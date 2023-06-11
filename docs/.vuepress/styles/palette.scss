@@ -1,0 +1,36 @@
+// Spectre.css variables
+// https://github.com/picturepan2/spectre/blob/master/src/_variables.scss
+@forward "node_modules/spectre.css/src/variables";
+$primary-color: #3068E5;
+$warning-color: #e8bb49;
+$base-font-family: "Noto Sans", -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto;
+$mono-font-family: "Source Code Pro", Menlo, Monaco, Consolas, "Courier New", monospace;
+
+// Vuepress-next default theme variables
+$MQMobileNarrow: 600px;
+$MQMobile: 840px;
+$MQNarrow: 960px;
+
+// Colors
+$text-color: #2c3e50;
+$secondary-text-color: #888;
+$light-text-color: #DEDEDE;
+$code-bg-color: #282c34;
+
+// Layout
+$navbar-height: 3.2rem;
+$page-width: 1088px;
+$side-container-width: 13rem;
+$sidebar-width: 15.5rem;
+$breadcrumb-height: 2.4rem;
+$navbar-and-breadcrumb-height: $navbar-height + $breadcrumb-height;
+$breadcrumb-background-color: #fff;
+
+// Card
+$max-package-card-width: 54.4rem;
+$max-package-card-skeleton-width: 27.2rem;
+
+// Scrollbar
+$scrollbar-background-color: #eee;
+$scrollbar-thumb-color: #ccc;
+$scrollbar-thumb-hover-color: #999;

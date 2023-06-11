@@ -1,0 +1,380 @@
+// Palette
+@use './palette.scss' as *;
+
+// Spectre.css
+@use "node_modules/spectre.css/src/spectre"
+with ($primary-color: $primary-color,
+  $warning-color: $warning-color,
+  $base-font-family: $base-font-family,
+  $mono-font-family: $mono-font-family,
+);
+
+// Highlight.js
+@use 'highlight.js/scss/monokai-sublime.scss' as *;
+
+// fonts
+@use './fonts.scss' as *;
+
+code.hljs {
+  display: inline;
+}
+
+.tooltip-click:hover::after {
+  opacity: 0;
+}
+
+.tooltip-click:focus::after,
+.tooltip-click:active::after {
+  opacity: 1;
+  transform: translate(-50%, -.2rem);
+}
+
+// Vuepress-next default theme css variables
+:root {
+  --c-text-accent: #{$primary-color};
+}
+
+// Fix documentation style issues caused by spectre overriden.
+body {
+  background: var(--c-bg);
+  color: var(--c-text);
+}
+
+ul {
+  list-style: disc outside;
+}
+
+small {
+  a {
+    font-size: 80% !important;
+    font-weight: 400;
+  }
+}
+
+.navbar {
+  .navbar-items-wrapper {
+    font-size: $font-size-sm;
+  }
+
+  .navbar-dropdown-title {
+    font-size: $font-size-sm;
+  }
+
+  .navbar-items {
+    a {
+      &:visited {
+        color: inherit;
+      }
+
+      &:hover {
+        text-decoration: none;
+      }
+    }
+  }
+}
+
+.avatar[data-initial]::before {
+  pointer-events: none;
+}
+
+.table {
+  thead {
+    tr {
+      border-top: 0px solid;
+    }
+
+    th {
+      border-top: 0px solid;
+      border-left: 0px solid;
+      border-right: 0px solid;
+    }
+  }
+
+  tbody {
+    tr {
+      td {
+        border-left: 0px solid;
+        border-right: 0px solid;
+      }
+    }
+  }
+}
+
+kbd {
+  border: none;
+  border-bottom: none;
+}
+
+.theme-default-content {
+  code {
+    padding: 0.1rem 0.2rem;
+  }
+}
+
+// Global overriden.
+.text-warning {
+  color: $warning-color;
+}
+
+.bg-warning {
+  background-color: $warning-color !important;
+}
+
+.menu .menu-item {
+
+  a,
+  >a,
+  input,
+  .form-select,
+  .form-switch {
+    font-size: $font-size-sm;
+  }
+
+  .form-switch {
+    margin-left: 0.4rem;
+  }
+}
+
+// Page layout.
+main {
+  padding: $navbar-height 0 0;
+  max-width: $page-width;
+  margin: 0 auto;
+
+  .sideview {
+    section {
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  &.page {
+    padding-top: 0;
+  }
+}
+
+.breadcrumbview {
+  margin-bottom: 0.8rem;
+
+  .breadcrumb-item,
+  .breadcrumb-item a {
+    font-size: $font-size-sm;
+  }
+}
+
+@media (min-width: $MQMobileNarrow) {
+  main {
+    &.applayout {
+      max-width: 100%;
+
+      .sideview {
+        .scroll-area {
+          position: fixed;
+          top: $navbar-height;
+          left: 0;
+          bottom: 0;
+          overflow-y: auto;
+          width: $side-container-width;
+          padding-top: 0.2rem;
+        }
+      }
+
+      .mainview {
+        padding-top: 0.2rem;
+        padding-left: $side-container-width;
+      }
+
+      .breadcrumb-container {
+        position: fixed;
+        top: $navbar-height;
+        left: $side-container-width;
+        right: 0;
+        width: calc(100% - #{$side-container-width});
+        z-index: 1;
+        background-color: $breadcrumb-background-color;
+
+        .breadcrumbview {
+          margin-bottom: 0;
+
+          ul.breadcrumb {
+            margin-bottom: 0;
+          }
+        }
+      }
+
+      .contentview {
+        .scroll-area {
+          margin-top: $breadcrumb-height;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: $MQMobileNarrow) {
+  main {
+    max-width: 100%;
+    margin: 0;
+    overflow-x: hidden;
+
+    .sideview {
+      margin-top: 1.15rem;
+    }
+  }
+
+  .theme-default-content {
+    font-size: $font-size-sm;
+
+    &:not(.custom) {
+      padding: 1rem;
+
+      >h1:first-child {
+        margin-top: 0;
+      }
+    }
+
+    p {
+      margin-block-start: 1em;
+      margin-block-end: 1em;
+      margin-inline-start: 0;
+      margin-inline-end: 0;
+    }
+  }
+}
+
+.hide {
+  display: none;
+}
+
+.display-block {
+  display: block;
+}
+
+.sidebar {
+  font-size: $font-size-sm;
+  width: $sidebar-width;
+
+  .sidebar-link {
+    text-decoration: none;
+    padding-right: 0.6rem;
+
+    &:focus {
+      box-shadow: none;
+    }
+
+    &:visited {
+      color: $text-color;
+    }
+
+    &.active {
+      color: primary-color;
+    }
+  }
+
+  >.sidebar-links {
+    padding: 0.2rem 0 1.5rem 0 !important;
+  }
+
+  .sidebar-links {
+    li {
+      margin-top: 0rem !important;
+
+      a.sidebar-link {
+        font-size: $font-size-sm !important;
+        line-height: 1.5 !important;
+      }
+
+      .sidebar-heading {
+        padding-left: 0.55rem;
+      }
+    }
+  }
+
+  .sidebar-sub-headers {
+    li {
+      margin-top: 0;
+
+      a.sidebar-link {
+        font-size: $font-size-sm !important;
+        padding-left: 0.4rem;
+      }
+    }
+  }
+
+  .sidebar-group {
+    a.sidebar-link {
+      padding-left: 0.6rem;
+    }
+  }
+}
+
+.page-edit {
+  padding-left: 1rem !important;
+  padding-right: 1rem !important;
+}
+
+.page-nav {
+  padding-left: 1rem !important;
+  padding-right: 1rem !important;
+}
+
+.tile .tile-title {
+  margin-top: 0 !important;
+}
+
+.avatar:not(.custom) {
+  background: #eee;
+}
+
+.pkg-sm {
+  .pkg-title {
+    margin: 0 0 0.3rem 0;
+
+    a::before {
+      content: "📦 ";
+    }
+  }
+}
+
+.form-group {
+  .form-label {
+    &.required:after {
+      content: " *";
+      color: $primary-color;
+    }
+  }
+}
+
+// scrollbar: the emerging W3C standard that is currently Firefox-only
+* {
+  scrollbar-width: thin;
+  scrollbar-color: $scrollbar-thumb-color $scrollbar-background-color;
+}
+
+*:hover {
+  scrollbar-color: $scrollbar-thumb-hover-color $scrollbar-background-color;
+}
+
+// scrollbar: Works on Chrome/Edge/Safari
+*::-webkit-scrollbar {
+  width: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: $scrollbar-background-color;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: $scrollbar-thumb-color;
+  border-radius: 20px;
+  border: 2px solid $scrollbar-thumb-color;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: $scrollbar-thumb-hover-color;
+  border-color: $scrollbar-thumb-hover-color;
+}
+
+// ads
+.adp:empty {
+  display: none;
+}
