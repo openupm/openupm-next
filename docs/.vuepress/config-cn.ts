@@ -81,12 +81,6 @@ export const themeConfig: any = {
           iconLeft: true
         },
         {
-          text: "GitHub论坛",
-          link: "https://github.com/openupm/openupm/discussions",
-          icon: "fas fa-hands-helping",
-          iconLeft: true
-        },
-        {
           link: "mailto:hello@openupm.com",
           text: "联系我们",
           icon: "fas fa-envelope",

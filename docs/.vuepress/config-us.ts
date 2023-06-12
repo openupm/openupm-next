@@ -81,12 +81,6 @@ export const themeConfig: any = {
           iconLeft: true
         },
         {
-          text: "GitHub Discussions",
-          link: "https://github.com/openupm/openupm/discussions",
-          icon: "fas fa-hands-helping",
-          iconLeft: true
-        },
-        {
           text: "Medium",
           link: "https://medium.com/openupm",
           icon: "fab fa-medium",

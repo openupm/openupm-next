@@ -57,6 +57,7 @@ const config: any = _.mergeWith({
   ],
   alias: {
     '@': path.resolve(__dirname),
+    '@theme/AutoLink.vue': path.resolve(__dirname, 'components/AutoLink.vue'),
     // https://github.com/intlify/vue-i18n-next/issues/789
     'vue-i18n': 'vue-i18n/dist/vue-i18n.esm-browser.prod.js',
   },

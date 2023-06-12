@@ -12,5 +12,5 @@ import InitialLoading from '../components/InitialLoading.vue';
 </template>
 
 <style lang="scss">
-@use '@/styles/palette' as p;
+// @use '@/styles/palette' as p;
 </style>
