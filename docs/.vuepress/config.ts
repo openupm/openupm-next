@@ -4,6 +4,7 @@ import { getDirname, path } from "@vuepress/utils";
 import { registerComponentsPlugin } from "@vuepress/plugin-register-components";
 import { viteBundler } from '@vuepress/bundler-vite'
 import vueI18nPlugin from './plugins/plugin-vue-i18n';
+import openupmPlugin from './plugins/plugin-openupm';
 
 const __dirname = getDirname(import.meta.url)
 
@@ -19,16 +20,19 @@ const mergeCustomizer = (obj, src) => { if (_.isArray(obj)) return obj.concat(sr
 
 // Merge themeConfig with regionConfig.themeConfig
 const themeConfig: any = _.mergeWith({
-  baseDomain: BASE_DOMAIN,
+  // Default theme configurations
+  // https://v2.vuepress.vuejs.org/reference/default-theme/config.html
   domain: `https://${BASE_DOMAIN}`,
-  region: OPENUPM_REGION,
-  // repo: "https://github.com/openupm/openupm",
   docsRepo: "https://github.com/openupm/openupm-frontend",
   docsDir: "docs",
   editLinks: true,
   logo: "/images/openupm-icon-256.png",
   lastUpdated: false,
-  smoothScroll: true,
+  // Custom configurations
+  baseDomain: BASE_DOMAIN,
+  region: OPENUPM_REGION,
+  openupmApiUrl: `https://api.${BASE_DOMAIN}`,
+  openupmRegistryUrl: `https://package.${BASE_DOMAIN}`,
 }, regionConfig.themeConfig, mergeCustomizer);
 
 // Merge config with regionConfig.config
@@ -54,10 +58,12 @@ const config: any = _.mergeWith({
   plugins: [
     vueI18nPlugin({ locales: [regionConfig.config.lang], localeDir: path.resolve(__dirname, "./locales") }),
     registerComponentsPlugin({ componentsDir: path.resolve(__dirname, "./components") }),
+    openupmPlugin({}),
   ],
   alias: {
     '@': path.resolve(__dirname),
     '@theme/AutoLink.vue': path.resolve(__dirname, 'components/AutoLink.vue'),
+    '@theme/Navbar.vue': path.resolve(__dirname, 'components/Navbar.vue'),
     // https://github.com/intlify/vue-i18n-next/issues/789
     'vue-i18n': 'vue-i18n/dist/vue-i18n.esm-browser.prod.js',
   },

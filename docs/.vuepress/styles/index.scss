@@ -110,6 +110,10 @@ kbd {
     color: $primary-color;
   }
 
+  .toggle-color-mode-button {
+    color: darken($primary-color, 20%);
+  }
+
   .navbar-items {
     font-size: $font-size-sm;
 
@@ -154,6 +158,10 @@ kbd {
 
 .dark {
   .navbar {
+    .toggle-color-mode-button {
+      color: inherit;
+    }
+
     .navbar-items {
       a {
         color: inherit;
@@ -170,6 +178,11 @@ kbd {
       }
     }
   }
+}
+
+.toggle-sidebar-button {
+  left: 0.5rem;
+  top: 0.4rem;
 }
 
 // Sidebar
