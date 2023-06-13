@@ -5,7 +5,8 @@ import { useThemeData } from '@vuepress/plugin-theme-data/client';
 
 import { SortType } from "@/constant";
 
-export const useDefaultStore = defineStore('default', {
+export const useDefaultStore = defineStore('pinia-default', {
+  persist: true,
   state() {
     return {
       packagesExtra: {} as any,
