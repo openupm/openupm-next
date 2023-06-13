@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { useStore } from 'vuex';
 import numeral from 'numeral';
 
-const store = useStore();
+import { useDefaultStore } from '@/store';
+
+const store = useDefaultStore();
 
 const stars = computed(() => {
-  const value = Number(store.getters.siteInfo.stars);
+  const value = Number(store.siteInfo.stars);
   if (isNaN(value)) return "...";
   return numeral(value).format("1.1a");
 });
