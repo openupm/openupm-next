@@ -18,10 +18,12 @@ const stars = computed(() => {
   <div class="navbar-items hide-md">
     <div class="nav-item growth">
       <div class="btn-group">
-        <a href="https://github.com/openupm/openupm" class="btn btn-default btn-sm"><i class="fab fa-github"></i> Stars
-          <span class="stars">{{ stars }}</span></a>
-        <a href="https://www.patreon.com/openupm" class="btn btn-default btn-sm"><i class="fab fa-patreon"></i> {{
-          $t("donate") }}</a>
+        <a href="https://github.com/openupm/openupm" class="btn btn-default btn-sm">
+          <i class="fab fa-github"></i> Stars <span class="stars">{{ stars }}</span>
+        </a>
+        <a href="https://www.patreon.com/openupm" class="btn btn-default btn-sm">
+          <i class="fab fa-patreon"></i> {{ $t("donate") }}
+        </a>
       </div>
     </div>
   </div>
@@ -52,3 +54,11 @@ const stars = computed(() => {
   }
 }
 </style>
+
+<i18n locale="en-US" lang="yaml">
+donate: Donate
+</i18n>
+
+<i18n locale="zh-CN" lang="yaml">
+donate: 赞助
+</i18n>

@@ -1,0 +1,90 @@
+
+  
+<script setup lang="ts">
+import { computed } from 'vue';
+import { useI18n } from 'vue-i18n'
+import numeral from 'numeral';
+
+import { useDefaultStore } from '@/store';
+const store = useDefaultStore();
+const { t } = useI18n();
+
+const stars = computed(() => {
+  const value = Number(store.siteInfo.stars);
+  if (isNaN(value)) return "...";
+  return numeral(value).format("1.1a");
+});
+
+const packagesLink = computed(() => {
+  return {
+    link: "/packages/",
+    text: t("packages"),
+    icon: "fa fa-box-open",
+    iconLeft: true
+  }
+});
+</script>
+
+<template>
+  <div class="growth-navbar-mobile show-sm">
+    <div class="columns">
+      <div class="column col-12">
+        <div class="btn-group">
+          <AutoLink :item="packagesLink" class="btn btn-default btn-sm" />
+          <a href="https://github.com/openupm/openupm" class="btn btn-default btn-sm">
+            <i class="fab fa-github"></i> Stars
+            <span class="stars">{{ stars }}</span>
+          </a>
+          <a href="https://www.patreon.com/openupm" class="btn btn-default btn-sm">
+            <i class="fab fa-patreon"></i> {{ $t("donate") }}
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+  
+<style lang="scss" scoped>
+@use '@/styles/palette' as *;
+
+// ad-block
+.growth-navbar-mobile {
+  position: fixed;
+  width: 100%;
+  margin: $navbar-height 0 0 0;
+  z-index: $zindex-1;
+
+  .btn-group {
+    width: 100%;
+
+    .btn {
+      font-weight: bold;
+
+      &:first-child {
+        border-radius: 0;
+        border-left: 0;
+      }
+
+      &:last-child {
+        border-radius: 0;
+        border-right: 0;
+      }
+    }
+  }
+
+  .stars {
+    display: inline-block;
+    min-width: 1rem;
+  }
+}
+</style>
+
+<i18n locale="en-US" lang="yaml">
+donate: Donate
+packages: Packages
+</i18n>
+  
+<i18n locale="zh-CN" lang="yaml">
+donate: 赞助
+packages: 软件包
+</i18n>

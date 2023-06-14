@@ -4,20 +4,19 @@ import { onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router'
 import { createI18n } from 'vue-i18n';
 import { defineClientConfig } from '@vuepress/client'
+import messages from '@intlify/unplugin-vue-i18n/messages'
 
 import Layout from '@/layouts/Layout.vue'
 import { useDefaultStore } from '@/store';
-// vue-i18n messages provided by plugin-vue-i18n
-declare const __VUE_I18N_MESSAGES__: any;
-const VUE_I18N_MESSAGES = __VUE_I18N_MESSAGES__;
 
 export default defineClientConfig({
   enhance({ app, router, siteData }) {
     // vue-i18n
     const i18n = createI18n({
+      allowComposition: true,
       locale: siteData.value.lang,
       fallbackLocale: 'en-US',
-      messages: VUE_I18N_MESSAGES,
+      messages
     });
     app.use(i18n);
     // pinia

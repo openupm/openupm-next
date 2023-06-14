@@ -56,8 +56,7 @@ git-tag-prefix: Git tag prefix
 git-tag-prefix-desc-html: >-
   The prefix to filter Git tags for monorepo (one repository that holds many
   packages). The prefixed tag should separate the semver with a slash
-  <code>/</code>, hyphen <code>-</code>, or underscore <code>_</code>. e.g.
-  <code>com.company.package-a/x.y.z</code>.
+  "/", hyphen "-", or underscore "_". e.g. "com.company.package-a/x.y.z".
 git-tag-prefix-placeholder: leave empty to include all tags by default
 github: GitHub
 go: Go
@@ -87,7 +86,6 @@ license-name-desc: The open source license name
 loading-branches: Loading branches...
 loading-package-json-path: Loading package.json path...
 loading-readme-md-path: Loading README.md path...
-loading-spin-text: Loading...
 lowest-unity-version: Lowest Unity version
 manual-installation: Manual installation
 medium: Medium
@@ -96,7 +94,7 @@ minimal-version-to-build: Minimal version to build
 minimal-version-to-build-placeholder: leave empty to build all versions by default
 monthly-downloads: Monthly Downloads
 name: Name
-name-at-version: Name@version
+name-at-version: Name{'@'}version
 needles-package-installer: Needle's package installer
 no-markdown-file-found-fallbacks: No markdown file found, fallbacks to README.md
 note: Note
@@ -141,7 +139,7 @@ release-reason-internal-error: server internal error
 release-reason-invalid-version: invalid version
 release-reason-none: unknown error
 release-reason-package-json-parsing-error: invalid format of package.json
-release-reason-package-name-invalid: the package name includes unsupported @ character
+release-reason-package-name-invalid: the package name includes unsupported {'@'} character
 release-reason-package-name-not-match: the name of package.json isn't matched
 release-reason-package-not-found: error path package.json
 release-reason-private: the package is explicitly private
@@ -183,11 +181,11 @@ unity-version: Unity Version
 upload-to-github-via-pr: Upload to GitHub via pull request (PR)
 upload-to-github-via-pr-desc: The package is verified. A YAML file has been generated to store the metadata.
 upload-to-github-via-pr-step-1-html: >-
-  Click the <kbd>Submit Pull Request</kbd> button to start uploading the file to
+  Click the "Submit Pull Request" button to start uploading the file to
   GitHub.
 upload-to-github-via-pr-step-2-html: >-
-  On the GitHub page, click the <kbd>Purpose new file</kbd> button. Then click
-  the <kbd>Create pull request</kbd> button on the following page. If you need
+  On the GitHub page, click the "Purpose new file" button. Then click
+  the"Create pull request" button on the following page. If you need
   help with the GitHub website, learn more at
 upload-to-github-via-pr-step-3-html: >-
   The pull request will get merged once it passes a workflow. For security

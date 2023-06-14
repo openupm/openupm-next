@@ -3,7 +3,8 @@ import { defaultTheme } from 'vuepress'
 import { getDirname, path } from "@vuepress/utils";
 import { registerComponentsPlugin } from "@vuepress/plugin-register-components";
 import { viteBundler } from '@vuepress/bundler-vite'
-import vueI18nPlugin from './plugins/plugin-vue-i18n';
+import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite'
+
 import openupmPlugin from './plugins/plugin-openupm';
 
 const __dirname = getDirname(import.meta.url)
@@ -56,7 +57,6 @@ const config: any = _.mergeWith({
     ["link", { rel: "alternate", type: "application/json", href: `https://api.${BASE_DOMAIN}/feeds/updates/json` }],
   ],
   plugins: [
-    vueI18nPlugin({ locales: [regionConfig.config.lang], localeDir: path.resolve(__dirname, "./locales") }),
     registerComponentsPlugin({ componentsDir: path.resolve(__dirname, "./components") }),
     openupmPlugin({}),
   ],
@@ -74,7 +74,13 @@ const config: any = _.mergeWith({
         preprocessorOptions: {
           scss: { quietDeps: true }
         }
-      }
+      },
+      plugins: [
+        VueI18nPlugin({
+          // locale messages resource pre-compile option
+          include: [path.resolve(__dirname, './locales/**')],
+        }),
+      ]
     },
   }),
 }, regionConfig.config, mergeCustomizer);

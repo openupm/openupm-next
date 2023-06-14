@@ -63,7 +63,7 @@ git-tag-ignore-pattern-desc: 用于排除Git标签的正则表达式
 git-tag-ignore-pattern-placeholder: 可不填，则默认处理所有Git标签
 git-tag-prefix: Git标签前缀
 git-tag-prefix-desc-html: >-
-  过滤Git标签的前缀。主要由包含多个项目的代码仓库（monorepos）用来区分不同的软件包。该前缀应使用使用斜杠<code>/</code>，连字符<code>-</code>或下划线<code>_</code>来分隔版本号。例如<code>myprefix/x.y.z</code>。
+  过滤Git标签的前缀。主要由包含多个项目的代码仓库（monorepos）用来区分不同的软件包。该前缀应使用使用斜杠"/"，连字符"-"或下划线"_"来分隔版本号。例如"myprefix/x.y.z"。
 git-tag-prefix-placeholder: 可不填，则默认处理所有Git标签
 github: GitHub
 go: 开始
@@ -94,7 +94,6 @@ license-name-desc: 请指定许可证名称。
 loading-branches: 加载分支...
 loading-package-json-path: 加载package.json路径...
 loading-readme-md-path: 加载README.md路径...
-loading-spin-text: 加载中...
 localization: 本地化
 lowest-unity-version: 最低兼容Unity版本
 manual-installation: 手动安装
@@ -106,7 +105,7 @@ monthly-downloads: 月下载量
 mobile: 移动端
 modeling: 建模
 name: 名称
-name-at-version: 名称@版本
+name-at-version: 名称{'@'}版本
 needles-package-installer: Needle的软件包辅助安装器
 no-markdown-file-found-fallbacks: 无法找到markdown文件, 使用默认值README.md
 network: 网络
@@ -159,7 +158,7 @@ release-reason-internal-error: 服务器内部错误
 release-reason-invalid-version: 无效的版本
 release-reason-none: 未知错误
 release-reason-package-json-parsing-error: package.json格式错误
-release-reason-package-name-invalid: 该软件包名称包含不支持的字符，例如“@”
+release-reason-package-name-invalid: 该软件包名称包含不支持的字符，例如“{'@'}”
 release-reason-package-name-not-match: 该软件包名称与package.json不匹配
 release-reason-package-not-found: 未能找到package.json的路径
 release-reason-private: 该软件包是私有的
@@ -201,8 +200,8 @@ twitter: 推特
 unity-version: Unity兼容版本
 upload-to-github-via-pr: 向GitHub提交合并请求（PR）
 upload-to-github-via-pr-desc: 软件包已通过基本验证，并生成了一个YAML文件来存储元数据。
-upload-to-github-via-pr-step-1-html: 点击<kbd>提交合并请求</kbd>按钮，将引导你访问GitHub网站完成后续步骤。
-upload-to-github-via-pr-step-2-html: 在GitHub页面，点击页尾的<kbd>Purpose new file</kbd>按钮，并在新页面上点击<kbd>Create pull request</kbd>按钮。了解更多GitHub的帮助信息，请参考
+upload-to-github-via-pr-step-1-html: 点击"提交合并请求"按钮，将引导你访问GitHub网站完成后续步骤。
+upload-to-github-via-pr-step-2-html: 在GitHub页面，点击页尾的"Purpose new file"按钮，并在新页面上点击"Create pull request"按钮。了解更多GitHub的帮助信息，请参考
 upload-to-github-via-pr-step-3-html: 合并请求将会在测试通过后被自动合并。出于安全考虑，首次提交的贡献者需要等待维护人审批，我们将尽力在24小时内完成首次贡献者的审批。请参考
 upstream: 父项目
 utilities: 工具
