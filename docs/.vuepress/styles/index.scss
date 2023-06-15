@@ -4,6 +4,7 @@
 // Spectre.css
 @use "node_modules/spectre.css/src/spectre"
 with ($primary-color: $primary-color,
+  $primary-color-light: $primary-color-light,
   $warning-color: $warning-color,
   $base-font-family: $base-font-family,
   $mono-font-family: $mono-font-family,
@@ -26,7 +27,8 @@ with ($primary-color: $primary-color,
 }
 
 html.dark {
-  --c-brand: #{$primary-color};
+  --c-brand: #{lighten($primary-color, 5%)};
+  --c-text-accent: #{lighten($primary-color, 5%)};
   --c-brand-light: #{$primary-color-light};
 }
 
@@ -91,7 +93,6 @@ kbd {
   background-color: $warning-color !important;
 }
 
-
 .theme-default-content {
 
   pre,
@@ -113,7 +114,12 @@ div[class*=language-] {
   }
 }
 
+// Dark color scheme
 .dark {
+  a {
+    color: var(--c-text-accent);
+  }
+
   .btn-default {
     background-color: var(--c-bg-dark);
     color: var(--c-text);
