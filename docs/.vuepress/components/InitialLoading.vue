@@ -24,7 +24,7 @@ onMounted(() => {
   font-size: $font-size-sm;
 
   .loader {
-    z-index: 21;
+    z-index: $zindex-1;
     position: fixed;
     top: $navbar-height + 0.6rem;
     right: 0;

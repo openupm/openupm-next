@@ -51,8 +51,9 @@ const packagesLink = computed(() => {
 .growth-navbar-mobile {
   position: fixed;
   width: 100%;
-  margin: $navbar-height 0 0 0;
-  z-index: $zindex-1;
+  top: $navbar-height;
+  margin: 0;
+  z-index: 1;
 
   .btn-group {
     width: 100%;
