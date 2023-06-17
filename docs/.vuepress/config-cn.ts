@@ -16,8 +16,8 @@ export const config: any = {
 const docSideBar = function () {
   return [
     {
-      title: "使用指南",
-      collapsable: false,
+      text: "使用指南",
+      collapsible: true,
       children: [
         "/zh/docs/",
         "/zh/docs/getting-started",
@@ -28,25 +28,25 @@ const docSideBar = function () {
       ]
     },
     {
-      title: "NuGet",
-      collapsable: false,
+      text: "NuGet",
+      collapsible: true,
       children: [
         "/nuget/"
       ]
     },
     {
-      title: "软件包作者指南",
-      collapsable: false,
+      text: "软件包作者指南",
+      collapsible: true,
       children: ["/zh/docs/adding-badge", "/zh/docs/managing-upm-project"]
     },
     {
-      title: "OpenUPM维护指南",
-      collapsable: true,
+      text: "OpenUPM维护指南",
+      collapsible: true,
       children: ["/zh/docs/dev/"]
     },
     {
-      title: "其他资源",
-      collapsable: true,
+      text: "其他资源",
+      collapsible: true,
       children: [
         "/zh/docs/team",
         "/zh/docs/terms",

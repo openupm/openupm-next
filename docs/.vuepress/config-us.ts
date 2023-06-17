@@ -18,8 +18,8 @@ export const config: any = {
 const docSideBar = function () {
   return [
     {
-      title: "Guide",
-      collapsable: false,
+      text: "Guide",
+      collapsible: true,
       children: [
         "/docs/",
         "/docs/getting-started",
@@ -30,25 +30,25 @@ const docSideBar = function () {
       ]
     },
     {
-      title: "NuGet",
-      collapsable: false,
+      text: "NuGet",
+      collapsible: true,
       children: [
         "/nuget/"
       ]
     },
     {
-      title: "Package Creator Guide",
-      collapsable: false,
+      text: "Package Creator Guide",
+      collapsible: true,
       children: ["/docs/adding-badge", "/docs/managing-upm-project"]
     },
     {
-      title: "Development Guide",
-      collapsable: true,
+      text: "Development Guide",
+      collapsible: true,
       children: ["/docs/dev/"]
     },
     {
-      title: "Resources",
-      collapsable: true,
+      text: "Resources",
+      collapsible: true,
       children: [
         "/docs/team",
         "/docs/terms",

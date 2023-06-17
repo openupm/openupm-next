@@ -24,6 +24,9 @@ with ($primary-color: $primary-color,
   --c-text-accent: #{$primary-color};
   --navbar-height: #{$navbar-height};
   --code-ln-wrapper-width: 2.8rem;
+  --c-scrollbar-background: #eee;
+  --c-scrollbar-thumb: #bbb;
+  --c-scrollbar-thumb-hover: #999;
 }
 
 html.dark {
@@ -38,6 +41,10 @@ body {
   color: var(--c-text);
 }
 
+p {
+  margin: 0 0 0.8rem;
+}
+
 ul {
   list-style: disc outside;
 }
@@ -49,8 +56,14 @@ small {
   }
 }
 
-code.hljs {
-  display: inline;
+code {
+
+  background-color: var(--c-bg-dark);
+  color: inherit;
+
+  .hljs {
+    display: inline;
+  }
 }
 
 .avatar[data-initial]::before {
@@ -95,9 +108,82 @@ kbd {
 
 .theme-default-content {
 
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin-top: 0;
+    margin-bottom: 0.6rem;
+    padding-top: 0.6rem;
+
+    &:first-child {
+
+      +p,
+      +pre,
+      +.custom-container {
+        margin-top: 1.6rem;
+      }
+    }
+  }
+
+
+  h1 {
+    font-size: 1.8rem;
+  }
+
+  h2 {
+    font-size: 1.32rem;
+  }
+
+  h2 {
+    font-size: 1.32rem;
+  }
+
+  h3 {
+    font-size: 1.08rem;
+  }
+
+  h4 {
+    font-size: 0.92rem;
+  }
+
+  h5 {
+    font-size: 0.84rem;
+  }
+
+  h6 {
+    font-size: 0.8rem;
+  }
+
+  p {
+    font-size: 0.75rem;
+  }
+
   pre,
   pre[class*=language-] {
     padding: 1rem 1rem;
+  }
+}
+
+.page {
+  .theme-default-content {
+    margin-top: $navbar-height + 1.2rem;
+  }
+}
+
+.custom-container {
+
+  .custom-container-title,
+  .custom-container-title:not(:only-child) {
+    margin: 0.6rem 0;
+  }
+
+  &.tip,
+  &.warning,
+  &.danger {
+    margin: 0.8rem 0;
   }
 }
 
@@ -207,7 +293,7 @@ div[class*=language-] {
   top: 0.4rem;
 }
 
-// Sidebar
+// Sidebar + Nanvbar
 .sidebar {
   .navbar-items {
     a {
@@ -215,7 +301,8 @@ div[class*=language-] {
     }
 
     .navbar-item {
-      padding: 0.3rem 0 0.3rem 1.5rem;
+      font-size: 0.75rem;
+      padding: 0.3rem 0 0.3rem 1.25rem;
     }
 
     .navbar-dropdown-wrapper {
@@ -224,6 +311,89 @@ div[class*=language-] {
           margin-top: 0;
         }
       }
+    }
+  }
+}
+
+// Sidebar
+.sidebar {
+  width: $sidebar-width;
+  scrollbar-color: var(--c-scrollbar-thumb) var(--c-scrollbar-background);
+
+  &::-webkit-scrollbar {
+    width: 7px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: var(--c-scrollbar-background);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--c-scrollbar-thumb);
+  }
+
+  .sidebar-items {
+    padding: 1.2rem 0;
+  }
+
+  .sidebar-item.sidebar-heading {
+    font-size: 0.8rem;
+  }
+
+  .sidebar-item {
+    text-decoration: none;
+
+    &:visited {
+      color: inherit;
+    }
+
+    &:focus {
+      box-shadow: none;
+    }
+
+    &:hover {
+      color: $primary-color;
+    }
+
+    &.sidebar-heading {
+      padding: 0.3rem 0.8rem 0 1rem;
+    }
+
+    &:not(.sidebar-heading) {
+      font-size: 0.75rem;
+      padding: 0.15rem 0.8rem 0.15rem 1rem;
+    }
+  }
+
+  .sidebar-item-children {
+    .sidebar-item-children {
+      >li {
+        margin-top: 0.24rem;
+      }
+
+      .sidebar-item {
+        &:not(.sidebar-heading) {
+          padding: 0.15rem 0.8rem 0.15rem 0.6rem;
+        }
+      }
+    }
+  }
+}
+
+.dark {
+  .sidebar {
+    .sidebar-item {
+      &:not(.active) {
+        color: inherit;
+      }
+    }
+  }
+}
+
+@media (max-width: $MQMobileNarrow) {
+  .sidebar {
+    .sidebar-items {
+      padding: 0.3rem 0;
     }
   }
 }
@@ -351,13 +521,6 @@ main {
         margin-top: 0;
       }
     }
-
-    p {
-      margin-block-start: 1em;
-      margin-block-end: 1em;
-      margin-inline-start: 0;
-      margin-inline-end: 0;
-    }
   }
 }
 
@@ -367,64 +530,6 @@ main {
 
 .display-block {
   display: block;
-}
-
-.sidebar {
-  font-size: $font-size-sm;
-  width: $sidebar-width;
-
-  .sidebar-link {
-    text-decoration: none;
-    padding-right: 0.6rem;
-
-    &:focus {
-      box-shadow: none;
-    }
-
-    &:visited {
-      color: $text-color;
-    }
-
-    &.active {
-      color: primary-color;
-    }
-  }
-
-  >.sidebar-links {
-    padding: 0.2rem 0 1.5rem 0 !important;
-  }
-
-  .sidebar-links {
-    li {
-      margin-top: 0rem !important;
-
-      a.sidebar-link {
-        font-size: $font-size-sm !important;
-        line-height: 1.5 !important;
-      }
-
-      .sidebar-heading {
-        padding-left: 0.55rem;
-      }
-    }
-  }
-
-  .sidebar-sub-headers {
-    li {
-      margin-top: 0;
-
-      a.sidebar-link {
-        font-size: $font-size-sm !important;
-        padding-left: 0.4rem;
-      }
-    }
-  }
-
-  .sidebar-group {
-    a.sidebar-link {
-      padding-left: 0.6rem;
-    }
-  }
 }
 
 .page-edit {
@@ -467,31 +572,31 @@ main {
 // scrollbar: the emerging W3C standard that is currently Firefox-only
 * {
   scrollbar-width: thin;
-  scrollbar-color: $scrollbar-thumb-color $scrollbar-background-color;
+  scrollbar-color: var(--c-scrollbar-thumb) var(--c-scrollbar-background);
 }
 
 *:hover {
-  scrollbar-color: $scrollbar-thumb-hover-color $scrollbar-background-color;
+  scrollbar-color: var(--c-scrollbar-thumb-hover) var(--c-scrollbar-background);
 }
 
 // scrollbar: Works on Chrome/Edge/Safari
 *::-webkit-scrollbar {
-  width: 10px;
+  width: 7px;
 }
 
 *::-webkit-scrollbar-track {
-  background: $scrollbar-background-color;
+  background: var(--c-scrollbar-background);
 }
 
 *::-webkit-scrollbar-thumb {
-  background-color: $scrollbar-thumb-color;
+  background-color: var(--c-scrollbar-thumb);
   border-radius: 20px;
-  border: 2px solid $scrollbar-thumb-color;
+  border: 2px solid var(--c-scrollbar-thumb);
 }
 
 *::-webkit-scrollbar-thumb:hover {
-  background-color: $scrollbar-thumb-hover-color;
-  border-color: $scrollbar-thumb-hover-color;
+  background-color: var(--c-scrollbar-thumb-hover);
+  border-color: var(--c-scrollbar-thumb-hover);
 }
 
 // ads
