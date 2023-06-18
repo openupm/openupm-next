@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n'
 import numeral from 'numeral';
 
 import { useDefaultStore } from '@/store';
@@ -22,7 +23,7 @@ const stars = computed(() => {
           <i class="fab fa-github"></i> Stars <span class="stars">{{ stars }}</span>
         </a>
         <a href="https://www.patreon.com/openupm" class="btn btn-default btn-sm">
-          <i class="fab fa-patreon"></i> {{ $t("donate") }}
+          <i class="fab fa-patreon"></i> {{ $capitalize($t("donate")) }}
         </a>
       </div>
     </div>
@@ -54,11 +55,3 @@ const stars = computed(() => {
   }
 }
 </style>
-
-<i18n locale="en-US" lang="yaml">
-donate: Donate
-</i18n>
-
-<i18n locale="zh-CN" lang="yaml">
-donate: 赞助
-</i18n>

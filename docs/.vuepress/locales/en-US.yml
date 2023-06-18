@@ -31,7 +31,7 @@ discord: Discord
 discovered-by: Discovered by
 discovered-by-placeholder: hunter
 display-name-zhcn: Display name (Chinese)
-donate: Donate
+donate: donate
 edit-package: Edit this package
 english-text: 'English text:'
 experimental: experimental
@@ -107,7 +107,7 @@ package-name-contains-unity: >-
   The package name contains text "unity" should respect to the trademarks rules
   (just a friendly reminder).
 package-updates: Package Updates
-packages: Packages
+packages: packages
 path-of-package-json: Path of package.json
 path-of-readme: Path of README.md
 path-of-readme-zhcn: Path of README.md (Chinese)

@@ -5,6 +5,7 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n'
 import numeral from 'numeral';
 
+import { capitalize } from "lodash";
 import { useDefaultStore } from '@/store';
 const store = useDefaultStore();
 const { t } = useI18n();
@@ -18,7 +19,7 @@ const stars = computed(() => {
 const packagesLink = computed(() => {
   return {
     link: "/packages/",
-    text: t("packages"),
+    text: capitalize(t("packages")),
     icon: "fa fa-box-open",
     iconLeft: true
   }
@@ -36,7 +37,7 @@ const packagesLink = computed(() => {
             <span class="stars">{{ stars }}</span>
           </a>
           <a href="https://www.patreon.com/openupm" class="btn btn-default btn-sm">
-            <i class="fab fa-patreon"></i> {{ $t("donate") }}
+            <i class="fab fa-patreon"></i> {{ $capitalize($t("donate")) }}
           </a>
         </div>
       </div>
@@ -79,13 +80,3 @@ const packagesLink = computed(() => {
   }
 }
 </style>
-
-<i18n locale="en-US" lang="yaml">
-donate: Donate
-packages: Packages
-</i18n>
-  
-<i18n locale="zh-CN" lang="yaml">
-donate: 赞助
-packages: 软件包
-</i18n>
