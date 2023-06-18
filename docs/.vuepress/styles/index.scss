@@ -23,10 +23,13 @@ with ($primary-color: $primary-color,
   --c-brand-light: #{$primary-color-light};
   --c-text-accent: #{$primary-color};
   --navbar-height: #{$navbar-height};
-  --code-ln-wrapper-width: 2.8rem;
+  --scrollbar-width: 7px;
+  --scrollbar-height: 7px;
   --c-scrollbar-background: #eee;
   --c-scrollbar-thumb: #bbb;
   --c-scrollbar-thumb-hover: #999;
+  --sidebar-width: 16rem;
+  --code-ln-wrapper-width: 2.8rem;
 }
 
 html.dark {
@@ -321,7 +324,7 @@ div[class*=language-] {
   scrollbar-color: var(--c-scrollbar-thumb) var(--c-scrollbar-background);
 
   &::-webkit-scrollbar {
-    width: 7px;
+    width: var(--scrollbar-width);
   }
 
   &::-webkit-scrollbar-track {
@@ -581,7 +584,9 @@ main {
 
 // scrollbar: Works on Chrome/Edge/Safari
 *::-webkit-scrollbar {
-  width: 7px;
+  height: var(--scrollbar-height);
+  width: var(--scrollbar-width);
+  ;
 }
 
 *::-webkit-scrollbar-track {
