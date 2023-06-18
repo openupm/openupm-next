@@ -59,5 +59,5 @@ Checkout the [curated list](https://github.com/xoofx/UnityNuGet/blob/master/regi
 Or use the [`/-/all` API endpoint](https://unitynuget-registry.azurewebsites.net/-/all)
 
 ```sh
-$ curl -s https://unitynuget-registry.azurewebsites.net/-/all|json -k
+$ curl -s https://unitynuget-registry.azurewebsites.net/-/all | json -k
 ```

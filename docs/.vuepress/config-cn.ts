@@ -31,7 +31,7 @@ const docSideBar = function () {
       text: "NuGet",
       collapsible: true,
       children: [
-        "/nuget/"
+        "/zh/nuget/"
       ]
     },
     {
@@ -61,7 +61,7 @@ export const themeConfig: any = {
   editLinkText: "编辑此页面",
   navbar: [
     { text: "软件包", link: "/packages/" },
-    { text: "NuGet", link: "/nuget/" },
+    { text: "NuGet", link: "/zh/nuget/" },
     { text: "文档", link: "/zh/docs/" },
     {
       text: "支持",

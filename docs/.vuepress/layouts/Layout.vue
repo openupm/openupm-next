@@ -7,4 +7,4 @@ import ParentLayout from '@vuepress/theme-default/layouts/Layout.vue'
   </ParentLayout>
 </template>
 
-<style lang="scss"></style>
+<style lang="scss" scoped></style>

@@ -2,11 +2,11 @@
 showFooter: false
 pageClass: page-team
 ---
-# Team
+# 团队
 
-OpenUPM is a service for hosting and building open source unity package manager (upm) packages. The intention is to create an universal platform to discover, share and distribute open source upm packages, and a community along with it.
+OpenUPM是用于托管和构建开源UPM软件的基础服务。我们的目的是创建一个统一的平台，来发现、分享和分发开源的UPM软件包，以及围绕此建设一个开源社区。
 
-The development of OpenUPM is guided by:
+OpenUPM的开发和维护者：
 
 <div class="tile">
   <div class="tile-icon">
@@ -15,7 +15,7 @@ The development of OpenUPM is guided by:
   <div class="tile-content">
     <p class="tile-title">Favo Yang</p>
     <ul>
-      <li><i class="fa fa-code"></i> Creator @OpenUPM</li>
+      <li><i class="fa fa-code"></i> 创建者 @OpenUPM</li>
       <li><i class="fa fa-home"></i> <a href="https://littlebigfun.com">littlebigfun.com</a></li>
       <li><i class="fab fa-patreon"></i> <a href="https://patreon.com/openupm">patreon.com/openupm</a></li>
       <li><i class="fab fa-github"></i> <a href="https://github.com/favoyang">github.com/favoyang</a></li>

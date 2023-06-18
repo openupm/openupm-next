@@ -29,7 +29,7 @@ const stars = computed(() => {
   </div>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @use '@/styles/palette' as *;
 
 .navbar-items {
