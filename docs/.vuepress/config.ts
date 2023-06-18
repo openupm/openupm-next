@@ -67,6 +67,11 @@ const config: any = _.mergeWith({
     // https://github.com/intlify/vue-i18n-next/issues/789
     'vue-i18n': 'vue-i18n/dist/vue-i18n.esm-browser.prod.js',
   },
+  markdown: {
+    code: {
+      lineNumbers: false,
+    }
+  },
   shouldPrefetch: false,
   bundler: viteBundler({
     viteOptions: {
