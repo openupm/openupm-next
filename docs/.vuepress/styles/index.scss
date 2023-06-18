@@ -223,6 +223,15 @@ div[class*=language-] {
 
 // Navbar
 .navbar {
+
+  a {
+    text-decoration: none;
+
+    &:focus {
+      box-shadow: none;
+    }
+  }
+
   .site-name {
     color: $primary-color;
   }
