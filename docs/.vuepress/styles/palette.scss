@@ -30,3 +30,12 @@ $breadcrumb-background-color: #fff;
 // Card
 $max-package-card-width: 54.4rem;
 $max-package-card-skeleton-width: 27.2rem;
+
+// Font icon
+@mixin font-awesome-icon {
+  display: inline-block;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  font-family: 'Font Awesome 5 Free';
+  font-weight: 900;
+}

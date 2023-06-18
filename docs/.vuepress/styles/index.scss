@@ -168,11 +168,17 @@ kbd {
   pre[class*=language-] {
     padding: 1rem 1rem;
   }
+
 }
 
 .page {
   .theme-default-content {
     margin-top: $navbar-height + 1.2rem;
+    padding: 0 1rem 1rem 1rem;
+  }
+
+  .page-meta {
+    padding: 0 1rem;
   }
 }
 
@@ -401,17 +407,6 @@ div[class*=language-] {
   }
 }
 
-// Tooltip-click
-.tooltip-click:hover::after {
-  opacity: 0;
-}
-
-.tooltip-click:focus::after,
-.tooltip-click:active::after {
-  opacity: 1;
-  transform: translate(-50%, -.2rem);
-}
-
 // Menu
 .menu .menu-item {
 
@@ -525,49 +520,10 @@ main {
       }
     }
   }
-}
 
-.hide {
-  display: none;
-}
-
-.display-block {
-  display: block;
-}
-
-.page-edit {
-  padding-left: 1rem !important;
-  padding-right: 1rem !important;
-}
-
-.page-nav {
-  padding-left: 1rem !important;
-  padding-right: 1rem !important;
-}
-
-.tile .tile-title {
-  margin-top: 0 !important;
-}
-
-.avatar:not(.custom) {
-  background: #eee;
-}
-
-.pkg-sm {
-  .pkg-title {
-    margin: 0 0 0.3rem 0;
-
-    a::before {
-      content: "📦 ";
-    }
-  }
-}
-
-.form-group {
-  .form-label {
-    &.required:after {
-      content: " *";
-      color: $primary-color;
+  .page-meta {
+    .meta-item:first-child {
+      margin-top: 0;
     }
   }
 }
@@ -604,7 +560,76 @@ main {
   border-color: var(--c-scrollbar-thumb-hover);
 }
 
-// ads
+// Custom: misc
+.hide {
+  display: none;
+}
+
+.display-block {
+  display: block;
+}
+
+// Custom: ads
 .adp:empty {
   display: none;
+}
+
+// Custom: tooltip-click
+.tooltip-click:hover::after {
+  opacity: 0;
+}
+
+.tooltip-click:focus::after,
+.tooltip-click:active::after {
+  opacity: 1;
+  transform: translate(-50%, -.2rem);
+}
+
+.page-nav {
+  padding: 0 1rem;
+
+  .prev {
+    a {
+      &::before {
+        @include font-awesome-icon;
+        content: "\f060";
+      }
+    }
+  }
+
+  .next {
+    a {
+      &::after {
+        @include font-awesome-icon;
+        content: "\f061";
+      }
+    }
+  }
+}
+
+.tile .tile-title {
+  margin-top: 0 !important;
+}
+
+.avatar:not(.custom) {
+  background: #eee;
+}
+
+.pkg-sm {
+  .pkg-title {
+    margin: 0 0 0.3rem 0;
+
+    a::before {
+      content: "📦 ";
+    }
+  }
+}
+
+.form-group {
+  .form-label {
+    &.required:after {
+      content: " *";
+      color: $primary-color;
+    }
+  }
 }
