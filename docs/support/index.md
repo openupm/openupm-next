@@ -65,7 +65,6 @@ See [Contributors](/contributors/)
 
       &:hover {
         text-decoration: none !important;
-        background-color: #eee;
       }
 
       i {

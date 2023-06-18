@@ -65,7 +65,6 @@ OpenUPM是一项开源服务，完全免费使用。然而托管该服务、维�
 
       &:hover {
         text-decoration: none !important;
-        background-color: #eee;
       }
 
       i {
