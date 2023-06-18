@@ -34,6 +34,7 @@ const themeConfig: any = _.mergeWith({
   region: OPENUPM_REGION,
   openupmApiUrl: `https://api.${BASE_DOMAIN}`,
   openupmRegistryUrl: `https://package.${BASE_DOMAIN}`,
+  contributors: false,
 }, regionConfig.themeConfig, mergeCustomizer);
 
 // Merge config with regionConfig.config
