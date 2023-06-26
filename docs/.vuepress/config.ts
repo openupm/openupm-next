@@ -9,11 +9,10 @@ import OpenupmPlugin from '../../dist/vuepress-plugin-openupm';
 
 const __dirname = getDirname(import.meta.url)
 
-const OPENUPM_REGION = process.env.OPENUPM_REGION == "cn" ? "cn" : "us";
-const BASE_DOMAIN = OPENUPM_REGION == "cn" ? "openupm.cn" : "openupm.com";
+const VITE_OPENUPM_REGION = process.env.VITE_OPENUPM_REGION == "cn" ? "cn" : "us";
 import configUs from "./config-us";
 import configCn from "./config-cn";
-const regionConfig: any = OPENUPM_REGION == "cn" ? configCn : configUs;
+const regionConfig: any = VITE_OPENUPM_REGION == "cn" ? configCn : configUs;
 const THEME_COLOR = "#3068E5";
 
 // Merge customizer to concat arrays
@@ -23,18 +22,14 @@ const mergeCustomizer = (obj, src) => { if (isArray(obj)) return obj.concat(src)
 const themeConfig: any = mergeWith({
   // Default theme configurations
   // https://v2.vuepress.vuejs.org/reference/default-theme/config.html
-  domain: `https://${BASE_DOMAIN}`,
   docsRepo: "https://github.com/openupm/openupm-next",
   docsDir: "docs",
   editLinks: true,
   logo: "/images/openupm-icon-256.png",
   lastUpdated: false,
-  // Custom configurations
-  baseDomain: BASE_DOMAIN,
-  region: OPENUPM_REGION,
-  openupmApiUrl: `https://api.${BASE_DOMAIN}`,
-  openupmRegistryUrl: `https://package.${BASE_DOMAIN}`,
   contributors: false,
+  // Custom configurations here
+  // ...
 }, regionConfig.themeConfig, mergeCustomizer);
 
 // Merge config with regionConfig.config
@@ -53,9 +48,6 @@ const config: any = mergeWith({
     ["link", { rel: "manifest", href: "/manifest.json" }],
     ["link", { rel: "stylesheet", href: "/vendors/fontawesome-free@5.15.1/css/all.css" }],
     ["link", { rel: "stylesheet", href: "/vendors/cookieconsent@3.1.1/build/cookieconsent.min.css" }],
-    ["link", { rel: "alternate", type: "application/rss+xml", href: `https://api.${BASE_DOMAIN}/feeds/updates/rss` }],
-    ["link", { rel: "alternate", type: "application/rss+atom", href: `https://api.${BASE_DOMAIN}/feeds/updates/atom` }],
-    ["link", { rel: "alternate", type: "application/json", href: `https://api.${BASE_DOMAIN}/feeds/updates/json` }],
   ],
   plugins: [
     registerComponentsPlugin({ componentsDir: path.resolve(__dirname, "./components") }),

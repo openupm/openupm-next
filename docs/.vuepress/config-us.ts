@@ -5,6 +5,9 @@ export const config: any = {
   title: "OpenUPM",
   description: "OpenUPM is a managed UPM registry with automatic build services for open-source Unity packages.",
   head: [
+    ["link", { rel: "alternate", type: "application/rss+xml", href: `https://api.openupm.com/feeds/updates/rss` }],
+    ["link", { rel: "alternate", type: "application/rss+atom", href: `https://api.openupm.com/feeds/updates/atom` }],
+    ["link", { rel: "alternate", type: "application/json", href: `https://api.openupm.com/feeds/updates/json` }],
     ["meta", { name: "keywords", content: "openupm,upm,registry,unity,package,manager,open source" }],
     // GA4
     ['script', { async: true, src: 'https://www.googletagmanager.com/gtag/js?id=G-HBWCQ2KGQ5' }],
@@ -67,6 +70,7 @@ const docSideBar = function () {
 };
 
 export const themeConfig: any = {
+  domain: `https://openupm.com`,
   navbar: [
     { text: "Packages", link: "/packages/" },
     { text: "NuGet", link: "/nuget/" },

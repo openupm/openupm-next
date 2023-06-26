@@ -114,5 +114,5 @@ The website supports two regions with different configurations:
 - To develop the CN region:
 
   ```
-  OPENUPM_REGION=cn yarn docs:dev
+  VITE_OPENUPM_REGION=cn yarn docs:dev
   ```

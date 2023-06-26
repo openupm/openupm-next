@@ -4,6 +4,7 @@ import { defineStore } from 'pinia'
 import { useThemeData } from '@vuepress/plugin-theme-data/client';
 
 import { SortType } from "@/constant";
+import { getAPIBaseUrl } from "@shared/urls";
 
 export const useDefaultStore = defineStore('pinia-default', {
   persist: true,
@@ -18,11 +19,10 @@ export const useDefaultStore = defineStore('pinia-default', {
   },
   actions: {
     async fetchPackagesExtra() {
-      const themeData = useThemeData();
-      const openupmApiUrl = themeData.value.openupmApiUrl;
+      const apiBaseUrl = getAPIBaseUrl();
       try {
         const resp = await axios.get(
-          urljoin(openupmApiUrl, "/packages/extra"),
+          urljoin(apiBaseUrl, "/packages/extra"),
           { headers: { Accept: "application/json" } }
         );
         resp.data.__time = new Date().getTime();
@@ -37,11 +37,10 @@ export const useDefaultStore = defineStore('pinia-default', {
       if (timeElapsed > cacheTime) await this.fetchPackagesExtra();
     },
     async fetchRecentPackages() {
-      const themeData = useThemeData();
-      const openupmApiUrl = themeData.value.openupmApiUrl;
+      const apiBaseUrl = getAPIBaseUrl();
       try {
         const resp = await axios.get(
-          urljoin(openupmApiUrl, "/packages/recent"),
+          urljoin(apiBaseUrl, "/packages/recent"),
           { headers: { Accept: "application/json" } }
         );
         this.recentPackages = resp.data;
@@ -50,11 +49,10 @@ export const useDefaultStore = defineStore('pinia-default', {
       }
     },
     async fetchSiteInfo() {
-      const themeData = useThemeData();
-      const openupmApiUrl = themeData.value.openupmApiUrl;
+      const apiBaseUrl = getAPIBaseUrl();
       try {
         const resp = await axios.get(
-          urljoin(openupmApiUrl, "site/info"),
+          urljoin(apiBaseUrl, "site/info"),
           { headers: { Accept: "application/json" } }
         );
         resp.data.__time = new Date().getTime();

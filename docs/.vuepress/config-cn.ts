@@ -5,6 +5,9 @@ export const config: any = {
   title: "OpenUPM中文网",
   description: "OpenUPM是收集Unity开源软件包的仓库和自动化构建服务。",
   head: [
+    ["link", { rel: "alternate", type: "application/rss+xml", href: `https://api.openupm.cn/feeds/updates/rss` }],
+    ["link", { rel: "alternate", type: "application/rss+atom", href: `https://api.openupm.cn/feeds/updates/atom` }],
+    ["link", { rel: "alternate", type: "application/json", href: `https://api.openupm.cn/feeds/updates/json` }],
     ["meta", { name: "keywords", content: "openupm,upm,registry,unity,package,manager,open source,开源,软件源,软件包,软件包仓库" }],
     ["script", { src: "/vendors/https-only/https-only.js" }],
     // GA4
@@ -65,6 +68,7 @@ const docSideBar = function () {
 };
 
 export const themeConfig: any = {
+  domain: `https://openupm.cn`,
   editLinkText: "编辑此页面",
   navbar: [
     { text: "软件包", link: "/packages/" },

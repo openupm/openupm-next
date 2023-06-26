@@ -67,3 +67,13 @@ export const getCachedAvatarImageFilename = function (username: string, size: nu
   username = username.toLowerCase();
   return `${username}-${size}x${size}.png`;
 };
+
+/**
+ * Get environment variable value.
+ * @param name environment variable name
+ * @returns environment variable value
+ */
+export const getEnv = function (name: string): string {
+  if (import.meta && import.meta.env) return import.meta.env[name];
+  else if (typeof process !== 'undefined' && process.env) return process.env[name];
+}

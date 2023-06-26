@@ -7,7 +7,9 @@ import {
   isPackageBlockedByScope,
   isValidPackageName,
   getCachedAvatarImageFilename,
+  getEnv,
 } from "@shared/utils";
+import { getEnvironmentData } from 'worker_threads';
 
 describe("@shared/utils.ts", function () {
   describe("isValidPackageName()", function () {
@@ -73,6 +75,14 @@ describe("@shared/utils.ts", function () {
       const scope = "com.anotherorg.mypackage";
       const result = isPackageBlockedByScope(packageName, scope);
       result.should.be.false;
+    });
+  });
+
+  describe("getEnv", function () {
+    it("should return the correct value for node", function () {
+      process.env.tempvar1 = "test";
+      getEnv("tempvar1").should.equal("test");
+      process.env.tempvar1 = undefined;
     });
   });
 });
