@@ -1,17 +1,21 @@
 {
-  "name": "openupm-frontend",
+  "type": "module",
+  "name": "openupm-next",
   "version": "1.0.0",
-  "description": "The frontend website of openupm.com",
+  "description": "openupm-next in typescript",
   "private": true,
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "docs:dev": "vuepress dev docs",
-    "docs:build": "vuepress build docs"
+    "precompile": "esbuild src/node/vuepress-plugin-openupm.ts --bundle --platform=node --format=esm --outdir=dist",
+    "precompile:dev": "npm run precompile -- --watch",
+    "docs:dev": "concurrently -k -n precompile:dev,docs:dev \"npm run precompile:dev\" \"vuepress dev docs\"",
+    "docs:build": "npm run precompile && vuepress build docs",
+    "test:dev": "cross-env NODE_ENV=test vitest",
+    "test": "cross-env NODE_ENV=test vitest run"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/openupm/openupm-frontend.git"
+    "url": "git+https://github.com/openupm/openupm-next.git"
   },
   "keywords": [
     "openupm"
@@ -19,25 +23,35 @@
   "author": "Favo Yang",
   "license": "BSD-3-Clause",
   "bugs": {
-    "url": "https://github.com/openupm/openupm-frontend/issues"
+    "url": "https://github.com/openupm/openupm-next/issues"
   },
-  "homepage": "https://github.com/openupm/openupm-frontend#readme",
+  "homepage": "https://github.com/openupm/openupm-next#readme",
   "devDependencies": {
     "@intlify/unplugin-vue-i18n": "^0.11.0",
+    "@types/chai": "^4.3.5",
     "@vuepress/client": "^2.0.0-beta.63",
     "@vuepress/plugin-register-components": "^2.0.0-beta.63",
     "@vuepress/plugin-theme-data": "^2.0.0-beta.63",
     "axios": "^1.4.0",
+    "chai": "^4.3.7",
+    "concurrently": "^8.2.0",
+    "esbuild": "^0.18.8",
     "highlight.js": "^11.8.0",
     "js-yaml": "^4.1.0",
-    "lodash": "^4.17.21",
+    "lodash-es": "^4.17.21",
     "numeral": "^2.0.6",
     "pinia": "^2.1.3",
     "pinia-plugin-persistedstate": "^3.1.0",
     "spectre.css": "^0.5.9",
     "url-join": "^5.0.0",
+    "v-lazy-image": "^2.1.1",
+    "vitest": "^0.32.2",
     "vue": "^3.3.4",
     "vue-i18n": "^9.2.2",
     "vuepress": "^2.0.0-beta.63"
+  },
+  "dependencies": {
+    "cross-env": "^7.0.3",
+    "spdx-license-list": "^6.6.0"
   }
 }

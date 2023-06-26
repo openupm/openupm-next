@@ -23,8 +23,15 @@ const docSideBar = function () {
         "/zh/docs/getting-started",
         "/zh/docs/adding-upm-package",
         "/zh/docs/modifying-upm-package",
-        "/zh/docs/opt-out",
-        "/zh/support/"
+        "/zh/docs/opt-out"
+      ]
+    },
+    {
+      text: "支持我们",
+      collapsible: true,
+      children: [
+        "/zh/support/",
+        "/zh/contributors/"
       ]
     },
     {
@@ -67,7 +74,7 @@ export const themeConfig: any = {
       text: "支持",
       children: [
         { text: "支持OpenUPM", link: "/zh/support/" },
-        { text: "贡献者", link: "/contributors/" }
+        { text: "贡献者", link: "/zh/contributors/" }
       ]
     },
     {
@@ -111,8 +118,8 @@ export const themeConfig: any = {
   ],
   sidebar: {
     "/docs/": docSideBar(),
-    "/nuget/": docSideBar(),
-    "/support/": docSideBar(),
-    "/zh/": docSideBar()
+    "/zh/": docSideBar(),
   },
 };
+
+export default { config, themeConfig };

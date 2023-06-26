@@ -26,7 +26,14 @@ const docSideBar = function () {
         "/docs/adding-upm-package",
         "/docs/modifying-upm-package",
         "/docs/opt-out",
-        "/support/"
+      ]
+    },
+    {
+      text: "Support US",
+      collapsible: true,
+      children: [
+        "/support/",
+        "/contributors/"
       ]
     },
     {
@@ -132,5 +139,8 @@ export const themeConfig: any = {
     "/docs/": docSideBar(),
     "/nuget/": docSideBar(),
     "/support/": docSideBar(),
+    "/contributors/": docSideBar(),
   },
 };
+
+export default { config, themeConfig };

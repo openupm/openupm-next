@@ -9,7 +9,7 @@ The OpenUPM service is composed of below sub-systems:
 
 - Public upm registry
 - *Automatic build pipelines
-- *Website frontend
+- *Website next
 - *Website backend (API)
 - *Package curated list
 - [OpenUPM-CLI](https://github.com/openupm/openupm-cli) command-line tool
@@ -20,18 +20,12 @@ Entries with `*` prefix are located in the [main repository](https://github.com/
 
 ```
 .
-├── app         # service backend
-│   ├── db         # database, Redis
-│   ├── jobs       # background jobs
-│   ├── models     # models
-│   ├── queues     # job queues
-│   ├── utils      # useful scripts
-│   └── views      # HTTP endpoints
-├── config       # configurations
-├── data         # data
-│   └── packages # package curated list (YAML files)
-├── docs         # web frontend (vuepress)
-└── tests        # unit tests
+├── src          # backend
+│   ├── node       # node.js server
+│   ├── shared     # shared code between node and client
+├── data         # linked data folder
+├── docs         # website frontend (vuepress)
+└── test        # unit tests
 ```
 
 ## Public UPM Registry
@@ -81,7 +75,7 @@ yarn gh:ratelimit
 
 ## Website Frontend
 
-OpenUPM uses [VuePress](https://vuepress.vuejs.org) - a static website generator to develop website frontend.
+OpenUPM uses [VuePress](https://vuepress.vuejs.org) - a static website generator to develop website next.
 
 ```bash
 source env.sh

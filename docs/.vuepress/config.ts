@@ -1,30 +1,30 @@
-import _ from "lodash";
+import { isArray, mergeWith } from "lodash-es";
 import { defaultTheme } from 'vuepress'
 import { getDirname, path } from "@vuepress/utils";
 import { registerComponentsPlugin } from "@vuepress/plugin-register-components";
 import { viteBundler } from '@vuepress/bundler-vite'
 import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite'
 
-import openupmPlugin from './plugins/plugin-openupm';
+import OpenupmPlugin from '../../dist/vuepress-plugin-openupm';
 
 const __dirname = getDirname(import.meta.url)
 
 const OPENUPM_REGION = process.env.OPENUPM_REGION == "cn" ? "cn" : "us";
 const BASE_DOMAIN = OPENUPM_REGION == "cn" ? "openupm.cn" : "openupm.com";
-import * as configUs from "./config-us";
-import * as configCn from "./config-cn";
+import configUs from "./config-us";
+import configCn from "./config-cn";
 const regionConfig: any = OPENUPM_REGION == "cn" ? configCn : configUs;
 const THEME_COLOR = "#3068E5";
 
 // Merge customizer to concat arrays
-const mergeCustomizer = (obj, src) => { if (_.isArray(obj)) return obj.concat(src); };
+const mergeCustomizer = (obj, src) => { if (isArray(obj)) return obj.concat(src); };
 
 // Merge themeConfig with regionConfig.themeConfig
-const themeConfig: any = _.mergeWith({
+const themeConfig: any = mergeWith({
   // Default theme configurations
   // https://v2.vuepress.vuejs.org/reference/default-theme/config.html
   domain: `https://${BASE_DOMAIN}`,
-  docsRepo: "https://github.com/openupm/openupm-frontend",
+  docsRepo: "https://github.com/openupm/openupm-next",
   docsDir: "docs",
   editLinks: true,
   logo: "/images/openupm-icon-256.png",
@@ -38,7 +38,7 @@ const themeConfig: any = _.mergeWith({
 }, regionConfig.themeConfig, mergeCustomizer);
 
 // Merge config with regionConfig.config
-const config: any = _.mergeWith({
+const config: any = mergeWith({
   theme: defaultTheme(themeConfig),
   head: [
     ["meta", { name: "theme-color", content: THEME_COLOR }],
@@ -59,10 +59,12 @@ const config: any = _.mergeWith({
   ],
   plugins: [
     registerComponentsPlugin({ componentsDir: path.resolve(__dirname, "./components") }),
-    openupmPlugin({}),
+    OpenupmPlugin({}),
   ],
   alias: {
     '@': path.resolve(__dirname),
+    '@node': path.resolve(__dirname, '../../src/node'),
+    '@shared': path.resolve(__dirname, '../../src/shared'),
     '@theme/AutoLink.vue': path.resolve(__dirname, 'components/AutoLink.vue'),
     '@theme/Navbar.vue': path.resolve(__dirname, 'components/Navbar.vue'),
     // https://github.com/intlify/vue-i18n-next/issues/789

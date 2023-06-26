@@ -5,7 +5,7 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n'
 import numeral from 'numeral';
 
-import { capitalize } from "lodash";
+import { capitalize } from "lodash-es";
 import { useDefaultStore } from '@/store';
 const store = useDefaultStore();
 const { t } = useI18n();

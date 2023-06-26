@@ -2,7 +2,7 @@
 showFooter: false
 pageClass: page-support-openupm
 ---
-# 支援OpenUPM
+# 支持OpenUPM
 
 OpenUPM是一项开源服务，完全免费使用。然而托管该服务、维护和开发新功能所需投入的精力是巨大的。在没有适当财务支持的情况下，将较难持续。您可以通过以下方法支持OpenUPM的发展：
 
@@ -13,7 +13,7 @@ OpenUPM是一项开源服务，完全免费使用。然而托管该服务、维�
     <a href="https://github.com/openupm/openupm"><i class="fa fa-star c-star"></i>Github Star</a>
   </div>
   <div class="column col-6 text-center">
-    <a href="https://www.patreon.com/openupm"><i class="fab fa-patreon c-patreon"></i>在Patreon上支援</a>
+    <a href="https://www.patreon.com/openupm"><i class="fab fa-patreon c-patreon"></i>在Patreon上支持</a>
   </div>
   <div class="column col-6 text-center">
     <a href="/packages/add/"><i class="fas fa-plus-circle text-primary"></i>提交新的UPM软件包</a>
@@ -33,10 +33,6 @@ OpenUPM是一项开源服务，完全免费使用。然而托管该服务、维�
 如果您经营一家盈利性公司并在使用OpenUPM的过程中有所受益。我们推荐您考虑赞助OpenUPM：您的赞助可以确保您的产品所依赖的项目保持健康，并得到积极维护。同时还可以帮助您提高在OpenUPM社区中曝光率，以吸引到优秀的软件或游戏开发者。
 
 如果您是个人用户，并且享受使用OpenUPM带来的愉悦，请考虑少量赞助我们以示感谢，就像偶尔为好友买杯咖啡一样。
-
-## 赞助商和支持者
-
-请参考[贡献者](/contributors/)页面。
 
 <style lang="scss" scoped>
 .page-support-openupm {
