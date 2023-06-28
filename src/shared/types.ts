@@ -1,4 +1,4 @@
-export interface PackageMeta {
+export interface PackageMetadata {
   name: string;
   repoUrl: string;
   repo: string;
@@ -6,7 +6,7 @@ export interface PackageMeta {
   ownerUrl: string;
   hunter: string;
   hunterUrl: string | null;
-  licenseSpdxId?: string | null;
+  licenseSpdxId: string | null;
   licenseName: string;
   parentRepoUrl: string | null;
   parentRepo: string | null;

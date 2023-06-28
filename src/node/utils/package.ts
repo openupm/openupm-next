@@ -1,8 +1,8 @@
-// Utilities for handling package meta data.
+// Utilities for handling package metadata.
 import path from "path";
 import spdx from "spdx-license-list";
 
-import { PackageMeta } from "@shared/types";
+import { PackageMetadata } from "@shared/types";
 
 
 /**
@@ -25,11 +25,11 @@ export const convertRepoUrl = function (url: string, format?: string): string {
 };
 
 /**
- * Prepare package meta data with additional fields for client side rendering.
- * @param doc package meta data read from yaml file
- * @returns the passed in package meta data with additional fields
+ * Parse package metadata.
+ * @param doc package metadata read from yaml file
+ * @returns the passed in package metadata with additional fields
  */
-export const preparePackageMeta = function (doc: any): PackageMeta {
+export const parsePackageMetadata = function (doc: any): PackageMetadata {
   const ghUrl = convertRepoUrl(doc.repoUrl, "https");
   const url = new URL(doc.repoUrl);
   // owner
@@ -81,7 +81,7 @@ export const preparePackageMeta = function (doc: any): PackageMeta {
 };
 
 /**
- * Get package namespace scope `com.orgname` from package name `com.orgname.pkgname`. 
+ * Get package namespace scope `com.orgname` from package name `com.orgname.pkgname`.
  * @param packageName package name
  * @returns namespace scope
  */

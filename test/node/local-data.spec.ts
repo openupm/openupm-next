@@ -11,7 +11,7 @@ import {
   loadPackage,
   packageExists,
 } from "@node/local-data";
-import { PackageMeta } from "@shared/types";
+import { PackageMetadata } from "@shared/types";
 
 
 describe("@node/local-data.ts", function () {
@@ -60,11 +60,11 @@ describe("@node/local-data.ts", function () {
   describe("collectPackageHuntersAndOwners", function () {
     it("should return package hunters and owners", async function () {
       const packages = [
-        { hunter: "bob", owner: "jane", } as PackageMeta,
-        { hunter: "bob", owner: "jane", } as PackageMeta,
-        { hunter: "bob", owner: "jane", } as PackageMeta,
-        { hunter: "bob", owner: "john", } as PackageMeta,
-        { hunter: "peter", owner: "john", parentOwner: "bill", parentOwnerUrl: "https://github.com/bill" } as PackageMeta,
+        { hunter: "bob", owner: "jane", } as PackageMetadata,
+        { hunter: "bob", owner: "jane", } as PackageMetadata,
+        { hunter: "bob", owner: "jane", } as PackageMetadata,
+        { hunter: "bob", owner: "john", } as PackageMetadata,
+        { hunter: "peter", owner: "john", parentOwner: "bill", parentOwnerUrl: "https://github.com/bill" } as PackageMetadata,
       ];
       const expectedHunters = [
         { githubUser: "bob", score: 4 },
