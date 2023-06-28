@@ -14,7 +14,7 @@ export const useDefaultStore = defineStore('pinia-default', {
       recentPackages: [] as any[],
       preferHorizontalLayout: false,
       siteInfo: {} as any,
-      packageListSort: SortType.updatedAt
+      packageListSortType: SortType.updatedAt
     }
   },
   actions: {
@@ -66,12 +66,11 @@ export const useDefaultStore = defineStore('pinia-default', {
       const cacheTime = 5 * 60 * 1000;
       if (timeElapsed > cacheTime) await this.fetchSiteInfo();
     },
-    setPreferHorizontalLayout(value) {
+    setPreferHorizontalLayout(value: boolean) {
       this.preferHorizontalLayout = value;
     },
-    setPackageListSort(value) {
-      this.packageListSort = value;
+    setPackageListSort(value: string) {
+      this.packageListSortType = value;
     }
   }
 });
-
