@@ -1,5 +1,5 @@
 
-  
+
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n'
@@ -12,7 +12,7 @@ const { t } = useI18n();
 
 const stars = computed(() => {
   const value = Number(store.siteInfo.stars);
-  if (isNaN(value)) return "...";
+  if (isNaN(value) || value == 0) return "...";
   return numeral(value).format("1.1a");
 });
 
@@ -44,7 +44,7 @@ const packagesLink = computed(() => {
     </div>
   </div>
 </template>
-  
+
 <style lang="scss" scoped>
 @use '@/styles/palette' as *;
 

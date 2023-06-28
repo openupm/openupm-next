@@ -34,7 +34,12 @@ export interface PackageExtraMetadata {
   dl30d: number;
 }
 
-export interface PackageInfo extends PackageMetadata, PackageExtraMetadata {};
+export interface PackageInfo extends PackageMetadata, PackageExtraMetadata { };
+
+export interface SiteInfo {
+  // GitHub repo stars
+  stars: number
+}
 
 export interface GithubUserWithScore {
   githubUser: string;

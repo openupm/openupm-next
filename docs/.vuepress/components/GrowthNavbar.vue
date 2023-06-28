@@ -9,7 +9,7 @@ const store = useDefaultStore();
 
 const stars = computed(() => {
   const value = Number(store.siteInfo.stars);
-  if (isNaN(value)) return "...";
+  if (isNaN(value) || value == 0) return "...";
   return numeral(value).format("1.1a");
 });
 

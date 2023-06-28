@@ -5,7 +5,7 @@ import { defineStore } from 'pinia'
 
 import { SortType } from "@/constant";
 import { getAPIBaseUrl } from "@shared/urls";
-import { PackageExtraMetadata } from "@shared/types";
+import { PackageExtraMetadata, SiteInfo } from "@shared/types";
 import { parsePackageExtraMetadata } from '@shared/utils';
 
 export const useDefaultStore = defineStore('pinia-default', {
@@ -16,7 +16,8 @@ export const useDefaultStore = defineStore('pinia-default', {
       __allPackageExtraFetchTime: 0,
       recentPackages: [] as any[],
       preferHorizontalLayout: false,
-      siteInfo: {} as any,
+      siteInfo: { stars: 0 } as SiteInfo,
+      __siteInfoFetchTime: 0,
       packageListSortType: SortType.updatedAt
     }
   },
@@ -59,14 +60,14 @@ export const useDefaultStore = defineStore('pinia-default', {
           urljoin(apiBaseUrl, "site/info"),
           { headers: { Accept: "application/json" } }
         );
-        resp.data.__time = new Date().getTime();
-        this.siteInfo = resp.data;
+        this.__siteInfoFetchTime = new Date().getTime();
+        this.siteInfo = resp.data as SiteInfo;
       } catch (error) {
         console.error(error);
       }
     },
     async fetchSiteInfoWithCache() {
-      const timeElapsed = new Date().getTime() - (this.siteInfo.__time || 0);
+      const timeElapsed = new Date().getTime() - (this.__siteInfoFetchTime || 0);
       const cacheTime = 5 * 60 * 1000;
       if (timeElapsed > cacheTime) await this.fetchSiteInfo();
     },
