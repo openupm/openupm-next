@@ -1,4 +1,5 @@
 import { ValidationError } from "./custom-errors";
+import { PackageExtraMetadata } from "./types";
 
 /**
  * Return whether a package name is valid and the ValidationError instance
@@ -73,7 +74,21 @@ export const getCachedAvatarImageFilename = function (username: string, size: nu
  * @param name environment variable name
  * @returns environment variable value
  */
-export const getEnv = function (name: string): string {
+export const getEnv = function (name: string): string | undefined {
   if (import.meta && import.meta.env) return import.meta.env[name];
   else if (typeof process !== 'undefined' && process.env) return process.env[name];
+}
+
+/**
+ * Parse package extra metadata
+ * @param obj input object
+ * @returns parsed PackageExtraMetadata object
+ */
+export const parsePackageExtraMetadata = function (obj: any): PackageExtraMetadata {
+  if (obj.ver === undefined) obj.ver = null;
+  if (!obj.stars) obj.stars = 0;
+  if (!obj.pstars) obj.pstars = 0;
+  if (!obj.imageFilename) obj.imageFilename = null;
+  if (!obj.dl30d) obj.dl30d = 0;
+  return obj as PackageExtraMetadata;
 }

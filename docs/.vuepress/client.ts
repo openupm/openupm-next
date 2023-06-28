@@ -32,7 +32,7 @@ export default defineClientConfig({
     const fetchSiteData = () => {
       const store = useDefaultStore();
       store.fetchSiteInfoWithCache();
-      store.fetchPackagesExtraWithCache();
+      store.fetchAllPackageExtraMetadataWithCache();
     };
     onMounted(() => fetchSiteData())
     const route = useRoute();
