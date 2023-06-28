@@ -7,7 +7,8 @@ import { defineClientConfig } from '@vuepress/client'
 import messages from '@intlify/unplugin-vue-i18n/messages'
 
 import { GlobalFilters } from '@/vue-plugins/global-filters';
-import Layout from '@/layouts/Layout.vue'
+import Layout from '@/layouts/Layout.vue';
+import WideLayout from '@/layouts/WideLayout.vue';
 import { useDefaultStore } from '@/store';
 
 export default defineClientConfig({
@@ -39,5 +40,6 @@ export default defineClientConfig({
   },
   layouts: {
     Layout,
+    WideLayout,
   },
 })
