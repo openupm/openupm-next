@@ -4,8 +4,8 @@ import { promises as afs } from "fs";
 import yaml from "js-yaml";
 import { countBy, flatMap, sortBy, toPairs } from 'lodash-es';
 
-import { preparePackageMeta } from "@node/utils/package";
-import { PackageMeta, GithubUserWithScore } from "@shared/types";
+import { parsePackageMetadata } from "@node/utils/package";
+import { PackageMetadata, GithubUserWithScore } from "@shared/types";
 
 /**
  * Get the local data directory.
@@ -62,10 +62,10 @@ export const loadPackageNames = async function (options?: { sortKey?: string }):
  * @param name package name
  * @returns package meta object
  */
-export const loadPackage = async function (name: string): Promise<PackageMeta | null> {
+export const loadPackage = async function (name: string): Promise<PackageMetadata | null> {
   try {
     const absPath = path.resolve(getLocalDataDir(), "packages", name + ".yml");
-    return preparePackageMeta(yaml.load(await afs.readFile(absPath, "utf8")));
+    return parsePackageMetadata(yaml.load(await afs.readFile(absPath, "utf8")));
   } catch (e) {
     console.error(e);
     return null;
@@ -105,14 +105,14 @@ export const loadBlockedScopes = async function (): Promise<string[]> {
  * @param packages package meta array
  * @returns package hunters and owners
  */
-export const collectPackageHuntersAndOwners = async function (packages: PackageMeta[]): Promise<{ hunters: GithubUserWithScore[], owners: GithubUserWithScore[] }> {
+export const collectPackageHuntersAndOwners = async function (packages: PackageMetadata[]): Promise<{ hunters: GithubUserWithScore[], owners: GithubUserWithScore[] }> {
   const getConstributors = (type: string): GithubUserWithScore[] => {
     const entries = flatMap(packages, pkg => {
       if (type == "hunter")
         return [pkg.hunter];
       else if (type == "owner") {
         let arr = [pkg.owner];
-        if (pkg.parentOwner && pkg.parentOwnerUrl.toLowerCase().includes("github"))
+        if (pkg.parentOwner && pkg.parentOwnerUrl && pkg.parentOwnerUrl.toLowerCase().includes("github"))
           arr.push(pkg.parentOwner);
         return arr;
       } else {
