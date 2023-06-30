@@ -6,7 +6,7 @@
   "private": true,
   "main": "index.js",
   "scripts": {
-    "precompile": "esbuild src/node/vuepress-plugin-openupm.ts --bundle --platform=node --format=esm --outdir=dist",
+    "precompile": "node precompile.js",
     "precompile:dev": "npm run precompile -- --watch",
     "docs:dev": "concurrently -k -n precompile:dev,docs:dev \"npm run precompile:dev\" \"vuepress dev docs\"",
     "docs:build": "npm run precompile && vuepress build docs",
