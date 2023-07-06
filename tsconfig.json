@@ -33,11 +33,11 @@
     "docs/.vuepress/**/*.ts",
     "docs/.vuepress/**/*.vue",
     "src/*.ts",
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "test/**/*.ts"
   ],
   "exclude": [
     "./node_modules/",
-    "./test/",
     ".temp",
     "lib",
     "dist"

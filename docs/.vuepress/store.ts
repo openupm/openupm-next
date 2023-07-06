@@ -5,42 +5,51 @@ import { defineStore } from 'pinia'
 
 import { SortType } from "@/constant";
 import { getAPIBaseUrl } from "@shared/urls";
-import { PackageExtraMetadata, SiteInfo } from "@shared/types";
-import { parsePackageExtraMetadata } from '@shared/utils';
+import { PackageMetadataRemote, SiteInfo } from "@shared/types";
+import { parsePackageMetadataRemote } from '@shared/utils';
 
 export const useDefaultStore = defineStore('pinia-default', {
   persist: true,
   state() {
     return {
-      allPackageExtraMetadata: {} as Record<string, PackageExtraMetadata>,
-      __allPackageExtraFetchTime: 0,
+      packageMetadataRemoteList: {} as Record<string, PackageMetadataRemote>,
       recentPackages: [] as any[],
       preferHorizontalLayout: false,
       siteInfo: { stars: 0 } as SiteInfo,
+      packageListSortType: SortType.updatedAt,
+      __packageMetadataRemoteListFetchTime: 0,
       __siteInfoFetchTime: 0,
-      packageListSortType: SortType.updatedAt
     }
   },
 
   actions: {
-    async fetchAllPackageExtraMetadata() {
+    /**
+     * Fetch package metadata remote list into the store.
+     */
+    async fetchPackageMetadataRemoteList() {
       const apiBaseUrl = getAPIBaseUrl();
       try {
         const resp = await axios.get(
           urljoin(apiBaseUrl, "/packages/extra"),
           { headers: { Accept: "application/json" } }
         );
-        this.__allPackageExtraFetchTime = new Date().getTime();
-        this.allPackageExtraMetadata = mapValues(resp.data, (value: any) => parsePackageExtraMetadata(value));;
+        this.__packageMetadataRemoteListFetchTime = new Date().getTime();
+        this.packageMetadataRemoteList = mapValues(resp.data, (value: any) => parsePackageMetadataRemote(value));;
       } catch (error) {
         console.error(error);
       }
     },
-    async fetchAllPackageExtraMetadataWithCache() {
-      const timeElapsed = new Date().getTime() - (this.__allPackageExtraFetchTime || 0);
+    /**
+     * Fetch package metadata remote list into the store with cache.
+     */
+    async fetchCachedPackageMetadataRemoteList() {
+      const timeElapsed = new Date().getTime() - (this.__packageMetadataRemoteListFetchTime || 0);
       const cacheTime = 5 * 60 * 1000;
-      if (timeElapsed > cacheTime) await this.fetchAllPackageExtraMetadata();
+      if (timeElapsed > cacheTime) await this.fetchPackageMetadataRemoteList();
     },
+    /**
+     * Fetch recent packages into the store.
+     */
     async fetchRecentPackages() {
       const apiBaseUrl = getAPIBaseUrl();
       try {
@@ -53,6 +62,9 @@ export const useDefaultStore = defineStore('pinia-default', {
         console.error(error);
       }
     },
+    /**
+     * Fetch site info into the store.
+     */
     async fetchSiteInfo() {
       const apiBaseUrl = getAPIBaseUrl();
       try {
@@ -66,14 +78,18 @@ export const useDefaultStore = defineStore('pinia-default', {
         console.error(error);
       }
     },
-    async fetchSiteInfoWithCache() {
+    /**
+     * Fetch site info into the store with cache.
+     */
+    async fetchCachedSiteInfo() {
       const timeElapsed = new Date().getTime() - (this.__siteInfoFetchTime || 0);
       const cacheTime = 5 * 60 * 1000;
       if (timeElapsed > cacheTime) await this.fetchSiteInfo();
     },
-    setPreferHorizontalLayout(value: boolean) {
-      this.preferHorizontalLayout = value;
-    },
+    /**
+     * Set package list sort type.
+     * @param value Sort type
+     */
     setPackageListSort(value: string) {
       this.packageListSortType = value;
     }

@@ -8,10 +8,10 @@ import {
   loadBlockedScopes,
   loadBuiltinPackageNames,
   loadPackageNames,
-  loadPackage,
-  packageExists,
+  loadPackageMetadataLocal,
+  packageMetadataLocalExists,
 } from "@node/local-data";
-import { PackageMetadata } from "@shared/types";
+import { PackageMetadataLocal } from "@shared/types";
 
 
 describe("@node/local-data.ts", function () {
@@ -38,21 +38,23 @@ describe("@node/local-data.ts", function () {
 
   describe("loadPackage()", function () {
     it("should load package", async function () {
-      const pkg = await loadPackage("com.littlebigfun.addressable-importer");
-      pkg.name.should.equal("com.littlebigfun.addressable-importer");
-      pkg.readme.should.equal("main:README.md");
-      pkg.readmeBranch.should.equal("main");
-      pkg.readmeBase.should.equal("main");
+      const temp = await loadPackageMetadataLocal("com.littlebigfun.addressable-importer");
+      const metadataLocal = temp as PackageMetadataLocal;
+      metadataLocal.should.not.equal(null);
+      metadataLocal.name.should.equal("com.littlebigfun.addressable-importer");
+      metadataLocal.readme.should.equal("main:README.md");
+      metadataLocal.readmeBranch.should.equal("main");
+      metadataLocal.readmeBase.should.equal("main");
     });
   });
 
   describe("packageExists()", function () {
     it("should return true if package exists", async function () {
-      const exists = await packageExists("com.littlebigfun.addressable-importer");
+      const exists = await packageMetadataLocalExists("com.littlebigfun.addressable-importer");
       exists.should.equal(true);
     });
     it("should return false if package doesn't exists", async function () {
-      const exists = await packageExists("com.myorg.package-not-exists");
+      const exists = await packageMetadataLocalExists("com.myorg.package-not-exists");
       exists.should.equal(false);
     });
   });
@@ -60,10 +62,10 @@ describe("@node/local-data.ts", function () {
   describe("collectPackageHuntersAndOwners", function () {
     it("should return package hunters and owners", async function () {
       const packages = [
-        { hunter: "bob", owner: "jane", } as PackageMetadata,
-        { hunter: "bob", owner: "jane", } as PackageMetadata,
-        { hunter: "bob", owner: "jane", } as PackageMetadata,
-        { hunter: "bob", owner: "john", } as PackageMetadata,
+        { hunter: "bob", owner: "jane", } as PackageMetadataLocal,
+        { hunter: "bob", owner: "jane", } as PackageMetadataLocal,
+        { hunter: "bob", owner: "jane", } as PackageMetadataLocal,
+        { hunter: "bob", owner: "john", } as PackageMetadataLocal,
         { hunter: "peter", owner: "john", parentOwner: "bill", parentOwnerUrl: "https://github.com/bill" } as PackageMetadata,
       ];
       const expectedHunters = [

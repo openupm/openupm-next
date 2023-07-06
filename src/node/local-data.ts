@@ -5,7 +5,7 @@ import yaml from "js-yaml";
 import { countBy, flatMap, sortBy, toPairs } from 'lodash-es';
 
 import { parsePackageMetadata } from "@node/utils/package";
-import { PackageMetadata, GithubUserWithScore } from "@shared/types";
+import { PackageMetadataLocal, GithubUserWithScore, TopicBase } from "@shared/types";
 
 /**
  * Get the local data directory.
@@ -58,11 +58,11 @@ export const loadPackageNames = async function (options?: { sortKey?: string }):
 };
 
 /**
- * Load package meta by given package name.
+ * Load package metadata local for given package name.
  * @param name package name
  * @returns package meta object
  */
-export const loadPackage = async function (name: string): Promise<PackageMetadata | null> {
+export const loadPackageMetadataLocal = async function (name: string): Promise<PackageMetadataLocal | null> {
   try {
     const absPath = path.resolve(getLocalDataDir(), "packages", name + ".yml");
     return parsePackageMetadata(yaml.load(await afs.readFile(absPath, "utf8")));
@@ -73,11 +73,11 @@ export const loadPackage = async function (name: string): Promise<PackageMetadat
 };
 
 /**
- * Verify if package meta file exists.
+ * Verify if package metadata local file exists.
  * @param name package name
- * @returns true if package name is valid
+ * @returns true if package metadata local file exists
  */
-export const packageExists = function (name: string): boolean {
+export const packageMetadataLocalExists = function (name: string): boolean {
   const absPath: string = path.resolve(getLocalDataDir(), "packages", name + ".yml");
   return fs.existsSync(absPath);
 };
@@ -103,13 +103,23 @@ export const loadBlockedScopes = async function (): Promise<string[]> {
 };
 
 /**
+ * Load topics.
+ * @returns TopicBase array
+ */
+export const loadTopics = async function (): Promise<TopicBase[]> {
+  const absPath = path.resolve(getLocalDataDir(), "topics.yml");
+  const content = yaml.load(await afs.readFile(absPath, "utf8")) as any;
+  return content.topics;
+};
+
+/**
  * Collect package hunters and owners from given package meta array.
- * @param packages package meta array
+ * @param metadataLocalList package metadata array
  * @returns package hunters and owners
  */
-export const collectPackageHuntersAndOwners = async function (packages: PackageMetadata[]): Promise<{ hunters: GithubUserWithScore[], owners: GithubUserWithScore[] }> {
+export const collectPackageHuntersAndOwners = async function (metadataLocalList: PackageMetadataLocal[]): Promise<{ hunters: GithubUserWithScore[], owners: GithubUserWithScore[] }> {
   const getConstributors = (type: string): GithubUserWithScore[] => {
-    const entries = flatMap(packages, pkg => {
+    const entries = flatMap(metadataLocalList, pkg => {
       if (type == "hunter")
         return [pkg.hunter];
       else if (type == "owner") {

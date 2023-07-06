@@ -36,6 +36,7 @@ html.dark {
   --c-brand: #{lighten($primary-color, 5%)};
   --c-text-accent: #{lighten($primary-color, 5%)};
   --c-brand-light: #{$primary-color-light};
+  --c-warning-text: #746000;
 }
 
 // Fix default theme style issues caused by spectre overriden.
@@ -74,6 +75,13 @@ code {
 }
 
 .table {
+
+  display: table;
+
+  * {
+    font-size: $font-size-md;
+  }
+
   thead {
     tr {
       border-top: 0px solid;
@@ -96,17 +104,35 @@ code {
   }
 }
 
+.menu {
+  .menu-item {
+    margin-bottom: 0.2rem;
+  }
+}
+
 kbd {
   border: none;
   border-bottom: none;
 }
 
 .text-warning {
-  color: $warning-color;
+  color: var(--c-warning);
 }
 
-.bg-warning {
-  background-color: $warning-color !important;
+.label {
+  &.label-warning {
+    background-color: var(--c-warning);
+    color: var(--c-warning-text);
+  }
+}
+
+.toast {
+
+  &.toast-warning {
+    background-color: var(--c-warning);
+    border-color: var(--c-warning-border-dark);
+    color: var(--c-warning-text);
+  }
 }
 
 .theme-default-content {
@@ -160,8 +186,19 @@ kbd {
     font-size: 0.8rem;
   }
 
-  p {
-    font-size: 0.75rem;
+  p,
+  li,
+  ol,
+  ul {
+    font-size: $font-size-md;
+  }
+
+  ol {
+    list-style: decimal;
+  }
+
+  .label {
+    font-size: $font-size-md;
   }
 
   pre,
@@ -218,6 +255,27 @@ div[class*=language-] {
   .btn-default {
     background-color: var(--c-bg-dark);
     color: var(--c-text);
+  }
+
+  .label-default {
+    background-color: var(--c-bg-dark);
+    color: var(--c-text);
+  }
+
+  .menu {
+    background: var(--c-bg-lighter);
+
+    .menu-item {
+
+      a:active,
+      a.active,
+      a:hover,
+      a:focus {
+        background-color: var(--c-bg-dark);
+        color: var(--c-text);
+      }
+
+    }
   }
 }
 
@@ -319,7 +377,7 @@ div[class*=language-] {
     }
 
     .navbar-item {
-      font-size: 0.75rem;
+      font-size: $font-size-md;
       padding: 0.3rem 0 0.3rem 1.25rem;
     }
 
@@ -378,7 +436,7 @@ div[class*=language-] {
     }
 
     &:not(.sidebar-heading) {
-      font-size: 0.75rem;
+      font-size: $font-size-md;
       padding: 0.15rem 0.8rem 0.15rem 1.6rem;
     }
   }
@@ -424,7 +482,7 @@ div[class*=language-] {
   input,
   .form-select,
   .form-switch {
-    font-size: $font-size-sm;
+    font-size: $font-size-md;
   }
 
   .form-switch {
@@ -584,14 +642,22 @@ main {
 }
 
 // Custom: tooltip-click
-.tooltip-click:hover::after {
-  opacity: 0;
-}
+.tooltip-click {
+  cursor: pointer;
 
-.tooltip-click:focus::after,
-.tooltip-click:active::after {
-  opacity: 1;
-  transform: translate(-50%, -.2rem);
+  &:hover::after {
+    opacity: 0;
+  }
+
+  &:focus::after,
+  &:active::after {
+    opacity: 1;
+    transform: translate(-50%, -.2rem);
+  }
+
+  a {
+    cursor: pointer;
+  }
 }
 
 .page-nav {

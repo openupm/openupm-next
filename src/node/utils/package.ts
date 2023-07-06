@@ -2,7 +2,7 @@
 import path from "path";
 import spdx from "spdx-license-list";
 
-import { PackageMetadata } from "@shared/types";
+import { PackageMetadataLocal } from "@shared/types";
 
 
 /**
@@ -25,11 +25,11 @@ export const convertRepoUrl = function (url: string, format?: string): string {
 };
 
 /**
- * Parse package metadata.
+ * Parse package metadata from yaml file.
  * @param doc package metadata read from yaml file
  * @returns the passed in package metadata with additional fields
  */
-export const parsePackageMetadata = function (doc: any): PackageMetadata {
+export const parsePackageMetadata = function (doc: any): PackageMetadataLocal {
   const ghUrl = convertRepoUrl(doc.repoUrl, "https");
   const url = new URL(doc.repoUrl);
   // owner
@@ -77,6 +77,8 @@ export const parsePackageMetadata = function (doc: any): PackageMetadata {
   const dirname = path.dirname(readmePath);
   doc.readmeBranch = readmeBranch;
   doc.readmeBase = dirname == "." ? readmeBranch : [readmeBranch, dirname].join("/");
+  // topics
+  if (!doc.topics) doc.topics = [];
   return doc;
 };
 
@@ -85,7 +87,7 @@ export const parsePackageMetadata = function (doc: any): PackageMetadata {
  * @param packageName package name
  * @returns namespace scope
  */
-export const getNamespace = function (packageName: string): string {
+export const getPackageNamespace = function (packageName: string): string {
   return packageName
     .split(".")
     .slice(0, 2)

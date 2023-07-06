@@ -9,9 +9,10 @@ back: Back
 backers: Backers
 badge: Badge
 basic: Basic
+display-name: display name
 branch: Branch
 build: Build
-build-pipelines: Build Pipelines
+build-pipelines: build pipelines
 can-not-locate-the-path-of-pac: Can not locate the path of package.json in the selected branch
 china-region-desc: Leave empty if you're unfamiliar with Chinese translation.
 china-region-info: China region
@@ -24,15 +25,13 @@ cookie-consent-dismiss: Got it!
 cookie-consent-message: >-
   This website uses cookies to ensure you get the best experience on our
   website.
-dependencies: Dependencies
-deps-missing: Please install the missing dependency manually.
+dependencies: dependencies
 description-zhcn: Description (Chinese)
 discord: Discord
 discovered-by: Discovered by
 discovered-by-placeholder: hunter
 display-name-zhcn: Display name (Chinese)
 donate: donate
-edit-package: Edit this package
 english-text: 'English text:'
 experimental: experimental
 featured-image: Featured image
@@ -45,9 +44,6 @@ fill-the-package-form-desc: >-
 find-more-at: Find more at
 footer-copyright: Copyright © 2019-2022 Favo Yang
 get: Get
-git-deps-missing: Please install the Git dependency manually.
-git-deps-nuget: The package may exist in the uplinked UnityNuGet registry.
-git-deps-replaced: The Git dependency can be replaced by a version available on OpenUPM.
 git-tag: Git tag
 git-tag-ignore-pattern: Git tag ignore pattern
 git-tag-ignore-pattern-desc: 'The regular expression to exclude Git tags:'
@@ -76,8 +72,7 @@ install-via-package-installer-step-2: >-
   editor window.
 install-via-package-installer-step-3: The installer will remove itself after installation.
 install-via-package-manager: Install via Package Manager
-installation: Installation
-invalid-git-tag-and: Invalid Git tag (non-semver or duplicated version)
+installation: installation
 latest: latest
 learn-more: Learn more
 license: License
@@ -93,11 +88,10 @@ meta-data: Metadata
 minimal-version-to-build: Minimal version to build
 minimal-version-to-build-placeholder: leave empty to build all versions by default
 monthly-downloads: Monthly Downloads
-name: Name
-name-at-version: Name{'@'}version
+name: name
 needles-package-installer: Needle's package installer
 no-markdown-file-found-fallbacks: No markdown file found, fallbacks to README.md
-note: Note
+note: note
 notice: Notice
 package-already-exists-in-unity-registry: The package already exists in the Unity registry
 package-installer: package installer
@@ -119,13 +113,13 @@ privacy-policy: Privacy Policy
 project: Project
 promote: Promote
 published-time: Published time
-readme: Readme
+readme: readme
 readme-to-found: Readme is not available, please try again later.
 last-publish: Last Publish
 region: Region
 region-cn: China
 region-us: United States
-related-packages: Related Packages
+related-packages: related packages
 release-reason-bad-gateway: server bad gateway
 release-reason-bad-request: server bad request
 release-reason-build-cancellation: the build is cancelled manually
@@ -167,11 +161,9 @@ stars: Stars
 state: State
 status: Status
 submit-pr: Submit Pull Request
-supported-unity-version: Supported Unity Version
+supported-unity-version: supported unity version
 team: Team
 terms-of-use: Terms of Use
-the-repository-is-unavailable: >-
-  The repository is currently inaccessible to OpenUPM. This could be because the owner has deleted it or changed it to private, in which case OpenUPM will no longer track any changes.
 top-package-hunters: Top Package Hunters
 top-package-owners: Top Package Owners
 topics: Topics
@@ -193,8 +185,8 @@ upload-to-github-via-pr-step-3-html: >-
   the workflow. We try out best to get it approved within 24h. Learn more at
 upstream: upstream
 verify-package: Verify package
-version: Version
-versions: Versions
+version: version
+versions: versions
 wait-for-ci-pipelines: Wait for the workflow to complete
 wait-for-ci-pipelines-step-1-html: >-
   It may take up to 1h to finish the initial workflow. Then you can visit the

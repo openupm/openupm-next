@@ -61,7 +61,7 @@ const sponsors = computed(() => {
 .sponsor-item {
   display: inline-block;
   vertical-align: middle;
-  margin: 0 1rem 0 0;
+  margin: 0 0.5rem 0.5rem 0;
   max-width: 10rem;
 
   &.sponsor-diamond {
@@ -85,4 +85,3 @@ const sponsors = computed(() => {
   }
 }
 </style>
-  

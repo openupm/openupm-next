@@ -1,5 +1,24 @@
 import { ValidationError } from "./custom-errors";
-import { PackageExtraMetadata } from "./types";
+import { PackageMetadataLocal, PackageMetadataRemote, PackageMetadata } from "./types";
+import { Region } from "./constant";
+
+/**
+ * Get environment variable value.
+ * @param name environment variable name
+ * @returns environment variable value
+ */
+export const getEnv = function (name: string): string | undefined {
+  if (import.meta && import.meta.env) return import.meta.env[name];
+  else if (typeof process !== 'undefined' && process.env) return process.env[name];
+}
+
+/**
+ * Get region from environment variable.
+ * @returns region string
+ */
+export const getRegion = function (): string {
+  return getEnv("VITE_OPENUPM_REGION") || Region.US;
+}
 
 /**
  * Return whether a package name is valid and the ValidationError instance
@@ -70,25 +89,49 @@ export const getCachedAvatarImageFilename = function (username: string, size: nu
 };
 
 /**
- * Get environment variable value.
- * @param name environment variable name
- * @returns environment variable value
- */
-export const getEnv = function (name: string): string | undefined {
-  if (import.meta && import.meta.env) return import.meta.env[name];
-  else if (typeof process !== 'undefined' && process.env) return process.env[name];
-}
-
-/**
- * Parse package extra metadata
+ * Parse package metadata remote
  * @param obj input object
- * @returns parsed PackageExtraMetadata object
+ * @returns parsed PackageMetadataRemote object
  */
-export const parsePackageExtraMetadata = function (obj: any): PackageExtraMetadata {
+export const parsePackageMetadataRemote = function (obj: any): PackageMetadataRemote {
   if (obj.ver === undefined) obj.ver = null;
   if (!obj.stars) obj.stars = 0;
   if (!obj.pstars) obj.pstars = 0;
   if (!obj.imageFilename) obj.imageFilename = null;
   if (!obj.dl30d) obj.dl30d = 0;
-  return obj as PackageExtraMetadata;
+  if (!obj.repoUnavailable) obj.repoUnavailable = false;
+  return obj as PackageMetadataRemote;
+}
+
+/**
+ * Get package metadata by merging metadata local and metadata remote
+ * @param metadataLocal package metadata local
+ * @param metadataRemote package metadata remote
+ * @returns full package metadata
+ */
+export const getPackageMetadata = function (metadataLocal: PackageMetadataLocal, metadataRemote: PackageMetadataRemote): PackageMetadata {
+  const result = { ...metadataLocal, ...metadataRemote };
+  return result as PackageMetadata;
+}
+
+/**
+ * Get localized package display name
+ * @param metadata package metadata
+ * @returns localized package display name
+ */
+export const getLocalePackageDisplayName = function (metadata: PackageMetadataLocal): string {
+  const region = getRegion();
+  if (region == Region.CN) return metadata.displayName_zhCN || metadata.displayName || "";
+  return metadata.displayName || "";
+}
+
+/**
+ * Get localized package description
+ * @param metadata package metadata
+ * @returns localized package description
+ */
+export const getLocalePackageDescription = function (metadata: PackageMetadataLocal): string {
+  const region = getRegion();
+  if (region == Region.CN) return metadata.description_zhCN || metadata.description || "";
+  return metadata.description || "";
 }

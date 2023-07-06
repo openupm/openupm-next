@@ -1,18 +1,12 @@
-<!-- The `Layout` component adds a root class name to the default theme's `Layout` component. -->
+<!-- Wrap default theme layout -->
 <script setup lang="ts">
-import ParentLayout from '@vuepress/theme-default/layouts/Layout.vue'
-
-const props = defineProps({
-  classname: {
-    type: String,
-    default: ''
-  }
-})
+import ParentLayout from '@vuepress/theme-default/layouts/Layout.vue';
 </script>
 
 <template>
-  <div :class="classname">
-    <ParentLayout v-bind="$attrs">
-    </ParentLayout>
-  </div>
+  <ParentLayout>
+    <template v-for="(_, name) in $slots" #[name]="slotData">
+      <slot :name="name" v-bind="slotData || {}" />
+    </template>
+  </ParentLayout>
 </template>

@@ -5,7 +5,7 @@ chai.should();
 
 import {
   convertRepoUrl,
-  getNamespace,
+  getPackageNamespace,
   // isValidPackageName
 } from "@node/utils/package";
 
@@ -42,17 +42,17 @@ describe("@node/utils/package.ts", function () {
       );
     });
   });
-  describe("getNamespace()", function () {
+  describe("getPackageNamespace()", function () {
     it("should handle x.y", async function () {
-      const namespace = getNamespace("com.littlebigfun");
+      const namespace = getPackageNamespace("com.littlebigfun");
       namespace.should.equal("com.littlebigfun");
     });
     it("should handle x.y.z", async function () {
-      const namespace = getNamespace("com.littlebigfun.addressable-importer");
+      const namespace = getPackageNamespace("com.littlebigfun.addressable-importer");
       namespace.should.equal("com.littlebigfun");
     });
     it("should handle x.y.z.sub", async function () {
-      const namespace = getNamespace("com.littlebigfun.addressable-importer.sub");
+      const namespace = getPackageNamespace("com.littlebigfun.addressable-importer.sub");
       namespace.should.equal("com.littlebigfun");
     });
   });

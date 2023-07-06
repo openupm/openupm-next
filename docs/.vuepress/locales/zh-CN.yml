@@ -15,6 +15,7 @@ back: 后退
 backers: 资助者
 badge: 徽章
 basic: 基础
+display-name: 显示名称
 branch: 分支
 build: 构建
 build-pipelines: 构建管线
@@ -33,7 +34,6 @@ cookie-consent-message: 本网站使用cookie来确保您获得最佳体验。
 data-management: 数据管理
 debugging-and-logging: 调试和日志
 dependencies: 依赖
-deps-missing: 请搜索并手动安装这个缺失的依赖包。
 description-zhcn: 包描述（中文）
 discord: Discord
 discovered-by: 软件包猎手
@@ -41,7 +41,6 @@ discovered-by-placeholder: GitHub用户名
 display-name-zhcn: 包名称（中文）
 donate: 赞助
 dots-and-ecs: DOTS & ECS
-edit-package: 编辑此软件包
 editor-enhancement: 增强编辑器
 english-text: 英文文本：
 experimental: 实验性
@@ -54,9 +53,6 @@ find-more-at: 了解更多
 footer-copyright: 版权所有 © 2019-2020 Favo Yang
 frameworks: 框架
 get: 获取
-git-deps-missing: 请手动安装这个缺失的Git依赖。
-git-deps-nuget: 该程序包可能存在于uplink的UnityNuGet仓库中。
-git-deps-replaced: 这个Git依赖可以被替换为一个已在OpenUPM上发布的同名软件包。
 git-tag: Git 标签
 git-tag-ignore-pattern: Git标签忽略正则表达式
 git-tag-ignore-pattern-desc: 用于排除Git标签的正则表达式
@@ -84,7 +80,6 @@ install-via-package-installer-step-3: 辅助安装器在完成安装任务后，
 install-via-package-manager: 安装方式：包管理器
 installation: 安装
 integration: 集成
-invalid-git-tag-and: 无效的Git标签（非semver或重复的版本）
 latest: 最新
 learn-more: 了解更多
 level-design: 关卡设计
@@ -105,7 +100,6 @@ monthly-downloads: 月下载量
 mobile: 移动端
 modeling: 建模
 name: 名称
-name-at-version: 名称{'@'}版本
 needles-package-installer: Needle的软件包辅助安装器
 no-markdown-file-found-fallbacks: 无法找到markdown文件, 使用默认值README.md
 network: 网络
@@ -186,12 +180,11 @@ sprite-management: 精灵管理
 state: 软件包状态
 status: 服务监测
 submit-pr: 提交合并请求
-supported-unity-version: 兼容Unity版本
+supported-unity-version: 兼容的Unity版本
 team: 团队
 terms-of-use: 服务条例
 terrain: 地形
 testing: 测试
-the-repository-is-unavailable: OpenUPM目前无法访问该仓库。如果是因为所有者删除了该仓库或者将其设为私有，那么OpenUPM将无法继续跟踪它的更新。
 top-package-hunters: 软件包猎手排行榜
 top-package-owners: 软件包作者排行榜
 topics: 主题
