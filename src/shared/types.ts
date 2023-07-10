@@ -135,6 +135,13 @@ export interface DailyDownload {
   downloads: number;
 }
 
+export interface DownloadsRange {
+  package: string;
+  start: string;
+  end: string;
+  downloads: Array<DailyDownload>;
+}
+
 export interface TopicBase {
   name: string;
   slug: string;

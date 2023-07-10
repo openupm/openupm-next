@@ -6,17 +6,18 @@ import { viteBundler } from '@vuepress/bundler-vite'
 import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite'
 
 import OpenupmPlugin from '../../dist/vuepress-plugin-openupm';
+import { Region } from "../../src/shared/constant";
 
 const __dirname = getDirname(import.meta.url)
 
-const VITE_OPENUPM_REGION = process.env.VITE_OPENUPM_REGION == "cn" ? "cn" : "us";
+const VITE_OPENUPM_REGION = process.env.VITE_OPENUPM_REGION == Region.CN ? Region.CN : Region.US;
 import configUs from "./config-us";
 import configCn from "./config-cn";
-const regionConfig: any = VITE_OPENUPM_REGION == "cn" ? configCn : configUs;
+const regionConfig: any = VITE_OPENUPM_REGION == Region.CN ? configCn : configUs;
 const THEME_COLOR = "#3068E5";
 
 // Merge customizer to concat arrays
-const mergeCustomizer = (obj, src) => { if (isArray(obj)) return obj.concat(src); };
+const mergeCustomizer = (obj: any, src: any) => { if (isArray(obj)) return obj.concat(src); };
 
 // Merge themeConfig with regionConfig.themeConfig
 const themeConfig: any = mergeWith({

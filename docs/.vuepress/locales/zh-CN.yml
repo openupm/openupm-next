@@ -49,7 +49,6 @@ featured-image-desc: 若要使用代码仓库默认的社交媒体预览图，�
 field-none: 无
 fill-the-package-form: 填写软件包表单
 fill-the-package-form-desc: 请提供此UPM软件包的基本信息。该软件包必须符合OpenUPM的软件包标准，请参考
-find-more-at: 了解更多
 footer-copyright: 版权所有 © 2019-2020 Favo Yang
 frameworks: 框架
 get: 获取
@@ -63,21 +62,14 @@ git-tag-prefix-desc-html: >-
 git-tag-prefix-placeholder: 可不填，则默认处理所有Git标签
 github: GitHub
 go: 开始
-go-to-unity-project: 进入Unity工程目录
 gui: 用户界面
-has-no-valid-tag: OpenUPM跟踪遵循semver约定的Git标签。如果未检测到有效的Git标签，则该软件包将不会列在软件包列表中。
-has-not-succeeded-build: 软件包没有有效的版本。如果有正在进行的构建，请等待它们完成。如果所有构建都失败了，软件包将不会列在软件包列表中，直到构建出一个有效的版本。
 home: 首页
 icpText: 京ICP备18005908号-2
 input-management: 输入管理
-install-openupm-cli: 安装 openupm-cli
-install-package: 安装软件包
-install-via-command-line-interface: 安装方式：命令行工具
 install-via-package-installer: 通过软件包辅助安装器安装
 install-via-package-installer-intro: 通过创建一个传统的.unitypackage安装引导文件，来辅助安装UPM软件包至你的Unity工程。
 install-via-package-installer-step-2: 打开下载好的文件，或将其拖动到Unity的编辑器窗口中。
 install-via-package-installer-step-3: 辅助安装器在完成安装任务后，会自动删除自身。
-install-via-package-manager: 安装方式：包管理器
 installation: 安装
 integration: 集成
 latest: 最新
@@ -91,7 +83,6 @@ loading-package-json-path: 加载package.json路径...
 loading-readme-md-path: 加载README.md路径...
 localization: 本地化
 lowest-unity-version: 最低兼容Unity版本
-manual-installation: 手动安装
 medium: Medium
 meta-data: 元数据
 minimal-version-to-build: 可处理的最小版本
@@ -163,7 +154,6 @@ release-reason-service-unavailable: 服务器暂时无响应
 release-reason-unauthorized: 服务器未授权
 release-reason-version-conflict: 该版本已存在（请检查package.json的版本）
 report-abuse: 举报
-report-malware-or-abuse: 举报恶意软件或滥用
 repository: 代码仓库
 repository-placeholder: 所有者/项目名称
 services: 服务

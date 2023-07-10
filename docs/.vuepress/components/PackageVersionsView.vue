@@ -4,7 +4,7 @@ import { PackageVersionViewEntry } from "@shared/types";
 
 const props = defineProps({
   versions: {
-    type: Array as () => Array<PackageVersionViewEntry>,
+    type: Array<PackageVersionViewEntry>,
     default: () => []
   },
   isLoading: {

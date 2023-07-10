@@ -4,10 +4,10 @@ add-package-title: Submit Open Source UPM Package
 advanced: Advanced
 all: All
 and: and
-authors: Author(s)
+authors: authors
 back: Back
 backers: Backers
-badge: Badge
+badge: badge
 basic: Basic
 display-name: display name
 branch: Branch
@@ -28,7 +28,7 @@ cookie-consent-message: >-
 dependencies: dependencies
 description-zhcn: Description (Chinese)
 discord: Discord
-discovered-by: Discovered by
+discovered-by: discovered by
 discovered-by-placeholder: hunter
 display-name-zhcn: Display name (Chinese)
 donate: donate
@@ -41,7 +41,6 @@ fill-the-package-form: Fill the package form
 fill-the-package-form-desc: >-
   Please fill the form to provide the package information. The package must
   conform to OpenUPM's package criteria. Learn more at
-find-more-at: Find more at
 footer-copyright: Copyright © 2019-2022 Favo Yang
 get: Get
 git-tag: Git tag
@@ -56,13 +55,7 @@ git-tag-prefix-desc-html: >-
 git-tag-prefix-placeholder: leave empty to include all tags by default
 github: GitHub
 go: Go
-go-to-unity-project: Go to your Unity project directory
-has-no-valid-tag: OpenUPM tracks Git tags that follow the semver convention. If a valid Git tag is not detected, the package will not be listed on the package listing.
-has-not-succeeded-build: The package does not have a valid version. If there are builds in progress, please wait for them to finish. If all builds have failed, the package will not be listed on the package listing until a valid version is built.
 home: Home
-install-openupm-cli: Install openupm-cli
-install-package: Install package
-install-via-command-line-interface: Install via Command-Line Interface
 install-via-package-installer: Install via Package Installer
 install-via-package-installer-intro: >-
   creates a traditional .unitypackage helper to install a UPM package into your
@@ -71,23 +64,21 @@ install-via-package-installer-step-2: >-
   Open the downloaded file with your Unity editor or drag it into the Unity
   editor window.
 install-via-package-installer-step-3: The installer will remove itself after installation.
-install-via-package-manager: Install via Package Manager
 installation: installation
 latest: latest
-learn-more: Learn more
-license: License
+learn-more: learn more
+license: license
 license-name: License name
 license-name-desc: The open source license name
 loading-branches: Loading branches...
 loading-package-json-path: Loading package.json path...
 loading-readme-md-path: Loading README.md path...
 lowest-unity-version: Lowest Unity version
-manual-installation: Manual installation
 medium: Medium
 meta-data: Metadata
 minimal-version-to-build: Minimal version to build
 minimal-version-to-build-placeholder: leave empty to build all versions by default
-monthly-downloads: Monthly Downloads
+monthly-downloads: monthly downloads
 name: name
 needles-package-installer: Needle's package installer
 no-markdown-file-found-fallbacks: No markdown file found, fallbacks to README.md
@@ -115,7 +106,7 @@ promote: Promote
 published-time: Published time
 readme: readme
 readme-to-found: Readme is not available, please try again later.
-last-publish: Last Publish
+last-publish: last publish
 region: Region
 region-cn: China
 region-us: United States
@@ -144,8 +135,7 @@ release-reason-service-unavailable: server unavailable
 release-reason-unauthorized: server unauthorized
 release-reason-version-conflict: the version already exists (check package.json version)
 report-abuse: Report
-report-malware-or-abuse: Report malware or abuse
-repository: Repository
+repository: repository
 repository-placeholder: owner/project-name
 show-more: Show more
 sort-by: Sort by
@@ -169,7 +159,7 @@ top-package-owners: Top Package Owners
 topics: Topics
 tweet: Tweet
 twitter: Twitter
-unity-version: Unity Version
+unity-version: unity version
 upload-to-github-via-pr: Upload to GitHub via pull request (PR)
 upload-to-github-via-pr-desc: The package is verified. A YAML file has been generated to store the metadata.
 upload-to-github-via-pr-step-1-html: >-

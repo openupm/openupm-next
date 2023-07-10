@@ -1,9 +1,16 @@
 ---
 editLink: false
+sidebar: auto
 ---
-# Elements
+# Style Cheatsheet
 
-## Labels
+## Elements
+
+### Typography
+
+This is a paragraph.
+
+### Labels
 
 <span class="label label-default mr-2">default label</span>
 <span class="label label-primary mr-2">default label</span>
@@ -13,7 +20,17 @@ editLink: false
 <span class="label label-error mr-2">default label</span>
 <span class="label label-default label-rounded mr-2">default label</span>
 
-## Quotes
+### KBD
+
+<kbd>Enter</kbd>
+
+## Components
+
+### Chip
+
+<span class="chip"><i class="fa fa-user"></i>UserX</span>
+
+### Quotes
 
 ::: tip Tip
 This is a tip quote

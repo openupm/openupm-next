@@ -17,7 +17,7 @@ import { Region, ReleaseState } from "@shared/constant";
 import { usePageFrontmatter } from "@vuepress/client";
 import { useDefaultStore } from "@/store";
 import { getPackageMetadata, getRegion } from "@shared/utils";
-import { PackageInfo, PackageMetadataLocal, PackageRegistryInfo, PackageRelease, PackageVersionViewEntry } from "@shared/types";
+import { DownloadsRange, PackageInfo, PackageMetadataLocal, PackageRegistryInfo, PackageRelease, PackageVersionViewEntry } from "@shared/types";
 import { getMonthlyDownloadsUrl, getPackageInfoUrl, getPackageMetadataUrl } from '@shared/urls';
 import { fillMissingDates, isPackageExist, timeAgoFormat } from '@/utils';
 
@@ -37,7 +37,7 @@ const SubPageSlug = {
 interface State {
   packageInfo: PackageInfo,
   registryInfo: PackageRegistryInfo,
-  monthlyDownloads: any,
+  monthlyDownloads: DownloadsRange,
   subPage: string,
   __packageInfoFetched: boolean,
   __registryInfoFetched: boolean,
@@ -59,7 +59,12 @@ const initState = (): State => ({
     readme: "",
     "dist-tags": {},
   },
-  monthlyDownloads: {},
+  monthlyDownloads: {
+    package: "",
+    start: "",
+    end: "",
+    downloads: [],
+  },
   subPage: SubPageSlug.readme,
   __packageInfoFetched: false,
   __registryInfoFetched: false,
@@ -213,6 +218,9 @@ const subPages = computed(() => {
         registryInfo: state.registryInfo,
         monthlyDownloads: state.monthlyDownloads,
         hasNotSucceededBuild: hasNotSucceededBuild.value,
+        packageInfoFetched: state.__packageInfoFetched,
+        registryInfoFetched: state.__registryInfoFetched,
+        monthlyDownloadsFetched: state.__monthlyDownloadsFetched,
       }
     },
     {
@@ -269,6 +277,15 @@ const subPages = computed(() => {
       class: { "active": x.slug == currentSubPageSlug.value }
     };
   });
+});
+
+const subPageMetaProps = computed(() => {
+  for (const subPage of subPages.value) {
+    if (subPage.slug === SubPageSlug.meta) {
+      return subPage.props;
+    }
+  }
+  return {};
 });
 
 const topics = computed(() => {
@@ -397,8 +414,9 @@ const buildRouterLinkQuery = function (subPage: string): any {
     <template #page-content-top>
       <div class="columns columns-contentview">
         <div class="column col-8 col-xl-8 col-lg-8 col-md-12 col-sm-12">
-          <div v-if="packageMetadata.repoUnavailable" class="toast toast-warning mb-2">
-            {{ $t("the-repository-is-unavailable") }}
+          <div v-if="packageMetadata.repoUnavailable" class="custom-container warning">
+            <p class="custom-container-title">{{ $t("repository-is-unavailable-title") }}</p>
+            <p>{{ $t("repository-is-unavailable-desc") }}</p>
           </div>
           <div class="topic-list">
             <a v-for="item in topics" :key="item.slug" :href="item.urlPath">
@@ -408,7 +426,7 @@ const buildRouterLinkQuery = function (subPage: string): any {
           <component :is="currentSubPage.component" v-bind="currentSubPage.props" />
         </div>
         <div class="column column-meta col-4 col-xl-4 col-lg-4 col-md-12 col-sm-12">
-          <PackageMetadataView v-show="shouldShowMeta" v-bind="currentSubPage.props" />
+          <PackageMetadataView v-show="shouldShowMeta" v-bind="subPageMetaProps" />
         </div>
       </div>
     </template>
@@ -459,9 +477,11 @@ const buildRouterLinkQuery = function (subPage: string): any {
 </style>
 
 <i18n locale="en-US" lang="yaml">
-  the-repository-is-unavailable: The repository is currently inaccessible to OpenUPM. This could be because the owner has deleted it or changed it to private, in which case OpenUPM will no longer track any changes.
+  repository-is-unavailable-title: The source code repository is currently inaccessible to OpenUPM
+  repository-is-unavailable-desc: This may be a temporary network issue. However, if the repository is deleted or made private by its author, OpenUPM will no longer track further changes. Any packages already published will not be affected.
 </i18n>
 
 <i18n locale="zh-CN" lang="yaml">
-  the-repository-is-unavailable: OpenUPM目前无法访问该仓库。如果是因为所有者删除了该仓库或者将其设为私有，那么OpenUPM将无法继续跟踪它的更新。
+  repository-is-unavailable-title: OpenUPM目前无法访问该源代码仓库
+  repository-is-unavailable-desc: 这可能是暂时的网络问题。但是，如果仓库被作者删除或设为私有，OpenUPM将不再跟踪其后续更改。已发布的任何软件包都不会受到影响。
 </i18n>

@@ -33,9 +33,6 @@ export const getPackageDetailPagePath = function (packageName: string): string {
  * @returns package detail url
  */
 export const getPackageDetailPageUrl = function (packageName: string): string {
-  // FIXME: the com.unity test is wrong if hosting com.unity.xxx on the registry.
-  if (packageName.startsWith("com.unity."))
-    return `https://docs.unity3d.com/Packages/${packageName}@latest`;
   const webBaseUrl = getWebBaseUrl();
   return urljoin(webBaseUrl, getPackageDetailPagePath(packageName));
 }
@@ -133,4 +130,20 @@ export const getPackageMetadataUrl = function (name: string): string {
  */
 export const getMonthlyDownloadsUrl = function (name: string): string {
   return urljoin(getRegistryBaseUrl(), "downloads", "range", "last-month", name);
+}
+
+/**
+ * Get openupm-cli repo url.
+ * @returns openupm-cli repo url
+ */
+export const getOpenupmCliRepoUrl = function (): string {
+  return "https://github.com/openupm/openupm-cli#openupm-cli";
+}
+
+/**
+ * Get Node.js download url.
+ * @returns Node.js download url
+ */
+export const getNodeJsUrl = function (): string {
+  return "https://nodejs.org/en/download/";
 }

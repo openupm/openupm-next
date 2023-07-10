@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 import { useI18n } from "vue-i18n";
 import PlaceholderLoader from '@/components/PlaceholderLoader.vue';
-import AutoLink from '@theme/AutoLink.vue'
+import AutoLink from '@/components/AutoLink.vue'
 
 import { getGitHubPackageMetadataUrl } from "@shared/urls";
 

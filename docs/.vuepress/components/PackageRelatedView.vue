@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 
-import AutoLink from '@theme/AutoLink.vue'
+import AutoLink from '@/components/AutoLink.vue'
 import { getPackageDetailPagePath } from '@shared/urls';
 
 const props = defineProps({

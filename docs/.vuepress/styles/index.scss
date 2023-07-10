@@ -65,6 +65,10 @@ code {
   background-color: var(--c-bg-dark);
   color: inherit;
 
+  &:hover {
+    background-color: var(--c-bg-light);
+  }
+
   .hljs {
     display: inline;
   }
@@ -135,6 +139,21 @@ kbd {
   }
 }
 
+.chip {
+
+  >.fa,
+  >.fas,
+  >.fab {
+    margin-right: 0.3rem;
+  }
+}
+
+.btn-group {
+  a:hover {
+    text-decoration: none;
+  }
+}
+
 .theme-default-content {
 
   h1,
@@ -156,7 +175,6 @@ kbd {
       }
     }
   }
-
 
   h1 {
     font-size: 1.8rem;
@@ -209,9 +227,13 @@ kbd {
 }
 
 .page {
-  .theme-default-content {
+  .theme-default-content:not(.custom) {
     margin-top: $navbar-height + 1.2rem;
     padding: 0 1rem 1rem 1rem;
+  }
+
+  .theme-default-content.custom {
+    padding: 0;
   }
 
   .page-meta {
@@ -277,6 +299,16 @@ div[class*=language-] {
 
     }
   }
+
+  .chip {
+    background: var(--c-bg-dark);
+    color: var(--c-text);
+  }
+
+  .divider[data-content]::after,
+  .divider-vert[data-content]::after {
+    background: var(--c-bg);
+  }
 }
 
 // Navbar
@@ -295,7 +327,10 @@ div[class*=language-] {
   }
 
   .toggle-color-mode-button {
-    color: darken($primary-color, 20%);
+    svg {
+      stroke: $primary-color;
+      fill: $primary-color;
+    }
   }
 
   .navbar-items {
@@ -639,25 +674,6 @@ main {
 // Custom: ads
 .adp:empty {
   display: none;
-}
-
-// Custom: tooltip-click
-.tooltip-click {
-  cursor: pointer;
-
-  &:hover::after {
-    opacity: 0;
-  }
-
-  &:focus::after,
-  &:active::after {
-    opacity: 1;
-    transform: translate(-50%, -.2rem);
-  }
-
-  a {
-    cursor: pointer;
-  }
 }
 
 .page-nav {
