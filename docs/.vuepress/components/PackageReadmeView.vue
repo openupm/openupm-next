@@ -1,10 +1,7 @@
 <script setup lang="ts">
-import { computed } from 'vue';
 import { useI18n } from "vue-i18n";
 import PlaceholderLoader from '@/components/PlaceholderLoader.vue';
 import AutoLink from '@/components/AutoLink.vue'
-
-import { getGitHubPackageMetadataUrl } from "@shared/urls";
 
 const { t } = useI18n();
 
@@ -22,13 +19,6 @@ const props = defineProps({
     default: true
   }
 });
-
-const editNavLink = computed(() => {
-  return {
-    link: getGitHubPackageMetadataUrl(props.name),
-    text: t("edit-metadata")
-  };
-});
 </script>
 
 <template>
@@ -42,12 +32,6 @@ const editNavLink = computed(() => {
         <p v-else>{{ $t("readme-to-found") }}</p>
       </div>
     </ClientOnly>
-    <div class="editlink-wrap">
-      <div class="divider"></div>
-      <p>
-        <AutoLink :item="editNavLink" />
-      </p>
-    </div>
   </div>
 </template>
 
@@ -57,16 +41,4 @@ const editNavLink = computed(() => {
 .readme-wrap {
   max-width: 42rem;
 }
-
-.editlink-wrap {
-  margin-top: 1rem;
-}
 </style>
-
-<i18n locale="en-US" lang="yaml">
-  edit-metadata: Edit the package metadata
-</i18n>
-
-<i18n locale="zh-CN" lang="yaml">
-  edit-metadata: 编辑软件包元数据
-</i18n>

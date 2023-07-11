@@ -5,6 +5,7 @@ import { computed, watch, onMounted, reactive } from 'vue';
 import { useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n'
 import VueScrollTo from "vue-scrollto";
+import { useMq } from "vue3-mq";
 
 import ParentLayout from "@/layouts/WideLayout.vue";
 import PackageDependenciesView from "@/components/PackageDependenciesView.vue";
@@ -23,10 +24,11 @@ import { fillMissingDates, isPackageExist, timeAgoFormat } from '@/utils';
 
 const route = useRoute();
 const { t } = useI18n();
+const mq = useMq();
 
 const SubPageSlug = {
   deps: "deps",
-  meta: "meta",
+  metadata: "metadata",
   pipelines: "pipelines",
   readme: "readme",
   related: "related",
@@ -185,13 +187,12 @@ const readmeHtml = computed(() => {
   return html || state.packageInfo.readmeHtml;
 });
 
-const shouldShowMetaSubpageEntry = computed(() => {
-  return false;
-  // return $mq == "xs" || $mq == "sm" || $mq == "md";
+const shouldShowMetadataSubpageEntry = computed(() => {
+  return mq.lgMinus;
 });
 
-const shouldShowMeta = computed(() => {
-  return !shouldShowMetaSubpageEntry.value || currentSubPageSlug.value == SubPageSlug.meta;
+const shouldShowMetadataSection = computed(() => {
+  return !shouldShowMetadataSubpageEntry.value;
 });
 
 const subPages = computed(() => {
@@ -209,8 +210,8 @@ const subPages = computed(() => {
     },
     {
       text: capitalize(t("installation")),
-      slug: SubPageSlug.meta,
-      visible: shouldShowMetaSubpageEntry.value,
+      slug: SubPageSlug.metadata,
+      visible: shouldShowMetadataSubpageEntry.value,
       component: PackageMetadataView,
       props: {
         metadata: packageMetadata.value,
@@ -279,9 +280,9 @@ const subPages = computed(() => {
   });
 });
 
-const subPageMetaProps = computed(() => {
+const subPageMetadataProps = computed(() => {
   for (const subPage of subPages.value) {
-    if (subPage.slug === SubPageSlug.meta) {
+    if (subPage.slug === SubPageSlug.metadata) {
       return subPage.props;
     }
   }
@@ -426,7 +427,7 @@ const buildRouterLinkQuery = function (subPage: string): any {
           <component :is="currentSubPage.component" v-bind="currentSubPage.props" />
         </div>
         <div class="column column-meta col-4 col-xl-4 col-lg-4 col-md-12 col-sm-12">
-          <PackageMetadataView v-show="shouldShowMeta" v-bind="subPageMetaProps" />
+          <PackageMetadataView v-show="shouldShowMetadataSection" v-bind="subPageMetadataProps" />
         </div>
       </div>
     </template>

@@ -53,7 +53,7 @@ const repoTagsNavLink = computed(() => {
 </script>
 
 <template>
-  <section class="col-12 install-section">
+  <section v-if="isLoading || version" class="col-12 install-section">
     <div v-if="isLoading">
       <PlaceholderLoader />
     </div>

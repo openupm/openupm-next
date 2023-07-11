@@ -5,6 +5,7 @@ import { useRoute } from 'vue-router'
 import { createI18n } from 'vue-i18n';
 import { defineClientConfig } from '@vuepress/client'
 import messages from '@intlify/unplugin-vue-i18n/messages'
+import { Vue3Mq } from "vue3-mq";
 
 import { useDefaultStore } from '@/store';
 import { GlobalFilters } from '@/vue-plugins/global-filters';
@@ -28,6 +29,17 @@ export default defineClientConfig({
     const pinia = createPinia();
     pinia.use(piniaPluginPersistedstate);
     app.use(pinia);
+    // vue3-mq
+    app.use(Vue3Mq, {
+      // Vuepress-next breakpoints
+      breakpoints: {
+        xs: 0,
+        sm: 481,
+        md: 601,
+        lg: 841,
+        xl: 961
+      }
+    } as any);
   },
   setup() {
     const fetchSiteData = () => {

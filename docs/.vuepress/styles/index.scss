@@ -241,6 +241,14 @@ kbd {
   }
 }
 
+@media (max-width: $MQMobileNarrow) {
+  .page {
+    .theme-default-content:not(.custom) {
+      margin-top: $navbar-height + 2.2rem;
+    }
+  }
+}
+
 .custom-container {
 
   .custom-container-title,

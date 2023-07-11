@@ -56,7 +56,7 @@ const fillEndPath = computed(() => {
   </svg>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 svg {
   stroke: #1f8ceb;
   fill: rgba(31, 140, 235, 0.06);

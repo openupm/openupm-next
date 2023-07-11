@@ -9,7 +9,7 @@ import CopyWrapper from "@/components/CopyWrapper.vue";
 import PackageSetup from "@/components/PackageSetup.vue";
 import Sparkline from "@/components/Sparkline.vue";
 import { timeAgoFormat } from '@/utils';
-import { getAvatarImageUrl, getPackageDetailPageUrl } from '@shared/urls';
+import { getAvatarImageUrl, getGitHubPackageMetadataUrl, getPackageDetailPageUrl } from '@shared/urls';
 import { DownloadsRange, PackageInfo, PackageMetadata, PackageRegistryInfo } from "@shared/types";
 
 const { t } = useI18n();
@@ -187,6 +187,13 @@ const version = computed(() => {
   if (distTags && distTags.latest) return distTags.latest;
   else return null;
 });
+
+const editLink = computed(() => {
+  return {
+    link: getGitHubPackageMetadataUrl(props.metadata.name),
+    text: t("edit-metadata")
+  };
+});
 </script>
 
 <template>
@@ -305,6 +312,9 @@ const version = computed(() => {
       <section class="col-12">
         <AutoLink :item="reportLink" />
       </section>
+      <section class="col-12">
+        <AutoLink :item="editLink" />
+      </section>
     </div>
   </div>
 </template>
@@ -381,8 +391,10 @@ const version = computed(() => {
 
 <i18n locale="en-US" lang="yaml">
   report-malware-or-abuse: report malware or abuse
+  edit-metadata: Edit package metadata
 </i18n>
 
 <i18n locale="zh-CN" lang="yaml">
   report-malware-or-abuse: 举报恶意软件或滥用
+  edit-metadata: 编辑软件包元数据
 </i18n>
