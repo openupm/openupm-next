@@ -31,15 +31,15 @@ export const convertRepoUrl = function (url: string, format?: string): string {
  */
 export const parsePackageMetadata = function (doc: any): PackageMetadataLocal {
   const ghUrl = convertRepoUrl(doc.repoUrl, "https");
-  const url = new URL(doc.repoUrl);
+  const url = new URL(ghUrl);
   // owner
   doc.owner = url.pathname.split("/")[1];
-  doc.ownerUrl = `https://${ghUrl.hostname}/${ghUrl.owner}`;
+  doc.ownerUrl = `https://${url.hostname}/${doc.owner}`;
   // repo
   doc.repo = url.pathname.split("/")[2];
   // hunter
   if (doc.hunter) {
-    doc.hunterUrl = `https://${ghUrl.hostname}/${doc.hunter}`;
+    doc.hunterUrl = `https://${url.hostname}/${doc.hunter}`;
   } else {
     doc.hunter = "";
     doc.hunterUrl = null;

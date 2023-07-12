@@ -8,8 +8,8 @@ import {
   isValidPackageName,
   getCachedAvatarImageFilename,
   getEnv,
+  parsePackageMetadataRemote,
 } from "@shared/utils";
-import { getEnvironmentData } from 'worker_threads';
 
 describe("@shared/utils.ts", function () {
   describe("isValidPackageName()", function () {
@@ -83,6 +83,105 @@ describe("@shared/utils.ts", function () {
       process.env.tempvar1 = "test";
       getEnv("tempvar1").should.equal("test");
       process.env.tempvar1 = undefined;
+    });
+  });
+
+
+  describe('getCachedAvatarImageFilename', () => {
+    it('should return the expected filename', () => {
+      const username = 'JohnDoe';
+      const size = 64;
+      const expected = 'johndoe-64x64.png';
+      const result = getCachedAvatarImageFilename(username, size);
+      result.should.equal(expected);
+    });
+
+    it('should convert username to lowercase', () => {
+      const username = 'JaneDoe';
+      const size = 128;
+      const expected = 'janedoe-128x128.png';
+      const result = getCachedAvatarImageFilename(username.toUpperCase(), size);
+      result.should.equal(expected);
+    });
+  });
+
+  describe('parsePackageMetadataRemote', () => {
+    it('should set ver to null if not defined', () => {
+      const input = {
+        stars: 10,
+        pstars: 5,
+        imageFilename: 'test.png',
+        dl30d: 100,
+        repoUnavailable: false,
+      };
+      const expected = null;
+      const result = parsePackageMetadataRemote(input);
+      assert.equal(result.ver, expected);
+    });
+
+    it('should set stars to 0 if not defined', () => {
+      const input = {
+        ver: '1.0.0',
+        pstars: 5,
+        imageFilename: 'test.png',
+        dl30d: 100,
+        repoUnavailable: false,
+      };
+      const expected = 0;
+      const result = parsePackageMetadataRemote(input);
+      result.stars.should.equal(expected);
+    });
+
+    it('should set pstars to 0 if not defined', () => {
+      const input = {
+        ver: '1.0.0',
+        stars: 10,
+        imageFilename: 'test.png',
+        dl30d: 100,
+        repoUnavailable: false,
+      };
+      const expected = 0;
+      const result = parsePackageMetadataRemote(input);
+      result.pstars.should.equal(expected);
+    });
+
+    it('should set imageFilename to null if not defined', () => {
+      const input = {
+        ver: '1.0.0',
+        stars: 10,
+        pstars: 5,
+        dl30d: 100,
+        repoUnavailable: false,
+      };
+      const expected = null;
+      const result = parsePackageMetadataRemote(input);
+      assert.equal(result.imageFilename, expected);
+    });
+
+    it('should set dl30d to 0 if not defined', () => {
+      const input = {
+        ver: '1.0.0',
+        stars: 10,
+        pstars: 5,
+        imageFilename: 'test.png',
+        repoUnavailable: false,
+      };
+      const expected = 0;
+      const result = parsePackageMetadataRemote(input);
+      result.dl30d.should.equal(expected);
+    });
+
+    it('should set repoUnavailable to false if not defined', () => {
+      const input = {
+        ver: '1.0.0',
+        stars: 10,
+        pstars: 5,
+        imageFilename: 'test.png',
+        dl30d: 100,
+      };
+      const expected = false;
+      const result = parsePackageMetadataRemote(input);
+      result.repoUnavailable.should.equal(expected);
     });
   });
 });
