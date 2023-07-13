@@ -18,4 +18,8 @@ export default defineConfig({
       '@shared': path.resolve(__dirname, './src/shared'),
     },
   },
+  define: {
+    // https://github.com/vuepress/vuepress-next/blob/main/packages/bundler-vite/src/plugins/mainPlugin.ts#L205
+    __VUEPRESS_SSR__: true,
+  },
 });

@@ -11,8 +11,8 @@
     "docs:dev": "concurrently -k -n precompile:dev,docs:dev \"npm run precompile:dev\" \"vuepress dev docs\"",
     "docs:build": "npm run precompile && NODE_OPTIONS='--experimental-modules --es-module-specifier-resolution=node' vuepress build docs",
     "docs:serve": "ws -d ./docs/.vuepress/dist --cors.origin '*'",
-    "test:dev": "cross-env NODE_ENV=test vitest",
-    "test": "cross-env NODE_ENV=test vitest run"
+    "test:dev": "cross-env NODE_ENV=test vitest --config vite.config.test.ts",
+    "test": "cross-env NODE_ENV=test vitest run --config vite.config.test.ts"
   },
   "repository": {
     "type": "git",
