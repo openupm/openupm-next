@@ -65,7 +65,6 @@ jobs:
         # Remove CN region content
         # rm -rf docs/zh
         # Build
-        source env.sh
         npm run docs:build
     - name: deploy to openupm-next-website repo
       uses: JamesIves/github-pages-deploy-action@3.6.2
