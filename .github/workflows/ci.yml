@@ -26,8 +26,8 @@ jobs:
         repository: openupm/openupm
         ref: master
         path: tmp-openupm
-    - name: link tmp-openupm/data folder
-      run: ln -s tmp-openupm/data data
+    - name: move tmp-openupm/data to data
+      run: mv tmp-openupm/data data && rm -rf tmp-openupm
     - name: set node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
@@ -50,8 +50,8 @@ jobs:
         repository: openupm/openupm
         ref: master
         path: tmp-openupm
-    - name: link tmp-openupm/data folder
-      run: ln -s tmp-openupm/data data
+    - name: move tmp-openupm/data to data
+      run: mv tmp-openupm/data data && rm -rf tmp-openupm
     - name: set node.js 16.x
       uses: actions/setup-node@v3
       with:
