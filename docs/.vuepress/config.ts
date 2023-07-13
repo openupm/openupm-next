@@ -81,7 +81,10 @@ const config: any = mergeWith({
           // locale messages resource pre-compile option
           include: [path.resolve(__dirname, './locales/**')],
         }),
-      ]
+      ],
+      ssr: {
+        noExternal: ['vue-i18n'],
+      }
     },
   }),
 }, regionConfig.config, mergeCustomizer);

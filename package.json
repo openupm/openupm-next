@@ -9,7 +9,7 @@
     "precompile": "node precompile.js",
     "precompile:dev": "npm run precompile -- --watch",
     "docs:dev": "concurrently -k -n precompile:dev,docs:dev \"npm run precompile:dev\" \"vuepress dev docs\"",
-    "docs:build": "npm run precompile && vuepress build docs",
+    "docs:build": "npm run precompile && NODE_OPTIONS='--experimental-modules --es-module-specifier-resolution=node' vuepress build docs",
     "test:dev": "cross-env NODE_ENV=test vitest",
     "test": "cross-env NODE_ENV=test vitest run"
   },
