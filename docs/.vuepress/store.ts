@@ -9,7 +9,7 @@ import { PackageMetadataRemote, SiteInfo } from "@shared/types";
 import { parsePackageMetadataRemote } from '@shared/utils';
 
 export const useDefaultStore = defineStore('pinia-default', {
-  persist: true,
+  persist: __VUEPRESS_SSR__ ? false : true,
   state() {
     return {
       packageMetadataRemoteList: {} as Record<string, PackageMetadataRemote>,
