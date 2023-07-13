@@ -3,7 +3,7 @@ showFooter: false
 ---
 # Terms of Use
 
-::: warning TLDR:
+::: warning Notice
 OpenUPM is a service that encourages the use and development of the open-source unity contents. I know that most people skim through terms of use because they're boring, but I try my best to provide the services for you without worrying about the legal issues by applying the common practice of terms-of-use.
 :::
 

@@ -45,6 +45,3 @@ manifest updated, please open unity project to apply changes
 ::: warning 免责声明
 OpenUPM 是一个独立的开源服务，与 Unity Technologies Inc. 没有关联。
 :::
-
-<style lang="stylus">
-</style>

@@ -23,15 +23,13 @@ const props = defineProps({
 
 <template>
   <div class="readme-wrap">
-    <ClientOnly>
-      <div v-if="isLoading">
-        <PlaceholderLoader />
-      </div>
-      <div v-else>
-        <div v-if="readmeHtml" v-html="readmeHtml"></div>
-        <p v-else>{{ $t("readme-to-found") }}</p>
-      </div>
-    </ClientOnly>
+    <div v-if="isLoading">
+      <PlaceholderLoader />
+    </div>
+    <div v-else>
+      <div v-if="readmeHtml" v-html="readmeHtml"></div>
+      <p v-else>{{ $t("readme-to-found") }}</p>
+    </div>
   </div>
 </template>
 
