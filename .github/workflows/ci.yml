@@ -55,7 +55,7 @@ jobs:
     - name: set node.js 16.x
       uses: actions/setup-node@v3
       with:
-        node-version: '14.x'
+        node-version: '16.x'
     - name: npm install
       run: npm install
     - name: npm run docs:build
@@ -67,7 +67,7 @@ jobs:
         # Build
         source env.sh
         npm run docs:build
-    - name: deploy to openupm-website repo
+    - name: deploy to openupm-next-website repo
       uses: JamesIves/github-pages-deploy-action@3.6.2
       with:
         repository-name: openupm/openupm-next-website
