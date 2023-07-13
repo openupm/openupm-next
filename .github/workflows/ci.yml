@@ -1,0 +1,58 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, 'skip ci')"
+    strategy:
+      matrix:
+        node-version: [16.x]
+        redis: [5.x]
+    name: CI - redis ${{ matrix.redis }}, node ${{ matrix.node-version }}
+    steps:
+    - name: setup redis
+      uses: shogo82148/actions-setup-redis@v1
+      with:
+        redis-version: ${{ matrix.redis }}
+    - name: ping redis
+      run: redis-cli ping
+    - uses: actions/checkout@v2
+    - name: set node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: npm install
+      run: npm install
+    - name: npm run test
+      run: npm run test
+
+  build-website-us:
+    runs-on: macos-latest
+    needs: test
+    if: github.ref == 'refs/heads/main' && github.repository == 'openupm/openupm-next'
+    steps:
+    - uses: actions/checkout@v1
+    - name: set node.js 16.x
+      uses: actions/setup-node@v3
+      with:
+        node-version: '14.x'
+    - name: npm install
+      run: npm install
+    - name: npm run docs:build
+      run: |
+        # Set region to us
+        export OPENUPM_REGION=us
+        # Remove CN region content
+        # rm -rf docs/zh
+        # Build
+        source env.sh
+        npm run docs:build
+    - name: deploy to openupm-website repo
+      uses: JamesIves/github-pages-deploy-action@3.6.2
+      with:
+        repository-name: openupm/openupm-next-website
+        folder: docs/.vuepress/dist
+        single-commit: true
+        ACCESS_TOKEN: ${{ secrets.OPENUPM_NEXT_WEBSITE_DEPLOY_KEY }}
