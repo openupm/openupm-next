@@ -29,7 +29,7 @@ ${cli} add ${props.name}`;
 });
 
 const highlighted = computed(() => {
-  const highlighted = highlightjs.highlight("sh", bashScript.value).value;
+  const highlighted = highlightjs.highlight(bashScript.value, { language: "sh" }).value;
   return `<pre><code class="hljs sh">${highlighted}</code></pre>`;
 });
 

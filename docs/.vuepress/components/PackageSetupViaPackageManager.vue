@@ -45,7 +45,7 @@ const manifest = computed(() => {
   };
   jsonData.dependencies[props.name] = props.version;
   const jsonText = JSON.stringify(jsonData, null, 4);
-  const highlighted = highlightjs.highlight("json", jsonText).value;
+  const highlighted = highlightjs.highlight(jsonText, { language: "json" }).value;
   return `<pre><code class="hljs json">${highlighted}</code></pre>`;
 });
 
