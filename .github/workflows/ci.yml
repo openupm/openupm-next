@@ -20,8 +20,6 @@ jobs:
       run: redis-cli ping
     - name: checkout main repo
       uses: actions/checkout@v3
-    - name: create tmp folder
-      run: mkdir -p tmp-openupm
     - name: checkout openupm/openupm repo for the data folder
       uses: actions/checkout@v3
       with:
@@ -29,7 +27,7 @@ jobs:
         ref: master
         path: tmp-openupm
     - name: link tmp-openupm/data folder
-      run: ln -s ../tmp-openupm/openupm/data data
+      run: ln -s tmp-openupm/data data
     - name: set node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
@@ -46,8 +44,6 @@ jobs:
     steps:
     - name: checkout main repo
       uses: actions/checkout@v3
-    - name: create tmp folder
-      run: mkdir -p tmp-openupm
     - name: checkout openupm/openupm repo for the data folder
       uses: actions/checkout@v3
       with:
@@ -55,7 +51,7 @@ jobs:
         ref: master
         path: tmp-openupm
     - name: link tmp-openupm/data folder
-      run: ln -s ../tmp-openupm/openupm/data data
+      run: ln -s tmp-openupm/data data
     - name: set node.js 16.x
       uses: actions/setup-node@v3
       with:
