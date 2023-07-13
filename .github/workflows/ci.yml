@@ -67,7 +67,7 @@ jobs:
         # Build
         npm run docs:build
     - name: deploy to openupm-next-website repo
-      uses: JamesIves/github-pages-deploy-action@3.6.2
+      uses: JamesIves/github-pages-deploy-action@4.4.3
       with:
         repository-name: openupm/openupm-next-website
         folder: docs/.vuepress/dist
