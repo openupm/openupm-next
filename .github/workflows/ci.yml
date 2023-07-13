@@ -72,4 +72,4 @@ jobs:
         repository-name: openupm/openupm-next-website
         folder: docs/.vuepress/dist
         single-commit: true
-        ACCESS_TOKEN: ${{ secrets.OPENUPM_NEXT_WEBSITE_DEPLOY_KEY }}
+        ssh-key: ${{ secrets.OPENUPM_NEXT_WEBSITE_DEPLOY_KEY }}
