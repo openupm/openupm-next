@@ -4,6 +4,7 @@ import { getDirname, path } from "@vuepress/utils";
 import { registerComponentsPlugin } from "@vuepress/plugin-register-components";
 import { viteBundler } from '@vuepress/bundler-vite'
 import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite'
+import { visualizer } from "rollup-plugin-visualizer";
 
 import OpenupmPlugin from '../../dist/vuepress-plugin-openupm';
 import { Region } from "../../src/shared/constant";
@@ -80,6 +81,13 @@ const config: any = mergeWith({
         VueI18nPlugin({
           // locale messages resource pre-compile option
           include: [path.resolve(__dirname, './locales/**')],
+        }),
+        visualizer({
+          template: "treemap", // or sunburst
+          open: false,
+          gzipSize: true,
+          brotliSize: true,
+          filename: "bundle-analyse.html", // will be saved in project's root
         }),
       ],
       ssr: {

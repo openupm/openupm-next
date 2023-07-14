@@ -66,6 +66,11 @@ jobs:
         # rm -rf docs/zh
         # Build
         npm run docs:build
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: bundle-analysis-report
+        path: bundle-analyse.html
     - name: deploy to openupm-next-website repo
       uses: JamesIves/github-pages-deploy-action@v4
       with:
