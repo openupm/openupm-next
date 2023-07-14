@@ -67,7 +67,7 @@ jobs:
         # Build
         npm run docs:build
     - name: Upload artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: bundle-analysis-report
         path: bundle-analyse.html
