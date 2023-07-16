@@ -103,7 +103,7 @@ watch(currentSubPageSlug, (newValue, oldValue) => {
   VueScrollTo.scrollTo(".theme-default-content", 500, { offset: -150 });
 });
 
-// Tthe current sub page object
+// The current sub page object
 const currentSubPage = computed(() => {
   for (const subPage of subPages.value)
     if (subPage.slug === currentSubPageSlug.value) return subPage;
