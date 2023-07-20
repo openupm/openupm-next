@@ -19,7 +19,7 @@ import { usePageFrontmatter } from "@vuepress/client";
 import { useDefaultStore } from "@/store";
 import { getPackageMetadata, getRegion } from "@shared/utils";
 import { DownloadsRange, PackageInfo, PackageMetadataLocal, PackageRegistryInfo, PackageRelease, PackageVersionViewEntry } from "@shared/types";
-import { getMonthlyDownloadsUrl, getPackageInfoUrl, getPackageMetadataUrl } from '@shared/urls';
+import { getMonthlyDownloadsUrl, getPackageInfoUrl, getPackageMetadataUrl, isPackageDetailPath } from '@shared/urls';
 import { fillMissingDates, isPackageExist, timeAgoFormat } from '@/utils';
 
 const route = useRoute();
@@ -306,7 +306,7 @@ onMounted(() => {
 });
 
 watch(() => route.path, (newPath, oldPath) => {
-  if (/^\/packages\/.+\/$/.test(newPath)) {
+  if (isPackageDetailPath(newPath)) {
     resetState();
     fetchAllData();
   }

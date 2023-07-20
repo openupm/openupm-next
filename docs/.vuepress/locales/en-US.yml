@@ -1,5 +1,4 @@
 about: About
-add-package: Add Package
 add-package-title: Submit Open Source UPM Package
 advanced: Advanced
 all: All
@@ -20,7 +19,7 @@ code-of-conduct: Code of Conduct
 commit: Commit
 connect: Connect
 contact-us: Contact Us
-contributors: Contributors
+contributors: contributors
 cookie-consent-dismiss: Got it!
 cookie-consent-message: >-
   This website uses cookies to ensure you get the best experience on our
@@ -54,6 +53,7 @@ git-tag-prefix-desc-html: >-
   "/", hyphen "-", or underscore "_". e.g. "com.company.package-a/x.y.z".
 git-tag-prefix-placeholder: leave empty to include all tags by default
 github: GitHub
+github-stars: GitHub stars
 go: Go
 home: Home
 install-via-package-installer: Install via Package Installer
@@ -138,7 +138,6 @@ report-abuse: Report
 repository: repository
 repository-placeholder: owner/project-name
 show-more: Show more
-sort-by: Sort by
 sponsor-bronze: Bronze Sponsors 🥉
 sponsor-diamond: Diamond Sponsors 💎
 sponsor-featured: Featured Sponsors

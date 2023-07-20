@@ -37,6 +37,16 @@ export const getPackageDetailPageUrl = function (packageName: string): string {
   return urljoin(webBaseUrl, getPackageDetailPagePath(packageName));
 }
 
+/**
+ * Get package list page path for topic.
+ * @param topic topic
+ * @returns package list page path
+ */
+export const getPackageListPagePath = function (topic?: string): string {
+  if (topic) return `/packages/topics/${topic}/`;
+  return '/packages/';
+}
+
 // OpenUPM GitHub repo url.
 export const OpenUPMGitHubRepoUrl = "https://github.com/openupm/openupm";
 
@@ -146,4 +156,20 @@ export const getOpenupmCliRepoUrl = function (): string {
  */
 export const getNodeJsUrl = function (): string {
   return "https://nodejs.org/en/download/";
+}
+
+/**
+ * Test if path is package detail path.
+ * @param path url path
+ */
+export const isPackageDetailPath = function (path: string): boolean {
+  return /^\/packages\/[\w.-]+\/$/.test(path);
+}
+
+/**
+ * Test if path is package list path.
+ * @param path url path
+ */
+export const isPackageListPath = function (path: string): boolean {
+  return path === '/packages/' || /^\/packages\/topics\/[\w.-]+\/$/.test(path);
 }

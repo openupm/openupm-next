@@ -12,6 +12,7 @@ import { GlobalFilters } from '@/vue-plugins/global-filters';
 import Layout from '@/layouts/Layout.vue';
 import WideLayout from '@/layouts/WideLayout.vue';
 import PackageDetailLayout from '@/layouts/PackageDetailLayout.vue';
+import PackageListLayout from '@/layouts/PackageListLayout.vue';
 
 export default defineClientConfig({
   enhance({ app, router, siteData }) {
@@ -55,5 +56,6 @@ export default defineClientConfig({
     Layout,
     WideLayout,
     PackageDetailLayout,
+    PackageListLayout,
   },
 })

@@ -1,6 +1,5 @@
 2d: 2D
 about: 关于我们
-add-package: 提交软件包
 add-package-title: 提交开源UPM软件包
 advanced: 高级
 ai: AI
@@ -61,6 +60,7 @@ git-tag-prefix-desc-html: >-
   过滤Git标签的前缀。主要由包含多个项目的代码仓库（monorepos）用来区分不同的软件包。该前缀应使用使用斜杠"/"，连字符"-"或下划线"_"来分隔版本号。例如"myprefix/x.y.z"。
 git-tag-prefix-placeholder: 可不填，则默认处理所有Git标签
 github: GitHub
+github-stars: GitHub stars
 go: 开始
 gui: 用户界面
 home: 首页
@@ -158,7 +158,6 @@ repository: 代码仓库
 repository-placeholder: 所有者/项目名称
 services: 服务
 show-more: 更多
-sort-by: 排序
 sponsor-bronze: 铜牌赞助商 🥉
 sponsor-diamond: 钻石赞助商 💎
 sponsor-featured: 主要赞助商

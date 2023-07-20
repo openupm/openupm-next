@@ -1,10 +1,22 @@
 <script setup lang="ts">
-import { reactive, computed, toRef } from 'vue'
+import { reactive, computed, toRef, PropType } from 'vue'
 import ParentComponent from '@vuepress/theme-default/components/AutoLink.vue';
+
+interface AutoLinkItem {
+  text: string;
+  ariaLabel?: string;
+  link: string;
+  rel?: string;
+  target?: string;
+  activeMatch?: string;
+  icon?: string;
+  iconLeft?: boolean;
+  iconRight?: boolean;
+}
 
 const props = defineProps({
   item: {
-    type: Object,
+    type: Object as PropType<AutoLinkItem>,
     required: true,
   },
 })
@@ -30,7 +42,7 @@ const showRightIcon = computed(() => {
 </template>
 
 <style lang="scss" scoped>
-  a > i {
-    margin-right: 0.2rem;
-  }
+a>i {
+  margin-right: 0.2rem;
+}
 </style>

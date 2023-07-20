@@ -6,6 +6,7 @@ import { useDefaultStore } from "@/store";
 import { Region } from "@shared/constant";
 import { getRegion } from "@shared/utils";
 import { DailyDownload } from "@shared/types";
+import { ComposerTranslation } from "vue-i18n";
 
 /**
  * Return whether the package exists
@@ -48,4 +49,38 @@ export const fillMissingDates = function (discreteStats: DailyDownload[], startD
     currentDate.setDate(currentDate.getDate() + 1);
   }
   return filledStats;
+}
+
+/**
+ * Generate a hue value from a string within a specified range.
+ * @param {string} str - The input string to generate the hue from.
+ * @param {number} rangeMin - The minimum value of the hue range (must be >= 0).
+ * @param {number} rangeMax - The maximum value of the hue range (must be <= 255).
+ * @returns {number} - The value within the specified range.
+ */
+export const generateHueFromStringInRange = function (str: string, rangeMin: number, rangeMax: number): number {
+  if (rangeMin < 0) {
+    rangeMin = 0;
+  }
+  if (rangeMax > 255) {
+    rangeMax = 255;
+  }
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 2) - hash);
+  }
+  const hue = Math.abs(hash % (rangeMax - rangeMin + 1)) + rangeMin;
+  return hue;
+};
+
+/**
+ * Translate a string with fallback.
+ * @param t translation function
+ * @param tkey translation key
+ * @param fallback fallback string if translation failed
+ */
+export const translateFallback = function (t: ComposerTranslation, tkey: string, fallback: string) {
+  const tvalue = t(tkey);
+  if (tvalue == tkey) return fallback;
+  return tvalue;
 }

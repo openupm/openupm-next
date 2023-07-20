@@ -9,6 +9,7 @@ import {
   getCachedAvatarImageFilename,
   getEnv,
   parsePackageMetadataRemote,
+  filterMetadatabyTopicSlug,
 } from "@shared/utils";
 
 describe("@shared/utils.ts", function () {
@@ -182,6 +183,33 @@ describe("@shared/utils.ts", function () {
       const expected = false;
       const result = parsePackageMetadataRemote(input);
       result.repoUnavailable.should.equal(expected);
+    });
+  });
+
+  describe('filterMetadatabyTopicSlug', () => {
+    const metadata = {
+      excludedFromList: false,
+      topics: ['javascript', 'typescript'],
+    } as any;
+
+    it('should return false if metadata is excluded from list', () => {
+      const result = filterMetadatabyTopicSlug({ ...metadata, excludedFromList: true }, 'javascript');
+      result.should.be.false;
+    });
+
+    it('should return true if metadata topics include the topic slug', () => {
+      const result = filterMetadatabyTopicSlug(metadata, 'javascript');
+      result.should.be.true;
+    });
+
+    it('should return false if metadata topics do not include the topic slug', () => {
+      const result = filterMetadatabyTopicSlug(metadata, 'react');
+      result.should.be.false;
+    });
+
+    it('should return false if metadata is excluded from list, even if topic slug is defined', () => {
+      const result = filterMetadatabyTopicSlug({ ...metadata, excludedFromList: true }, 'javascript');
+      result.should.be.false;
     });
   });
 });

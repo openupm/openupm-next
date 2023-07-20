@@ -3,7 +3,7 @@ import chai from "chai";
 const assert = chai.assert;
 chai.should();
 
-import { fillMissingDates } from "@/utils";
+import { fillMissingDates, generateHueFromStringInRange } from "@/utils";
 
 describe("@/utils.ts", function () {
 
@@ -30,8 +30,8 @@ describe("@/utils.ts", function () {
     it('should return an empty array if startDate is after endDate', () => {
       const startDate = new Date('2021-01-05');
       const endDate = new Date('2021-01-01');
-      const discreteStats = [];
-      const expected = [];
+      const discreteStats = [] as any[];
+      const expected = [] as any[];
       const result = fillMissingDates(discreteStats, startDate, endDate);
       result.should.deep.equal(expected);
     });
@@ -55,6 +55,35 @@ describe("@/utils.ts", function () {
       ];
       const result = fillMissingDates(discreteStats, startDate, endDate);
       result.should.deep.equal(expected);
+    });
+  });
+
+  describe('generateHueFromStringInRange', () => {
+    it('should return a number within the specified range', () => {
+      const str = 'test';
+      const rangeMin = 0;
+      const rangeMax = 255;
+      const result = generateHueFromStringInRange(str, rangeMin, rangeMax);
+      result.should.be.a('number');
+      result.should.be.within(rangeMin, rangeMax);
+    });
+
+    it('should return a number within the specified range, even if rangeMin is negative', () => {
+      const str = 'test';
+      const rangeMin = -10;
+      const rangeMax = 255;
+      const result = generateHueFromStringInRange(str, rangeMin, rangeMax);
+      result.should.be.a('number');
+      result.should.be.within(0, rangeMax);
+    });
+
+    it('should return a number within the specified range, even if rangeMax is greater than 255', () => {
+      const str = 'test';
+      const rangeMin = 0;
+      const rangeMax = 300;
+      const result = generateHueFromStringInRange(str, rangeMin, rangeMax);
+      result.should.be.a('number');
+      result.should.be.within(rangeMin, 255);
     });
   });
 })

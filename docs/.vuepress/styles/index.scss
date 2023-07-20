@@ -229,7 +229,7 @@ kbd {
 .page {
   .theme-default-content:not(.custom) {
     margin-top: $navbar-height + 1.2rem;
-    padding: 0 1rem 1rem 1rem;
+    padding: 0 0.5rem 1rem 0.5rem;
   }
 
   .theme-default-content.custom {
@@ -295,6 +295,10 @@ div[class*=language-] {
   .menu {
     background: var(--c-bg-lighter);
 
+    .divider[data-content]::after {
+      background: var(--c-bg-lighter);
+    }
+
     .menu-item {
 
       a:active,
@@ -313,9 +317,18 @@ div[class*=language-] {
     color: var(--c-text);
   }
 
+  .divider {
+    border-top-color: var(--c-bg-dark) !important;
+  }
+
   .divider[data-content]::after,
   .divider-vert[data-content]::after {
     background: var(--c-bg);
+  }
+
+  .form-select:not([multiple]):not([size]) {
+    background-color: var(--c-bg-dark);
+    border-color: var(--c-border);
   }
 }
 

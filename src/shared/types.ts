@@ -77,7 +77,7 @@ export interface PackageRelease {
   buildId: string;
   state: ReleaseState;
   reason: ReleaseReason;
-  updateAt: number;
+  updatedAt: number;
 }
 
 export interface PackageInfo {
@@ -150,4 +150,5 @@ export interface TopicBase {
 export interface Topic extends TopicBase {
   urlPath: string;
   count: number;
+  metadataList?: PackageMetadataLocal[];
 }

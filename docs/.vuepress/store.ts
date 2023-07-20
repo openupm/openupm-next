@@ -14,9 +14,7 @@ export const useDefaultStore = defineStore('pinia-default', {
     return {
       packageMetadataRemoteList: {} as Record<string, PackageMetadataRemote>,
       recentPackages: [] as any[],
-      preferHorizontalLayout: false,
       siteInfo: { stars: 0 } as SiteInfo,
-      packageListSortType: SortType.updatedAt,
       __packageMetadataRemoteListFetchTime: 0,
       __siteInfoFetchTime: 0,
     }
@@ -86,12 +84,5 @@ export const useDefaultStore = defineStore('pinia-default', {
       const cacheTime = 5 * 60 * 1000;
       if (timeElapsed > cacheTime) await this.fetchSiteInfo();
     },
-    /**
-     * Set package list sort type.
-     * @param value Sort type
-     */
-    setPackageListSort(value: string) {
-      this.packageListSortType = value;
-    }
   }
 });

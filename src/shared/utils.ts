@@ -95,8 +95,10 @@ export const getCachedAvatarImageFilename = function (username: string, size: nu
  */
 export const parsePackageMetadataRemote = function (obj: any): PackageMetadataRemote {
   if (obj.ver === undefined) obj.ver = null;
+  if (obj.time === undefined) obj.time = 0;
   if (!obj.stars) obj.stars = 0;
   if (!obj.pstars) obj.pstars = 0;
+  if (!obj.unity) obj.unity = "2017.2";
   if (!obj.imageFilename) obj.imageFilename = null;
   if (!obj.dl30d) obj.dl30d = 0;
   if (!obj.repoUnavailable) obj.repoUnavailable = false;
@@ -134,4 +136,15 @@ export const getLocalePackageDescription = function (metadata: PackageMetadataLo
   const region = getRegion();
   if (region == Region.CN) return metadata.description_zhCN || metadata.description || "";
   return metadata.description || "";
+}
+
+/**
+ * Filter package metadata by topic slug
+ * @param metadata package metadata local
+ * @param topicSlug topic slug
+ * @returns whether the package metadata should be filtered by the given topic slug
+ */
+export const filterMetadatabyTopicSlug = function (metadata: PackageMetadataLocal, topicSlug: string) {
+  if (metadata.excludedFromList) return false;
+  else return metadata.topics.includes(topicSlug);
 }
