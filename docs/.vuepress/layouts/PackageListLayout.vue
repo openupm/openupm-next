@@ -192,15 +192,19 @@ watch(() => sortType.value, () => {
             <div v-if="isLoading" class="placeholder-loader-wrapper">
               <PlaceholderLoader />
             </div>
-            <RecycleScroller v-else ref="cardScrollerRef" class="card-scroller" :items="metadataList" key-field="name"
-              :grid-items="cardGridItems" :item-size="cardHeight" :item-secondary-size="cardWidth"
-              @resize="onCardScrollerResize">
-              <template #default="{ item, index }">
-                <div class="mr-1">
-                  <PackageCard :metadata="item" />
-                </div>
-              </template>
-            </RecycleScroller>
+            <div v-else>
+              <client-only>
+                <RecycleScroller ref="cardScrollerRef" class="card-scroller" :items="metadataList" key-field="name"
+                  :grid-items="cardGridItems" :item-size="cardHeight" :item-secondary-size="cardWidth"
+                  @resize="onCardScrollerResize">
+                  <template #default="{ item, index }">
+                    <div class="mr-1">
+                      <PackageCard :metadata="item" />
+                    </div>
+                  </template>
+                </RecycleScroller>
+              </client-only>
+            </div>
           </section>
         </div>
       </div>
