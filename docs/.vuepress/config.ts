@@ -59,6 +59,7 @@ const config: any = mergeWith({
     '@': path.resolve(__dirname),
     '@node': path.resolve(__dirname, '../../src/node'),
     '@shared': path.resolve(__dirname, '../../src/shared'),
+    '@node_modules': path.resolve(__dirname, '../../node_modules'),
     '@theme/AutoLink.vue': path.resolve(__dirname, 'components/AutoLink.vue'),
     '@theme/Navbar.vue': path.resolve(__dirname, 'components/Navbar.vue'),
     // https://github.com/intlify/vue-i18n-next/issues/789

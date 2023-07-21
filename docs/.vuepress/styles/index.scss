@@ -228,7 +228,7 @@ kbd {
 
 .page {
   .theme-default-content:not(.custom) {
-    margin-top: $navbar-height + 1.2rem;
+    margin-top: $theme-default-content-margin-top;
     padding: 0 0.5rem 1rem 0.5rem;
   }
 
@@ -244,7 +244,7 @@ kbd {
 @media (max-width: $MQMobileNarrow) {
   .page {
     .theme-default-content:not(.custom) {
-      margin-top: $navbar-height + 2.2rem;
+      margin-top: $theme-default-content-margin-top-mobile;
     }
   }
 }

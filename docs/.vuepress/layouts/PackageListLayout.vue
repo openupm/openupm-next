@@ -1,10 +1,13 @@
 <script setup lang="ts">
-import { orderBy, capitalize } from "lodash-es";
+import { orderBy, capitalize, clamp } from "lodash-es";
 import { computed, watch, onMounted, ref } from "vue";
 import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n'
 import { useMq } from "vue3-mq";
 import { usePageFrontmatter } from "@vuepress/client";
+import { useElementBounding } from '@vueuse/core';
+import { RecycleScroller } from 'vue-virtual-scroller';
+import '@node_modules/vue-virtual-scroller/dist/vue-virtual-scroller.css';
 
 import ParentLayout from "@/layouts/WideLayout.vue";
 import { SortType } from "@/constant";
@@ -24,6 +27,8 @@ const mq = useMq();
 const frontmatter = usePageFrontmatter();
 
 const sortType = ref(SortType.downloads)
+const cardGridItems = ref(4);
+const cardScrollerRef = ref(null);
 
 const sortTypeList = computed(() => [
   { text: capitalize(t("name")), value: SortType.name },
@@ -86,6 +91,24 @@ const metadataList = computed(() => {
 const isLoading = computed(() => {
   return !metadataList.value.length;
 });
+
+const cardWidth = computed(() => {
+  if (mq.sm || mq.xs) return window.innerWidth - 6;
+  return 300;
+});
+
+const cardHeight = computed(() => {
+  if (mq.xs) return 360;
+  if (mq.sm) return 400;
+  return 300;
+});
+
+const onCardScrollerResize = function () {
+  // We use this to get the width of the scrolling container:
+  const { width } = useElementBounding(cardScrollerRef);
+  // Calculate the maximum media posters we can fit in a row based on the scroller width:
+  cardGridItems.value = clamp(Math.floor(width.value / cardWidth.value), 1, 6);
+}
 
 /**
  * Parse query string to set initial values.
@@ -169,11 +192,15 @@ watch(() => sortType.value, () => {
             <div v-if="isLoading" class="placeholder-loader-wrapper">
               <PlaceholderLoader />
             </div>
-            <div v-else class="columns">
-              <div v-for="metadata in metadataList" :key="metadata.name" v-memo="[metadata]" class="column col-card">
-                <PackageCard :metadata="metadata" />
-              </div>
-            </div>
+            <RecycleScroller v-else ref="cardScrollerRef" class="card-scroller" :items="metadataList" key-field="name"
+              :grid-items="cardGridItems" :item-size="cardHeight" :item-secondary-size="cardWidth"
+              @resize="onCardScrollerResize">
+              <template #default="{ item, index }">
+                <div class="mr-1">
+                  <PackageCard :metadata="item" />
+                </div>
+              </template>
+            </RecycleScroller>
           </section>
         </div>
       </div>
@@ -181,10 +208,30 @@ watch(() => sortType.value, () => {
   </ParentLayout>
 </template>
 
+<style lang="scss">
+@use '@/styles/palette' as *;
+
+.package-list {
+  .page {
+    padding-bottom: 0;
+
+    >.theme-default-content:not(.custom) {
+      padding-bottom: 0;
+      padding-right: 0;
+    }
+  }
+}
+</style>
+
 <style lang="scss" scoped>
 @use '@/styles/palette' as *;
 
 .package-section {
+  .card-scroller {
+    // The vue-virtual-scroller requires a fixed height to work properly.
+    height: calc(100vh - $theme-default-content-margin-top);
+  }
+
   .column {
     &.col-card {
       width: 15rem;
@@ -208,6 +255,13 @@ watch(() => sortType.value, () => {
 
 @media (max-width: $MQMobileNarrow) {
   .package-section {
+    .card-scroller {
+      // The vue-virtual-scroller requires a fixed height to work properly.
+      height: calc(100vh - $theme-default-content-margin-top-mobile);
+      // Hide scrollbar on mobile
+      --scrollbar-width: 0;
+    }
+
     .column {
       &.col-card {
         width: 100%;
