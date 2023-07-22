@@ -10,6 +10,7 @@ import {
   getEnv,
   parsePackageMetadataRemote,
   filterMetadatabyTopicSlug,
+  getPackageNamespace,
 } from "@shared/utils";
 
 describe("@shared/utils.ts", function () {
@@ -210,6 +211,21 @@ describe("@shared/utils.ts", function () {
     it('should return false if metadata is excluded from list, even if topic slug is defined', () => {
       const result = filterMetadatabyTopicSlug({ ...metadata, excludedFromList: true }, 'javascript');
       result.should.be.false;
+    });
+  });
+
+  describe("getPackageNamespace()", function () {
+    it("should handle x.y", async function () {
+      const namespace = getPackageNamespace("com.littlebigfun");
+      namespace.should.equal("com.littlebigfun");
+    });
+    it("should handle x.y.z", async function () {
+      const namespace = getPackageNamespace("com.littlebigfun.addressable-importer");
+      namespace.should.equal("com.littlebigfun");
+    });
+    it("should handle x.y.z.sub", async function () {
+      const namespace = getPackageNamespace("com.littlebigfun.addressable-importer.sub");
+      namespace.should.equal("com.littlebigfun");
     });
   });
 });

@@ -1,7 +1,7 @@
 import urljoin from "url-join";
 import { PUBLIC_GEN_DIR, Region } from "./constant";
 import { getCachedAvatarImageFilename, getRegion } from "./utils";
-import { getPackageNamespace } from "@node/utils/package";
+import { getPackageNamespace } from "@shared/utils";
 
 /**
  * Get base domain.

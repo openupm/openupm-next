@@ -4,7 +4,7 @@ import { createPage } from '@vuepress/core'
 
 import { collectPackageHuntersAndOwners, loadPackageNames, loadPackageMetadataLocal, loadTopics } from '@node/local-data';
 import { GithubUserWithScore, PackageMetadataLocal, Topic } from '@shared/types';
-import { getPackageNamespace } from './utils/package';
+import { getPackageNamespace } from '@shared/utils';
 import { getLocalePackageDisplayName } from '@shared/utils';
 import { getPackageDetailPagePath, getPackageListPagePath } from '@shared/urls';
 import { writePublicGen } from '@node/utils/write-public';

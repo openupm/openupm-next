@@ -4,7 +4,6 @@ import spdx from "spdx-license-list";
 
 import { PackageMetadataLocal } from "@shared/types";
 
-
 /**
  * Get cleaned GitHub repo url.
  * @param url GitHub repo url
@@ -80,16 +79,4 @@ export const parsePackageMetadata = function (doc: any): PackageMetadataLocal {
   // topics
   if (!doc.topics) doc.topics = [];
   return doc;
-};
-
-/**
- * Get package namespace scope `com.orgname` from package name `com.orgname.pkgname`.
- * @param packageName package name
- * @returns namespace scope
- */
-export const getPackageNamespace = function (packageName: string): string {
-  return packageName
-    .split(".")
-    .slice(0, 2)
-    .join(".");
 };

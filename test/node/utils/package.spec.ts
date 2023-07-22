@@ -5,9 +5,7 @@ chai.should();
 
 import {
   convertRepoUrl,
-  getPackageNamespace,
   parsePackageMetadata,
-  // isValidPackageName
 } from "@node/utils/package";
 
 describe("@node/utils/package.ts", function () {
@@ -41,20 +39,6 @@ describe("@node/utils/package.ts", function () {
         convertRepoUrl("https://github.com/username/repo.git", "git"),
         "git@github.com:username/repo.git"
       );
-    });
-  });
-  describe("getPackageNamespace()", function () {
-    it("should handle x.y", async function () {
-      const namespace = getPackageNamespace("com.littlebigfun");
-      namespace.should.equal("com.littlebigfun");
-    });
-    it("should handle x.y.z", async function () {
-      const namespace = getPackageNamespace("com.littlebigfun.addressable-importer");
-      namespace.should.equal("com.littlebigfun");
-    });
-    it("should handle x.y.z.sub", async function () {
-      const namespace = getPackageNamespace("com.littlebigfun.addressable-importer.sub");
-      namespace.should.equal("com.littlebigfun");
     });
   });
   describe('parsePackageMetadata', () => {

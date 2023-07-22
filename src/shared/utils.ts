@@ -148,3 +148,15 @@ export const filterMetadatabyTopicSlug = function (metadata: PackageMetadataLoca
   if (metadata.excludedFromList) return false;
   else return metadata.topics.includes(topicSlug);
 }
+
+/**
+ * Get package namespace scope `com.orgname` from package name `com.orgname.pkgname`.
+ * @param packageName package name
+ * @returns namespace scope
+ */
+export const getPackageNamespace = function (packageName: string): string {
+  return packageName
+    .split(".")
+    .slice(0, 2)
+    .join(".");
+};
