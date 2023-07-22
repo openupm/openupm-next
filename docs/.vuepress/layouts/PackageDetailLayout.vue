@@ -19,7 +19,7 @@ import { usePageFrontmatter } from "@vuepress/client";
 import { useDefaultStore } from "@/store";
 import { getPackageMetadata, getRegion } from "@shared/utils";
 import { DownloadsRange, PackageInfo, PackageMetadataLocal, PackageRegistryInfo, PackageRelease, PackageVersionViewEntry } from "@shared/types";
-import { getMonthlyDownloadsUrl, getPackageInfoUrl, getPackageMetadataUrl, isPackageDetailPath } from '@shared/urls';
+import { getMonthlyDownloadsUrl, getPackageInfoUrl, getPackageMetadataUrl, getPackageRelatedPackagesPath, isPackageDetailPath } from '@shared/urls';
 import { fillMissingDates, isPackageExist, timeAgoFormat } from '@/utils';
 
 const route = useRoute();
@@ -40,10 +40,12 @@ interface State {
   packageInfo: PackageInfo,
   registryInfo: PackageRegistryInfo,
   monthlyDownloads: DownloadsRange,
+  sameScopePackages: PackageMetadataLocal[],
   subPage: string,
   __packageInfoFetched: boolean,
   __registryInfoFetched: boolean,
   __monthlyDownloadsFetched: boolean,
+  __sameScopePackagesFetched: boolean,
 };
 
 const initState = (): State => ({
@@ -67,10 +69,12 @@ const initState = (): State => ({
     end: "",
     downloads: [],
   },
+  sameScopePackages: [],
   subPage: SubPageSlug.readme,
   __packageInfoFetched: false,
   __registryInfoFetched: false,
   __monthlyDownloadsFetched: false,
+  __sameScopePackagesFetched: false,
 });
 
 const resetState = () => {
@@ -85,7 +89,7 @@ const frontmatter = usePageFrontmatter();
 
 const packageMetadata = computed(() => {
   const metadataLocal = frontmatter.value.metadataLocal as PackageMetadataLocal;
-  const metadataRemote = store.packageMetadataRemoteList[metadataLocal.name];
+  const metadataRemote = store.packageMetadataRemoteDict[metadataLocal.name];
   return getPackageMetadata(metadataLocal, metadataRemote);
 });
 
@@ -166,6 +170,10 @@ const packageVersions = computed(() => {
       version: x
     } as PackageVersionViewEntry;
   });
+});
+
+const relatedPackages = computed(() => {
+  return state.sameScopePackages.filter(x => x.name != packageMetadata.value.name);
 });
 
 const pipelinesIcon = computed(() => {
@@ -265,10 +273,11 @@ const subPages = computed(() => {
       text: capitalize(t("related-packages")),
       slug: SubPageSlug.related,
       visible: true,
-      count: (frontmatter.value.relatedPackages as any[] || []).length,
+      count: relatedPackages.value.length,
       component: PackageRelatedView,
       props: {
-        relatedPackages: frontmatter.value.relatedPackages,
+        relatedPackages: relatedPackages.value,
+        isLoading: !state.__sameScopePackagesFetched,
       }
     }
   ].map(x => {
@@ -321,6 +330,7 @@ const fetchAllData = async () => {
   await fetchPackageInfo();
   await fetchRegistryInfo();
   await fetchMonthlyDownloads();
+  await fetchRelatedPackages();
 };
 
 /**
@@ -384,6 +394,23 @@ const fetchRegistryInfo = async () => {
 };
 
 /**
+ * Fetch related packages.
+ */
+const fetchRelatedPackages = async () => {
+  try {
+    let resp = await axios.get(
+      getPackageRelatedPackagesPath(packageMetadata.value.name),
+      { headers: { Accept: "application/json" } }
+    );
+    state.sameScopePackages = resp.data as PackageMetadataLocal[];
+  } catch (error) {
+    console.error(error);
+  } finally {
+    state.__sameScopePackagesFetched = true;
+  }
+}
+
+/**
  * Build router link query.
  * @param subPage Sub page slug.
  * @returns Router link query.
@@ -419,7 +446,7 @@ const buildRouterLinkQuery = function (subPage: string): any {
             <p class="custom-container-title">{{ $t("repository-is-unavailable-title") }}</p>
             <p>{{ $t("repository-is-unavailable-desc") }}</p>
           </div>
-          <div class="topic-list">
+          <div v-if="topics.length" class="topic-list">
             <a v-for="item in topics" :key="item.slug" :href="item.urlPath">
               <span class="label label-default label-rounded mr-1">{{ item.localeName }}</span>
             </a>

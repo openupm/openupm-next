@@ -15,7 +15,7 @@ import { ComposerTranslation } from "vue-i18n";
  */
 export const isPackageExist = function (name: string): boolean {
   const store = useDefaultStore();
-  return name in store.packageMetadataRemoteList;
+  return name in store.packageMetadataRemoteDict;
 }
 
 // Return time since string for the given date

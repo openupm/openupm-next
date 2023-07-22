@@ -30,5 +30,6 @@ coverage
 *.sw?
 
 docs/.vuepress/dist
+docs/.vuepress/public/gen/*.json
 data
 bundle-analyse.html

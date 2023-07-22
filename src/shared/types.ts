@@ -149,6 +149,4 @@ export interface TopicBase {
 
 export interface Topic extends TopicBase {
   urlPath: string;
-  count: number;
-  metadataList?: PackageMetadataLocal[];
 }

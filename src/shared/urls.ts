@@ -1,6 +1,7 @@
 import urljoin from "url-join";
-import { Region } from "./constant";
+import { PUBLIC_GEN_DIR, Region } from "./constant";
 import { getCachedAvatarImageFilename, getRegion } from "./utils";
+import { getPackageNamespace } from "@node/utils/package";
 
 /**
  * Get base domain.
@@ -35,6 +36,35 @@ export const getPackageDetailPagePath = function (packageName: string): string {
 export const getPackageDetailPageUrl = function (packageName: string): string {
   const webBaseUrl = getWebBaseUrl();
   return urljoin(webBaseUrl, getPackageDetailPagePath(packageName));
+}
+
+/**
+ * Get package's related packages page path for package name.
+ * @param packageName package name
+ * @returns package detail page path
+ */
+export const getPackageRelatedPackagesPath = function (packageName: string): string {
+  const scope = getPackageNamespace(packageName);
+  return urljoin("/", PUBLIC_GEN_DIR, scope + ".json");
+}
+
+/**
+ * Get public gen path for path.
+ * @param path path
+ * @returns public gen path
+ */
+export const getPublicGenPath = function (path: string): string {
+  return urljoin("/", PUBLIC_GEN_DIR, path);
+}
+
+/**
+ * Get public gen url for path.
+ * @param path path
+ * @returns public gen url
+ */
+export const getPublicGenUrl = function (path: string): string {
+  const webBaseUrl = getWebBaseUrl();
+  return urljoin(webBaseUrl, getPublicGenPath(path));
 }
 
 /**

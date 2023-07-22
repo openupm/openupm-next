@@ -94,66 +94,62 @@ const releaseEntries = computed(() => {
 </script>
 
 <template>
-  <div class="subpage-pipelines">
+  <div v-if="props.isLoading">
+    <PlaceholderLoader />
+  </div>
+  <div v-else class="subpage-pipelines">
     <h2>
       {{ $capitalize($t("build-pipelines")) }}
-      <sup v-if="releaseEntries.length">{{ releaseEntries.length }}</sup>
+      <sup>{{ releaseEntries.length }}</sup>
     </h2>
-    <div v-if="!releaseEntries.length">
-      <PlaceholderLoader />
-    </div>
-    <section v-else class="col-12">
-      <div v-if="!props.isLoading">
-        <table class="table">
-          <thead>
-            <tr>
-              <th class="td-icon"></th>
-              <th>{{ $capitalize($t("git-tag")) }}</th>
-              <th>{{ $capitalize($t("version")) }}</th>
-              <th>{{ $capitalize($t("commit")) }}</th>
-              <th>{{ $capitalize($t("build")) }}</th>
-              <th>{{ $capitalize($t("note")) }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="entry in releaseEntries" :key="entry.tag">
-              <td>
-                <i :class="entry.icon"></i>
-              </td>
-              <td>{{ entry.tag }}</td>
-              <td>
-                {{ entry.version }}
-              </td>
-              <td>
-                <AutoLink :item="entry.commitLink" />
-              </td>
-              <td>
-                <AutoLink v-if="entry.buildId" :item="entry.buildLink" />
-              </td>
-              <td>
-                <span>{{ entry.note }}</span>
-                <span v-show="entry.errorCode" class="label label-warning mr-2">{{ entry.errorCode }}</span>
-                <span class="hide-sm">{{ entry.errorMessage }}</span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <table v-if="invalidTagEntries.length" class="table">
-          <thead>
-            <tr>
-              <th>{{ $t("invalid-git-tag-col-text") }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="entry in invalidTagEntries" :key="entry.tag">
-              <td>
-                <AutoLink :item="entry.tagLink" />
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
+    <table v-if="releaseEntries.length" class="table">
+      <thead>
+        <tr>
+          <th class="td-icon"></th>
+          <th>{{ $capitalize($t("git-tag")) }}</th>
+          <th>{{ $capitalize($t("version")) }}</th>
+          <th>{{ $capitalize($t("commit")) }}</th>
+          <th>{{ $capitalize($t("build")) }}</th>
+          <th>{{ $capitalize($t("note")) }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="entry in releaseEntries" :key="entry.tag">
+          <td>
+            <i :class="entry.icon"></i>
+          </td>
+          <td>{{ entry.tag }}</td>
+          <td>
+            {{ entry.version }}
+          </td>
+          <td>
+            <AutoLink :item="entry.commitLink" />
+          </td>
+          <td>
+            <AutoLink v-if="entry.buildId" :item="entry.buildLink" />
+          </td>
+          <td>
+            <span>{{ entry.note }}</span>
+            <span v-show="entry.errorCode" class="label label-warning mr-2">{{ entry.errorCode }}</span>
+            <span class="hide-sm">{{ entry.errorMessage }}</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <table v-if="invalidTagEntries.length" class="table">
+      <thead>
+        <tr>
+          <th>{{ $t("invalid-git-tag-col-text") }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="entry in invalidTagEntries" :key="entry.tag">
+          <td>
+            <AutoLink :item="entry.tagLink" />
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </template>
 

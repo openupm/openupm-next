@@ -1,12 +1,14 @@
 // Plugin adds dynamic pages for openupm.
-import { countBy, groupBy } from 'lodash-es';
+import { groupBy } from 'lodash-es';
 import { createPage } from '@vuepress/core'
 
 import { collectPackageHuntersAndOwners, loadPackageNames, loadPackageMetadataLocal, loadTopics } from '@node/local-data';
 import { GithubUserWithScore, PackageMetadataLocal, Topic } from '@shared/types';
 import { getPackageNamespace } from './utils/package';
-import { getLocalePackageDescription, getLocalePackageDisplayName, filterMetadatabyTopicSlug } from '@shared/utils';
+import { getLocalePackageDisplayName } from '@shared/utils';
 import { getPackageDetailPagePath, getPackageListPagePath } from '@shared/urls';
+import { writePublicGen } from '@node/utils/write-public';
+import { METADATA_LOCAL_LIST_FILENAME } from '@shared/constant';
 
 /**
  * Plugin data.
@@ -24,16 +26,10 @@ const PLUGIN_DATA = await (async () => {
     name: "All",
     slug: "",
     urlPath: getPackageListPagePath(),
-    count: metadataLocalList.length,
-    metadataList: metadataLocalList,
-  }]
-    .concat(rawTopics.map(topic => {
-      const topicMetadataList = metadataLocalList.filter(x => filterMetadatabyTopicSlug(x, topic.slug));
+  }].concat(rawTopics.map(x => {
       return {
-        ...topic,
-        urlPath: getPackageListPagePath(topic.slug),
-        count: topicMetadataList.length,
-        metadataList: topicMetadataList,
+      ...x,
+      urlPath: getPackageListPagePath(x.slug),
       };
     }));
   // Collect package hunters and owners.
@@ -61,7 +57,6 @@ const createDetailPages = async function (app: any) {
   const { metadataLocalList, metadataGroupByNamespace, topicsWithAll } = PLUGIN_DATA;
   for (const metadataLocal of metadataLocalList) {
     const displayName = getLocalePackageDisplayName(metadataLocal);
-    // const description = getLocalePackageDescription(metadataLocal);
     const frontmatter = {
       layout: "PackageDetailLayout",
       // Hack: use an empty element to show sidebar
@@ -69,21 +64,7 @@ const createDetailPages = async function (app: any) {
       showFooter: false,
       title: displayName ? `📦 ${displayName} - ${metadataLocal.name}` : `📦 ${metadataLocal.name}`,
       metadataLocal: metadataLocal,
-      relatedPackages: metadataGroupByNamespace[getPackageNamespace(metadataLocal.name)]
-        .filter(x => x.name != metadataLocal.name)
-        .map(x => {
-          return {
-            name: x.name,
-            text: x.displayName || x.name,
-          };
-        }),
-      topics: (metadataLocal.topics)
-        .map(x => {
-          const topic = topicsWithAll.find(topic => topic.slug == x);
-          if (topic) return topic;
-          else return null;
-        })
-        .filter(x => x)
+      topics: topicsWithAll.filter(x => x.slug && metadataLocal.topics.includes(x.slug))
     };
     const pageOptions = {
       path: getPackageDetailPagePath(metadataLocal.name),
@@ -104,8 +85,6 @@ const createListPages = async function (app: any) {
   const pages: any[] = [];
   const { topicsWithAll } = PLUGIN_DATA;
   for (const topic of topicsWithAll) {
-    // Skip topic with no packages
-    if (topic.slug && topic.count == 0) continue;
     // Create page
     const frontmatter = {
       layout: "PackageListLayout",
@@ -113,8 +92,7 @@ const createListPages = async function (app: any) {
       sidebar: [{ text: "", children: [] }],
       showFooter: false,
       title: topic.slug ? `Packages - ${topic.name}` : "Packages",
-      topics: topicsWithAll,
-      topic,
+      topicSlug: topic.slug,
     };
     const pageOptions = {
       path: topic.urlPath,
@@ -144,5 +122,12 @@ export default () => ({
       page.frontmatter.owners = owners.slice(0, 100);
     }
   },
+  onPrepared: async (app: any) => {
+    await app.writeTemp('topics.js', `export const topicsWithAll = ${JSON.stringify(PLUGIN_DATA.topicsWithAll)};`);
+    await writePublicGen(app, METADATA_LOCAL_LIST_FILENAME, JSON.stringify(PLUGIN_DATA.metadataLocalList));
+    for (const namespace in PLUGIN_DATA.metadataGroupByNamespace) {
+      await writePublicGen(app, `${namespace}.json`, JSON.stringify(PLUGIN_DATA.metadataGroupByNamespace[namespace]));
+    }
+  }
 });
 

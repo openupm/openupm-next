@@ -3,47 +3,79 @@ import axios from "axios";
 import urljoin from "url-join";
 import { defineStore } from 'pinia'
 
-import { SortType } from "@/constant";
-import { getAPIBaseUrl } from "@shared/urls";
-import { PackageMetadataRemote, SiteInfo } from "@shared/types";
+import { getAPIBaseUrl, getPublicGenPath } from "@shared/urls";
+import { PackageMetadataLocal, PackageMetadataRemote, SiteInfo } from "@shared/types";
 import { parsePackageMetadataRemote } from '@shared/utils';
+import { METADATA_LOCAL_LIST_FILENAME } from '@shared/constant';
 
 export const useDefaultStore = defineStore('pinia-default', {
   persist: __VUEPRESS_SSR__ ? false : true,
   state() {
     return {
-      packageMetadataRemoteList: {} as Record<string, PackageMetadataRemote>,
+      packageMetadataRemoteDict: {} as Record<string, PackageMetadataRemote>,
+      packageMetadataLocalList: [] as PackageMetadataLocal[],
       recentPackages: [] as any[],
       siteInfo: { stars: 0 } as SiteInfo,
-      __packageMetadataRemoteListFetchTime: 0,
+      __packageMetadataRemoteDictFetchTime: 0,
+      __packageMetadataLocalListFetchTime: 0,
       __siteInfoFetchTime: 0,
+    }
+  },
+
+  getters: {
+    isMetadataReady: (state) => {
+      return Object.keys(state.packageMetadataRemoteDict).length > 0 && state.packageMetadataLocalList.length > 0;
     }
   },
 
   actions: {
     /**
-     * Fetch package metadata remote list into the store.
+     * Fetch package metadata remote dict into the store.
      */
-    async fetchPackageMetadataRemoteList() {
+    async fetchPackageMetadataRemoteDict() {
       const apiBaseUrl = getAPIBaseUrl();
       try {
         const resp = await axios.get(
           urljoin(apiBaseUrl, "/packages/extra"),
           { headers: { Accept: "application/json" } }
         );
-        this.__packageMetadataRemoteListFetchTime = new Date().getTime();
-        this.packageMetadataRemoteList = mapValues(resp.data, (value: any) => parsePackageMetadataRemote(value));;
+        this.__packageMetadataRemoteDictFetchTime = new Date().getTime();
+        this.packageMetadataRemoteDict = mapValues(resp.data, (value: any) => parsePackageMetadataRemote(value));;
       } catch (error) {
         console.error(error);
       }
     },
     /**
-     * Fetch package metadata remote list into the store with cache.
+     * Fetch package metadata remote dict into the store with cache.
      */
-    async fetchCachedPackageMetadataRemoteList() {
-      const timeElapsed = new Date().getTime() - (this.__packageMetadataRemoteListFetchTime || 0);
+    async fetchCachedPackageMetadataRemoteDict() {
+      const timeElapsed = new Date().getTime() - (this.__packageMetadataRemoteDictFetchTime || 0);
       const cacheTime = 5 * 60 * 1000;
-      if (timeElapsed > cacheTime) await this.fetchPackageMetadataRemoteList();
+      if (timeElapsed > cacheTime) await this.fetchPackageMetadataRemoteDict();
+    },
+    /**
+     * Fetch package metadata local list into the store.
+    */
+    async fetchPackageMetadataLocalList() {
+      const apiBaseUrl = getAPIBaseUrl();
+      try {
+        const resp = await axios.get(
+          getPublicGenPath(METADATA_LOCAL_LIST_FILENAME),
+          { headers: { Accept: "application/json" } }
+        );
+        this.__packageMetadataLocalListFetchTime = new Date().getTime();
+        this.packageMetadataLocalList = resp.data as PackageMetadataLocal[];
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    /**
+     * Fetch package metadata local list into the store with cache.
+     */
+    async fetchCachedPackageMetadataLocalList() {
+      const timeElapsed = new Date().getTime() - (this.__packageMetadataLocalListFetchTime || 0);
+      const cacheTime = 5 * 60 * 1000;
+      if (timeElapsed > cacheTime) await this.fetchPackageMetadataLocalList();
     },
     /**
      * Fetch recent packages into the store.

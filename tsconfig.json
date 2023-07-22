@@ -26,7 +26,10 @@
       ],
       "@shared/*": [
         "./src/shared/*"
-      ]
+      ],
+      "@temp/*": [
+        "./docs/.vuepress/.temp/*"
+      ],
     }
   },
   "include": [

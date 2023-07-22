@@ -65,37 +65,35 @@ const dependencyList = computed(() => {
 </script>
 
 <template>
-  <div class="subpage-deps">
+  <div v-if="isLoading">
+    <PlaceholderLoader />
+  </div>
+  <div v-else class="subpage-deps">
     <h2>
       {{ $capitalize($t("dependencies")) }}
-      <sup v-if="dependencyList.length">{{ dependencyList.length }}</sup>
+      <sup>{{ dependencyList.length }}</sup>
     </h2>
-    <div v-if="isLoading">
-      <PlaceholderLoader />
-    </div>
-    <div v-else>
-      <table v-if="dependencyList.length" class="table">
-        <thead>
-          <tr>
-            <th class="td-icon"></th>
-            <th class="td-name">{{ $capitalize($t("name-at-version")) }}</th>
-            <th class="td-note">{{ $capitalize($t("note")) }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="entry in dependencyList" :key="entry.name">
-            <td class="td-icon"><i :class="entry.icon"></i></td>
-            <td class="td-name">
-              <AutoLink v-if="entry.link" :item="entry.link" class="dep-text" />
-              <span v-else>{{ entry.nameWithVersion }}</span>
-            </td>
-            <td class="td-note">
-              <div class="inner">{{ entry.helpText }}</div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <table v-if="dependencyList.length" class="table">
+      <thead>
+        <tr>
+          <th class="td-icon"></th>
+          <th class="td-name">{{ $capitalize($t("name-at-version")) }}</th>
+          <th class="td-note">{{ $capitalize($t("note")) }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="entry in dependencyList" :key="entry.name">
+          <td class="td-icon"><i :class="entry.icon"></i></td>
+          <td class="td-name">
+            <AutoLink v-if="entry.link" :item="entry.link" class="dep-text" />
+            <span v-else>{{ entry.nameWithVersion }}</span>
+          </td>
+          <td class="td-note">
+            <div class="inner">{{ entry.helpText }}</div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </template>
 

@@ -46,7 +46,8 @@ export default defineClientConfig({
     const fetchSiteData = () => {
       const store = useDefaultStore();
       store.fetchCachedSiteInfo();
-      store.fetchCachedPackageMetadataRemoteList();
+      store.fetchCachedPackageMetadataRemoteDict();
+      store.fetchCachedPackageMetadataLocalList();
     };
     onMounted(() => fetchSiteData())
     const route = useRoute();

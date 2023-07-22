@@ -18,6 +18,7 @@ import { Topic } from "@shared/types";
 import { getPackageMetadata } from "@shared/utils";
 import { translateFallback } from "@/utils";
 import { getPackageListPagePath, isPackageListPath } from "@shared/urls";
+import { topicsWithAll } from '@temp/topics.js';
 
 const route = useRoute();
 const router = useRouter();
@@ -47,35 +48,34 @@ const sortTypeOptions = computed(() => {
   });
 });
 
-const topic = computed(() => {
-  return frontmatter.value.topic as Topic;
+const topicSlug = computed(() => {
+  return frontmatter.value.topicSlug as string;
 });
 
-const topics = computed(() => {
-  const topics = frontmatter.value.topics as Topic[];
-  return topics
-    .filter((x) => x.count > 0)
-    .map((x) => {
-      const tkey = x.slug || "all";
-      const tvalue = t(tkey);
-      return {
-        link: x.urlPath,
-        text: translateFallback(t, x.slug || "all", x.name),
-        value: x.slug,
-        class: x.slug == topic.value.slug ? "active" : "",
-      };
-    });
-});
-
-const metadataList = computed(() => {
-  // Join extra data
-  const topic = frontmatter.value.topic as Topic;
-  let items = (topic.metadataList || []).map((metadataLocal) => {
-    const metadataRemote = store.packageMetadataRemoteList[metadataLocal.name];
-    return getPackageMetadata(metadataLocal, metadataRemote);
+const topicEntries = computed(() => {
+  return (topicsWithAll as Topic[]).map((x) => {
+    const tkey = x.slug || "all";
+    const tvalue = t(tkey);
+    return {
+      link: x.urlPath,
+      text: translateFallback(t, x.slug || "all", x.name),
+      value: x.slug,
+      class: x.slug === topicSlug.value ? "active" : "",
+    };
   });
-  // Filter packages with versions.
-  items = items.filter((metadata) => metadata.ver);
+});
+
+const metadataEntries = computed(() => {
+  let items = store.packageMetadataLocalList
+    // Filter packages with topicSlug
+    .filter((x) => topicSlug.value === "" || x.topics.includes(topicSlug.value))
+    // Join metadata remote
+    .map((x) => {
+      const metadataRemote = store.packageMetadataRemoteDict[x.name];
+      return getPackageMetadata(x, metadataRemote);
+    })
+    // Filter packages with versions.
+    .filter((x) => x.ver);
   // Sort
   if (sortType.value == SortType.updatedAt)
     items = orderBy(items, ["time"], ["desc"]);
@@ -89,7 +89,7 @@ const metadataList = computed(() => {
 });
 
 const isLoading = computed(() => {
-  return !metadataList.value.length;
+  return !store.isMetadataReady;
 });
 
 const cardWidth = computed(() => {
@@ -133,7 +133,7 @@ const query = computed(() => {
  */
 const updateRouter = () => {
   router.push({
-    path: getPackageListPagePath(topic.value.slug),
+    path: getPackageListPagePath(topicSlug.value),
     query: query.value,
   });
 };
@@ -174,7 +174,7 @@ watch(() => sortType.value, () => {
         <ul class="menu">
           <li class="divider" :data-content="$t('topics')"></li>
           <div class="columns">
-            <div v-for="item in topics" :key="item.value" class="column col-12">
+            <div v-for="item in topicEntries" :key="item.value" class="column col-12">
               <li class="menu-item">
                 <RouterLink :class="['nav-link', item.class]" :to="{ path: item.link, query }" :exact="false">
                   {{ item.text }}
@@ -194,7 +194,10 @@ watch(() => sortType.value, () => {
             </div>
             <div v-else>
               <client-only>
-                <RecycleScroller ref="cardScrollerRef" class="card-scroller" :items="metadataList" key-field="name"
+                <div v-if="!metadataEntries.length">
+                  {{ $t('no-data-available') }}
+                </div>
+                <RecycleScroller ref="cardScrollerRef" class="card-scroller" :items="metadataEntries" key-field="name"
                   :grid-items="cardGridItems" :item-size="cardHeight" :item-secondary-size="cardWidth"
                   @resize="onCardScrollerResize">
                   <template #default="{ item, index }">
@@ -278,8 +281,10 @@ watch(() => sortType.value, () => {
 
 <i18n locale="en-US" lang="yaml">
 sort-by: Sort by
+no-data-available: There are no packages available for this topic.
 </i18n>
 
 <i18n locale="zh-CN" lang="yaml">
 sort-by: 排序
+no-data-available: 此主题下没有可用的包。
 </i18n>
