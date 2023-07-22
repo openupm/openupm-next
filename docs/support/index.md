@@ -32,7 +32,7 @@ We accept donations on the following channels
 
 If you run a business and are using OpenUPM in a revenue-generating product, it makes business sense to sponsor OpenUPM development: **it ensures the project that your product relies on stays healthy and actively maintained.** It can also help your exposure in the OpenUPM community and makes it easier to attract OpenUPM developers.
 
-If you are an individual user and have enjoyed the productivity of using OpenUPM, consider donating as a sign of appreciation - like buying me coffee once in a while :)
+If you are an individual user and have enjoyed the productivity of using OpenUPM, consider donating as a sign of appreciation.
 
 <style lang="scss" scoped>
 .page-support-openupm {
