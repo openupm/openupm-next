@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PropType, computed, reactive } from "vue";
+import { PropType, computed } from "vue";
 
 import AutoLink from '@/components/AutoLink.vue'
 import { generateHueFromStringInRange, timeAgoFormat } from '@/utils';

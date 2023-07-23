@@ -2,7 +2,7 @@
 import VLazyImage from "v-lazy-image";
 
 const DefaultImagePlaceholder =
-  "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8Xw8AAoMBgDTD2qgAAAAASUVORK5CYII=";
+  "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 
 const props = defineProps({
   placeholder: {
@@ -11,10 +11,9 @@ const props = defineProps({
   }
 });
 
-const imageNotFound = (event: Event) => {
-  const target = event.target as HTMLImageElement;
-  target.src = DefaultImagePlaceholder;
-  target.classList.add("v-lazy-image-loaded");
+const imageNotFound = (el: HTMLImageElement) => {
+  el.src = DefaultImagePlaceholder;
+  el.classList.add("v-lazy-image-loaded");
 };
 </script>
 
