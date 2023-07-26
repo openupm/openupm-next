@@ -160,3 +160,23 @@ export const getPackageNamespace = function (packageName: string): string {
     .slice(0, 2)
     .join(".");
 };
+
+/**
+ * Return whether the package requires manual verification.
+ */
+export const isPackageRequiresManualVerification = function (packageName: string): boolean {
+  const name = packageName.toLowerCase();
+  const scopes = [
+    "com.amazonaws.",
+    "com.google.",
+    "com.unity.",
+    "com.microsoft.",
+    "com.apple.",
+    "com.meta.",
+    "com.oculus.",
+    "com.twitter.",
+    "com.x.",
+    "com.facebook.",
+  ];
+  return scopes.some(scope => name.includes(scope));
+}

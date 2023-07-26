@@ -224,6 +224,10 @@ kbd {
     padding: 1rem 1rem;
   }
 
+  a.btn:hover {
+    text-decoration: none;
+  }
+
 }
 
 .page {
@@ -276,6 +280,19 @@ div[class*=language-] {
   }
 }
 
+.has-error {
+  .form-input-hint {
+    color: var(--c-warning-text);
+  }
+
+  .form-input,
+  .form-select,
+  .form-checkbox .form-icon,
+  .form-radio .form-icon {
+    border-color: var(--c-warning);
+  }
+}
+
 // Dark color scheme
 .dark {
   a {
@@ -285,6 +302,10 @@ div[class*=language-] {
   .btn-default {
     background-color: var(--c-bg-dark);
     color: var(--c-text);
+
+    &:hover {
+      background-color: var(--c-bg-light);
+    }
   }
 
   .label-default {
@@ -329,6 +350,46 @@ div[class*=language-] {
   .form-select:not([multiple]):not([size]) {
     background-color: var(--c-bg-dark);
     border-color: var(--c-border);
+  }
+
+  .form-input {
+    background-color: var(--c-bg-dark);
+    border-color: var(--c-border);
+    color: var(--c-text);
+
+    &::placeholder {
+      color: var(--c-text-lightest);
+    }
+  }
+
+  .form-input-hint {
+    color: var(--c-text-lightest);
+  }
+
+  .input-group {
+    .input-group-addon {
+      background-color: var(--c-bg-dark);
+      border-color: var(--c-border);
+      color: var(--c-text);
+    }
+  }
+
+  .form-checkbox .form-icon,
+  .form-radio .form-icon {
+    background-color: var(--c-bg-light);
+  }
+
+  .has-error {
+    .form-input-hint {
+      color: var(--c-warning-text);
+    }
+
+    .form-input,
+    .form-select,
+    .form-checkbox .form-icon,
+    .form-radio .form-icon {
+      border-color: var(--c-warning);
+    }
   }
 }
 

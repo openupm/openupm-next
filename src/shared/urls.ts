@@ -90,6 +90,17 @@ export const getGitHubPackageMetadataUrl = function (packageName: string): strin
 }
 
 /**
+ * Get GitHub raw file url for given github html url.
+ * @param url github html url
+ * @returns GitHub raw file url
+ */
+export const getGitHubRawFileUrl = function (url: string): string {
+  const gitHubBlobRe = /^https?:\/\/github\.com\/.*\/.*\/blob\//i;
+  if (gitHubBlobRe.test(url)) url = url.replace(/\/blob\//, "/raw/");
+  return url;
+}
+
+/**
  * Get Azure DevOps build url for build id.
  * @param buildId Azure DevOps build id
  * @returns Azure DevOps build url
@@ -202,4 +213,8 @@ export const isPackageDetailPath = function (path: string): boolean {
  */
 export const isPackageListPath = function (path: string): boolean {
   return path === '/packages/' || /^\/packages\/topics\/[\w.-]+\/$/.test(path);
+}
+
+export const getUnityRegistryUrl = function (): string {
+  return getRegion() == Region.CN ? "https://packages.unity.cn" : "https://packages.unity.com";
 }

@@ -3,6 +3,6 @@
 export const SortType = {
   name: "name",
   pop: "pop",
-  updatedAt: "updatedAt",
+  updateTime: "time",
   downloads: "downloads",
 };

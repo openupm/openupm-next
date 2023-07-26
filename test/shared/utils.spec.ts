@@ -11,6 +11,7 @@ import {
   parsePackageMetadataRemote,
   filterMetadatabyTopicSlug,
   getPackageNamespace,
+  isPackageRequiresManualVerification,
 } from "@shared/utils";
 
 describe("@shared/utils.ts", function () {
@@ -226,6 +227,20 @@ describe("@shared/utils.ts", function () {
     it("should handle x.y.z.sub", async function () {
       const namespace = getPackageNamespace("com.littlebigfun.addressable-importer.sub");
       namespace.should.equal("com.littlebigfun");
+    });
+  });
+
+  describe('isPackageRequiresManualVerification', () => {
+    it('should return true for package names containing "com.unity."', () => {
+      isPackageRequiresManualVerification('com.unity.package').should.be.true;
+    });
+
+    it('should return false for package names not containing "com.unity."', () => {
+      isPackageRequiresManualVerification('com.example.package').should.be.false;
+    });
+
+    it('should be case-insensitive', () => {
+      isPackageRequiresManualVerification('COM.UNITY.PACKAGE').should.be.true;
     });
   });
 });

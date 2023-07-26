@@ -13,6 +13,7 @@ import Layout from '@/layouts/Layout.vue';
 import WideLayout from '@/layouts/WideLayout.vue';
 import PackageDetailLayout from '@/layouts/PackageDetailLayout.vue';
 import PackageListLayout from '@/layouts/PackageListLayout.vue';
+import PackageAddLayout from '@/layouts/PackageAddLayout.vue';
 
 export default defineClientConfig({
   enhance({ app, router, siteData }) {
@@ -58,5 +59,6 @@ export default defineClientConfig({
     WideLayout,
     PackageDetailLayout,
     PackageListLayout,
+    PackageAddLayout,
   },
 })

@@ -1,14 +1,15 @@
 // Plugin adds dynamic pages for openupm.
 import { groupBy } from 'lodash-es';
 import { createPage } from '@vuepress/core'
+import spdx from 'spdx-license-list';
 
-import { collectPackageHuntersAndOwners, loadPackageNames, loadPackageMetadataLocal, loadTopics } from '@node/local-data';
-import { GithubUserWithScore, PackageMetadataLocal, Topic } from '@shared/types';
+import { collectPackageHuntersAndOwners, loadPackageNames, loadPackageMetadataLocal, loadTopics, loadBlockedScopes } from '@node/local-data';
+import { GithubUserWithScore, License, PackageMetadataLocal, Topic } from '@shared/types';
 import { getPackageNamespace } from '@shared/utils';
 import { getLocalePackageDisplayName } from '@shared/utils';
 import { getPackageDetailPagePath, getPackageListPagePath } from '@shared/urls';
 import { writePublicGen } from '@node/utils/write-public';
-import { METADATA_LOCAL_LIST_FILENAME } from '@shared/constant';
+import { BLOCKED_SCOPES_FILENAME, METADATA_LOCAL_LIST_FILENAME, SDPXLIST_FILENAME } from '@shared/constant';
 
 /**
  * Plugin data.
@@ -27,11 +28,11 @@ const PLUGIN_DATA = await (async () => {
     slug: "",
     urlPath: getPackageListPagePath(),
   }].concat(rawTopics.map(x => {
-      return {
+    return {
       ...x,
       urlPath: getPackageListPagePath(x.slug),
-      };
-    }));
+    };
+  }));
   // Collect package hunters and owners.
   let { hunters, owners } = await collectPackageHuntersAndOwners(metadataLocalList);
   const prepareContributors = (contributors: GithubUserWithScore[]) => {
@@ -45,7 +46,27 @@ const PLUGIN_DATA = await (async () => {
   };
   hunters = prepareContributors(hunters);
   owners = prepareContributors(owners);
-  return { metadataLocalList, metadataGroupByNamespace, topicsWithAll, hunters, owners };
+  // Blocked scopes
+  const blockedScopes = await loadBlockedScopes();
+  // Spdx
+  const sdpxList = Object.keys(spdx)
+    .sort(function (a, b) {
+      return spdx[a].name
+        .toLowerCase()
+        .localeCompare(spdx[b].name.toLowerCase());
+    })
+    .map(function (key) {
+      return { id: key, name: spdx[key].name } as License;
+    });
+  return {
+    blockedScopes,
+    hunters,
+    metadataLocalList,
+    metadataGroupByNamespace,
+    owners,
+    sdpxList,
+    topicsWithAll,
+  };
 })();
 
 /**
@@ -105,15 +126,21 @@ const createListPages = async function (app: any) {
   return pages;
 }
 
+/**
+ * Add pages to vuepress app
+ * @param app vuepress app
+ * @param pages pages to add
+ */
+const addPages = (app: any, pages: any[]) => {
+  for (const page of pages)
+    app.pages.push(page);
+}
+
 export default () => ({
   name: 'vuepress-plugin-openupm',
   async onInitialized(app: any) {
-    const pages = ([] as any[])
-      .concat(await createDetailPages(app))
-      .concat(await createListPages(app));
-    for (const page of pages) {
-      app.pages.push(page);
-    }
+    addPages(app, await createDetailPages(app));
+    addPages(app, await createListPages(app));
   },
   extendsPage: async (page: any) => {
     if (page.path.endsWith('/contributors/')) {
@@ -125,9 +152,10 @@ export default () => ({
   onPrepared: async (app: any) => {
     await app.writeTemp('topics.js', `export const topicsWithAll = ${JSON.stringify(PLUGIN_DATA.topicsWithAll)};`);
     await writePublicGen(app, METADATA_LOCAL_LIST_FILENAME, JSON.stringify(PLUGIN_DATA.metadataLocalList));
+    await writePublicGen(app, BLOCKED_SCOPES_FILENAME, JSON.stringify(PLUGIN_DATA.blockedScopes));
+    await writePublicGen(app, SDPXLIST_FILENAME, JSON.stringify(PLUGIN_DATA.sdpxList));
     for (const namespace in PLUGIN_DATA.metadataGroupByNamespace) {
       await writePublicGen(app, `${namespace}.json`, JSON.stringify(PLUGIN_DATA.metadataGroupByNamespace[namespace]));
     }
   }
 });
-

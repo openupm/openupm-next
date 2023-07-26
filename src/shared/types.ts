@@ -150,3 +150,8 @@ export interface TopicBase {
 export interface Topic extends TopicBase {
   urlPath: string;
 }
+
+export interface License {
+  id: string;
+  name: string;
+}

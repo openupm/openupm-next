@@ -57,7 +57,6 @@ export const useDefaultStore = defineStore('pinia-default', {
      * Fetch package metadata local list into the store.
     */
     async fetchPackageMetadataLocalList() {
-      const apiBaseUrl = getAPIBaseUrl();
       try {
         const resp = await axios.get(
           getPublicGenPath(METADATA_LOCAL_LIST_FILENAME),

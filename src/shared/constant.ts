@@ -79,3 +79,5 @@ export const Region = {
 export const PUBLIC_GEN_DIR = "gen";
 
 export const METADATA_LOCAL_LIST_FILENAME = "metadatalocallist.json";
+export const BLOCKED_SCOPES_FILENAME = "blockedscopes.json";
+export const SDPXLIST_FILENAME = "spdxlist.json";

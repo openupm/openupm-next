@@ -34,7 +34,7 @@ const cardScrollerRef = ref(null);
 const sortTypeList = computed(() => [
   { text: capitalize(t("name")), value: SortType.name },
   { text: capitalize(t("github-stars")), value: SortType.pop },
-  { text: capitalize(t("last-publish")), value: SortType.updatedAt },
+  { text: capitalize(t("last-publish")), value: SortType.updateTime },
   { text: capitalize(t("monthly-downloads")), value: SortType.downloads },
 ]);
 
@@ -77,7 +77,7 @@ const metadataEntries = computed(() => {
     // Filter packages with versions.
     .filter((x) => x.ver);
   // Sort
-  if (sortType.value == SortType.updatedAt)
+  if (sortType.value == SortType.updateTime)
     items = orderBy(items, ["time"], ["desc"]);
   else if (sortType.value == SortType.pop)
     items = orderBy(items, ["stars"], ["desc"]);
