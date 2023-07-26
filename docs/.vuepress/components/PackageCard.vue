@@ -4,7 +4,7 @@ import { PropType, computed } from "vue";
 import AutoLink from '@/components/AutoLink.vue'
 import { generateHueFromStringInRange, timeAgoFormat } from '@/utils';
 import { PackageMetadata } from '@shared/types';
-import { getAvatarImageUrl, getPackageDetailPagePath } from '@shared/urls';
+import { getAvatarImageUrl, getGitHubAvatarUrl, getPackageDetailPagePath } from '@shared/urls';
 import { getLocalePackageDescription, getLocalePackageDisplayName } from "@shared/utils";
 
 const props = defineProps({
@@ -12,16 +12,24 @@ const props = defineProps({
     type: Object as PropType<PackageMetadata>,
     required: true
   },
+  preferRawAvatarUrl: {
+    type: Boolean,
+    default: false
+  }
 });
 
 const ownerAvatarUrl = computed(() => {
   const avatarSize = 48;
+  if (props.preferRawAvatarUrl)
+    return getGitHubAvatarUrl(props.metadata.owner, avatarSize);
   return getAvatarImageUrl(props.metadata.owner, avatarSize);
 });
 
 const parentOwnerAvatarUrl = computed(() => {
   if (!props.metadata.parentOwner) return null;
   const avatarSize = 48;
+  if (props.preferRawAvatarUrl)
+    return getGitHubAvatarUrl(props.metadata.parentOwner, avatarSize);
   return getAvatarImageUrl(props.metadata.parentOwner, avatarSize);
 });
 
@@ -90,7 +98,7 @@ const packageLink = computed(() => {
             </div>
             <div class="card-footer">
               <div class="row1">
-                <span class="chip chip-avatar">
+                <span v-if="metadata.owner" class="chip chip-avatar">
                   <LazyImage :src="ownerAvatarUrl" :alt="metadata.owner" class="avatar avatar-sm" />
                   {{ metadata.owner }}
                 </span>

@@ -101,6 +101,16 @@ export const getGitHubRawFileUrl = function (url: string): string {
 }
 
 /**
+ * Get GitHub avatar image url for github user.
+ * @param username github username
+ * @param size image size in pixels
+ * @returns image url
+ */
+export const getGitHubAvatarUrl = function (username: string, size: number): string {
+  return urljoin("https://github.com/", username + ".png?size=" + size);
+};
+
+/**
  * Get Azure DevOps build url for build id.
  * @param buildId Azure DevOps build id
  * @returns Azure DevOps build url

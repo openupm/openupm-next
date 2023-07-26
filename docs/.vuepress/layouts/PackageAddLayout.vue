@@ -12,6 +12,7 @@ import VueScrollTo from "vue-scrollto";
 
 import ParentLayout from "@/layouts/WideLayout.vue";
 import AutoLink from "@/components/AutoLink.vue";
+import FormField from "@/components/FormField.vue";
 import PackageCard from "@/components/PackageCard.vue";
 import PlaceholderLoader from '@/components/PlaceholderLoader.vue';
 import { useDefaultStore } from '@/store';
@@ -45,6 +46,7 @@ const initState = function () {
       errors: {},
       values: {},
       prompts: {},
+      required: {},
       options: {
         topics: topicsWithAll.slice(1, topicsWithAll.length - 1).map((x: Topic) => ({
           slug: x.slug,
@@ -82,6 +84,7 @@ const resetForm = (form: any, skipFields?: string[]) => {
     }
     form.errors[schemaKey.key] = "";
     form.prompts[schemaKey.key] = "";
+    form.required[schemaKey.key] = schemaKey.schema._flags.presence === "required";
   }
   // Reset form.options
   for (const topic of form.options.topics) topic.value = false;
@@ -108,6 +111,12 @@ const isLoadingLicenses = ref(true);
 
 const existedPackageNames = computed(() => {
   return store.packageMetadataLocalList.map((x) => x.name);
+});
+
+const repoOwner = computed(() => {
+  if (state.repoInfo && state.repoInfo.owner && state.repoInfo.owner.login)
+    return state.repoInfo.owner.login;
+  return "openupm";
 });
 
 const uploadLink = computed(() => {
@@ -486,6 +495,17 @@ const isLoading = computed(() => {
   return isLoadingBlockedScopes.value || isLoadingLicenses.value;
 });
 
+const metadata = computed(() => {
+  return {
+    name: state.packageJsonObj.name || "com.example.package",
+    displayName: state.packageJsonObj.displayName || "Your Package Name",
+    description: state.packageJsonObj.description || state.repoInfo.description || "",
+    image: state.form.values.image || null,
+    stars: state.repoInfo.stargazers_count || 0,
+    owner: repoOwner.value,
+  } as any;
+});
+
 // Hooks
 onMounted(() => {
   // Fetch blocked scopes.
@@ -671,6 +691,8 @@ onMounted(() => {
               <h5 class="form-zone-title">
                 {{ $capitalize($t("promotion")) }}
               </h5>
+              <FormField :form="state.form" field="image" label="Cover image URL" type="text"
+                :hint="t('cover-image-desc')" placeholder="Leave empty to use the default image" />
               <div id="id_topics" class="form-group" :class="{ 'has-error': state.form.errors.topics }">
                 <label class="form-label required">{{ $capitalize($t("topics")) }}</label>
                 <div class="columns">
@@ -688,6 +710,18 @@ onMounted(() => {
             </div>
           </div>
           <div class="column col-6 col-sm-12" :class="{ hide: state.hideMetaFields }">
+            <div class="form-zone">
+              <h5 class="form-zone-title">
+                Preview
+              </h5>
+              <div class="columns package-card-columns">
+                <div class="column col-2"></div>
+                <div class="column col-8">
+                  <PackageCard :metadata="metadata" :prefer-raw-avatar-url="true" />
+                </div>
+                <div class="column col-2"></div>
+              </div>
+            </div>
           </div>
           <div class="column col-6 col-sm-12" :class="{ hide: state.hideMetaFields }">
             <div class="form-group text-right">
@@ -713,34 +747,6 @@ onMounted(() => {
   .page {
     .btn-go {
       width: 3rem;
-    }
-
-    .pkg-img-columns {
-      padding-top: 0.6rem;
-
-      .pkg-img-wrap {
-        position: relative;
-        overflow: hidden;
-        padding-bottom: 100%;
-        border: 2px solid white;
-
-        &.selected {
-          border-color: var(--c-accent);
-        }
-
-        &:hover {
-          cursor: pointer;
-        }
-
-        .pkg-img {
-          position: absolute;
-          max-width: 100%;
-          max-height: 100%;
-          top: 50%;
-          left: 50%;
-          transform: translateX(-50%) translateY(-50%);
-        }
-      }
     }
 
     .theme-default-content {
@@ -774,12 +780,6 @@ onMounted(() => {
       margin-bottom: 0.4rem;
     }
 
-    .timeline {
-      .timeline-item {
-        margin-bottom: 0;
-      }
-    }
-
     .form-zone {
       margin: 0 0 0.8rem 0;
       border: 1px solid #eee;
@@ -791,6 +791,10 @@ onMounted(() => {
         margin-bottom: 0.2rem;
         background-color: var(--c-bg-dark);
       }
+
+      .package-card-columns {
+        margin: 1rem 0 0.4rem 0;
+      }
     }
   }
 }
@@ -798,7 +802,7 @@ onMounted(() => {
 
 <i18n locale="en-US" lang="yaml">
   can-not-locate-the-path-of-pac: Can not locate the path of package.json in the selected branch
-  cover-image: cover image
+  cover-image-desc: The cover image displayed on the listing page. Use the raw image URL if hosted on GitHub.
   discovered-by-placeholder: hunter
   discovered-by: discovered by
   git-tag-ignore-pattern-desc: 'The regular expression to exclude Git tags.'
