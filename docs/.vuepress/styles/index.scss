@@ -386,6 +386,7 @@ div[class*=language-] {
 
     .form-input,
     .form-select,
+    .form-select:not([multiple]):not([size]),
     .form-checkbox .form-icon,
     .form-radio .form-icon {
       border-color: var(--c-warning);
