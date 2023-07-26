@@ -5,15 +5,23 @@ showFooter: false
 
 ## UPM Package Criteria
 
-OpenUPM requires the package fulfills the below criteria:
-- The package name should conform to the [Unity Package Manager naming convention](https://docs.unity3d.com/Manual/cus-naming.html)
-- The package should comply with [Unity Terms](https://unity3d.com/legal/terms-of-service/software) and [Package Guidelines](https://unity.com/legal/terms-of-service/software/package-guidelines).
-- The package should be tested to make sure it works as expected.
-- The `package.json` could be placed at the root path or under a sub-folder.
-- The package should use an open-source license. It's recommended to choose one from the [spdx license list](https://spdx.org/licenses/).
-- The package should be hosted on Github.
-- The package should contain versioned Git tags using [semantic versioning (semver)](https://semver.org/). i.e. `v1.1.0`, `1.1.0`, `1.1.1-preview`, `v2.0.0-preview.1`. It's recommended to either use the [GitHub release](https://help.github.com/en/github/administering-a-repository/creating-releases) page, or the [CI tools](https://medium.com/openupm/how-to-maintain-upm-package-part-2-f352fbf5f87c) to create versioned Git tags.
-- The package size should be less than 512MB.
+OpenUPM requires packages to meet the following criteria:
+
+1. **Package Name:** The package name must follow the [Unity Package Manager naming convention](https://docs.unity3d.com/Manual/cus-naming.html), which uses "reverse domain name notation" with at least three segments, like `com.example.package-name`.
+
+1. **Unity Terms and Package Guidelines:** Packages should comply with [Unity Terms](https://unity3d.com/legal/terms-of-service/software) and [Package Guidelines](https://unity.com/legal/terms-of-service/software/package-guidelines).
+
+1. **Open-Source and GitHub Hosting:** Packages must be open-source and hosted on GitHub. It is recommended to choose a license from the [spdx license list](https://spdx.org/licenses/).
+
+1. **Functionality and Usefulness:** Packages should be functional and useful. Test packages are not accepted due to limited resources. It's advised to import your package via Git URL and test it before submission.
+
+1. **Semantic Versioning:** The package should use [semantic versioning (semver)](https://semver.org/). For example, `1.1.0`, `1.1.1-preview`, `v1.1.2`. You can create Git tags using the [GitHub release](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository#creating-a-release) feature or automate the process using [GitHub actions](https://medium.com/openupm/how-to-maintain-upm-package-part-2-f352fbf5f87c).
+
+1. **Package Size:** The package size should be under 512MB.
+
+1. **Legal Compliance:** The package must conform to local laws and regulations, ensuring that it does not promote hate speech, discrimination, or any harmful content. Additionally, it should not infringe upon intellectual property rights or violate any copyrights, trademarks, or patents.
+
+By adhering to these guidelines, package maintainers can contribute to a thriving ecosystem of Unity packages on OpenUPM, benefiting developers and users alike. Packages that do not meet these criteria will be rejected or removed from the OpenUPM platform.
 
 ## Understanding Different Folder Structures of UPM Repositories
 
