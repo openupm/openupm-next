@@ -468,7 +468,10 @@ const buildRouterLinkQuery = function (subPage: string): any {
   .theme-default-content {
 
     .topic-list {
-      margin-bottom: 0.8rem;
+
+      span.label {
+        margin-bottom: 0.4rem;
+      }
     }
 
     .column-meta {

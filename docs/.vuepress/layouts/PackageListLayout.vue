@@ -223,8 +223,17 @@ watch(() => sortType.value, () => {
     padding-bottom: 0;
 
     >.theme-default-content:not(.custom) {
-      padding-bottom: 0;
-      padding-right: 0;
+      padding: 0;
+    }
+  }
+}
+
+@media (max-width: $MQMobileNarrow) {
+  .package-list {
+    .page {
+      >.theme-default-content:not(.custom) {
+        padding: 0 0.5rem;
+      }
     }
   }
 }
