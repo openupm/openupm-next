@@ -465,6 +465,7 @@ const genYaml = () => {
     parentRepoUrl: repoInfo.parent ? repoInfo.parent.html_url : null,
     licenseSpdxId: form.values.licenseId,
     licenseName: form.values.licenseName,
+    image: form.values.image,
     topics: form.values.topics,
     hunter: form.values.hunter,
     gitTagPrefix: form.values.gitTagPrefix,
