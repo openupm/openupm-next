@@ -30,8 +30,10 @@ const themeConfig: any = mergeWith({
   logo: "/images/openupm-icon-256.png",
   lastUpdated: false,
   contributors: false,
-  // Custom configurations here
-  // ...
+  themePlugins: {
+    git: false,
+    mediumZoom: false,
+  }
 }, regionConfig.themeConfig, mergeCustomizer);
 
 // Merge config with regionConfig.config
