@@ -51,10 +51,11 @@ install-via-package-installer-step-2: >-
   editor window.
 install-via-package-installer-step-3: The installer will remove itself after installation.
 installation: installation
+loading...: loading...
 latest: latest
 learn-more: learn more
 license: license
-license-name: License name
+license-name: license name
 lowest-unity-version: Lowest Unity version
 medium: Medium
 meta-data: Metadata

@@ -155,3 +155,9 @@ export interface License {
   id: string;
   name: string;
 }
+
+export interface FormFieldOption {
+  key: string;
+  text: string;
+  selected?: boolean;
+}

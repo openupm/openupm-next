@@ -11,13 +11,12 @@ import { useI18n } from 'vue-i18n'
 import VueScrollTo from "vue-scrollto";
 
 import ParentLayout from "@/layouts/WideLayout.vue";
-import AutoLink from "@/components/AutoLink.vue";
 import FormField from "@/components/FormField.vue";
 import PackageCard from "@/components/PackageCard.vue";
 import PlaceholderLoader from '@/components/PlaceholderLoader.vue';
 import { useDefaultStore } from '@/store';
-import { License, Topic } from "@shared/types";
-import { getGitHubRawFileUrl, getPublicGenPath, getUnityRegistryUrl } from "@shared/urls";
+import { FormFieldOption, License, Topic } from "@shared/types";
+import { getPublicGenPath, getUnityRegistryUrl } from "@shared/urls";
 import { isPackageBlockedByScope, isPackageRequiresManualVerification, validPackageName } from "@shared/utils";
 import { topicsWithAll } from '@temp/topics.js';
 import { BLOCKED_SCOPES_FILENAME, SDPXLIST_FILENAME } from "@shared/constant";
@@ -45,23 +44,22 @@ const initState = function () {
     form: {
       errors: {},
       values: {},
-      prompts: {},
       required: {},
       options: {
         topics: topicsWithAll.slice(1, topicsWithAll.length - 1).map((x: Topic) => ({
-          slug: x.slug,
-          name: x.name,
-          value: false,
+          key: x.slug,
+          text: x.name,
+          selected: false,
         })),
-      },
+        branch: [],
+        packageJson: [],
+        readme: [],
+      } as { [key: string]: FormFieldOption[] },
     },
     isSubmitting: false,
     hideMetaFields: true,
     repoInfo: {},
-    packageJsonPaths: {},
     packageJsonObj: {} as any,
-    readmePaths: {},
-    branches: [] as string[],
   } as any;
   resetForm(obj.form);
   return obj;
@@ -73,7 +71,7 @@ const initState = function () {
  * @param skipFields fields to skip
  */
 const resetForm = (form: any, skipFields?: string[]) => {
-  // Reset values, errors and prompts.
+  // Reset values, errors.
   // PackageFormSchema.describe() is not available in browser environment, so we have to use $_terms.
   for (const schemaKey of PackageFormSchema.$_terms.keys) {
     if (skipFields && skipFields.includes(schemaKey.key)) continue;
@@ -83,11 +81,10 @@ const resetForm = (form: any, skipFields?: string[]) => {
       form.values[schemaKey.key] = schemaKey.schema._flags.default;
     }
     form.errors[schemaKey.key] = "";
-    form.prompts[schemaKey.key] = "";
     form.required[schemaKey.key] = schemaKey.schema._flags.presence === "required";
   }
   // Reset form.options
-  for (const topic of form.options.topics) topic.value = false;
+  for (const topic of form.options.topics) topic.selected = false;
 };
 
 /**
@@ -166,7 +163,7 @@ const fetchRepoInfo = async () => {
 };
 
 const fetchBranches = async () => {
-  state.branches = [];
+  state.form.options.branch = [];
   try {
     // Clean error message.
     state.form.errors.branch = "";
@@ -181,7 +178,7 @@ const fetchBranches = async () => {
       const branches = resp.data
         .map((x: any) => x.name)
         .filter((x: string) => !x.startsWith("all-contributors/"));
-      for (const item of branches) state.branches.push(item);
+      for (const item of branches) state.form.options.branch.push({ key: item, text: item });
       // parse next url from resp.headers.link, refs https://docs.github.com/en/rest/guides/traversing-with-pagination
       let nextUrl = null;
       if (resp.headers.link) {
@@ -197,10 +194,10 @@ const fetchBranches = async () => {
       else break;
     }
     // Assign the default branch
-    if (state.branches.includes("master")) {
+    if (state.form.options.branch.some((x: any) => x.key == "master")) {
       state.form.values.branch = "master";
       onBranchChange();
-    } else if (state.branches.includes("main")) {
+    } else if (state.form.options.some((x: any) => x.key == "main")) {
       state.form.values.branch = "main";
       onBranchChange();
     }
@@ -211,6 +208,8 @@ const fetchBranches = async () => {
 
 const fetchGitTrees = async () => {
   if (!state.form.values.branch) return;
+  state.form.options.packageJson = [];
+  state.form.options.readme = [];
   try {
     // Clean error message.
     state.form.errors.packageJson = "";
@@ -222,8 +221,6 @@ const fetchGitTrees = async () => {
       "git/trees",
       state.form.values.branch
     );
-    state.form.prompts.packageJson = t("loading-package-json-path");
-    state.form.prompts.readme = t("loading-readme-md-path");
     const resp = await axios.get(url, {
       params: { recursive: 1 },
       headers: { Accept: "application/vnd.github.v3.json" },
@@ -232,10 +229,9 @@ const fetchGitTrees = async () => {
     const paths = resp.data.tree
       .map((x: any) => x.path)
       .filter((x: string) => x.endsWith("package.json"));
-    state.packageJsonPaths = paths;
+    state.form.options.packageJson = paths.map((x: string) => ({ key: x, text: x }));
     state.form.values.packageJson = null;
     if (paths.length == 0) {
-      state.form.prompts.packageJson = "";
       state.form.errors.packageJson = t("can-not-locate-the-path-of-pac");
     } else if (paths.length == 1) {
       state.form.values.packageJson = paths[0];
@@ -250,9 +246,8 @@ const fetchGitTrees = async () => {
     const readmePaths = resp.data.tree
       .map((x: any) => x.path)
       .filter((x: string) => markdownRe.test(x));
-    state.readmePaths = readmePaths;
+    state.form.options.readme = readmePaths.map((x: string) => ({ key: x, text: x }));
     if (readmePaths.length == 0) {
-      state.form.prompts.readme = "";
       state.form.errors.readme = t("no-markdown-file-found-fallbacks");
     } else if (readmePaths.length == 1) {
       state.form.values.readme = readmePaths[0];
@@ -435,10 +430,10 @@ const onAnalyzeRepo = () => {
     state.isSubmitting = true;
     state.hideMetaFields = true;
     state.repoInfo = {};
-    state.packageJsonPaths = {};
+    state.form.options.packageJson = [];
+    state.form.options.readme = [];
+    state.form.options.branch = [];
     state.packageJsonObj = {};
-    state.readmePaths = {};
-    state.branches = [];
     fetchRepoInfo();
     fetchBranches();
   }
@@ -447,8 +442,8 @@ const onAnalyzeRepo = () => {
 const onTopicsChange = () => {
   const form = state.form;
   form.values.topics = form.options.topics
-    .filter((x: any) => x.value)
-    .map((x: any) => x.slug);
+    .filter((x: FormFieldOption) => x.selected)
+    .map((x: FormFieldOption) => x.key);
 };
 
 const onUpload = (event: Event) => {
@@ -483,13 +478,13 @@ const genYaml = () => {
   return yaml.dump(content);
 };
 
-const extraPackageNameWarning = () => {
+const extraPackageNameWarning = computed(() => {
   let pkgName = (state.packageJsonObj.name || "").toLowerCase();
   if (pkgName) {
     if (isPackageRequiresManualVerification(pkgName))
       return t("package-name-manual-verification");
   }
-};
+});
 
 const isLoading = computed(() => {
   return isLoadingBlockedScopes.value || isLoadingLicenses.value;
@@ -528,116 +523,37 @@ onMounted(() => {
         <button class="hide" @click.prevent></button>
         <div class="columns">
           <div class="column col-6 col-sm-12 mb-1">
-            <div id="id_repo" class="form-group pl-0 pr-0" :class="{ 'has-error': state.form.errors.repo }">
-              <label class="form-label required">{{ $capitalize($t("repository")) }}</label>
-              <div class="input-group">
-                <span class="input-group-addon">github.com/</span>
-                <input v-model.trim="state.form.values.repo" class="form-input" type="text"
-                  :placeholder="$t('repository-placeholder')" @change="onRepoChange" @keyup.enter="onAnalyzeRepo" />
+            <FormField class="pl-0 pr-0" :form="state.form" field="repo" :label='capitalize(t("repository"))'
+              input-group-text="github.com/" type="text" :placeholder="$t('repository-placeholder')"
+              @change="onRepoChange" @keyup.enter="onAnalyzeRepo">
+              <template #inputgroupafter>
                 <button class="btn btn-default input-group-btn btn-go" @click.prevent="onAnalyzeRepo">
                   {{ $t("go") }}
                 </button>
-              </div>
-              <div v-if="state.form.errors.repo" class="form-input-hint">
-                {{ state.form.errors.repo }}
-              </div>
-            </div>
+              </template>
+            </FormField>
           </div>
           <div class="column col-6 hide-sm">
           </div>
           <div class="column col-6 col-sm-12" :class="{ hide: state.hideMetaFields }">
             <div class="form-zone">
               <h5 class="form-zone-title">{{ $capitalize($t("basic")) }}</h5>
-              <div id="id_branch" class="form-group" :class="{
-                'has-error': state.form.errors.branch,
-              }">
-                <label class="form-label required">{{ $capitalize($t("branch")) }}</label>
-                <select v-model="state.form.values.branch" class="form-select" @change="onBranchChange">
-                  <option v-if="!state.branches.length" disabled selected value="">
-                    {{ $t("loading-branches") }}
-                  </option>
-                  <option v-for="branch in state.branches" :key="branch" :value="branch">
-                    {{ branch }}
-                  </option>
-                </select>
-                <div v-if="state.form.errors.branch" class="form-input-hint">
-                  {{ state.form.errors.branch }}
-                </div>
-              </div>
-              <div id="id_packageJson" class="form-group" :class="{
-                hide: !state.form.values.branch,
-                'has-error': state.form.errors.packageJson,
-              }">
-                <label class="form-label required">
-                  {{ $t("select-package-json") }}
-                </label>
-                <select v-model="state.form.values.packageJson" class="form-select" @change="onPackageJsonPathChange">
-                  <option v-if="!state.packageJsonPaths.length" disabled selected value="">
-                    {{ state.form.prompts.packageJson }}
-                  </option>
-                  <option v-for="path in state.packageJsonPaths" :key="path" :value="path">
-                    {{ path }}
-                  </option>
-                </select>
-                <div v-if="state.packageJsonObj" class="form-input-hint display-block">
-                  package name: <code>{{ state.packageJsonObj.name }}</code>
-                </div>
-                <div v-if="extraPackageNameWarning" class="form-input-hint">
-                  {{ extraPackageNameWarning() }}
-                </div>
-                <div v-if="state.form.errors.packageJson" class="form-input-hint">
-                  {{ state.form.errors.packageJson }}
-                </div>
-              </div>
-              <div id="id_readme" class="form-group" :class="{
-                hide: !state.form.values.branch,
-                'has-error': state.form.errors.readme,
-              }">
-                <label class="form-label">
-                  {{ $t("select-readme-md") }}
-                </label>
-                <select v-model="state.form.values.readme" class="form-select">
-                  <option v-if="!state.readmePaths.length" disabled selected value="">
-                    {{ state.form.prompts.readme }}
-                  </option>
-                  <option v-for="path in state.readmePaths" :key="path" :value="path">
-                    {{ path }}
-                  </option>
-                </select>
-                <div v-if="state.form.errors.readme" class="form-input-hint">
-                  {{ state.form.errors.readme }}
-                </div>
-              </div>
-              <div id="id_licenseName" class="form-group" :class="{
-                'has-error': state.form.errors.licenseName,
-              }">
-                <label class="form-label required">{{
-                  $t("license-name")
-                }}</label>
-                <input v-model="state.form.values.licenseName" class="form-input" type="text" />
-                <div class="form-input-hint">
-                  {{ $t("license-name-desc") }}
-                </div>
-                <div v-if="state.form.errors.licenseName" class="form-input-hint">
-                  {{ state.form.errors.licenseName }}
-                </div>
-              </div>
-              <div id="id_hunter" class="form-group" :class="{
-                'has-error': state.form.errors.hunter,
-              }">
-                <label class="form-label required">{{ $capitalize($t("discovered-by")) }}</label>
-                <div class="input-group">
-                  <span class="input-group-addon">github.com/</span>
-                  <input v-model="state.form.values.hunter" class="form-input" type="text"
-                    :placeholder="$t('discovered-by-placeholder')" />
-                </div>
-                <div class="form-input-hint">
-                  {{ $t("your-github-username") }}
-                </div>
-                <div v-if="state.form.errors.hunter" class="form-input-hint">
-                  {{ state.form.errors.hunter }}
-                </div>
-              </div>
+              <FormField :form="state.form" field="branch" :label='capitalize(t("branch"))' type="select" />
+              <FormField :form="state.form" field="packageJson" :label='capitalize(t("select-package-json"))'
+                type="select" :class="{ hide: !state.form.values.branch }" @change="onPackageJsonPathChange">
+                <template #hintafter>
+                  <div v-if="extraPackageNameWarning" class="form-input-hint">
+                    {{ extraPackageNameWarning }}
+                  </div>
+                </template>
+              </FormField>
+              <FormField :form="state.form" field="readme" :label='capitalize(t("select-readme-md"))' type="select"
+                :class="{ hide: !state.form.values.branch }" />
+              <FormField :form="state.form" field="licenseName" :label='capitalize(t("license-name"))' type="text"
+                :hint="t('license-name-desc')" />
+              <FormField :form="state.form" field="hunter" :label='capitalize(t("discovered-by"))'
+                :inputGroupText='t("hunter-input-group-text")' type="text" :hint="t('hunter-desc')"
+                :placeholder="$t('hunter-placeholder')" />
             </div>
           </div>
           <div class="column col-6 col-sm-12" :class="{ hide: state.hideMetaFields }">
@@ -645,45 +561,18 @@ onMounted(() => {
               <h5 class="form-zone-title">
                 {{ $t("advanced") }}
               </h5>
-              <div id="id_gitTagPrefix" class="form-group">
-                <label class="form-label">{{
-                  $t("git-tag-prefix")
-                }}</label>
-                <input v-model="state.form.values.gitTagPrefix" class="form-input" type="text"
-                  :placeholder="$t('git-tag-prefix-placeholder')" />
-                <div class="form-input-hint">{{ $t('git-tag-prefix-desc') }}</div>
-                <div v-if="state.form.errors.gitTagPrefix" class="form-input-hint">
-                  {{ state.form.errors.gitTagPrefix }}
-                </div>
-              </div>
-              <div id="id_gitTagIgnore" class="form-group">
-                <label class="form-label">{{
-                  $t("git-tag-ignore-pattern")
-                }}</label>
-                <input v-model="state.form.values.gitTagIgnore" class="form-input" type="text"
-                  :placeholder="$t('git-tag-ignore-pattern-placeholder')" />
-                <div class="form-input-hint">
-                  {{ $t("git-tag-ignore-pattern-desc") }}
-                  <br />
-                  <code v-if="state.form.values.gitTagIgnore">/{{ state.form.values.gitTagIgnore }}/i</code>
-                </div>
-                <div v-if="state.form.errors.gitTagIgnore" class="form-input-hint">
-                  {{ state.form.errors.gitTagIgnore }}
-                </div>
-              </div>
-              <div id="id_minVersion" class="form-group">
-                <label class="form-label">{{
-                  $t("minimal-version-to-build")
-                }}</label>
-                <input v-model="state.form.values.minVersion" class="form-input" type="text" :placeholder="$t('minimal-version-to-build-placeholder')
-                  " />
-                <div class="form-input-hint">
-                  {{ $t("minimal-version-to-build-desc") }}
-                </div>
-                <div v-if="state.form.errors.minVersion" class="form-input-hint">
-                  {{ state.form.errors.minVersion }}
-                </div>
-              </div>
+              <FormField :form="state.form" field="gitTagPrefix" :label='t("git-tag-prefix")' type="text"
+                :hint="t('git-tag-prefix-desc')" :placeholder="$t('git-tag-prefix-placeholder')" />
+              <FormField :form="state.form" field="gitTagIgnore" :label='t("git-tag-ignore")' type="text"
+                :hint="t('git-tag-ignore-desc')" :placeholder="$t('git-tag-ignore-placeholder')">
+                <template #hintafter>
+                  <div v-if="state.form.values.gitTagIgnore" class="form-input-hint">
+                    <code>/{{ state.form.values.gitTagIgnore }}/i</code>
+                  </div>
+                </template>
+              </FormField>
+              <FormField :form="state.form" field="minVersion" :label='t("min-version")' type="text"
+                :hint="t('min-version-desc')" :placeholder="$t('min-version-placeholder')" />
             </div>
           </div>
           <div class="column col-6 col-sm-12" :class="{ hide: state.hideMetaFields }">
@@ -691,22 +580,10 @@ onMounted(() => {
               <h5 class="form-zone-title">
                 {{ $capitalize($t("promotion")) }}
               </h5>
-              <FormField :form="state.form" field="image" label="Cover image URL" type="text"
-                :hint="t('cover-image-desc')" placeholder="Leave empty to use the default image" />
-              <div id="id_topics" class="form-group" :class="{ 'has-error': state.form.errors.topics }">
-                <label class="form-label required">{{ $capitalize($t("topics")) }}</label>
-                <div class="columns">
-                  <div v-for="item in state.form.options.topics" :key="item.slug" class="column col-6">
-                    <label class="form-checkbox">
-                      <input v-model="item.value" type="checkbox" @change="onTopicsChange" /><i class="form-icon"></i>
-                      {{ item.name }}
-                    </label>
-                  </div>
-                  <div v-if="state.form.errors.topics" class="form-input-hint">
-                    {{ state.form.errors.topics }}
-                  </div>
-                </div>
-              </div>
+              <FormField :form="state.form" field="image" :label="t('cover-image')" type="text"
+                :hint="t('cover-image-desc')" :placeholder="t('cover-image-placeholder')" />
+              <FormField :form="state.form" field="topics" :label="capitalize(t('topics'))" type="checkboxes"
+                @change="onTopicsChange" />
             </div>
           </div>
           <div class="column col-6 col-sm-12" :class="{ hide: state.hideMetaFields }">
@@ -782,7 +659,7 @@ onMounted(() => {
 
     .form-zone {
       margin: 0 0 0.8rem 0;
-      border: 1px solid #eee;
+      border: 1px solid var(--c-border);
 
       h5.form-zone-title {
         font-size: $font-size-md;
@@ -802,22 +679,23 @@ onMounted(() => {
 
 <i18n locale="en-US" lang="yaml">
   can-not-locate-the-path-of-pac: Can not locate the path of package.json in the selected branch
+  cover-image: Cover image URL
   cover-image-desc: The cover image displayed on the listing page. Use the raw image URL if hosted on GitHub.
-  discovered-by-placeholder: hunter
+  cover-image-placeholder: Leave empty to use the default image
   discovered-by: discovered by
-  git-tag-ignore-pattern-desc: 'The regular expression to exclude Git tags.'
-  git-tag-ignore-pattern-placeholder: leave empty to include all tags
-  git-tag-ignore-pattern: Git tag ignore pattern
-  git-tag-prefix-placeholder: leave empty to include all tags
+  hunter-desc: Your GitHub username
+  hunter-input-group-text: github.com/
+  hunter-placeholder: hunter
+  git-tag-ignore: Git tag ignore pattern
+  git-tag-ignore-desc: 'The regular expression to exclude Git tags.'
+  git-tag-ignore-placeholder: leave empty to include all tags
   git-tag-prefix: Git tag prefix
   git-tag-prefix-desc: "Filter Git tags for monorepo by using a prefix that separates the semver with a slash, hyphen, or underscore. Example: 'com.example.pkg/'."
+  git-tag-prefix-placeholder: leave empty to include all tags
   license-name-desc: Only open source licenses are permitted.
-  loading-branches: Loading branches...
-  loading-package-json-path: Loading package.json path...
-  loading-readme-md-path: Loading README.md path...
-  minimal-version-to-build-placeholder: leave empty to build all versions
-  minimal-version-to-build: Minimal version to build
-  minimal-version-to-build-desc: "The minimum version to build from. For example: '1.0.2'"
+  min-version: Minimal version to build
+  min-version-desc: "The minimum version to build from. For example: '1.0.2'"
+  min-version-placeholder: leave empty to build all versions
   no-markdown-file-found-fallbacks: No markdown file found, fallbacks to README.md
   package-already-exists-in-unity-registry: The package already exists in Unity registry
   package-json-not-found-error: "File not found: package.json."
@@ -829,5 +707,4 @@ onMounted(() => {
   private-repository-error: "Refuse to publish a private repository (\"private\": true in the package.json)."
   repository-placeholder: owner/project-name
   submit-metadata: submit metadata
-  your-github-username: Your GitHub username
 </i18n>
