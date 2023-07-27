@@ -155,7 +155,9 @@ const fetchRepoInfo = async () => {
   } catch (error) {
     const errorObj = error as Error;
     if (errorObj.message.includes("404"))
-      state.form.errors.repo = "Repository not found";
+      state.form.errors.repo = t("error-404");
+    else if (errorObj.message.includes("403"))
+      state.form.errors.repo = t("error-403");
     else state.form.errors.repo = errorObj.message;
   } finally {
     state.isSubmitting = false;
@@ -202,7 +204,10 @@ const fetchBranches = async () => {
       onBranchChange();
     }
   } catch (error) {
-    state.form.errors.branch = (error as Error).message;
+    const errorObj = error as Error;
+    if (errorObj.message.includes("403"))
+      state.form.errors.branch = t("error-403");
+    else state.form.errors.branch = errorObj.message;
   }
 };
 
@@ -260,7 +265,10 @@ const fetchGitTrees = async () => {
       }
     }
   } catch (error) {
-    state.form.errors.packageJson = (error as Error).message;
+    const errorObj = error as Error;
+    if (errorObj.message.includes("403"))
+      state.form.errors.packageJson = t("error-403");
+    else state.form.errors.packageJson = errorObj.message;
   }
 };
 
@@ -307,6 +315,8 @@ const fetchPackageJson = async () => {
     const errorObj = error as Error;
     if (errorObj.message.includes("404"))
       state.form.errors.packageJson = t("package-json-not-found-error");
+    if (errorObj.message.includes("403"))
+      state.form.errors.packageJson = t("error-403");
     else state.form.errors.packageJson = errorObj.message;
   }
 };
@@ -684,6 +694,8 @@ onMounted(() => {
   cover-image-desc: Set cover image on listing page with 2:1 aspect ratio (600x300px) and use raw image URL if hosted on GitHub.
   cover-image-placeholder: Leave empty to use the default image
   discovered-by: discovered by
+  error-404: Repository not found
+  error-403: GitHub API rate limit reached. Please wait and try again later. Thank you for your patience. Learn more at https://api.github.com/rate_limit.
   hunter-desc: Your GitHub username
   hunter-input-group-text: github.com/
   hunter-placeholder: hunter
