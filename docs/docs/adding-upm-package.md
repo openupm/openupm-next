@@ -7,19 +7,25 @@ showFooter: false
 
 OpenUPM requires packages to meet the following criteria:
 
-1. **Package Name:** The package name must follow the [Unity Package Manager naming convention](https://docs.unity3d.com/Manual/cus-naming.html), which uses "reverse domain name notation" with at least three segments, like `com.example.package-name`.
+1. **Package Name:** The package name must adhere to the [Unity Package Manager naming convention](https://docs.unity3d.com/Manual/cus-naming.html) by using "reverse domain name notation" with at least three segments, like `com.yourname.package-name`. Avoid using a scope that might cause confusion for others. For instance, refrain from using `com.unity.package-name` unless you are affiliated with Unity Technologies. Also, do not use `com.example` as the package name, as it is reserved for internal testing purposes.
 
-1. **Unity Terms and Package Guidelines:** Packages should comply with [Unity Terms](https://unity3d.com/legal/terms-of-service/software) and [Package Guidelines](https://unity.com/legal/terms-of-service/software/package-guidelines).
+2. **Unity Terms and Package Guidelines:** The package should comply with [Unity Terms](https://unity3d.com/legal/terms-of-service/software) and [Package Guidelines](https://unity.com/legal/terms-of-service/software/package-guidelines).
 
-1. **Open-Source and GitHub Hosting:** Packages must be open-source and hosted on GitHub. It is recommended to choose a license from the [spdx license list](https://spdx.org/licenses/).
+3. **Open-Source and GitHub Hosting:** The package must be open-source and hosted on GitHub. It is recommended to choose a license from the [spdx license list](https://spdx.org/licenses/).
 
-1. **Functionality and Usefulness:** Packages should be functional and useful. Test packages are not accepted due to limited resources. It's advised to import your package via Git URL and test it before submission.
+4. **Functionality and Usefulness:** The package should be functional and useful. Test packages are not accepted due to limited resources. It's advised to import your package via Git URL and test it before submission.
 
-1. **Semantic Versioning:** The package should use [semantic versioning (semver)](https://semver.org/). For example, `1.1.0`, `1.1.1-preview`, `v1.1.2`. You can create Git tags using the [GitHub release](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository#creating-a-release) feature or automate the process using [GitHub actions](https://medium.com/openupm/how-to-maintain-upm-package-part-2-f352fbf5f87c).
+5. **Semantic Versioning:** The package should use [semantic versioning (semver)](https://semver.org/). For example, `1.1.0`, `1.1.1-preview`, `v1.1.2`. You can create Git tags using the [GitHub release](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository#creating-a-release) feature or automate the process using [GitHub actions](https://medium.com/openupm/how-to-maintain-upm-package-part-2-f352fbf5f87c).
 
-1. **Package Size:** The package size should be under 512MB.
+6. **Package Size:** The package size should be under 512MB.
 
-1. **Legal Compliance:** The package must conform to local laws and regulations, ensuring that it does not promote hate speech, discrimination, or any harmful content. Additionally, it should not infringe upon intellectual property rights or violate any copyrights, trademarks, or patents.
+7. **Legal Compliance:** The package must conform to local laws and regulations, ensuring that it does not promote hate speech, discrimination, or any harmful content. Additionally, it should not infringe upon intellectual property rights or violate any copyrights, trademarks, or patents.
+
+8. **Forked Repositories:** If submitting a forked package, please make minimal changes to add UPM support (convert the C# project into UPM format by adding necessary files) to avoid confusion. If you plan to modify the original package significantly, change it to your own package name, like `com.yourname.package-name`.
+
+9. **Unity packages:** Please be aware that Unity publishes its own packages on the Unity registry or GitHub. You can only publish a package to OpenUPM if it is not already available on the Unity registry. This ensures that OpenUPM serves as a platform for packages that are not part of Unity's official offerings.
+
+10. **Uplinked NuGet packages:** We strongly encourage you to submit NuGet packages to [UnityNuGet](/nuget/) that have been uplinked by the OpenUPM registry. However, if you have a specific need to publish a NuGet package directly on OpenUPM, please use your own scope, such as `com.yourname.nuget-package-name`.
 
 By adhering to these guidelines, package maintainers can contribute to a thriving ecosystem of Unity packages on OpenUPM, benefiting developers and users alike. Packages that do not meet these criteria will be rejected or removed from the OpenUPM platform.
 
