@@ -681,7 +681,7 @@ onMounted(() => {
 <i18n locale="en-US" lang="yaml">
   can-not-locate-the-path-of-pac: Can not locate the path of package.json in the selected branch
   cover-image: Cover image URL
-  cover-image-desc: The cover image displayed on the listing page. Use the raw image URL if hosted on GitHub.
+  cover-image-desc: Set cover image on listing page with 2:1 aspect ratio (600x300px) and use raw image URL if hosted on GitHub.
   cover-image-placeholder: Leave empty to use the default image
   discovered-by: discovered by
   hunter-desc: Your GitHub username
