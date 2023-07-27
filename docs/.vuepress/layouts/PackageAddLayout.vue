@@ -446,6 +446,9 @@ const onAnalyzeRepo = () => {
     state.packageJsonObj = {};
     fetchRepoInfo();
     fetchBranches();
+    setTimeout(() => {
+      VueScrollTo.scrollTo("#id_form", 500, { offset: -80 });
+    }, 300);
   }
 };
 
@@ -529,7 +532,7 @@ onMounted(() => {
           <PlaceholderLoader />
         </div>
       </div>
-      <form v-else novalidate @submit.prevent>
+      <form id="id_form" v-else novalidate @submit.prevent>
         <!-- A dummy button is needed here to capture any input field that triggers a keyboard "Enter" key pressed event. But why... -->
         <button class="hide" @click.prevent></button>
         <div class="columns">
