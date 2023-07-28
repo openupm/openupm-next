@@ -5,8 +5,8 @@ showFooter: false
 
 OpenUPM is a service for hosting and building open-source UPM (Unity Package Manager) packages. OpenUPM provides a managed UPM registry and automatic build pipelines. The intention is to create a universal platform to discover, share, and distribute open-source UPM packages.
 
-::: warning DISCLAIMER
-OpenUPM is an open-source service, not an official service provided by Unity Technologies Inc.
+::: tip DISCLAIMER
+OpenUPM is an autonomous, open-source service and is not associated with Unity Technologies Inc.
 :::
 
 ## How It Works
