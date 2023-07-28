@@ -89,7 +89,6 @@ const features = computed(() => {
 
 .homepage {
   .hero {
-    padding-top: 0;
     padding-bottom: 0;
 
     .hero-body {
