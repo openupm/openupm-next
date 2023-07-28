@@ -5,13 +5,6 @@ import numeral from 'numeral';
 import { useDefaultStore } from '@/store';
 
 const store = useDefaultStore();
-
-const stars = computed(() => {
-  const value = Number(store.siteInfo.stars);
-  if (isNaN(value) || value == 0) return "...";
-  return numeral(value).format("1.1a");
-});
-
 </script>
 
 <template>
@@ -19,7 +12,7 @@ const stars = computed(() => {
     <div class="nav-item growth">
       <div class="btn-group">
         <a href="https://github.com/openupm/openupm" class="btn btn-default btn-sm">
-          <i class="fab fa-github"></i> Stars <span class="stars">{{ stars }}</span>
+          <i class="fab fa-github"></i> Stars <span class="stars">{{ store.formattedStars }}</span>
         </a>
         <a href="https://www.patreon.com/openupm" class="btn btn-default btn-sm">
           <i class="fab fa-patreon"></i> {{ $capitalize($t("donate")) }}

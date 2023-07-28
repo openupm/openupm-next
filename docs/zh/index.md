@@ -1,21 +1,16 @@
 ---
-ads: true
-layout: Home
-pageClass: homepage
-title:  OpenUPM - Unity开源软件包仓库
+layout: HomeLayout
+editLink: false
+title: Unity开源软件包仓库
 heroText: Unity开源软件包仓库
-actionText: 使用指南
-actionLink: /zh/docs/
 features:
-- title: 开源 UPM 软件包仓库
-  details: 托管超过 ... 个由社区精心筛选的开源软件包。
-- title: 自动化包发布
-  details: 使用 Git 标签跟踪自动化发布过程，保持软件包更新。
+- title: 开源软件包
+  desc: 托管由社区精心挑选的超过 <%= package_count %> 个开源软件包。
+- title: 自动化版本发布
+  desc: 自动跟踪 Git 标签以简化发布流程，确保软件包保持更新。
 - title: 命令行界面
-  details: 可选用 <a href="https://github.com/openupm/openupm-cli">OpenUPM-CLI</a> 工具管理软件包并与第三方 UPM 软件包仓库交互。
-noGlobalSocialShare: true
+  desc: 通过 OpenUPM-CLI 工具赋予命令行爱好者高效的 UPM registry交互能力。
 ---
-
 ### 命令行工具入门（可选的）
 
 ```sh
@@ -32,7 +27,7 @@ $ openupm-cn search addressable-importer
 ┌───────────────────────────────────────┬─────────┬───────────┬────────────┐
 │ Name                                  │ Version │ Author    │ Date       │
 ├───────────────────────────────────────┼─────────┼───────────┼────────────┤
-│ com.littlebigfun.addressable-importer │ 0.4.1   │ Favo Yang │ 2019-11-25 │
+│ com.littlebigfun.addressable-importer │ 1.0.0   │ Favo Yang │ 2019-11-25 │
 │ Unity Addressable Importer            │         │           │            │
 └───────────────────────────────────────┴─────────┴───────────┴────────────┘
 
@@ -42,6 +37,6 @@ added: com.littlebigfun.addressable-importer@0.4.1
 manifest updated, please open unity project to apply changes
 ```
 
-::: warning 免责声明
+::: tip 免责声明
 OpenUPM 是一个独立的开源服务，与 Unity Technologies Inc. 没有关联。
 :::

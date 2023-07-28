@@ -10,12 +10,6 @@ import { useDefaultStore } from '@/store';
 const store = useDefaultStore();
 const { t } = useI18n();
 
-const stars = computed(() => {
-  const value = Number(store.siteInfo.stars);
-  if (isNaN(value) || value == 0) return "...";
-  return numeral(value).format("1.1a");
-});
-
 const packagesLink = computed(() => {
   return {
     link: "/packages/",
@@ -34,7 +28,7 @@ const packagesLink = computed(() => {
           <AutoLink :item="packagesLink" class="btn btn-default btn-sm" />
           <a href="https://github.com/openupm/openupm" class="btn btn-default btn-sm">
             <i class="fab fa-github"></i> Stars
-            <span class="stars">{{ stars }}</span>
+            <span class="stars">{{ store.formattedStars }}</span>
           </a>
           <a href="https://www.patreon.com/openupm" class="btn btn-default btn-sm">
             <i class="fab fa-patreon"></i> {{ $capitalize($t("donate")) }}

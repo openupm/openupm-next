@@ -249,6 +249,11 @@ kbd {
   .page {
     .theme-default-content:not(.custom) {
       margin-top: $theme-default-content-margin-top-mobile;
+
+      div[class*=language-] {
+        margin-left: -1rem;
+        margin-right: -1rem;
+      }
     }
   }
 }

@@ -7,6 +7,7 @@ import { getAPIBaseUrl, getPublicGenPath } from "@shared/urls";
 import { PackageMetadataLocal, PackageMetadataRemote, SiteInfo } from "@shared/types";
 import { parsePackageMetadataRemote } from '@shared/utils';
 import { METADATA_LOCAL_LIST_FILENAME } from '@shared/constant';
+import numeral from 'numeral';
 
 export const useDefaultStore = defineStore('pinia-default', {
   persist: __VUEPRESS_SSR__ ? false : true,
@@ -25,6 +26,21 @@ export const useDefaultStore = defineStore('pinia-default', {
   getters: {
     isMetadataReady: (state) => {
       return Object.keys(state.packageMetadataRemoteDict).length > 0 && state.packageMetadataLocalList.length > 0;
+    },
+    readyPackageCount: (state) => {
+      let num = 0;
+      for (var name in state.packageMetadataRemoteDict) {
+        const metadata = state.packageMetadataRemoteDict[name];
+        if (metadata.ver) {
+          num += 1;
+        }
+      }
+      return num;
+    },
+    formattedStars: (state) => {
+      const value = Number(state.siteInfo.stars);
+      if (isNaN(value) || value == 0) return "...";
+      return numeral(value).format("1.1a");
     }
   },
 

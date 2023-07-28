@@ -228,3 +228,7 @@ export const isPackageListPath = function (path: string): boolean {
 export const getUnityRegistryUrl = function (): string {
   return getRegion() == Region.CN ? "https://packages.unity.cn" : "https://packages.unity.com";
 }
+
+export const getLocaleDocsPath = function (): string {
+  return getRegion() == Region.CN ? "/zh/docs/" : "/docs/";
+}
