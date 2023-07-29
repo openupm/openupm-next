@@ -2,8 +2,9 @@ import { isArray, mergeWith } from "lodash-es";
 import { defaultTheme } from 'vuepress'
 import { getDirname, path } from "@vuepress/utils";
 import { registerComponentsPlugin } from "@vuepress/plugin-register-components";
-import { viteBundler } from '@vuepress/bundler-vite'
-import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite'
+import { searchPlugin } from '@vuepress/plugin-search';
+import { viteBundler } from '@vuepress/bundler-vite';
+import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite';
 import { visualizer } from "rollup-plugin-visualizer";
 
 import OpenupmPlugin from '../../dist/vuepress-plugin-openupm';
@@ -56,6 +57,17 @@ const config: any = mergeWith({
   plugins: [
     registerComponentsPlugin({ componentsDir: path.resolve(__dirname, "./components") }),
     OpenupmPlugin({}),
+    searchPlugin({
+      locales: {
+        '/': {
+          placeholder: 'Search',
+        },
+        '/zh/': {
+          placeholder: '搜索',
+        },
+      },
+      maxSuggestions: 10,
+    }),
   ],
   alias: {
     '@': path.resolve(__dirname),

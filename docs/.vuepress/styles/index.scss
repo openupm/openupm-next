@@ -415,6 +415,9 @@ div[class*=language-] {
   }
 
   .toggle-color-mode-button {
+    top: 0.05rem;
+    position: relative;
+
     svg {
       stroke: $primary-color;
       fill: $primary-color;
@@ -711,10 +714,34 @@ main {
     }
   }
 
+  // TODO: still needed?
   .page-meta {
     .meta-item:first-child {
       margin-top: 0;
     }
+  }
+}
+
+// Search box
+.search-box {
+  margin-left: 0.6rem !important;
+
+  input {
+    font-size: $font-size-md !important;
+    font-weight: bold !important;
+    line-height: 1.8rem !important;
+    height: 1.8rem !important;
+    background-position-y: 0.35rem !important;
+    --search-input-width: 5.7rem;
+
+    &:focus {
+      --search-input-width: 12rem;
+    }
+  }
+
+  .suggestions {
+    font-size: $font-size-sm;
+    --search-result-width: 24rem;
   }
 }
 
