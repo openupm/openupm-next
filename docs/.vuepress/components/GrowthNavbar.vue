@@ -27,6 +27,10 @@ const store = useDefaultStore();
 
 .navbar-items {
   .nav-item {
+    .btn-group {
+      flex-wrap: nowrap;
+    }
+
     &.growth {
       margin-left: 1rem;
       display: inline-block;

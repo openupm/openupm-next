@@ -10,7 +10,7 @@ defineEmits<{ (e: 'toggle-sidebar'): void }>()
 <template>
   <ParentComponent @toggle-sidebar="$emit('toggle-sidebar')">
     <template #before>
-      <div class="navbar-items hide-sm mr-2">
+      <div class="navbar-items can-hide mr-2">
         <div class="nav-item packages-add">
           <a href="/packages/add/" class="nav-link">
             <i class="fas fa-plus-circle"></i>
