@@ -12,7 +12,7 @@ export const config: any = {
     ["script", { src: "/vendors/https-only/https-only.js" }],
     // GA4
     ['script', { async: true, src: 'https://www.googletagmanager.com/gtag/js?id=G-2GQ1LGF9G0' }],
-    ['script', {}, ["window.dataLayer = window.dataLayer || [];\nfunction gtag(){dataLayer.push(arguments);}\ngtag('js', new Date());\ngtag('config', 'G-2GQ1LGF9G0');"]],
+    ['script', {}, "window.dataLayer = window.dataLayer || [];\nfunction gtag(){dataLayer.push(arguments);}\ngtag('js', new Date());\ngtag('config', 'G-2GQ1LGF9G0');"],
   ],
 };
 
