@@ -1,5 +1,4 @@
 ---
-showFooter: false
 ---
 # Terms of Use
 

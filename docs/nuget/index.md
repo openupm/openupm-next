@@ -1,5 +1,4 @@
 ---
-showFooter: false
 pageClass: page-nuget
 ---
 # NuGet Packages

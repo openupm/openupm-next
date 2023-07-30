@@ -1,5 +1,4 @@
 ---
-showFooter: false
 ---
 # Managing UPM Project
 

@@ -1,5 +1,4 @@
 ---
-showFooter: false
 ---
 # 修改UPM软件包
 

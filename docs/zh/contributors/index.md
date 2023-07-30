@@ -1,5 +1,4 @@
 ---
-showFooter: false
 serviceSponsors:
 - text: Digital Ocean
   slug: digital-ocean

@@ -1,5 +1,4 @@
 ---
-showFooter: false
 ---
 # Modifying UPM Package
 

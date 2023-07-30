@@ -1,5 +1,4 @@
 ---
-showFooter: false
 ---
 # 行为准则
 

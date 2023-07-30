@@ -1,5 +1,4 @@
 ---
-showFooter: false
 ---
 
 # Privacy Q&A

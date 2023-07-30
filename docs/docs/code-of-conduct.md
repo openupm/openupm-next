@@ -1,5 +1,4 @@
 ---
-showFooter: false
 ---
 # Code of Conduct
 

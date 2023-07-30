@@ -1,5 +1,6 @@
 ---
 layout: HomeLayout
+showFooter: true
 editLink: false
 title: Open Source Unity Package Registry
 heroText: Open Source Unity Package Registry

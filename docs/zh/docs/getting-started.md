@@ -1,5 +1,4 @@
 ---
-showFooter: false
 ---
 # OpenUPM-CLI快速入门
 

@@ -1,5 +1,4 @@
 ---
-showFooter: false
 ---
 # Opt-out From OpenUPM
 

@@ -1,5 +1,4 @@
 ---
-showFooter: false
 ---
 # 添加UPM软件包
 

@@ -16,7 +16,7 @@ const { t } = useI18n();
 
 const guideLink = computed(() => {
   return {
-    link: getLocaleDocsPath(),
+    link: getLocaleDocsPath("/docs/"),
     text: capitalize(t("guide")),
   };
 });

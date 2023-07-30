@@ -1,5 +1,4 @@
 ---
-showFooter: false
 pageClass: page-support-openupm
 ---
 # 支持OpenUPM

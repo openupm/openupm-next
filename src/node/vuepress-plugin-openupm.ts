@@ -82,7 +82,6 @@ const createDetailPages = async function (app: any) {
       layout: "PackageDetailLayout",
       // Hack: use an empty element to show sidebar
       sidebar: [{ text: "", children: [] }],
-      showFooter: false,
       title: displayName ? `📦 ${displayName} - ${metadataLocal.name}` : `📦 ${metadataLocal.name}`,
       metadataLocal: metadataLocal,
       topics: topicsWithAll.filter(x => x.slug && metadataLocal.topics.includes(x.slug))
@@ -111,7 +110,6 @@ const createListPages = async function (app: any) {
       layout: "PackageListLayout",
       // Hack: use an empty element to show sidebar
       sidebar: [{ text: "", children: [] }],
-      showFooter: false,
       title: topic.slug ? `Packages - ${topic.name}` : "Packages",
       topicSlug: topic.slug,
     };

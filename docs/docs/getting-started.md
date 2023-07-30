@@ -1,5 +1,4 @@
 ---
-showFooter: false
 ---
 # Getting Started with OpenUPM-CLI
 

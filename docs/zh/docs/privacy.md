@@ -1,5 +1,4 @@
 ---
-showFooter: false
 ---
 
 # 隐私政策

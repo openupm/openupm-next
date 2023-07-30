@@ -1,5 +1,4 @@
 ---
-showFooter: false
 ---
 # 声明不参与OpenUPM
 

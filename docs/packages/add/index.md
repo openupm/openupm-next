@@ -1,6 +1,5 @@
 ---
 layout: PackageAddLayout
-showFooter: false
 title: "Package Add"
 editLink: false
 ---

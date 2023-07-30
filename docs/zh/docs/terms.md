@@ -1,5 +1,4 @@
 ---
-showFooter: false
 ---
 # 服务条款
 
