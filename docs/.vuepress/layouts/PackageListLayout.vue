@@ -199,7 +199,7 @@ watch(() => searchTerm.value, () => {
             </div>
           </li>
           <template v-if="searchTerm">
-            <li class="divider" :data-content="$t('search-by')"></li>
+            <li class="divider" :data-content="$t('keywords')"></li>
             <li class="menu-item">
               <span class="chip">
                 <i class="fas fa-search"></i>
@@ -352,12 +352,12 @@ watch(() => searchTerm.value, () => {
 
 <i18n locale="en-US" lang="yaml">
 sort-by: Sort by
-search-by: Search by
+keywords: Keywords
 no-data-available: There are no packages available for this topic.
 </i18n>
 
 <i18n locale="zh-CN" lang="yaml">
 sort-by: 排序
-search-by: 搜索
+keywords: 关键词
 no-data-available: 此主题下没有可用的包。
 </i18n>
