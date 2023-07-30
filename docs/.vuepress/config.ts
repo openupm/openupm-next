@@ -56,18 +56,8 @@ const config: any = mergeWith({
   ],
   plugins: [
     registerComponentsPlugin({ componentsDir: path.resolve(__dirname, "./components") }),
+    searchPlugin({}),
     OpenupmPlugin({}),
-    searchPlugin({
-      locales: {
-        '/': {
-          placeholder: 'Search',
-        },
-        '/zh/': {
-          placeholder: '搜索',
-        },
-      },
-      maxSuggestions: 10,
-    }),
   ],
   alias: {
     '@': path.resolve(__dirname),

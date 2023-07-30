@@ -128,6 +128,7 @@ release-reason-remote-submodule-unavailable: 无法读取submodule代码仓库
 release-reason-service-unavailable: 服务器暂时无响应
 release-reason-unauthorized: 服务器未授权
 release-reason-version-conflict: 该版本已存在（请检查package.json的版本）
+relevance: 相关性
 report-abuse: 举报
 repository: 代码仓库
 services: 服务

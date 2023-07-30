@@ -3,6 +3,7 @@ import ParentComponent from '@vuepress/theme-default/components/Navbar.vue';
 import GrowthNavbar from '../components/GrowthNavbar.vue';
 import GrowthNavbarMobile from '../components/GrowthNavbarMobile.vue';
 import InitialLoading from '../components/InitialLoading.vue';
+import { MySearchBox } from './MySearchBox';
 
 defineEmits<{ (e: 'toggle-sidebar'): void }>()
 </script>
@@ -10,6 +11,7 @@ defineEmits<{ (e: 'toggle-sidebar'): void }>()
 <template>
   <ParentComponent @toggle-sidebar="$emit('toggle-sidebar')">
     <template #before>
+      <MySearchBox />
       <div class="navbar-items can-hide mr-2">
         <div class="nav-item packages-add">
           <a href="/packages/add/" class="nav-link">

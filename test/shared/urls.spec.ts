@@ -4,7 +4,7 @@ const assert = chai.assert;
 chai.should();
 
 import {
-  isPackageDetailPath, isPackageListPath
+  isPackageDetailPath, isPackageListPath, parsePackageNameFromPackageDetailPath
 } from "@shared/urls";
 
 describe("@shared/urls.ts", function () {
@@ -66,4 +66,31 @@ describe("@shared/urls.ts", function () {
       result.should.be.false;
     });
   });
+
+  describe('parsePackageNameFromPackageDetailPath', () => {
+    it('should return the package name from a valid package detail path', () => {
+      const path = '/packages/com.example.mypackage/'
+      const packageName = parsePackageNameFromPackageDetailPath(path);
+      (packageName === null).should.be.false;
+      packageName!.should.equal('com.example.mypackage');
+    })
+
+    it('should return null for an invalid package detail path', () => {
+      const path = '/invalid/path/'
+      const packageName = parsePackageNameFromPackageDetailPath(path);
+      (packageName! === null).should.be.true;
+    })
+
+    it('should return null for a package topic path', () => {
+      const path = '/packages/topics/2d/'
+      const packageName = parsePackageNameFromPackageDetailPath(path);
+      (packageName! === null).should.be.true;
+    })
+
+    it('should return null for a package list path', () => {
+      const path = '/packages/'
+      const packageName = parsePackageNameFromPackageDetailPath(path);
+      (packageName! === null).should.be.true;
+    })
+  })
 });

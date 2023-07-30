@@ -128,6 +128,11 @@ kbd {
     background-color: var(--c-warning);
     color: var(--c-warning-text);
   }
+
+  &.label-default {
+    background-color: var(--c-bg-dark);
+    color: var(--c-text);
+  }
 }
 
 .toast {
@@ -145,6 +150,8 @@ kbd {
   >.fas,
   >.fab {
     margin-right: 0.3rem;
+    position: relative;
+    top: 0.05rem;
   }
 }
 
@@ -152,6 +159,11 @@ kbd {
   a:hover {
     text-decoration: none;
   }
+}
+
+.divider[data-content]::after,
+.divider-vert[data-content]::after {
+  font-size: $font-size-md;
 }
 
 .theme-default-content {
@@ -417,10 +429,15 @@ div[class*=language-] {
   .toggle-color-mode-button {
     top: 0.05rem;
     position: relative;
+    margin-left: 0.7rem;
 
     svg {
       stroke: $primary-color;
       fill: $primary-color;
+    }
+
+    @media (max-width: $MQMobileNarrow) {
+      margin-left: 0;
     }
   }
 
@@ -497,6 +514,8 @@ div[class*=language-] {
 
 // Sidebar + Nanvbar
 .sidebar {
+  font-size: $font-size-md;
+
   .navbar-items {
     a {
       color: inherit;
@@ -724,15 +743,14 @@ main {
 
 // Search box
 .search-box {
-  margin-left: 0.6rem !important;
+  margin-right: 1rem;
 
   input {
     font-size: $font-size-md !important;
-    font-weight: bold !important;
     line-height: 1.8rem !important;
     height: 1.8rem !important;
     background-position-y: 0.35rem !important;
-    --search-input-width: 5.7rem;
+    --search-input-width: 7.5rem;
 
     &:focus {
       --search-input-width: 12rem;
@@ -742,6 +760,10 @@ main {
   .suggestions {
     font-size: $font-size-sm;
     --search-result-width: 24rem;
+  }
+
+  @media (max-width: $MQMobileNarrow) {
+    margin-right: 0rem;
   }
 }
 

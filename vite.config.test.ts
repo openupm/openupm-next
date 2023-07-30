@@ -16,6 +16,7 @@ export default defineConfig({
       '@': path.resolve(__dirname, './docs/.vuepress'),
       '@node': path.resolve(__dirname, './src/node'),
       '@shared': path.resolve(__dirname, './src/shared'),
+      '@node_modules': path.resolve(__dirname, './node_modules'),
     },
   },
   define: {

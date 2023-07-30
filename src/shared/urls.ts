@@ -209,20 +209,29 @@ export const getNodeJsUrl = function (): string {
   return "https://nodejs.org/en/download/";
 }
 
+const packageDetailRe = new RegExp('^/packages/([\\w.-]+)/$', 'i');
+
 /**
  * Test if path is package detail path.
  * @param path url path
  */
 export const isPackageDetailPath = function (path: string): boolean {
-  return /^\/packages\/[\w.-]+\/$/.test(path);
+  return packageDetailRe.test(path);
 }
+
+export const parsePackageNameFromPackageDetailPath = function (path: string): string | null {
+  const match = packageDetailRe.exec(path);
+  return match ? match[1] : null;
+}
+
+const packageListRe = new RegExp('^/packages/topics/[\\w.-]+/$', 'i');
 
 /**
  * Test if path is package list path.
  * @param path url path
  */
 export const isPackageListPath = function (path: string): boolean {
-  return path === '/packages/' || /^\/packages\/topics\/[\w.-]+\/$/.test(path);
+  return path === '/packages/' || packageListRe.test(path);
 }
 
 export const getUnityRegistryUrl = function (): string {

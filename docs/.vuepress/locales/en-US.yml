@@ -106,6 +106,7 @@ release-reason-remote-submodule-unavailable: remote submodule repository unavail
 release-reason-service-unavailable: server unavailable
 release-reason-unauthorized: server unauthorized
 release-reason-version-conflict: the version already exists (check package.json version)
+relevance: Relevance
 report-abuse: Report
 repository: repository
 show-more: Show more

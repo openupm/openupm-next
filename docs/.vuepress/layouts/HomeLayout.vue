@@ -125,6 +125,7 @@ const features = computed(() => {
     }
 
     h3 {
+      font-weight: bold;
       font-size: 0.9rem;
       color: var(--c-brand);
     }

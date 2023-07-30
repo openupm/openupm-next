@@ -43,6 +43,10 @@ export default defineClientConfig({
         xl: 961
       }
     } as any);
+    // hide NavbarSearch component
+    app.component('NavbarSearch', () => {
+      return null
+    })
   },
   setup() {
     const fetchSiteData = () => {
