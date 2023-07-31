@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import GitHubAvatar from '@/components/GitHubAvatar.vue';
-import LazyImage from '@/components/LazyImage.vue';
 
 interface Sponsor {
   text: string;

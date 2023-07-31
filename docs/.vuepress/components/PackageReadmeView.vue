@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
-import PlaceholderLoader from '@/components/PlaceholderLoader.vue';
 
 const { t } = useI18n();
 

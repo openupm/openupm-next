@@ -5,7 +5,6 @@ import numeral from 'numeral';
 import { computed } from 'vue';
 
 import ParentLayout from "@/layouts/WideLayout.vue";
-import AutoLink from "@/components/AutoLink.vue";
 import { useDefaultStore } from '@/store';
 import { usePageFrontmatter } from '@vuepress/client';
 import { OpenUPMGitHubRepoUrl, getLocaleDocsPath } from '@shared/urls';

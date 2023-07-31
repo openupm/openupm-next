@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { PropType, computed } from "vue";
 
-import AutoLink from '@/components/AutoLink.vue'
 import { generateHueFromStringInRange, timeAgoFormat } from '@/utils';
 import { PackageMetadata } from '@shared/types';
 import { getAvatarImageUrl, getGitHubAvatarUrl, getPackageDetailPagePath } from '@shared/urls';

@@ -2,8 +2,6 @@
 import { computed } from 'vue';
 import highlightjs from "highlight.js";
 
-import Modal from "@/components/Modal.vue";
-import CopyWrapper from "@/components/CopyWrapper.vue";
 import { getRegistryBaseUrl } from '@shared/urls';
 
 const props = defineProps({

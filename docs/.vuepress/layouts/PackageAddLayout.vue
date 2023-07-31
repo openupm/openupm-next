@@ -11,9 +11,6 @@ import { useI18n } from 'vue-i18n'
 import VueScrollTo from "vue-scrollto";
 
 import ParentLayout from "@/layouts/WideLayout.vue";
-import FormField from "@/components/FormField.vue";
-import PackageCard from "@/components/PackageCard.vue";
-import PlaceholderLoader from '@/components/PlaceholderLoader.vue';
 import { useDefaultStore } from '@/store';
 import { FormFieldOption, License, Topic } from "@shared/types";
 import { getPublicGenPath, getUnityRegistryUrl } from "@shared/urls";

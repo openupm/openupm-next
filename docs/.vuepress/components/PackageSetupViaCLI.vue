@@ -4,8 +4,6 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import highlightjs from "highlight.js";
 
-import AutoLink from '@/components/AutoLink.vue'
-import Modal from "@/components/Modal.vue";
 import { getRegion } from '@shared/utils';
 import { Region } from '@shared/constant';
 import { getNodeJsUrl, getOpenupmCliRepoUrl } from '@shared/urls';

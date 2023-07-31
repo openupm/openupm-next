@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import AutoLink from "@/components/AutoLink.vue";
-import util from "@root/docs/.vuepress/util";
 import { OpenUPMGitHubRepoUrl, getLocaleDocsPath, getWebBaseUrl, getAPIBaseUrl } from '@shared/urls';
 import { useI18n } from 'vue-i18n';
 import { getRegion } from '@shared/utils';

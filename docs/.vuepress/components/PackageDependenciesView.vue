@@ -2,7 +2,6 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import PlaceholderLoader from '@/components/PlaceholderLoader.vue';
 import { getPackageDetailPagePath } from "@shared/urls";
 import { PackageDependency } from '@shared/types';
 

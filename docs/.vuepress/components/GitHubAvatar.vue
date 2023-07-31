@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { PropType } from 'vue';
 
-import LazyImage from '@/components/LazyImage.vue';
 import { getAvatarImageUrl } from "@shared/urls";
 
 interface Profile {

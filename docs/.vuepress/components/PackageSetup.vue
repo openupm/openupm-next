@@ -2,11 +2,6 @@
 import { PropType, computed } from 'vue';
 import urljoin from "url-join";
 
-import AutoLink from '@/components/AutoLink.vue'
-import CopyWrapper from "@/components/CopyWrapper.vue";
-import PackageSetupViaCLI from "@/components/PackageSetupViaCLI.vue";
-import PackageSetupViaPackageManager from "@/components/PackageSetupViaPackageManager.vue";
-import PlaceholderLoader from '@/components/PlaceholderLoader.vue';
 import { getRegion } from '@shared/utils';
 import { Region } from '@shared/constant';
 import { PackageMetadata } from "@shared/types";

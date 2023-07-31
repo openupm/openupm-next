@@ -4,8 +4,6 @@ import { useI18n } from 'vue-i18n';
 import { paramCase } from "change-case";
 import urljoin from "url-join";
 
-import AutoLink from '@/components/AutoLink.vue'
-import PlaceholderLoader from '@/components/PlaceholderLoader.vue';
 import { ReleaseState, ReleaseReason } from "@shared/constant";
 import { getAzureWebBuildUrl } from '@shared/urls';
 import { PackageRelease } from '@shared/types';

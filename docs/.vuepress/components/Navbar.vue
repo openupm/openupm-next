@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import ParentComponent from '@vuepress/theme-default/components/Navbar.vue';
-import GrowthNavbar from '../components/GrowthNavbar.vue';
-import GrowthNavbarMobile from '../components/GrowthNavbarMobile.vue';
-import InitialLoading from '../components/InitialLoading.vue';
-import { MySearchBox } from './MySearchBox';
+import MySearchBox from '@/components/MySearchBox';
 
 defineEmits<{ (e: 'toggle-sidebar'): void }>()
 </script>

@@ -4,7 +4,6 @@ import { computed } from 'vue';
 import { usePageFrontmatter } from '@vuepress/client';
 
 import ParentLayout from '@vuepress/theme-default/layouts/Layout.vue';
-import Footer from '@/components/Footer.vue';
 
 const frontmatter = usePageFrontmatter();
 

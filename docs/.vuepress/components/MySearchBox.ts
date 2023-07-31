@@ -16,11 +16,7 @@ import {
   SearchSuggestion,
 } from '@node_modules/@vuepress/plugin-search/lib/client/composables'
 
-export type SearchBoxLocales = LocaleConfig<{
-  placeholder: string
-}>
-
-export const MySearchBox = defineComponent({
+export default defineComponent({
   name: 'MySearchBox',
 
   setup(props) {

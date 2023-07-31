@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import PlaceholderLoader from '@/components/PlaceholderLoader.vue';
 import { PackageVersionViewEntry } from "@shared/types";
 
 const props = defineProps({

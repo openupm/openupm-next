@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 
-import AutoLink from '@/components/AutoLink.vue'
-import PlaceholderLoader from '@/components/PlaceholderLoader.vue';
 import { getPackageDetailPagePath } from '@shared/urls';
 import { PackageMetadataLocal } from '@shared/types';
 

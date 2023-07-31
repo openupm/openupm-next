@@ -12,8 +12,6 @@ import { useSearchIndex } from '@node_modules/@vuepress/plugin-search/lib/client
 
 import ParentLayout from "@/layouts/WideLayout.vue";
 import { SortType } from "@/constant";
-import PackageCard from "@/components/PackageCard.vue";
-import PlaceholderLoader from '@/components/PlaceholderLoader.vue';
 import { useDefaultStore } from '@/store';
 import { Topic } from "@shared/types";
 import { getPackageMetadata } from "@shared/utils";

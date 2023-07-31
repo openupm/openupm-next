@@ -4,10 +4,6 @@ import escape from "escape-html";
 import { PropType, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import AutoLink from '@/components/AutoLink.vue'
-import CopyWrapper from "@/components/CopyWrapper.vue";
-import PackageSetup from "@/components/PackageSetup.vue";
-import Sparkline from "@/components/Sparkline.vue";
 import { timeAgoFormat } from '@/utils';
 import { getAvatarImageUrl, getGitHubPackageMetadataUrl, getPackageDetailPageUrl } from '@shared/urls';
 import { DownloadsRange, PackageInfo, PackageMetadata, PackageRegistryInfo } from "@shared/types";
