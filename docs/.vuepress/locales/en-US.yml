@@ -18,10 +18,6 @@ commit: Commit
 connect: Connect
 contact-us: Contact Us
 contributors: contributors
-cookie-consent-dismiss: Got it!
-cookie-consent-message: >-
-  This website uses cookies to ensure you get the best experience on our
-  website.
 dependencies: dependencies
 description-zhcn: Description (Chinese)
 discord: Discord
