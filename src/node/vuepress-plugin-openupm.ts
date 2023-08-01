@@ -6,7 +6,7 @@ import spdx from 'spdx-license-list';
 import { collectPackageHuntersAndOwners, loadPackageNames, loadPackageMetadataLocal, loadTopics, loadBlockedScopes } from '@node/local-data';
 import { GithubUserWithScore, License, PackageMetadataLocal, Topic } from '@shared/types';
 import { getPackageNamespace } from '@shared/utils';
-import { getLocalePackageDisplayName } from '@shared/utils';
+import { getLocalePackageDisplayName, getLocalePackageDescription } from '@shared/utils';
 import { getPackageDetailPagePath, getPackageListPagePath } from '@shared/urls';
 import { writePublicGen } from '@node/utils/write-public';
 import { BLOCKED_SCOPES_FILENAME, METADATA_LOCAL_LIST_FILENAME, SDPXLIST_FILENAME } from '@shared/constant';
@@ -78,11 +78,20 @@ const createDetailPages = async function (app: any) {
   const { metadataLocalList, metadataGroupByNamespace, topicsWithAll } = PLUGIN_DATA;
   for (const metadataLocal of metadataLocalList) {
     const displayName = getLocalePackageDisplayName(metadataLocal);
+    const title = displayName ? `📦 ${displayName} - ${metadataLocal.name}` : `📦 ${metadataLocal.name}`;
+    const description = getLocalePackageDescription(metadataLocal);
+    const cover = metadataLocal.image;
+    const author = metadataLocal.owner;
+    const tags = metadataLocal.topics;
     const frontmatter = {
       layout: "PackageDetailLayout",
       // Hack: use an empty element to show sidebar
       sidebar: [{ text: "", children: [] }],
-      title: displayName ? `📦 ${displayName} - ${metadataLocal.name}` : `📦 ${metadataLocal.name}`,
+      title,
+      description,
+      cover,
+      author,
+      tags,
       metadataLocal: metadataLocal,
       topics: topicsWithAll.filter(x => x.slug && metadataLocal.topics.includes(x.slug))
     };

@@ -2,6 +2,7 @@
 layout: HomeLayout
 editLink: false
 title: Unity开源软件包仓库
+description: OpenUPM是一个托管的开源UPM包管理器，提供了自动化的构建服务。
 heroText: Unity开源软件包仓库
 features:
 - title: 开源软件包

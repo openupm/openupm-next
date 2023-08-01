@@ -1,3 +1,4 @@
+import urlJoin from "url-join";
 import { isArray, mergeWith } from "lodash-es";
 import { defaultTheme } from 'vuepress'
 import { getDirname, path } from "@vuepress/utils";
@@ -6,6 +7,7 @@ import { searchPlugin } from '@vuepress/plugin-search';
 import { viteBundler } from '@vuepress/bundler-vite';
 import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite';
 import { visualizer } from "rollup-plugin-visualizer";
+import { seoPlugin } from "vuepress-plugin-seo2";
 
 import OpenupmPlugin from '../../dist/vuepress-plugin-openupm';
 import { Region } from "../../src/shared/constant";
@@ -60,6 +62,10 @@ const config: any = mergeWith({
     registerComponentsPlugin({ componentsDir: path.resolve(__dirname, "./components") }),
     searchPlugin({}),
     OpenupmPlugin({}),
+    seoPlugin({
+      hostname: themeConfig.domain,
+      fallBackImage: urlJoin(themeConfig.domain, "/images/openupm-twitter.png"),
+    }),
   ],
   alias: {
     '@': path.resolve(__dirname),

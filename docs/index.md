@@ -3,6 +3,7 @@ layout: HomeLayout
 showFooter: true
 editLink: false
 title: Open Source Unity Package Registry
+description: OpenUPM is a managed UPM registry with automatic build services for open-source Unity packages.
 heroText: Open Source Unity Package Registry
 features:
 - title: Open Source Packages
