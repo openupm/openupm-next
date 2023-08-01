@@ -54,6 +54,7 @@ const config: any = mergeWith({
     ["link", { rel: "stylesheet", href: "/vendors/fontawesome-free@5.15.1/css/all.css" }],
     ["link", { rel: "stylesheet", href: "/vendors/cookieconsent@3.1.1/build/cookieconsent.min.css" }],
     ['script', { src: '/vendors/cookieconsent@3.1.1/build/cookieconsent.min.js', async: false }],
+    ['script', { src: '/vendors/chunkload-redirect/chunkload-redirect.js', async: true }],
   ],
   plugins: [
     registerComponentsPlugin({ componentsDir: path.resolve(__dirname, "./components") }),

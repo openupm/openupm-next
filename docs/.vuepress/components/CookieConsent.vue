@@ -8,7 +8,6 @@ const { t } = useI18n();
 
 const initCookieConsent = () => {
   const cookieconsent = (window as any).cookieconsent;
-  console.log(cookieconsent);
   cookieconsent.initialise({
     palette: {
       popup: {
