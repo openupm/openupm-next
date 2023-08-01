@@ -8,6 +8,7 @@ import { viteBundler } from '@vuepress/bundler-vite';
 import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite';
 import { visualizer } from "rollup-plugin-visualizer";
 import { seoPlugin } from "vuepress-plugin-seo2";
+import { sitemapPlugin } from "vuepress-plugin-sitemap2";
 
 import OpenupmPlugin from '../../dist/vuepress-plugin-openupm';
 import { Region } from "../../src/shared/constant";
@@ -65,6 +66,12 @@ const config: any = mergeWith({
     seoPlugin({
       hostname: themeConfig.domain,
       fallBackImage: urlJoin(themeConfig.domain, "/images/openupm-twitter.png"),
+    }),
+    sitemapPlugin({
+      hostname: themeConfig.domain,
+      modifyTimeGetter: (page, app) => {
+        return (new Date()).toISOString();
+      }
     }),
   ],
   alias: {
