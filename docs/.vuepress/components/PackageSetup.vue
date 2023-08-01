@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { PropType, computed } from 'vue';
-import urljoin from "url-join";
+import urlJoin from "url-join";
 
 import { getRegion } from '@shared/utils';
 import { Region } from '@shared/constant';
@@ -41,8 +41,8 @@ const pipelinesLink = computed(() => {
 
 const repoTagsNavLink = computed(() => {
   return {
-    link: urljoin(props.metadata.repoUrl, "tags"),
-    text: urljoin(props.metadata.repoUrl, "tags").replace("https://github.com/", ""),
+    link: urlJoin(props.metadata.repoUrl, "tags"),
+    text: urlJoin(props.metadata.repoUrl, "tags").replace("https://github.com/", ""),
   };
 });
 </script>

@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { paramCase } from "change-case";
-import urljoin from "url-join";
+import urlJoin from "url-join";
 
 import { ReleaseState, ReleaseReason } from "@shared/constant";
 import { getAzureWebBuildUrl } from '@shared/urls';
@@ -46,7 +46,7 @@ const invalidTagEntries = computed(() => {
     return {
       tag: x,
       tagLink: {
-        link: urljoin(props.repoUrl, "releases/tag", x),
+        link: urlJoin(props.repoUrl, "releases/tag", x),
         text: x
       }
     };
@@ -62,7 +62,7 @@ const releaseEntries = computed(() => {
         text: x.buildId
       },
       commitLink: {
-        link: urljoin(props.repoUrl, "commit", x.commit),
+        link: urlJoin(props.repoUrl, "commit", x.commit),
         text: x.commit.substring(0, 7)
       },
       icon: "",

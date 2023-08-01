@@ -1,4 +1,4 @@
-import urljoin from "url-join";
+import urlJoin from "url-join";
 import { PUBLIC_GEN_DIR, Region } from "./constant";
 import { getCachedAvatarImageFilename, getRegion } from "./utils";
 import { getPackageNamespace } from "@shared/utils";
@@ -35,7 +35,7 @@ export const getPackageDetailPagePath = function (packageName: string): string {
  */
 export const getPackageDetailPageUrl = function (packageName: string): string {
   const webBaseUrl = getWebBaseUrl();
-  return urljoin(webBaseUrl, getPackageDetailPagePath(packageName));
+  return urlJoin(webBaseUrl, getPackageDetailPagePath(packageName));
 }
 
 /**
@@ -45,7 +45,7 @@ export const getPackageDetailPageUrl = function (packageName: string): string {
  */
 export const getPackageRelatedPackagesPath = function (packageName: string): string {
   const scope = getPackageNamespace(packageName);
-  return urljoin("/", PUBLIC_GEN_DIR, scope + ".json");
+  return urlJoin("/", PUBLIC_GEN_DIR, scope + ".json");
 }
 
 /**
@@ -54,7 +54,7 @@ export const getPackageRelatedPackagesPath = function (packageName: string): str
  * @returns public gen path
  */
 export const getPublicGenPath = function (path: string): string {
-  return urljoin("/", PUBLIC_GEN_DIR, path);
+  return urlJoin("/", PUBLIC_GEN_DIR, path);
 }
 
 /**
@@ -64,7 +64,7 @@ export const getPublicGenPath = function (path: string): string {
  */
 export const getPublicGenUrl = function (path: string): string {
   const webBaseUrl = getWebBaseUrl();
-  return urljoin(webBaseUrl, getPublicGenPath(path));
+  return urlJoin(webBaseUrl, getPublicGenPath(path));
 }
 
 /**
@@ -86,7 +86,7 @@ export const OpenUPMGitHubRepoUrl = "https://github.com/openupm/openupm";
  * @returns GitHub package metadata url
  */
 export const getGitHubPackageMetadataUrl = function (packageName: string): string {
-  return urljoin(OpenUPMGitHubRepoUrl, "/blob/master/data/packages", packageName + ".yml");
+  return urlJoin(OpenUPMGitHubRepoUrl, "/blob/master/data/packages", packageName + ".yml");
 }
 
 /**
@@ -107,7 +107,7 @@ export const getGitHubRawFileUrl = function (url: string): string {
  * @returns image url
  */
 export const getGitHubAvatarUrl = function (username: string, size: number): string {
-  return urljoin("https://github.com/", username + ".png?size=" + size);
+  return urlJoin("https://github.com/", username + ".png?size=" + size);
 };
 
 /**
@@ -137,7 +137,7 @@ export const getMediaBaseUrl = function (): string {
 export const getPackageImageUrl = function (imageFilename: string): string | null {
   if (!imageFilename) return null;
   const mediaBaseUrl = getMediaBaseUrl();
-  return urljoin(mediaBaseUrl, imageFilename);
+  return urlJoin(mediaBaseUrl, imageFilename);
 };
 
 /**
@@ -149,7 +149,7 @@ export const getPackageImageUrl = function (imageFilename: string): string | nul
 export const getAvatarImageUrl = function (username: string, size: number): string {
   const mediaBaseUrl = getMediaBaseUrl();
   const filename = getCachedAvatarImageFilename(username, size);
-  return urljoin(mediaBaseUrl, filename);
+  return urlJoin(mediaBaseUrl, filename);
 };
 
 /**
@@ -165,7 +165,7 @@ export const getAPIBaseUrl = function (): string {
  * @returns api base url
  */
 export const getPackageInfoUrl = function (name: string): string {
-  return urljoin(getAPIBaseUrl(), "packages", name);
+  return urlJoin(getAPIBaseUrl(), "packages", name);
 }
 
 /**
@@ -182,7 +182,7 @@ export const getRegistryBaseUrl = function (): string {
  * @returns package metadata url
  */
 export const getPackageMetadataUrl = function (name: string): string {
-  return urljoin(getRegistryBaseUrl(), name);
+  return urlJoin(getRegistryBaseUrl(), name);
 }
 
 /**
@@ -190,7 +190,7 @@ export const getPackageMetadataUrl = function (name: string): string {
  * @param name package name
  */
 export const getMonthlyDownloadsUrl = function (name: string): string {
-  return urljoin(getRegistryBaseUrl(), "downloads", "range", "last-month", name);
+  return urlJoin(getRegistryBaseUrl(), "downloads", "range", "last-month", name);
 }
 
 /**
@@ -240,5 +240,5 @@ export const getUnityRegistryUrl = function (): string {
 
 export const getLocaleDocsPath = function (path: string): string {
   const regionPath = getRegion() == Region.CN ? "/zh" : "/";
-  return urljoin(regionPath, path);
+  return urlJoin(regionPath, path);
 }

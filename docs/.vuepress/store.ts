@@ -1,6 +1,6 @@
 import { mapValues } from 'lodash-es';
 import axios from "axios";
-import urljoin from "url-join";
+import urlJoin from "url-join";
 import { defineStore } from 'pinia'
 
 import { getAPIBaseUrl, getPublicGenPath } from "@shared/urls";
@@ -52,7 +52,7 @@ export const useDefaultStore = defineStore('pinia-default', {
       const apiBaseUrl = getAPIBaseUrl();
       try {
         const resp = await axios.get(
-          urljoin(apiBaseUrl, "/packages/extra"),
+          urlJoin(apiBaseUrl, "/packages/extra"),
           { headers: { Accept: "application/json" } }
         );
         this.__packageMetadataRemoteDictFetchTime = new Date().getTime();
@@ -99,7 +99,7 @@ export const useDefaultStore = defineStore('pinia-default', {
       const apiBaseUrl = getAPIBaseUrl();
       try {
         const resp = await axios.get(
-          urljoin(apiBaseUrl, "/packages/recent"),
+          urlJoin(apiBaseUrl, "/packages/recent"),
           { headers: { Accept: "application/json" } }
         );
         this.recentPackages = resp.data;
@@ -114,7 +114,7 @@ export const useDefaultStore = defineStore('pinia-default', {
       const apiBaseUrl = getAPIBaseUrl();
       try {
         const resp = await axios.get(
-          urljoin(apiBaseUrl, "site/info"),
+          urlJoin(apiBaseUrl, "site/info"),
           { headers: { Accept: "application/json" } }
         );
         this.__siteInfoFetchTime = new Date().getTime();

@@ -2,7 +2,7 @@
 import axios from "axios";
 import Joi from "joi";
 import querystring from "query-string";
-import urljoin from "url-join";
+import urlJoin from "url-join";
 import yaml from "js-yaml";
 
 import { capitalize, cloneDeep } from "lodash-es";
@@ -131,7 +131,7 @@ const fetchRepoInfo = async () => {
     resetFormErrors();
     // Fetch.
     const resp = await axios.get(
-      urljoin("https://api.github.com/repos/", state.form.values.repo),
+      urlJoin("https://api.github.com/repos/", state.form.values.repo),
       {
         headers: { Accept: "application/vnd.github.v3.json" },
       }
@@ -167,7 +167,7 @@ const fetchBranches = async () => {
     // Clean error message.
     state.form.errors.branch = "";
     let url =
-      urljoin("https://api.github.com/repos/", state.form.values.repo, "branches") +
+      urlJoin("https://api.github.com/repos/", state.form.values.repo, "branches") +
       "?per_page=100";
     // Traversing with pagination
     while (true) {
@@ -217,7 +217,7 @@ const fetchGitTrees = async () => {
     state.form.errors.packageJson = "";
     state.form.errors.readme = "";
     // Fetch.
-    const url = urljoin(
+    const url = urlJoin(
       "https://api.github.com/repos/",
       state.form.values.repo,
       "git/trees",
@@ -274,7 +274,7 @@ const fetchPackageJson = async () => {
     // Clean error message.
     state.form.errors.packageJson = "";
     // Fetch.
-    let url = urljoin(
+    let url = urlJoin(
       "https://api.github.com/repos/",
       state.form.values.repo,
       "contents",
@@ -350,7 +350,7 @@ const fetchLicenses = async () => {
 
 const verifyPackageExistInUnityRegistry = async (packageName: string) => {
   try {
-    let url = urljoin(getUnityRegistryUrl(), packageName);
+    let url = urlJoin(getUnityRegistryUrl(), packageName);
     let resp = await axios.get(url);
     throw new Error(t("package-already-exists-in-unity-registry"));
   } catch (error) { }
