@@ -216,27 +216,27 @@ const editLink = computed(() => {
         <Sparkline v-bind:data-points="monthlyDownloadsList" class="monthly-downloads-chart"></Sparkline>
       </section>
       <section class="col-6">
-        <div class="metadata-title">{{ $capitalize($t("version")) }}</div>
-        <span>{{ version || "-" }}</span>
-      </section>
-      <section class="col-6">
-        <div class="metadata-title">{{ $capitalize($t("license")) }}</div>
-        <span>{{ metadata.licenseSpdxId || metadata.licenseName || "-" }}</span>
-      </section>
-      <section class="col-6">
-        <div class="metadata-title">{{ $capitalize($t("unity-version")) }}</div>
-        <span>{{ unityVersion || "-" }}</span>
-      </section>
-      <section class="col-6">
         <div class="metadata-title"><i class="fab fa-github"></i> Stars</div>
         <span>
           <i class="fa fa-star"></i>
           {{ metadata.stars }}
         </span>
       </section>
-      <section class="col-12">
+      <section class="col-6">
+        <div class="metadata-title">{{ $capitalize($t("unity-version")) }}</div>
+        <span>{{ unityVersion || "-" }}</span>
+      </section>
+      <section class="col-6">
+        <div class="metadata-title">{{ $capitalize($t("version")) }}</div>
+        <span>{{ version || "-" }}</span>
+      </section>
+      <section class="col-6">
         <div class="metadata-title">{{ $capitalize($t("last-publish")) }}</div>
         <span>{{ publishedAt || "-" }}</span>
+      </section>
+      <section class="col-12">
+        <div class="metadata-title">{{ $capitalize($t("license")) }}</div>
+        <span>{{ metadata.licenseSpdxId || metadata.licenseName || "-" }}</span>
       </section>
       <section class="col-6">
         <div class="metadata-title">{{ $capitalize($t("authors")) }}</div>
