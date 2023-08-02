@@ -69,6 +69,10 @@ const packageLink = computed(() => {
     link: getPackageDetailPagePath(props.metadata.name)
   };
 });
+
+const imageErrorMessage = computed(() => {
+  return `Failed to load image for ${props.metadata.name}: `;
+});
 </script>
 
 <template>
@@ -79,7 +83,8 @@ const packageLink = computed(() => {
           <div class="column column-image col-12">
             <div class="card-image-wrapper">
               <div class="card-image">
-                <LazyImage v-if="metadata.image" :src="metadata.image" class="img-responsive" />
+                <LazyImage v-if="metadata.image" :src="metadata.image" class="img-responsive"
+                  :error-message="imageErrorMessage" />
                 <div v-else class="default-image" :style="defaultImageInlineStyle">
                   <span>{{ packageDisplayName }}</span>
                 </div>

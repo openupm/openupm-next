@@ -8,10 +8,16 @@ const props = defineProps({
   placeholder: {
     type: String,
     default: DefaultImagePlaceholder
+  },
+  errorMessage: {
+    type: String,
+    default: "Image not found: "
   }
 });
 
 const imageNotFound = (el: HTMLImageElement) => {
+  const src = (el.attributes as any).src.value;
+  console.log(props.errorMessage + src);
   el.src = DefaultImagePlaceholder;
   el.classList.add("v-lazy-image-loaded");
 };
