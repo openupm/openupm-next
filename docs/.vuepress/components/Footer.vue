@@ -145,14 +145,14 @@ const regionLinks = computed(() => [
           <div>
             <ul>
               <li class="mb-2">
-                <a href="https://m.do.co/c/50e7f9860fa9">
+                <a href="https://m.do.co/c/50e7f9860fa9" rel="noopener noreferrer" aria-label="Powerred by DigitalOcean">
                   <img
                     src="https://opensource.nyc3.cdn.digitaloceanspaces.com/attribution/assets/PoweredByDO/DO_Powered_by_Badge_white.svg"
-                    width="180px" />
+                    alt="Powerred by DigitalOcean" width="180" />
                 </a>
               </li>
               <li class="mb-2">
-                <a href="https://www.netlify.com">
+                <a href="https://www.netlify.com" rel="noopener noreferrer" aria-label="Deploys by Netlify">
                   <img src="https://www.netlify.com/img/global/badges/netlify-dark.svg" alt="Deploys by Netlify" />
                 </a>
               </li>

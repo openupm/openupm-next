@@ -26,11 +26,11 @@ const packagesLink = computed(() => {
       <div class="column col-12">
         <div class="btn-group">
           <AutoLink :item="packagesLink" class="btn btn-default btn-sm" />
-          <a href="https://github.com/openupm/openupm" class="btn btn-default btn-sm">
+          <a href="https://github.com/openupm/openupm" rel="noopener noreferrer" class="btn btn-default btn-sm">
             <i class="fab fa-github"></i> Stars
             <span class="stars">{{ store.formattedStars }}</span>
           </a>
-          <a href="https://www.patreon.com/openupm" class="btn btn-default btn-sm">
+          <a href="https://www.patreon.com/openupm" rel="noopener noreferrer" class="btn btn-default btn-sm">
             <i class="fab fa-patreon"></i> {{ $capitalize($t("donate")) }}
           </a>
         </div>

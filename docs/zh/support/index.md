@@ -9,10 +9,10 @@ OpenUPM是一项开源服务，完全免费使用。然而托管该服务、维�
 
 <div class="columns columns-grow">
   <div class="column col-6 text-center">
-    <a href="https://github.com/openupm/openupm"><i class="fa fa-star c-star"></i>Github Star</a>
+    <a href="https://github.com/openupm/openupm" rel="noopener noreferrer"><i class="fa fa-star c-star"></i>Github Star</a>
   </div>
   <div class="column col-6 text-center">
-    <a href="https://www.patreon.com/openupm"><i class="fab fa-patreon c-patreon"></i>在Patreon上支持</a>
+    <a href="https://www.patreon.com/openupm" rel="noopener noreferrer"><i class="fab fa-patreon c-patreon"></i>在Patreon上支持</a>
   </div>
   <div class="column col-6 text-center">
     <a href="/packages/add/"><i class="fas fa-plus-circle text-primary"></i>提交新的UPM软件包</a>

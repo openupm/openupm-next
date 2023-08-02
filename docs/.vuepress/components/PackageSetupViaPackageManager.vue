@@ -47,6 +47,13 @@ const manifest = computed(() => {
   return `<pre><code class="hljs json">${highlighted}</code></pre>`;
 });
 
+const upmManifestProjectLink = computed(() => {
+  return {
+    link: "https://docs.unity3d.com/Manual/upm-manifestPrj.html",
+    text: "Packages/manifest.json",
+  };
+})
+
 const modalId = "modal-manualinstallation";
 </script>
 
@@ -92,7 +99,7 @@ const modalId = "modal-manualinstallation";
       <div class="divider text-center" data-content="OR"></div>
       <p>
         Alternatively, merge the snippet to
-        <a href="https://docs.unity3d.com/Manual/upm-manifestPrj.html">Packages/manifest.json</a>
+        <AutoLink :item="upmManifestProjectLink" />
       </p>
       <div class="theme-default-content custom">
         <div class="language-json" v-html="manifest"></div>

@@ -1,7 +1,17 @@
 <script setup lang="ts">
+import { computed } from 'vue';
+
 import ParentComponent from '@vuepress/theme-default/components/Navbar.vue';
 import MySearchBox from '@/components/MySearchBox';
 
+const packageAddLink = computed(() => {
+  return {
+    link: "/packages/add/",
+    text: "",
+    icon: "fas fa-plus-circle",
+    iconLeft: true
+  };
+});
 defineEmits<{ (e: 'toggle-sidebar'): void }>()
 </script>
 
@@ -11,9 +21,7 @@ defineEmits<{ (e: 'toggle-sidebar'): void }>()
       <MySearchBox />
       <div class="navbar-items can-hide mr-2">
         <div class="nav-item packages-add">
-          <a href="/packages/add/" class="nav-link">
-            <i class="fas fa-plus-circle"></i>
-          </a>
+          <AutoLink :item="packageAddLink" class="nav-link" />
         </div>
       </div>
     </template>

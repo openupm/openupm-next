@@ -9,10 +9,10 @@ OpenUPM is an open-source service and completely free to use. However, the amoun
 
 <div class="columns columns-grow">
   <div class="column col-6 text-center">
-    <a href="https://github.com/openupm/openupm"><i class="fa fa-star c-star"></i>Star on Github</a>
+    <a href="https://github.com/openupm/openupm" rel="noopener noreferrer"><i class="fa fa-star c-star"></i>Star on Github</a>
   </div>
   <div class="column col-6 text-center">
-    <a href="https://www.patreon.com/openupm"><i class="fab fa-patreon c-patreon"></i>Donate on Patreon</a>
+    <a href="https://www.patreon.com/openupm" rel="noopener noreferrer"><i class="fab fa-patreon c-patreon"></i>Donate on Patreon</a>
   </div>
   <div class="column col-6 text-center">
     <a href="/packages/add/"><i class="fas fa-plus-circle text-primary"></i>Hunt UPM Packages</a>
