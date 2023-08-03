@@ -424,39 +424,43 @@ const buildRouterLinkQuery = function (subPage: string): any {
 <template>
   <ParentLayout class="package-detail">
     <template #sidebar-top>
-      <section class="subpage-section">
-        <ul class="menu">
-          <div class="columns">
-            <div v-for="item in subPages" :key="item.slug" class="column col-12">
-              <li v-show="item.visible" class="menu-item">
-                <RouterLink :class="item.class" :to="item.link" :exact="false">
-                  {{ item.text }}
-                  <sup v-if="item.count">{{ item.count }}</sup>
-                </RouterLink>
-              </li>
+      <ClientOnly>
+        <section class="subpage-section">
+          <ul class="menu">
+            <div class="columns">
+              <div v-for="item in subPages" :key="item.slug" class="column col-12">
+                <li v-show="item.visible" class="menu-item">
+                  <RouterLink :class="item.class" :to="item.link" :exact="false">
+                    {{ item.text }}
+                    <sup v-if="item.count">{{ item.count }}</sup>
+                  </RouterLink>
+                </li>
+              </div>
             </div>
-          </div>
-        </ul>
-      </section>
+          </ul>
+        </section>
+      </ClientOnly>
     </template>
     <template #page-content-top>
-      <div class="columns columns-contentview">
-        <div class="column col-8 col-xl-8 col-lg-8 col-md-12 col-sm-12">
-          <div v-if="packageMetadata.repoUnavailable" class="custom-container warning">
-            <p class="custom-container-title">{{ $t("repository-is-unavailable-title") }}</p>
-            <p>{{ $t("repository-is-unavailable-desc") }}</p>
+      <ClientOnly>
+        <div class="columns columns-contentview">
+          <div class="column col-8 col-xl-8 col-lg-8 col-md-12 col-sm-12">
+            <div v-if="packageMetadata.repoUnavailable" class="custom-container warning">
+              <p class="custom-container-title">{{ $t("repository-is-unavailable-title") }}</p>
+              <p>{{ $t("repository-is-unavailable-desc") }}</p>
+            </div>
+            <div v-if="topics.length" class="topic-list">
+              <a v-for="item in topics" :key="item.slug" :href="item.urlPath">
+                <span class="label label-default label-rounded mr-1">{{ item.localeName }}</span>
+              </a>
+            </div>
+            <component :is="currentSubPage.component" v-bind="currentSubPage.props" />
           </div>
-          <div v-if="topics.length" class="topic-list">
-            <a v-for="item in topics" :key="item.slug" :href="item.urlPath">
-              <span class="label label-default label-rounded mr-1">{{ item.localeName }}</span>
-            </a>
+          <div class="column column-meta col-4 col-xl-4 col-lg-4 col-md-12 col-sm-12">
+            <PackageMetadataView v-show="shouldShowMetadataSection" v-bind="subPageMetadataProps" />
           </div>
-          <component :is="currentSubPage.component" v-bind="currentSubPage.props" />
         </div>
-        <div class="column column-meta col-4 col-xl-4 col-lg-4 col-md-12 col-sm-12">
-          <PackageMetadataView v-show="shouldShowMetadataSection" v-bind="subPageMetadataProps" />
-        </div>
-      </div>
+      </ClientOnly>
     </template>
   </ParentLayout>
 </template>

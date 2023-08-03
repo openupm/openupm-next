@@ -19,7 +19,9 @@ const showFooter = computed(() => {
     </template>
     <template #page-bottom>
       <Footer v-if="showFooter" />
-      <CookieConsent />
+      <ClientOnly>
+        <CookieConsent />
+      </ClientOnly>
     </template>
   </ParentLayout>
 </template>

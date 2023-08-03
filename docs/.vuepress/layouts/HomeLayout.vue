@@ -65,7 +65,9 @@ const features = computed(() => {
         <div class="columns">
           <div v-for="(feature, index) in features" :key="index" class="feature-item col-4 col-md-12">
             <h3>{{ feature.title }}</h3>
-            <p>{{ feature.desc }}</p>
+            <ClientOnly>
+              <p>{{ feature.desc }}</p>
+            </ClientOnly>
           </div>
         </div>
       </div>

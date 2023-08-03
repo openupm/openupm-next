@@ -188,76 +188,81 @@ watch(() => searchTerm.value, () => {
 <template>
   <ParentLayout class="package-list">
     <template #sidebar-top>
-      <section class="state-section">
-        <ul class="menu">
-          <li class="menu-item">
-            Results
-            <div class="menu-badge">
-              <label class="label label-default">{{ metadataEntries.length }}</label>
-            </div>
-          </li>
-          <template v-if="searchTerm">
-            <li class="divider" :data-content="$t('keywords')"></li>
+      <ClientOnly>
+        <section class="state-section">
+          <ul class="menu">
             <li class="menu-item">
-              <span class="chip">
-                <i class="fas fa-search"></i>
-                <span class="chip-text" :title="searchTerm">{{ searchTerm }}</span>
-                <a class="btn btn-clear" href="#" aria-label="Close" role="button" @click="onSearchTermClose"></a>
-              </span>
+              Results
+              <div class="menu-badge">
+                <label class="label label-default">{{ metadataEntries.length }}</label>
+              </div>
             </li>
-          </template>
-          <li class="divider" :data-content="$t('sort-by')"></li>
-          <li class="menu-item">
-            <div class="form-group">
-              <select v-model="sortType" class="form-select">
-                <option v-for="option in sortTypeOptions" :key="option.value" :value="option.value">{{ option.text }}
-                </option>
-              </select>
-            </div>
-          </li>
-        </ul>
-      </section>
-      <section class="topic-section">
-        <ul class="menu">
-          <li class="divider" :data-content="$t('topics')"></li>
-          <div class="columns">
-            <div v-for="item in topicEntries" :key="item.value" class="column col-12">
+            <template v-if="searchTerm">
+              <li class="divider" :data-content="$t('keywords')"></li>
               <li class="menu-item">
-                <RouterLink :class="['nav-link', item.class]" :to="{ path: item.link, query }" :exact="false">
-                  {{ item.text }}
-                </RouterLink>
+                <span class="chip">
+                  <i class="fas fa-search"></i>
+                  <span class="chip-text" :title="searchTerm">{{ searchTerm }}</span>
+                  <a class="btn btn-clear" href="#" aria-label="Close" role="button" @click="onSearchTermClose"></a>
+                </span>
               </li>
+            </template>
+            <li class="divider" :data-content="$t('sort-by')"></li>
+            <li class="menu-item">
+              <div class="form-group">
+                <select v-model="sortType" class="form-select">
+                  <option v-for="option in sortTypeOptions" :key="option.value" :value="option.value">{{ option.text }}
+                  </option>
+                </select>
+              </div>
+            </li>
+          </ul>
+        </section>
+        <section class="topic-section">
+          <ul class="menu">
+            <li class="divider" :data-content="$t('topics')"></li>
+            <div class="columns">
+              <div v-for="item in topicEntries" :key="item.value" class="column col-12">
+                <li class="menu-item">
+                  <RouterLink :class="['nav-link', item.class]" :to="{ path: item.link, query }" :exact="false">
+                    {{ item.text }}
+                  </RouterLink>
+                </li>
+              </div>
             </div>
-          </div>
-        </ul>
-      </section>
+          </ul>
+        </section>
+      </ClientOnly>
+
     </template>
     <template #page-content-top>
-      <div class="columns">
-        <div class="column col-12">
-          <section class="package-section">
-            <div v-if="isLoading" class="placeholder-loader-wrapper">
-              <PlaceholderLoader />
-            </div>
-            <div v-else>
-              <client-only>
-                <div v-if="!metadataEntries.length">
-                  {{ $t('no-data-available') }}
-                </div>
-                <RecycleScroller ref="cardScrollerRef" class="card-scroller" :items="metadataEntries" key-field="name"
-                  :grid-items="cardGridItems" :item-size="cardHeight" :item-secondary-size="cardWidth"
-                  @resize="onCardScrollerResize">
-                  <template #default="{ item, index }">
-                    <div class="mr-1">
-                      <PackageCard :metadata="item" />
-                    </div>
-                  </template>
-                </RecycleScroller>
-              </client-only>
-            </div>
-          </section>
+      <ClientOnly>
+        <div class="columns">
+          <div class="column col-12">
+            <section class="package-section">
+              <div v-if="isLoading" class="placeholder-loader-wrapper">
+                <PlaceholderLoader />
+              </div>
+              <div v-else>
+                <client-only>
+                  <div v-if="!metadataEntries.length">
+                    {{ $t('no-data-available') }}
+                  </div>
+                  <RecycleScroller ref="cardScrollerRef" class="card-scroller" :items="metadataEntries" key-field="name"
+                    :grid-items="cardGridItems" :item-size="cardHeight" :item-secondary-size="cardWidth"
+                    @resize="onCardScrollerResize">
+                    <template #default="{ item, index }">
+                      <div class="mr-1">
+                        <PackageCard :metadata="item" />
+                      </div>
+                    </template>
+                  </RecycleScroller>
+                </client-only>
+              </div>
+            </section>
+          </div>
         </div>
-      </div>
+      </ClientOnly>
     </template>
   </ParentLayout>
 </template>
