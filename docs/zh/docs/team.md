@@ -16,7 +16,7 @@ OpenUPM的开发和维护者：
     <ul>
       <li><i class="fa fa-code"></i> 创建者 @OpenUPM</li>
       <li><i class="fa fa-home"></i> <a href="https://littlebigfun.com" rel="noopener noreferrer">littlebigfun.com</a></li>
-      <li><i class="fab fa-patreon"></i> <a href="https://patreon.com/openupm rel="noopener noreferrer"">patreon.com/openupm</a></li>
+      <li><i class="fab fa-patreon"></i> <a href="https://patreon.com/openupm" rel="noopener noreferrer">patreon.com/openupm</a></li>
       <li><i class="fab fa-github"></i> <a href="https://github.com/favoyang" rel="noopener noreferrer">github.com/favoyang</a></li>
       <li><i class="fab fa-twitter"></i> <a href="https://twitter.com/favo" rel="noopener noreferrer">twitter.com/favo</a></li>
     </ul>
