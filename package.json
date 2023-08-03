@@ -10,6 +10,7 @@
     "precompile:dev": "npm run precompile -- --watch",
     "docs:dev": "concurrently -k -n precompile:dev,docs:dev \"npm run precompile:dev\" \"vuepress dev docs\"",
     "docs:build": "npm run precompile && NODE_OPTIONS='--experimental-modules --es-module-specifier-resolution=node --max-old-space-size=14000' vuepress build docs",
+    "docs:build:limit": "npm run precompile && PACKAGE_LIMIT=5 NODE_OPTIONS='--experimental-modules --es-module-specifier-resolution=node --max-old-space-size=14000' vuepress build docs",
     "docs:serve": "ws -d ./docs/.vuepress/dist --cors.origin '*'",
     "test:dev": "cross-env NODE_ENV=test vitest --config vite.config.test.ts",
     "test": "cross-env NODE_ENV=test vitest run --config vite.config.test.ts"
