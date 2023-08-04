@@ -1,6 +1,7 @@
 import { ValidationError } from "./custom-errors";
 import { PackageMetadataLocal, PackageMetadataRemote, PackageMetadata } from "./types";
 import { Region } from "./constant";
+import { getPackageImageUrl } from "./urls";
 
 /**
  * Get environment variable value.
@@ -113,6 +114,9 @@ export const parsePackageMetadataRemote = function (obj: any): PackageMetadataRe
  */
 export const getPackageMetadata = function (metadataLocal: PackageMetadataLocal, metadataRemote: PackageMetadataRemote): PackageMetadata {
   const result = { ...metadataLocal, ...metadataRemote };
+  // Override image field from image filename of metadata remote
+  if (result.imageFilename)
+    result.image = getPackageImageUrl(result.imageFilename)
   return result as PackageMetadata;
 }
 
