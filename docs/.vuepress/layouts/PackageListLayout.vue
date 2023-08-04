@@ -104,6 +104,16 @@ const isLoading = computed(() => {
   return !store.isMetadataReady;
 });
 
+const noDataAvailableText = computed(() => {
+  if (searchTerm.value) {
+    if (topicSlug.value)
+      return t("no-search-results-for-topic", { searchTerm: searchTerm.value });
+    else
+      return t("no-search-results", { searchTerm: searchTerm.value });
+  }
+  return t("no-data-available");
+});
+
 const cardWidth = computed(() => {
   if (mq.sm || mq.xs) return window.innerWidth - 6;
   return 300;
@@ -246,7 +256,7 @@ watch(() => searchTerm.value, () => {
               <div v-else>
                 <client-only>
                   <div v-if="!metadataEntries.length">
-                    {{ $t('no-data-available') }}
+                    {{ noDataAvailableText }}
                   </div>
                   <RecycleScroller ref="cardScrollerRef" class="card-scroller" :items="metadataEntries" key-field="name"
                     :grid-items="cardGridItems" :item-size="cardHeight" :item-secondary-size="cardWidth"
@@ -356,11 +366,15 @@ watch(() => searchTerm.value, () => {
 <i18n locale="en-US" lang="yaml">
 sort-by: Sort by
 keywords: Keywords
-no-data-available: There are no packages available for this topic.
+no-data-available: No packages available for this topic.
+no-search-results: No search results for "{ searchTerm }".
+no-search-results-for-topic: No search results for "{ searchTerm }" in this topic.
 </i18n>
 
 <i18n locale="zh-CN" lang="yaml">
 sort-by: 排序
 keywords: 关键词
 no-data-available: 此主题下没有可用的包。
+no-search-results: 没有与 "{ searchTerm }" 相关的搜索结果。
+no-search-results-for-topic: 此主题下没有与 "{ searchTerm }" 相关的搜索结果。
 </i18n>
