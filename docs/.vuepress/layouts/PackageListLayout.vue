@@ -6,14 +6,15 @@ import { useI18n } from 'vue-i18n'
 import { useMq } from "vue3-mq";
 import { usePageFrontmatter } from "@vuepress/client";
 import { useElementBounding } from '@vueuse/core';
-import { RecycleScroller } from 'vue-virtual-scroller';
-import '@node_modules/vue-virtual-scroller/dist/vue-virtual-scroller.css';
+import Grid from 'vue-virtual-scroll-grid';
+import { PageProvider } from 'vue-virtual-scroll-grid/pipeline';
+
 import { useSearchIndex } from '@node_modules/@vuepress/plugin-search/lib/client/composables'
 
 import ParentLayout from "@/layouts/WideLayout.vue";
 import { SortType } from "@/constant";
 import { useDefaultStore } from '@/store';
-import { Topic } from "@shared/types";
+import { PackageMetadata, Topic } from "@shared/types";
 import { getPackageMetadata } from "@shared/utils";
 import { translateFallback } from "@/utils";
 import { getPackageListPagePath, isPackageListPath } from "@shared/urls";
@@ -114,23 +115,54 @@ const noDataAvailableText = computed(() => {
   return t("no-data-available");
 });
 
-const cardWidth = computed(() => {
-  if (mq.sm || mq.xs) return window.innerWidth - 6;
-  return 300;
+/* #region Grid layout */
+// Dummy grid page size is fixed to 40, since everything is already loaded in meatadataEntries.
+const gridPageSize = ref(40);
+
+// Grid page provider for virtual scroll grid that returns a slice of metadataEntries.
+const gridPageProvider = computed(() => {
+  // Keep a local reference of metadataEntries to ensure reactivity. Vue's dependency tracking system
+  // cannot detect reactive variables inside a function that is returned from a computed property. This
+  // is because the function is not executed until it is called, so Vue has no way of knowing which
+  // reactive variables it depends on.
+  const _metadataEntries = metadataEntries.value;
+  const provider: PageProvider = async (pageNumber: number, pageSize: number) => {
+    const start = pageNumber * pageSize;
+    const end = start + pageSize;
+    return _metadataEntries.slice(start, end);
+  };
+  return provider;
 });
 
-const cardHeight = computed(() => {
-  if (mq.xs) return 360;
-  if (mq.sm) return 400;
-  return 300;
-});
+// Grid item key for virtual scroll grid.
+const getGridKey = (item: any) => {
+  if (item.value) return item.value.name;
+  return item.index;
+};
 
-const onCardScrollerResize = function () {
-  // We use this to get the width of the scrolling container:
-  const { width } = useElementBounding(cardScrollerRef);
-  // Calculate the maximum media posters we can fit in a row based on the scroller width:
-  cardGridItems.value = clamp(Math.floor(width.value / cardWidth.value), 1, 6);
-}
+// Probe metadata for virtual scroll grid to estimate the size of grid item.
+const probeMetadata = computed(() => {
+  return {
+    name: "com.example.probe",
+    displayName: "probe",
+    description: "The probe slot is used to measure the visual size of grid item. It has no prop. You can pass the same element/component for the placeholder slot. If not provided, you must set a fixed height to grid-template-rows on your CSS grid, e.g. 200px. If provided, make sure it is styled with the same dimensions as rendered items in the default or placeholder slot. Otherwise, the view wouldn't be rendered properly, or the rendering could be very slow.",
+    licenseSpdxId: "mit",
+    licenseName: "MIT License",
+    image: null,
+    imageFilename: null,
+    topics: [],
+    hunter: "openupm",
+    repo: "favoyang/com.example.probe",
+    owner: "favoyang",
+    ver: "0.0.0",
+    time: (new Date()).getTime(),
+    stars: 1000,
+    pstars: 0,
+    unity: "2019.4",
+    dl30d: 1000,
+  } as any as PackageMetadata;
+});
+/* #endregion */
 
 const onSearchTermClose = () => {
   searchTerm.value = "";
@@ -243,7 +275,6 @@ watch(() => searchTerm.value, () => {
           </ul>
         </section>
       </ClientOnly>
-
     </template>
     <template #page-content-top>
       <ClientOnly>
@@ -258,15 +289,22 @@ watch(() => searchTerm.value, () => {
                   <div v-if="!metadataEntries.length">
                     {{ noDataAvailableText }}
                   </div>
-                  <RecycleScroller ref="cardScrollerRef" class="card-scroller" :items="metadataEntries" key-field="name"
-                    :grid-items="cardGridItems" :item-size="cardHeight" :item-secondary-size="cardWidth"
-                    @resize="onCardScrollerResize">
-                    <template #default="{ item, index }">
-                      <div class="mr-1">
-                        <PackageCard :metadata="item" />
-                      </div>
-                    </template>
-                  </RecycleScroller>
+                  <div v-else class="grid-wrapper">
+                    <Grid class="grid" :length="metadataEntries.length" :page-size="gridPageSize"
+                      :page-provider="gridPageProvider" :get-key="getGridKey">
+                      <template v-slot:probe>
+                        <!-- The virtual grid is designed to be used with a network provider.
+                          To get an accurate estimation, the default slot needs to be rendered
+                          after the probe slots. However, since our provider returns data instantly,
+                          we need to provide a simplest probe slot with a minimum height to prevent it
+                          from loading too slowly and producing an incorrect estimation. -->
+                        <div style="min-height: 14rem;"></div>
+                      </template>
+                      <template v-slot:default="{ item, style }">
+                        <PackageCard :metadata="item" :style="style" />
+                      </template>
+                    </Grid>
+                  </div>
                 </client-only>
               </div>
             </section>
@@ -286,15 +324,11 @@ watch(() => searchTerm.value, () => {
 
     >.theme-default-content:not(.custom) {
       padding: 0;
-    }
-  }
-}
+      margin-top: $navbar-height;
 
-@media (max-width: $MQMobileNarrow) {
-  .package-list {
-    .page {
-      >.theme-default-content:not(.custom) {
+      @media (max-width: $MQMobileNarrow) {
         padding: 0 0.5rem;
+        margin-top: $navbar-height-mobile;
       }
     }
   }
@@ -305,15 +339,36 @@ watch(() => searchTerm.value, () => {
 @use '@/styles/palette' as *;
 
 .package-section {
-  .card-scroller {
-    // The vue-virtual-scroller requires a fixed height to work properly.
-    height: calc(100vh - $theme-default-content-margin-top);
-  }
 
-  .column {
-    &.col-card {
-      width: 15rem;
-      flex: none;
+  .grid-wrapper {
+    height: calc(100vh - $navbar-height);
+    overflow: auto;
+
+    @media (max-width: $MQMobileNarrow) {
+      height: calc(100vh - $navbar-height-mobile);
+      // Hide scrollbar
+      --scrollbar-width: 0;
+    }
+
+    .grid {
+      padding-top: 0.85rem;
+      display: grid;
+      grid-gap: 0.4rem;
+      place-items: start stretch;
+      box-sizing: content-box;
+      grid-template-columns: 14.7rem 14.7rem 14.7rem 14.7rem;
+
+      @media (max-width: $size-2x) {
+        grid-template-columns: 14.7rem 14.7rem 14.7rem;
+      }
+
+      @media (max-width: $size-lg) {
+        grid-template-columns: 14.7rem 14.7rem;
+      }
+
+      @media (max-width: $MQMobileNarrow) {
+        grid-template-columns: 100%;
+      }
     }
   }
 }
@@ -342,24 +397,6 @@ watch(() => searchTerm.value, () => {
 
 .placeholder-loader-wrapper {
   max-width: 25rem;
-}
-
-@media (max-width: $MQMobileNarrow) {
-  .package-section {
-    .card-scroller {
-      // The vue-virtual-scroller requires a fixed height to work properly.
-      height: calc(100vh - $theme-default-content-margin-top-mobile);
-      // Hide scrollbar on mobile
-      --scrollbar-width: 0;
-    }
-
-    .column {
-      &.col-card {
-        width: 100%;
-        flex: none;
-      }
-    }
-  }
 }
 </style>
 

@@ -20,6 +20,7 @@ $code-bg-color: #282c34;
 
 // Layout
 $navbar-height: 3.2rem;
+$navbar-height-mobile: 4.2rem;
 $page-width: 1088px;
 $side-container-width: 13rem;
 $sidebar-width: 15.5rem;
@@ -27,7 +28,7 @@ $breadcrumb-height: 2.4rem;
 $navbar-and-breadcrumb-height: $navbar-height + $breadcrumb-height;
 $breadcrumb-background-color: #fff;
 $theme-default-content-margin-top: $navbar-height + 1.2rem;
-$theme-default-content-margin-top-mobile: $navbar-height + 2.2rem;
+$theme-default-content-margin-top-mobile: $navbar-height-mobile + 2.2rem;
 
 // Card
 $max-package-card-width: 54.4rem;

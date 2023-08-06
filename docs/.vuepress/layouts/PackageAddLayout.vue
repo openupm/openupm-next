@@ -605,7 +605,7 @@ onMounted(() => {
               <div class="columns package-card-columns">
                 <div class="column col-2"></div>
                 <div class="column col-8">
-                  <PackageCard :metadata="metadata" :prefer-raw-avatar-url="true" />
+                  <PackageCard :metadata="metadata" :prefer-raw-avatar-url="true" class="mb-2" />
                 </div>
                 <div class="column col-2"></div>
               </div>

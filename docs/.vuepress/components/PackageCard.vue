@@ -77,49 +77,43 @@ const imageErrorMessage = computed(() => {
 
 <template>
   <div class="package-card">
-    <div class="card">
+    <div class="card-inner">
       <div class="card-content">
-        <div class="columns">
-          <div class="column column-image col-12">
-            <div class="card-image-wrapper">
-              <div class="card-image">
-                <LazyImage v-if="metadata.image" :src="metadata.image" class="img-responsive"
-                  :error-message="imageErrorMessage" />
-                <div v-else class="default-image" :style="defaultImageInlineStyle">
-                  <span>{{ packageDisplayName }}</span>
-                </div>
-              </div>
+        <div class="card-image-wrapper">
+          <div class="card-image">
+            <LazyImage v-if="metadata.image" :src="metadata.image" class="img-responsive"
+              :error-message="imageErrorMessage" />
+            <div v-else class="default-image" :style="defaultImageInlineStyle">
+              <span>{{ packageDisplayName }}</span>
             </div>
           </div>
-          <div :class="['column', 'col-12']">
-            <div class="card-header">
-              <div class="card-title h5">
-                <AutoLink :item="packageLink" />
-              </div>
-            </div>
-            <div class="card-body">
-              {{ packageDescription }}
-            </div>
-            <div class="card-footer">
-              <div class="row1">
-                <span v-if="metadata.owner" class="chip chip-avatar">
-                  <LazyImage :src="ownerAvatarUrl" :alt="metadata.owner" class="avatar avatar-sm" />
-                  {{ metadata.owner }}
-                </span>
-                <span v-if="metadata.time" class="chip">
-                  <i class="fas fa-clock"></i>{{ timeAgoText }}
-                </span>
-              </div>
-              <div class="row2">
-                <span v-if="metadata.stars" class="chip">
-                  <i class="fa fa-star"></i>{{ metadata.stars }}
-                </span>
-                <span v-if="metadata.dl30d" class="chip">
-                  <i class="fas fa-download"></i>
-                  {{ metadata.dl30d }}/month
-                </span>
-              </div>
-            </div>
+        </div>
+        <div class="card-header">
+          <div class="h5">
+            <AutoLink :item="packageLink" />
+          </div>
+        </div>
+        <div class="card-body">
+          {{ packageDescription }}
+        </div>
+        <div class="card-footer">
+          <div class="row1">
+            <span v-if="metadata.owner" class="chip chip-avatar">
+              <LazyImage :src="ownerAvatarUrl" :alt="metadata.owner" class="avatar avatar-sm" />
+              {{ metadata.owner }}
+            </span>
+            <span v-if="metadata.time" class="chip">
+              <i class="fas fa-clock"></i>{{ timeAgoText }}
+            </span>
+          </div>
+          <div class="row2">
+            <span v-if="metadata.stars" class="chip">
+              <i class="fa fa-star"></i>{{ metadata.stars }}
+            </span>
+            <span v-if="metadata.dl30d" class="chip">
+              <i class="fas fa-download"></i>
+              {{ metadata.dl30d }}/month
+            </span>
           </div>
         </div>
       </div>
@@ -131,33 +125,31 @@ const imageErrorMessage = computed(() => {
 @use '@/styles/palette' as *;
 
 .package-card {
-  padding-bottom: 0.8rem;
-  height: calc(100% - 0.5rem);
+  --card-content-padding-lr: 0.4rem;
+  font-size: $font-size-md;
 
-  .card {
-    border: 0;
+  .card-inner {
     box-shadow: 0 .25rem .5rem var(--c-border);
-    // rgba(48, 55, 66, .15);
 
     .card-header {
-      padding-top: 0.3rem;
-    }
+      padding: 0.3rem var(--card-content-padding-lr) 0;
 
-    .card-title {
-      height: 1.15rem;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      overflow: hidden;
-      font-size: $font-size-md;
+      .h5 {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        font-size: $font-size-md;
 
-      >a {
-        font-weight: 600;
+        >a {
+          font-weight: 600;
+        }
       }
     }
 
     .card-body {
+      padding: 0 var(--card-content-padding-lr) 0.5rem;
       padding-top: 0rem;
-      height: 2rem;
+      height: 1.8rem;
       overflow: hidden;
       display: -webkit-box;
       -webkit-line-clamp: 2;
@@ -206,22 +198,20 @@ const imageErrorMessage = computed(() => {
     }
 
     .card-footer {
-      padding: 0.5rem 0.8rem 0.8rem 0.8rem;
+      height: 3.2rem;
+      padding: 0 var(--card-content-padding-lr);
+      box-sizing: border-box;
 
-      .row2 {
-        height: 1.2rem;
-      }
-    }
+      .chip {
+        margin-bottom: 0.2rem;
+        font-size: $font-size-xs;
 
-    .chip {
-      margin-bottom: 0.2rem;
-      font-size: $font-size-xs;
-
-      &.chip-avatar {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 16ch;
+        &.chip-avatar {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          max-width: 16ch;
+        }
       }
     }
   }
@@ -229,7 +219,7 @@ const imageErrorMessage = computed(() => {
 
 .dark {
   .package-card {
-    .card {
+    .card-inner {
       box-shadow: none;
       background-color: var(--c-bg-light);
     }
