@@ -286,7 +286,7 @@ watch(() => searchTerm.value, () => {
               </div>
               <div v-else>
                 <client-only>
-                  <div v-if="!metadataEntries.length">
+                  <div class="no-data" v-if="!metadataEntries.length">
                     {{ noDataAvailableText }}
                   </div>
                   <div v-else class="grid-wrapper">
@@ -370,6 +370,10 @@ watch(() => searchTerm.value, () => {
         grid-template-columns: 100%;
       }
     }
+  }
+
+  .no-data {
+    margin: 0.6rem 0.4rem;
   }
 }
 
