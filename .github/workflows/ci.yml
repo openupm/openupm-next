@@ -33,7 +33,11 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - name: npm install
-      run: npm install
+      uses: nick-fields/retry@v2
+      with:
+        timeout_minutes: 3
+        max_attempts: 3
+        command: npm install
     - name: npm run test
       run: npm run test
 
@@ -57,7 +61,11 @@ jobs:
       with:
         node-version: '16.x'
     - name: npm install
-      run: npm install
+      uses: nick-fields/retry@v2
+      with:
+        timeout_minutes: 3
+        max_attempts: 3
+        command: npm install
     - name: npm run docs:build
       run: |
         # Set region to us
