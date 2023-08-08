@@ -1,13 +1,18 @@
 <script setup lang="ts">
 import { getLocaleDocsPath } from '@shared/urls';
 import { capitalize } from 'lodash-es';
-import { onMounted } from 'vue';
+import { onBeforeUnmount, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
 
 const initCookieConsent = () => {
   const cookieconsent = (window as any).cookieconsent;
+  if (cookieconsent === undefined) {
+    console.error("Cookie Consent script not loaded yet.");
+    return;
+  }
+  if (cookieconsent.inited) return;
   cookieconsent.initialise({
     palette: {
       popup: {
@@ -24,6 +29,7 @@ const initCookieConsent = () => {
       href: getLocaleDocsPath("/docs/privacy")
     },
   });
+  cookieconsent.inited = true;
 }
 
 onMounted(() => { initCookieConsent(); });
