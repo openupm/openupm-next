@@ -241,8 +241,10 @@ watch(() => searchTerm.value, () => {
       <ClientOnly>
         <section class="quicklink-section first">
           <ul class="menu">
-            <li class="menu-item">
+            <li class="menu-item mb-0">
+              <div class="btn-group btn-group-block">
               <AutoLink class="btn btn-default" :item="addPackageLink" />
+              </div>
             </li>
           </ul>
         </section>
