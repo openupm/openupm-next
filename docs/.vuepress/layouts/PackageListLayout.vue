@@ -5,7 +5,6 @@ import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n'
 import { useMq } from "vue3-mq";
 import { usePageFrontmatter } from "@vuepress/client";
-import { useElementBounding } from '@vueuse/core';
 import Grid from 'vue-virtual-scroll-grid';
 import { PageProvider } from 'vue-virtual-scroll-grid/pipeline';
 
@@ -321,6 +320,17 @@ watch(() => searchTerm.value, () => {
 .package-list {
   .page {
     padding-bottom: 0;
+
+    // Slow down the default transition.
+    &.fade-slide-y-leave-active {
+      transition: all 0.3s cubic-bezier(1, 0.5, 0.8, 1);
+    }
+
+    // Override the default transition to avoid the body scrollbar flashing.
+    &.fade-slide-y-enter-from,
+    &.fade-slide-y-leave-to {
+      transform: none;
+    }
 
     >.theme-default-content:not(.custom) {
       padding: 0;
