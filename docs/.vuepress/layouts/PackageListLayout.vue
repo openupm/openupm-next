@@ -114,6 +114,15 @@ const noDataAvailableText = computed(() => {
   return t("no-data-available");
 });
 
+const addPackageLink = computed(() => {
+  return {
+    link: "/packages/add/",
+    text: t("add-package"),
+    icon: "fas fa-plus-circle",
+    iconLeft: true
+  };
+});
+
 /* #region Grid layout */
 // Dummy grid page size is fixed to 40, since everything is already loaded in meatadataEntries.
 const gridPageSize = ref(40);
@@ -230,10 +239,17 @@ watch(() => searchTerm.value, () => {
   <ParentLayout class="package-list">
     <template #sidebar-top>
       <ClientOnly>
+        <section class="quicklink-section first">
+          <ul class="menu">
+            <li class="menu-item">
+              <AutoLink class="btn btn-default" :item="addPackageLink" />
+            </li>
+          </ul>
+        </section>
         <section class="state-section">
           <ul class="menu">
             <li class="menu-item">
-              Results
+              {{ $capitalize($t("results")) }}
               <div class="menu-badge">
                 <label class="label label-default">{{ metadataEntries.length }}</label>
               </div>
@@ -387,8 +403,10 @@ watch(() => searchTerm.value, () => {
   }
 }
 
-.state-section {
-  margin-top: 0.6rem;
+.sidebar {
+  section.first {
+    margin-top: 0.6rem;
+  }
 }
 
 .menu {
@@ -415,6 +433,8 @@ watch(() => searchTerm.value, () => {
 </style>
 
 <i18n locale="en-US" lang="yaml">
+add-package: Submit new package
+results: results
 sort-by: Sort by
 keywords: Keywords
 no-data-available: No packages available for this topic.
@@ -423,6 +443,8 @@ no-search-results-for-topic: No search results for "{ searchTerm }" in this topi
 </i18n>
 
 <i18n locale="zh-CN" lang="yaml">
+add-package: 添加新软件包
+results: 结果
 sort-by: 排序
 keywords: 关键词
 no-data-available: 此主题下没有可用的包。
