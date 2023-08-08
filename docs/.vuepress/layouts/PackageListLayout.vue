@@ -7,10 +7,10 @@ import { useMq } from "vue3-mq";
 import { usePageFrontmatter } from "@vuepress/client";
 import Grid from 'vue-virtual-scroll-grid';
 import { PageProvider } from 'vue-virtual-scroll-grid/pipeline';
-
 import { useSearchIndex } from '@node_modules/@vuepress/plugin-search/lib/client/composables'
 
 import ParentLayout from "@/layouts/WideLayout.vue";
+import VueVirtualScrollGridBackToTop from '@/components/VueVirtualScrollGridBackToTop';
 import { SortType } from "@/constant";
 import { useDefaultStore } from '@/store';
 import { PackageMetadata, Topic } from "@shared/types";
@@ -124,6 +124,8 @@ const addPackageLink = computed(() => {
 });
 
 /* #region Grid layout */
+const gridWrapperElement = ref(null);
+
 // Dummy grid page size is fixed to 40, since everything is already loaded in meatadataEntries.
 const gridPageSize = ref(40);
 
@@ -243,7 +245,7 @@ watch(() => searchTerm.value, () => {
           <ul class="menu">
             <li class="menu-item mb-0">
               <div class="btn-group btn-group-block">
-              <AutoLink class="btn btn-default" :item="addPackageLink" />
+                <AutoLink class="btn btn-default" :item="addPackageLink" />
               </div>
             </li>
           </ul>
@@ -306,7 +308,7 @@ watch(() => searchTerm.value, () => {
                   <div class="no-data" v-if="!metadataEntries.length">
                     {{ noDataAvailableText }}
                   </div>
-                  <div v-else class="grid-wrapper">
+                  <div v-else class="grid-wrapper" ref="gridWrapperElement">
                     <Grid class="grid" :length="metadataEntries.length" :page-size="gridPageSize"
                       :page-provider="gridPageProvider" :get-key="getGridKey">
                       <template v-slot:probe>
@@ -322,6 +324,7 @@ watch(() => searchTerm.value, () => {
                       </template>
                     </Grid>
                   </div>
+                  <VueVirtualScrollGridBackToTop :grid-wrapper="gridWrapperElement" />
                 </client-only>
               </div>
             </section>
