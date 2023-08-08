@@ -9,6 +9,7 @@ import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite';
 import { visualizer } from "rollup-plugin-visualizer";
 import { seoPlugin } from "vuepress-plugin-seo2";
 import { sitemapPlugin } from "vuepress-plugin-sitemap2";
+import { mediumZoomPlugin } from '@vuepress/plugin-medium-zoom'
 
 import OpenupmPlugin from '../../dist/vuepress-plugin-openupm';
 import { Region } from "../../src/shared/constant";
@@ -36,7 +37,7 @@ const themeConfig: any = mergeWith({
   contributors: false,
   themePlugins: {
     git: false,
-    mediumZoom: false,
+    mediumZoom: true,
   }
 }, regionConfig.themeConfig, mergeCustomizer);
 
@@ -72,6 +73,9 @@ const config: any = mergeWith({
       modifyTimeGetter: (page, app) => {
         return (new Date()).toISOString();
       }
+    }),
+    mediumZoomPlugin({
+      selector: '.theme-container:not(.package-list) .theme-default-content :not(a) > img',
     }),
   ],
   alias: {
