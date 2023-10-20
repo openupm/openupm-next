@@ -341,6 +341,27 @@ watch(() => searchTerm.value, () => {
 .package-list {
   .page {
     padding-bottom: 0;
+    padding-left: calc(var(--sidebar-width) + (100vw - var(--sidebar-width) - #{$package-grid-4c-width} - #{$scrollbar-width}*2)/2);
+
+    @media screen and (max-width: $package-grid-4c-page-width) {
+      padding-left: calc(var(--sidebar-width) + (100vw - var(--sidebar-width) - #{$package-grid-3c-width} - #{$scrollbar-width}*2)/2);
+    }
+
+    @media screen and (max-width: $package-grid-3c-page-width) {
+      padding-left: calc(var(--sidebar-width) + (100vw - var(--sidebar-width) - #{$package-grid-2c-width} - #{$scrollbar-width}*2)/2);
+    }
+
+    @media screen and (max-width: $package-grid-2c-page-width) {
+      padding-left: calc(var(--sidebar-width) + (100vw - var(--sidebar-width) - #{$package-grid-1c-width} - #{$scrollbar-width}*2)/2);
+    }
+
+    @media (max-width: $MQMobile) {
+      padding-left: calc((100vw - #{$package-grid-1c-width})/2);
+    }
+
+    @media (max-width: $MQMobileNarrow) {
+      padding-left: 0;
+    }
 
     // Slow down the default transition.
     &.fade-slide-y-leave-active {
@@ -384,20 +405,24 @@ watch(() => searchTerm.value, () => {
     .grid {
       padding-top: 0.85rem;
       display: grid;
-      grid-gap: 0.4rem;
+      grid-gap: $package-grid-column-hgap;
       place-items: start stretch;
       box-sizing: content-box;
-      grid-template-columns: 14.7rem 14.7rem 14.7rem 14.7rem;
+      grid-template-columns: $package-grid-column-width $package-grid-column-width $package-grid-column-width $package-grid-column-width;
 
-      @media (max-width: $size-2x) {
-        grid-template-columns: 14.7rem 14.7rem 14.7rem;
+      @media screen and (max-width: $package-grid-4c-page-width) {
+        grid-template-columns: $package-grid-column-width $package-grid-column-width $package-grid-column-width;
       }
 
-      @media (max-width: $size-lg) {
-        grid-template-columns: 14.7rem 14.7rem;
+      @media screen and (max-width: $package-grid-3c-page-width) {
+        grid-template-columns: $package-grid-column-width $package-grid-column-width;
       }
 
-      @media (max-width: $MQMobileNarrow) {
+      @media screen and (max-width: $package-grid-2c-page-width) {
+        grid-template-columns: $package-grid-column-width;
+      }
+
+      @media screen and (max-width: $MQMobileNarrow) {
         grid-template-columns: 100%;
       }
     }

@@ -23,8 +23,8 @@ with ($primary-color: $primary-color,
   --c-brand-light: #{$primary-color-light};
   --c-text-accent: #{$primary-color};
   --navbar-height: #{$navbar-height};
-  --scrollbar-width: 7px;
-  --scrollbar-height: 7px;
+  --scrollbar-width: #{$scrollbar-width};
+  --scrollbar-height: #{$scrollbar-height};
   --c-scrollbar-background: #eee;
   --c-scrollbar-thumb: #bbb;
   --c-scrollbar-thumb-hover: #999;
@@ -790,7 +790,7 @@ main {
 
 *::-webkit-scrollbar-thumb {
   background-color: var(--c-scrollbar-thumb);
-  border-radius: 20px;
+  border-radius: 0;
   border: 2px solid var(--c-scrollbar-thumb);
 }
 

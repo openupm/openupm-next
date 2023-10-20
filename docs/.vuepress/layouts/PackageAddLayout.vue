@@ -638,7 +638,6 @@ onMounted(() => {
     }
 
     .theme-default-content {
-      max-width: auto;
       margin: 0;
       padding: 0 0 2.5rem;
 

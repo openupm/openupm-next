@@ -23,16 +23,25 @@ $navbar-height: 3.2rem;
 $navbar-height-mobile: 4.2rem;
 $page-width: 1088px;
 $side-container-width: 13rem;
-$sidebar-width: 15.5rem;
+$sidebar-width: 310px;
 $breadcrumb-height: 2.4rem;
 $navbar-and-breadcrumb-height: $navbar-height + $breadcrumb-height;
 $breadcrumb-background-color: #fff;
 $theme-default-content-margin-top: $navbar-height + 1.2rem;
 $theme-default-content-margin-top-mobile: $navbar-height-mobile + 2.2rem;
 
-// Card
-$max-package-card-width: 54.4rem;
-$max-package-card-skeleton-width: 27.2rem;
+// Package grid
+// The unit below is in pixels, not rems, because it will be used in a media query later.
+// The rem unit in a media query is based on the initial font size of 16 pixels, which is different from the rem unit in spectre.css (20px).
+$package-grid-column-width: 294px;
+$package-grid-column-hgap: 8px;
+$package-grid-1c-width: $package-grid-column-width;
+$package-grid-2c-width: $package-grid-column-width*2 + $package-grid-column-hgap;
+$package-grid-3c-width: $package-grid-column-width*3 + $package-grid-column-hgap*2;
+$package-grid-4c-width: $package-grid-column-width*4 + $package-grid-column-hgap*3;
+$package-grid-2c-page-width: $sidebar-width + $package-grid-2c-width;
+$package-grid-3c-page-width: $sidebar-width + $package-grid-3c-width;
+$package-grid-4c-page-width: $sidebar-width + $package-grid-4c-width;
 
 // Font icon
 @mixin font-awesome-icon {
@@ -46,3 +55,7 @@ $max-package-card-skeleton-width: 27.2rem;
 // Font size
 $font-size-md: 0.75rem;
 $font-size-xs: 0.65rem;
+
+// Scrollbar
+$scrollbar-width: 12px;
+$scrollbar-height: 7px;
