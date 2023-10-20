@@ -1,11 +1,12 @@
 /**
  * Modified from @vuepress/plugin-search
- * 1. add a custom search entry.
- * 2. hardcoded configurations for locales, hotkeys, maxSuggestions.
- * 3. change the component name to MySearchBox.
+ * https://github.com/vuepress/vuepress-next/blob/main/ecosystem/plugin-search/src/client/components/SearchBox.ts
+ * - add a custom search entry.
+ * - hardcoded configurations for locales, hotkeys, maxSuggestions.
+ * - change the component name to MySearchBox.
+ * - fix: search index not reset when press escape key.
  */
 import { useRouteLocale } from '@vuepress/client'
-import type { LocaleConfig } from '@vuepress/shared'
 import { computed, defineComponent, h, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import {
@@ -78,6 +79,9 @@ export default defineComponent({
       }
       focusNext()
     }
+    const onEscape = (): void => {
+      focusIndex.value = 0;
+    }
     const goTo = (index: number): void => {
       if (!showSuggestions.value) {
         return
@@ -125,6 +129,10 @@ export default defineComponent({
                 case 'Enter': {
                   event.preventDefault()
                   goTo(focusIndex.value)
+                  break
+                }
+                case 'Escape': {
+                  onEscape()
                   break
                 }
               }
