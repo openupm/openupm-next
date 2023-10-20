@@ -26,8 +26,8 @@ with ($primary-color: $primary-color,
   --scrollbar-width: #{$scrollbar-width};
   --scrollbar-height: #{$scrollbar-height};
   --c-scrollbar-background: #eee;
-  --c-scrollbar-thumb: #bbb;
-  --c-scrollbar-thumb-hover: #999;
+  --c-scrollbar-thumb: #ccc;
+  --c-scrollbar-thumb-hover: #aaa;
   --sidebar-width: 16rem;
   --code-ln-wrapper-width: 2.8rem;
 }
@@ -37,6 +37,9 @@ html.dark {
   --c-text-accent: #{lighten($primary-color, 5%)};
   --c-brand-light: #{$primary-color-light};
   --c-warning-text: #746000;
+  --c-scrollbar-thumb: #454545;
+  --c-scrollbar-thumb-hover: #565656;
+  --c-scrollbar-background: #363636;
 }
 
 // Fix default theme style issues caused by spectre overriden.
