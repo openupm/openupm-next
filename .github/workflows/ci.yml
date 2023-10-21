@@ -80,3 +80,47 @@ jobs:
         folder: docs/.vuepress/dist
         single-commit: true
         ssh-key: ${{ secrets.OPENUPM_NEXT_WEBSITE_DEPLOY_KEY }}
+
+  build-website-cn:
+    runs-on: macos-latest
+    needs: test
+    if: github.ref == 'refs/heads/main' && github.repository == 'openupm/openupm-next'
+    steps:
+    - name: checkout main repo
+      uses: actions/checkout@v3
+    - name: checkout openupm/openupm repo for the data folder
+      uses: actions/checkout@v3
+      with:
+        repository: openupm/openupm
+        ref: master
+        path: tmp-openupm
+    - name: move tmp-openupm/data to data
+      run: mv tmp-openupm/data data && rm -rf tmp-openupm
+    - name: set node.js 16.x
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16.x'
+    - name: npm install
+      uses: nick-fields/retry@v2
+      with:
+        timeout_minutes: 3
+        max_attempts: 3
+        command: npm install
+    - name: npm run docs:build
+      run: |
+        # Overwrite homepage page with localized version
+        cp docs/zh/index.md docs/index.md
+        # Build website
+        VITE_OPENUPM_REGION=cn npm run docs:build
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: bundle-analysis-report-cn
+        path: bundle-analyse.html
+    - name: deploy to openupm-next-website-cn repo
+      uses: JamesIves/github-pages-deploy-action@v4
+      with:
+        repository-name: openupm/openupm-next-website-cn
+        folder: docs/.vuepress/dist
+        single-commit: true
+        ssh-key: ${{ secrets.OPENUPM_NEXT_WEBSITE_CN_DEPLOY_KEY }}
