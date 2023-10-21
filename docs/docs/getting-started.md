@@ -49,13 +49,11 @@ $ cd ~/Document/projects/hello-openupm
 
 # search package by keyword
 $ openupm search addressable
-fast search endpoint is not available, using old search.
-┌───────────────────────────────────────┬─────────┬───────────┬────────────┐
-│ Name                                  │ Version │ Author    │ Date       │
-├───────────────────────────────────────┼─────────┼───────────┼────────────┤
-│ com.littlebigfun.addressable-importer │ 0.4.1   │ Favo Yang │ 2019-12-10 │
-│ Unity Addressable Importer            │         │           │            │
-└───────────────────────────────────────┴─────────┴───────────┴────────────┘
+┌──────────────────────────────────────────┬────────────────────┬────────────┐
+│ Name                                     │ Version            │ Date       │
+├──────────────────────────────────────────┼────────────────────┼────────────┤
+│ com.littlebigfun.addressable-importer    │ 0.16.1             │ 2023-02-08 │
+└──────────────────────────────────────────┴────────────────────┴────────────┘
 ```
 
 It returns the package name `com.littlebigfun.addressable-importer`.

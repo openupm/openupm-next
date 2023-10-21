@@ -25,12 +25,11 @@ $ cd YOUR_UNITY_PROJECT_FOLDER
 
 # Search a package
 $ openupm search addressable-importer
-┌───────────────────────────────────────┬─────────┬───────────┬────────────┐
-│ Name                                  │ Version │ Author    │ Date       │
-├───────────────────────────────────────┼─────────┼───────────┼────────────┤
-│ com.littlebigfun.addressable-importer │ 1.0.0   │ Favo Yang │ 2019-11-25 │
-│ Unity Addressable Importer            │         │           │            │
-└───────────────────────────────────────┴─────────┴───────────┴────────────┘
+┌──────────────────────────────────────────┬────────────────────┬────────────┐
+│ Name                                     │ Version            │ Date       │
+├──────────────────────────────────────────┼────────────────────┼────────────┤
+│ com.littlebigfun.addressable-importer    │ 0.16.1             │ 2023-02-08 │
+└──────────────────────────────────────────┴────────────────────┴────────────┘
 
 # Install package
 $ openupm add com.littlebigfun.addressable-importer

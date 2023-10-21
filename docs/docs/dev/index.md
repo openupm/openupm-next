@@ -47,7 +47,7 @@ OpenUPM watches the package curated list regularly detects new contents and uses
 OpenUPM uses pm2 cron feature to run cronjobs.
 
 | Job                     | Description                          | GitHub Reset API | GitHub GraphQL API |
-|-------------------------|--------------------------------------|-----------------:|-------------------:|
+| ----------------------- | ------------------------------------ | ---------------: | -----------------: |
 | add-build-package-job   | add build-pkg to the job queue.      |                  |                    |
 | fetch-package-extra     | fetch package README, stars, ogimage |                n |                 2n |
 | aggregate-package-extra | aggregate package extra              |                  |                    |
@@ -60,7 +60,7 @@ OpenUPM uses pm2 cron feature to run cronjobs.
 OpenUPM uses [Bee-Queue](https://github.com/bee-queue/bee-queue) to manage the job queue.
 
 | Job                     | Description                                                  | GitHub API |
-|-------------------------|--------------------------------------------------------------|-----------:|
+| ----------------------- | ------------------------------------------------------------ | ---------: |
 | `build-pkg:<pkg>`       | fetch repo info and create build-rel jobs for valid Git tags |          0 |
 | `build-rel:<pkg>:<ver>` | build pkg@version via Azure Pipelines                        |          0 |
 
@@ -104,7 +104,7 @@ OpenUPM uses git as a database to maintain the package curated list. Each packag
 The website supports two regions with different configurations:
 
 | Region | Language | Fallback Language |
-|--------|----------|-------------------|
+| ------ | -------- | ----------------- |
 | US     | en-US    | n/a               |
 | CN     | zh-CN    | en-US             |
 
@@ -113,5 +113,5 @@ The website supports two regions with different configurations:
 - To develop the CN region:
 
   ```
-  VITE_OPENUPM_REGION=cn yarn docs:dev
+  VITE_OPENUPM_REGION=cn npm run docs:dev
   ```

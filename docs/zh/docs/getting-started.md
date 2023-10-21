@@ -48,13 +48,11 @@ $ cd ~/Document/projects/hello-openupm
 
 # 按关键字搜索软件包
 $ openupm-cn search addressable
-fast search endpoint is not available, using old search.
-┌───────────────────────────────────────┬─────────┬───────────┬────────────┐
-│ Name                                  │ Version │ Author    │ Date       │
-├───────────────────────────────────────┼─────────┼───────────┼────────────┤
-│ com.littlebigfun.addressable-importer │ 0.4.1   │ Favo Yang │ 2019-12-10 │
-│ Unity Addressable Importer            │         │           │            │
-└───────────────────────────────────────┴─────────┴───────────┴────────────┘
+┌──────────────────────────────────────────┬────────────────────┬────────────┐
+│ Name                                     │ Version            │ Date       │
+├──────────────────────────────────────────┼────────────────────┼────────────┤
+│ com.littlebigfun.addressable-importer    │ 0.16.1             │ 2023-02-08 │
+└──────────────────────────────────────────┴────────────────────┴────────────┘
 ```
 
 返回软件包名称 `com.littlebigfun.addressable-importer`。
