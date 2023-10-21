@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { orderBy, capitalize, clamp } from "lodash-es";
+import { orderBy, capitalize, groupBy } from "lodash-es";
 import { computed, watch, onMounted, ref } from "vue";
 import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n'
@@ -56,17 +56,25 @@ const topicSlug = computed(() => {
   return frontmatter.value.topicSlug as string;
 });
 
-const topicEntries = computed(() => {
-  return (topicsWithAll as Topic[]).map((x) => {
-    const tkey = x.slug || "all";
-    const tvalue = t(tkey);
+// Group topics by first letter and sort by first letter as array.
+const topicGroups = computed(() => {
+  const items = (topicsWithAll as Topic[]).map((x) => {
+    const text = x.name.replaceAll(" ", "-").replaceAll("-&-", "-");
     return {
       link: x.urlPath,
-      text: translateFallback(t, x.slug || "all", x.name),
+      text,
+      textFirstLetter: text.charAt(0).toUpperCase(),
+      textRestLetters: text.slice(1),
       value: x.slug,
       class: x.slug === topicSlug.value ? "active" : "",
     };
   });
+  const theAllEntry = items[0];
+  const itemsWithoutAllEntry = items.slice(1);
+  const groupedItems = Object.values(groupBy(itemsWithoutAllEntry, (item) => item.text.charAt(0).toUpperCase()));
+  const sortedItems = orderBy(groupedItems, [(item) => item[0].text.charAt(0).toUpperCase()]);
+  sortedItems.unshift([theAllEntry]);
+  return sortedItems;
 });
 
 const searchIndex = useSearchIndex();
@@ -283,12 +291,13 @@ watch(() => searchTerm.value, () => {
           <ul class="menu">
             <li class="divider" :data-content="$t('topics')"></li>
             <div class="columns">
-              <div v-for="item in topicEntries" :key="item.value" class="column col-12">
-                <li class="menu-item">
+              <div v-for="(group, gindex) in topicGroups" :key="gindex" class="column col-12 tag-group">
+                <span v-for="(item, index) in group" :key="item.value" class='tag-item'>
                   <RouterLink :class="['nav-link', item.class]" :to="{ path: item.link, query }" :exact="false">
-                    {{ item.text }}
+                    <span v-if="index == 0"><strong>{{ item.textFirstLetter }}</strong>{{ item.textRestLetters }}</span>
+                    <span v-else>{{ item.text }}</span>
                   </RouterLink>
-                </li>
+                </span>
               </div>
             </div>
           </ul>
@@ -440,6 +449,21 @@ watch(() => searchTerm.value, () => {
 }
 
 .menu {
+  .tag-group {
+    margin-left: 0.4rem;
+    margin-bottom: 0.4rem;
+    line-height: 1.5;
+
+    .tag-item {
+      margin-right: 0.2rem;
+      padding: 0 0.2rem;
+
+      .active {
+        background-color: var(--c-bg-dark);
+      }
+    }
+  }
+
   .chip {
     max-width: 100%;
 
