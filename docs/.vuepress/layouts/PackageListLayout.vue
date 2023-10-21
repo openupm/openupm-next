@@ -458,6 +458,10 @@ watch(() => searchTerm.value, () => {
       margin-right: 0.2rem;
       padding: 0 0.2rem;
 
+      strong {
+        color: var(--c-text-accent-strong);
+      }
+
       .active {
         background-color: var(--c-bg-dark);
       }

@@ -22,6 +22,7 @@ with ($primary-color: $primary-color,
   --c-brand: #{$primary-color};
   --c-brand-light: #{$primary-color-light};
   --c-text-accent: #{$primary-color};
+  --c-text-accent-strong: #{$primary-color};
   --navbar-height: #{$navbar-height};
   --scrollbar-width: #{$scrollbar-width};
   --scrollbar-height: #{$scrollbar-height};
@@ -35,6 +36,7 @@ with ($primary-color: $primary-color,
 html.dark {
   --c-brand: #{lighten($primary-color, 5%)};
   --c-text-accent: #{lighten($primary-color, 5%)};
+  --c-text-accent-strong: #{lighten($primary-color, 10%)};
   --c-brand-light: #{$primary-color-light};
   --c-warning-text: #746000;
   --c-scrollbar-thumb: #454545;
