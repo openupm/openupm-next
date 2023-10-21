@@ -67,13 +67,7 @@ jobs:
         max_attempts: 3
         command: npm install
     - name: npm run docs:build
-      run: |
-        # Set region to us
-        export OPENUPM_REGION=us
-        # Remove CN region content
-        # rm -rf docs/zh
-        # Build
-        npm run docs:build
+      run: VITE_OPENUPM_REGION=us npm run docs:build
     - name: Upload artifact
       uses: actions/upload-artifact@v3
       with:

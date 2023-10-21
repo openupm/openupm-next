@@ -16,10 +16,20 @@ import { Region } from "../../src/shared/constant";
 
 const __dirname = getDirname(import.meta.url)
 
+// Region
 const VITE_OPENUPM_REGION = process.env.VITE_OPENUPM_REGION == Region.CN ? Region.CN : Region.US;
 import configUs from "./config-us";
 import configCn from "./config-cn";
 const regionConfig: any = VITE_OPENUPM_REGION == Region.CN ? configCn : configUs;
+
+// Page patterns https://v2.vuepress.vuejs.org/reference/config.html#pagepatterns
+const pagePatterns = ['**/*.md', '!.vuepress', '!node_modules'];
+if (VITE_OPENUPM_REGION != Region.CN) {
+  pagePatterns.push('!zh/*.md');
+  pagePatterns.push('!zh/**/*.md');
+}
+
+// Theme color
 const THEME_COLOR = "#3068E5";
 
 // Merge customizer to concat arrays
@@ -43,6 +53,7 @@ const themeConfig: any = mergeWith({
 
 // Merge config with regionConfig.config
 const config: any = mergeWith({
+  pagePatterns,
   theme: defaultTheme(themeConfig),
   head: [
     ["meta", { name: "theme-color", content: THEME_COLOR }],
