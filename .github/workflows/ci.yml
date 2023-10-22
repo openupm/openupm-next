@@ -124,3 +124,16 @@ jobs:
         folder: docs/.vuepress/dist
         single-commit: true
         ssh-key: ${{ secrets.OPENUPM_NEXT_WEBSITE_CN_DEPLOY_KEY }}
+
+  deploy-website-cn:
+    runs-on: ubuntu-latest
+    needs: build-website-cn
+    if: github.ref == 'refs/heads/master' && github.repository == 'openupm/openupm-next'
+    steps:
+    - name: deploy website
+      uses: JimCronqvist/action-ssh@master
+      with:
+        privateKey: ${{ secrets.SERVER_CN_SSH_PRIVATE_KEY }}
+        hosts: ${{ secrets.SERVER_CN_USER }}@${{ secrets.SERVER_CN_HOST }}
+        command: |
+            /home/openupm/openupm-devops/scripts/deploy-website-cn.sh
