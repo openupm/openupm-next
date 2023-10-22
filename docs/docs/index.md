@@ -2,7 +2,7 @@
 ---
 # Introduction
 
-OpenUPM is a service for hosting and building open-source UPM (Unity Package Manager) packages. OpenUPM provides a managed UPM registry and automatic build pipelines. The intention is to create a universal platform to discover, share, and distribute open-source UPM packages.
+Welcome to OpenUPM, your solution for open-source Unity Package Manager (UPM) packages. OpenUPM is a user-friendly service that hosts, manages, and automates the building of UPM packages. We're here to make it easy for you to find, share, and distribute open-source UPM packages.
 
 ::: tip DISCLAIMER
 OpenUPM is an autonomous, open-source service and is not associated with Unity Technologies Inc.
@@ -10,80 +10,72 @@ OpenUPM is an autonomous, open-source service and is not associated with Unity T
 
 ## How It Works
 
-### Scoped Registry and Command-Line Interface
+### Scoped Registry
 
-Unity supports the [scoped registry](https://docs.unity3d.com/Manual/upm-scoped.html) that allowing developers to setup 3rd-party registries to host custom packages. OpenUPM provides a public UPM registry at `https://package.openupm.com`, and a group of services and tools to support it.
-
-The downside of the scoped registry is that you need to [maintain the scope field](https://docs.unity3d.com/Manual/upm-manifestPrj.html) of the `manifest.json` file to make it work. It's not a problem when working with a single namespace. But it's a challenge to work with a public registry with various namespaces. The dependency chain makes the issue worse. For example, the package-a depends on b, and b depends on c. It's a headache for a human to resolve all these dependencies to fill the scope field manually.
-
-To remove the pain to install a 3rd-party package, we create a command-line tool called [openupm-cli](https://github.com/openupm/openupm-cli) to maintain the manifest file. It can add, remove, and search packages in a terminal app, like Bash, Git-Bash, CMD, or PowerShell. When Unity detects the change of the manifest file, it will resolve it and install or remove packages for you.
-
-```
-+-----+   update   +---------------+   resolve   +-----+
-| CLI | ---------> | manifest.json | <---------- | UPM |
-+-----+            +---------------+             +-----+
-```
-
-Learn how to use the command-line tool at [Getting Started with CLI](./getting-started.md), or visit [OpenUPM-CLI Readme](https://github.com/openupm/openupm-cli#openupm-cli) for references. For more information about the Unity editor integration, please follow [#10](https://github.com/openupm/openupm/issues/10).
-
-If you are unfamiliar with the command-line, you can still use other installation options available on the package detail page.
+Unity offers a [scoped registry](https://docs.unity3d.com/Manual/upm-scoped.html) feature, which allows developers to set up third-party registries for hosting custom packages. OpenUPM simplifies this process by providing a public UPM registry at `https://package.openupm.com` and a set of tools to assist you.
 
 ### Automatic Build Pipelines
 
-OpenUPM maintains a [curated list](https://github.com/openupm/openupm/tree/master/data/packages) of open-source UPM repositories hosting on GitHub. Our build pipelines watch the list regularly to detect versioned Git tags, bundle the asset, then publish it to the OpenUPM registry as a package. This continuous publishing approach is different from the traditional package registry that requires the package owner/maintainer to submit the new release. It enables any developer with a GitHub account to contribute new UPM packages to the platform. The role is called [Package Hunter](/contributors/) to help the community grow faster.
+OpenUPM maintains a [curated list](https://github.com/openupm/openupm/tree/master/data/packages) of open-source UPM repositories hosted on GitHub. Our build pipelines regularly monitor this list, detecting versioned Git tags, bundling assets, and automatically publishing them to the OpenUPM registry as packages. This continuous publishing approach differs from traditional package registries, which often require package owners/maintainers to submit new releases manually. With OpenUPM, any developer with a GitHub account can contribute new UPM packages to the platform, making it accessible and user-friendly. These contributors are known as [Package Hunters](/contributors/) and play a vital role in accelerating community growth.
+
+### Package Discovery
+
+OpenUPM renders the curated list on its website, allowing you to filter packages by topics, search for keywords, and sort them by downloads, all to help you easily find your favorite open-source packages.
+
+![openupm website screenshot](./images/openupm-website-screenshot-20231022.png)
+
+### Command-Line Interface
+
+The idea behind a scoped registry is that you need to specify the [scope field](https://docs.unity3d.com/Manual/upm-manifestPrj.html) in `Packages/manifest.json` in advance to inform Unity about which packages are associated with a registry. This limitation can create additional work when installing a package from a scoped registry. Managing package dependencies and multiple namespaces can be a headache, especially when you have to manually fill the scope field for each package, and it becomes even more complex when dealing with layered dependency chains. For instance, if package-a depends on b, and b depends on c, you would need to manually resolve and specify all these dependencies in the scope field.
+
+However, when you install a package from the OpenUPM website, it automatically provides the required scope field for you.
+
+Furthermore, we've created a command-line tool known as [openupm-cli](https://github.com/openupm/openupm-cli) to manage the manifest file. This tool allows you to add, update, and remove for packages using a single command in most terminal apps like Bash, Git-Bash, CMD, or PowerShell. When Unity detects changes in the manifest file, it will automatically resolve and synchronize the packages for you.
+
+For a guide on using the command-line tool, check out [Getting Started with CLI](./getting-started.md).
 
 ## Regions
 
-For users who need to use OpenUPM services in China mainland, we suggest you switch to the [China region](https://openupm.cn), which provided the localized website and a mirror registry server at `https://package.openupm.cn`. The mirror registry synced with the global region every hour.
+OpenUPM is a global service, and we currently offer two regions: the global region and the [China region](https://openupm.cn). The China region is hosted in mainland China and provides a localized website along with a mirrored registry server at `https://package.openupm.cn`. This mirror registry is synced with the global region every few hours.
 
-## Why Not ...?
+## Alternatives
+
+This section provides a brief overview of the alternatives to OpenUPM and how they compare. We hope this information will help you decide which solution is best for your needs.
 
 ### Unity Asset Store
 
-[Unity Asset Store](https://assetstore.unity.com/) is the official solution for publishing software, assets, and services, offering both paid and free content. However, assets are installed into the Asset folder. The old fashion way is good for managing assets, but it lacks dependency management for libraries. Unity has a progressive way to encourage its large content to convert to the UPM format. But it takes time.
+The [Unity Asset Store](https://assetstore.unity.com/) serves as the official platform for publishing software and assets, providing a convenient means to monetize your Unity content. The Asset Store was originally designed for mutable content that could be located anywhere in the `Assets` folder, such as 3D models, textures, and scripts. As a result, you don't have a consistent way to uninstall an asset, and updating a version can be tricky. Later, Unity introduced a way to allow you to include a UPM package within an Asset Store asset, basically allowing you to package content under the `Packages` folder. However, it's not designed to function as a package registry, and it won't automatically resolve 3rd-party package dependencies for you.
 
-Unlike the Unity asset store, OpenUPM is focusing on the open-source from day one, and our open-source community is growing fast. Both the Unity Asset Store and OpenUPM will continue growing and inspiring each other.
+When working with 3rd-party content, we all desire continuous support from the author. Since the Unity Asset Store is well-suited for paid content, assets that achieve financial success are likely to receive better support. On the other hand, OpenUPM, being centered around open-source content, relies more on the community for support. You can become part of this community to report bugs, fix issues, and even contribute new features.
 
-### Other 3rd-party Registries
+We don't see the Unity Asset Store as a competitor to OpenUPM. There are many great assets on the Asset Store, and we encourage you to use it. Some mutable parts are more suitable for publishing on the Asset Store, such as 3D models, textures, and dedicated solutions for specific domains. More fundamental software may be better suited for publishing on OpenUPM. You can even choose to publish your content on both platforms. For instance, you can publish the core package on OpenUPM and provide a fully-featured demo project on the Asset Store.
 
-The other 3rd-party registries like [xcrew.dev](https://xcrew.dev/), [upm-packages.dev](https://upm-packages.dev/) and [unitynuget-registry](https://unitynuget-registry.azurewebsites.net) offering valuable contents and usually maintained by a few passionate developers.
+### NuGet and UnityNuGet
 
-If repositories of these UPM packages are hosting on GitHub, then they could be contributed to the OpenUPM platform as well.
+NuGet is a package manager for the Microsoft .NET platform. UnityNuGet is a project that provides a service to bundle NuGet packages into the UPM format. The OpenUPM registry uplinks to the UnityNuGet registry to make it easier to use a NuGet package. You can learn more about this process in the [NuGet Packages](/nuget/) section.
 
-In fact that openupm-cli is designed to support any 3rd-party registries when specifying the [registry option](https://github.com/openupm/openupm-cli#command-options). i.e. search the unitynuget-registry.
+### Using UPM via Git URL
 
-```sh
-$ openupm search memory --registry=https://unitynuget-registry.azurewebsites.net
-┌───────────────────────────┬──────────────────────┬────────────┬──────────┐
-│ Name                      │ Version              │ Author     │ Date     │
-├───────────────────────────┼──────────────────────┼────────────┼──────────┤
-│ org.nuget.system.memory   │ 4.5.3                │            │          │
-└───────────────────────────┴──────────────────────┴────────────┴──────────┘
-```
+Since Unity 2019.3, developers can install UPM packages directly via a Git URL. This is a quick way to install packages; however, it has some limitations:
+- It lacks version control.
+- It lacks support for custom packages with Git dependencies. Git URL is not the standard syntax for package dependencies, which means you cannot resolve a custom package that depends on another custom package using Git URLs.
 
-### UPM and Git Url
+While using Git URLs is a quick way to pick up a package, if you desire a better version control experience, you can encourage the package author to publish the package on OpenUPM.
 
-Since Unity 2019.3, developers can install the UPM package directly via Git URL. It's a quick way to install packages, however
-- lacking version control.
-- lacking support for the custom package with Git dependencies. Git URL is not the standard syntax of package dependency, hence you cannot resolve a custom package that depends on another custom package using Git URLs.
+## Credits for OpenSource Projects and Services
 
-To overcome these barriers, [UpmGitExtension](https://github.com/mob-sakai/UpmGitExtension) is a 3rd-party plugin that providing the Git tag based version control and the [dependency resolver](https://github.com/mob-sakai/GitDependencyResolverForUnity) for Git URLs. Along with [awesome-upm](https://github.com/starikcetin/awesome-upm) - a curated list of UPM repositories, together they offering a similar experience with OpenUPM. While the OpenUPM platform may be a better package discovery service.
-
-## The Power of Open Source
-
-OpenUPM is an open-source service. It's impossible to make it work without these amazing projects and services.
+OpenUPM is an open-source service, and it wouldn't be possible without the invaluable contributions of these amazing projects and services.
 
 Open-source software
 
 - [Verdaccio](https://verdaccio.org/) for the package registry.
-- [Vuepress](https://vuepress.vuejs.org/) for writing docs.
+- [Vuepress 2](https://v2.vuepress.vuejs.org/) for documentation writing.
 - [Spectre](https://github.com/picturepan2/spectre) for styling.
-- [Font Awesome](https://fontawesome.com/license/free) for icon.
+- [Font Awesome](https://fontawesome.com/license/free) for icons.
 
-Open-source friendly services
+Open-source friendly services (affiliate links included)
 
-- [Digital Ocean](https://m.do.co/c/50e7f9860fa9) for the cloud computing.
+- [Digital Ocean](https://m.do.co/c/50e7f9860fa9) for cloud VM.
 - [Azure Pipelines](https://azure.microsoft.com/en-us/services/devops/pipelines/) for build pipelines.
 - [Netlify](https://github.com/netlify) for hosting the website (region US).
-- [GitHub Actions](https://github.com/features/actions) for CI.
-- [Mergify](https://mergify.io/) for automatically merging. (use referral code `openupm-241828` to get one year free seat)
+- [Mergify](https://mergify.io/) for automated merging (use referral code `openupm-241828` to get one year of free seats).
