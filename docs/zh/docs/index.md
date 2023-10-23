@@ -24,7 +24,7 @@ Unity支持[scoped registry（带作用域的软件包仓库）](https://docs.un
 +-----+            +---------------+             +-----+
 ```
 
-请访问[OpenUPM-CLI快速入门](./getting-started.md)学习命令行的基本用法，或访问[OpenUPM-CLI自述文件](https://github.com/openupm/openupm-cli#openupm-cli)来了解更多信息。更友好的Unity编辑器集成，请参考工单[#10](https://github.com/openupm/openupm/issues/10)。
+请访问[OpenUPM-CLI快速入门](./getting-started-cli.md)学习命令行的基本用法，或访问[OpenUPM-CLI自述文件](https://github.com/openupm/openupm-cli#openupm-cli)来了解更多信息。更友好的Unity编辑器集成，请参考工单[#10](https://github.com/openupm/openupm/issues/10)。
 
 如果你不习惯使用命令行工具，仍然可以使用软件包页面提供的其他安装方式。
 

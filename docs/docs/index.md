@@ -32,7 +32,7 @@ However, when you install a package from the OpenUPM website, it automatically p
 
 Furthermore, we've created a command-line tool known as [openupm-cli](https://github.com/openupm/openupm-cli) to manage the manifest file. This tool allows you to add, update, and remove for packages using a single command in most terminal apps like Bash, Git-Bash, CMD, or PowerShell. When Unity detects changes in the manifest file, it will automatically resolve and synchronize the packages for you.
 
-For a guide on using the command-line tool, check out [Getting Started with CLI](./getting-started.md).
+For a guide on using the command-line tool, check out [Getting Started with CLI](./getting-started-cli.md).
 
 ## Regions
 

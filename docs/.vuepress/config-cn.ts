@@ -24,6 +24,7 @@ const docSideBar = function () {
       children: [
         "/zh/docs/",
         "/zh/docs/getting-started",
+        "/zh/docs/getting-started-cli",
         "/zh/docs/adding-upm-package",
         "/zh/docs/modifying-upm-package",
         "/zh/docs/opt-out"

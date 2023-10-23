@@ -1,121 +1,64 @@
 ---
 ---
-# Getting Started with OpenUPM-CLI
+# Getting Started with Unity Editor
 
-The article is a step-by-step tutorial for how to install openupm-cli and manipulate the package manifest file in the terminal. It can work with various shells:
-- Bash for Mac/Linux
-- [Git-Bash](https://gitforwindows.org/), CMD, or PowerShell for Windows.
+This article is a step-by-step tutorial on how to use OpenUPM with Unity Editor.
 
-::: tip Not a fan of command-line tool?
-If you are unfamiliar with the command-line, you can still use other installation options available on the package page.
-:::
+## Setup the Scoped Registry
 
-## Installing OpenUPM-CLI
+Start by visiting [OpenUPM](https://openupm.com) and search for the package you want to install. For example, search for [Unity Addressable Importer](https://openupm.com/packages/com.littlebigfun.addressable-importer/), a helper package for managing addressable assets.
 
-OpenUPM-CLI requires [Node.js 14.18 or above](https://nodejs.org/en/download/).
+![Install Option](./images/getting-started-editor-install-option.png)
 
+Click the **Manual installation** button to expand the installation instructions.
 
-Let's verify the Node.js installation by printing the npm version (the node package manager where UPM is inspired from).
+![Install Instructions](images/getting-started-editor-install-instructions.png)
 
-```sh
-$ npm -v
-6.13.4
-```
+Following the instructions, open Unity Editor, and go to the menu `Edit/Project Settings`. Click on the `Package Manager` in the left panel.
 
-It is recommended to install the openupm-cli globally, so you can use it from any path.
+![Package Manager](./images/getting-started-editor-package-manager.png)
 
-```sh
-$ npm install -g openupm-cli
-C:\Users\openupm\AppData\Roaming\npm\openupm -> C:\Users\openupm\AppData\Roaming\npm\node_modules\openupm-cli\bin\openupm + openupm-cli@1.1.0
-updated 2 packages in 12.177s
-```
+Add a new scoped registry by clicking the **+** button. Input the following information provided in the instructions:
 
-Let's verify the openupm-cli installation by printing the version.
+   - Name: `package.openupm.com`
+   - URL: `https://package.openupm.com`
+   - Scopes: `com.littlebigfun.addressable-importer`
 
-```sh
-$ openupm --version
-1.1.0
-```
+Click the **Apply** button to add the scoped registry.
 
 ## Installing a UPM Package
 
-The next step is creating a new Unity project, located at path `~/Document/projects/hello-openupm`.
+Click the `Window/Packages` menu to open the Package Manager window. You should see the `Addressable Importer` package in the left panel list, where you can install it directly.
 
-Let's install [Unity Addressable Importer](https://github.com/favoyang/unity-addressable-importer) a helper package to manage addressable assets. First you need identify the package name.
+If it's not shown in the list, click the **+** button and select `Add package by name`.
 
-```sh
-# go to the unity project folder
-$ cd ~/Document/projects/hello-openupm
+   ![Package Manager Window](images/getting-started-editor-package-manager-window.png)
 
-# search package by keyword
-$ openupm search addressable
-┌──────────────────────────────────────────┬────────────────────┬────────────┐
-│ Name                                     │ Version            │ Date       │
-├──────────────────────────────────────────┼────────────────────┼────────────┤
-│ com.littlebigfun.addressable-importer    │ 0.16.1             │ 2023-02-08 │
-└──────────────────────────────────────────┴────────────────────┴────────────┘
-```
+Fill in the package name: `com.littlebigfun.addressable-importer` and version `0.16.1`. Click the **Add** button to install the package.
 
-It returns the package name `com.littlebigfun.addressable-importer`.
+   ![Package Manager Window 2](images/getting-started-editor-package-manager-window-2.png)
 
-::: tip
-You can directly copy the *install command* from the [package detail page](/packages/com.littlebigfun.addressable-importer) of the openupm website.
-:::
-
-Let's install the package via the `add` command.
-
-```sh
-$ openupm add com.littlebigfun.addressable-importer
-added: com.littlebigfun.addressable-importer@0.4.1
-manifest updated, please open unity project to apply changes
-```
-
-It returns that the package version 0.4.1 was added to the manifest file.
-
-Go back to Unity editor, wait for the package manager to resolve package changes. Then you shall see the `com.littlebigfun.addressable-importer` appears in the package manager window.
-
-![Install package](./images/getting-started-install-package.png)
-
-Notice that the dependency `Addressbles` is also installed, but not shown in the `In Project` list. Because it's not the direct dependency of the project yet. If you want to use the latest version, you shall find it in the `All packages` list to upgrade the version. Or you can use openupm-cli to install the latest version.
-
-```sh
-$ openupm add com.unity.addressables
-added: com.unity.addressables@1.5.0
-manifest updated, please open unity project to apply changes
-```
-Go back to the Unity editor, wait for the package manager to resolve package changes. Then you shall see the latest version of `Addressables` appears in the package manager window.
-
-![Upgrade package](./images/getting-started-upgrade-package.png)
-
-::: warning Notice
-As of December 2019, the openupm-cli only resolves package dependencies, to add necessary dependencies and scope information to the manifest file. It won't directly download the tarballs.
-:::
+It's done! You can now use the package in your project.
 
 ## Understanding Manifest Changes
 
-To understand the underlying changes of the manifest file, let's print the JSON content.
+Behind the scenes, Unity records a few changes in the `Packages/manifest.json` file. It adds a scoped registry named `package.openupm.com` and includes the `com.littlebigfun.addressable-importer` package in the dependencies list.
 
 ```json
-$ cat Packages/manifest.json
 {
-  "dependencies": {
-    ...
-    "com.littlebigfun.addressable-importer": "0.4.1",
-    "com.unity.addressables": "1.5.0"
-  },
-  "scopedRegistries": [
-    {
-      "name": "package.openupm.com",
-      "url": "https://package.openupm.com",
-      "scopes": [
-        "com.littlebigfun.addressable-importer",
-        "com.openupm"
-      ]
+    "scopedRegistries": [
+        {
+            "name": "package.openupm.com",
+            "url": "https://package.openupm.com",
+            "scopes": [
+                "com.littlebigfun.addressable-importer"
+            ]
+        }
+    ],
+    "dependencies": {
+        "com.littlebigfun.addressable-importer": "0.16.1"
     }
-  ]
 }
 ```
 
-The openupm-cli adds both `com.littlebigfun.addressable-importer` and `com.unity.addressables` to dependencies. It also modified the scopedRegistries to link the `com.littlebigfun.addressable-importer` namespace with the openupm registry.
-
-Please visit the [openupm-cli readme](https://github.com/openupm/openupm-cli#openupm-cli) for more usages.
+If you find the process a bit verbose, you can learn more about the [openupm-cli](./getting-started-cli.md) to simplify the process.
