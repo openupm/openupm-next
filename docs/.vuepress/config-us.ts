@@ -37,6 +37,7 @@ const docSideBar = function () {
         "/docs/adding-badge",
         "/docs/troubleshooting-build-errors",
         "/docs/modifying-upm-package",
+        "/docs/reclaim-package-ownership",
         "/docs/opt-out",
         "/docs/managing-upm-project",
       ]
