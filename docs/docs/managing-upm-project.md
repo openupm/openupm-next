@@ -1,8 +1,8 @@
 ---
 ---
-# Managing UPM Project
+# Managing UPM Project like a Pro
 
-A list of blog posts to help you manage UPM project like a pro:
+Discover a collection of blog posts to assist you in managing your UPM project with expertise:
 
 - [How to Maintain UPM Package Part 1: Creating upm Branch with GitHub Action](https://medium.com/openupm/how-to-maintain-upm-package-part-1-7b4daf88d4c4)
 - [How to Maintain UPM Package Part 2: Automating Releases with GitHub Actions](https://medium.com/openupm/how-to-maintain-upm-package-part-2-f352fbf5f87c)
