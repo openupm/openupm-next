@@ -19,23 +19,23 @@ export const config: any = {
 const docSideBar = function () {
   return [
     {
-      text: "使用指南",
+      text: "用户指南",
       collapsible: true,
       children: [
         "/zh/docs/",
         "/zh/docs/getting-started",
         "/zh/docs/getting-started-cli",
-        "/zh/docs/adding-upm-package",
-        "/zh/docs/modifying-upm-package",
-        "/zh/docs/opt-out"
       ]
     },
     {
-      text: "支持我们",
+      text: "软件包作者指南",
       collapsible: true,
       children: [
-        "/zh/support/",
-        "/zh/contributors/"
+        "/zh/docs/adding-upm-package",
+        "/zh/docs/adding-badge",
+        "/zh/docs/modifying-upm-package",
+        "/zh/docs/opt-out",
+        "/zh/docs/managing-upm-project",
       ]
     },
     {
@@ -46,9 +46,12 @@ const docSideBar = function () {
       ]
     },
     {
-      text: "软件包作者指南",
+      text: "支持我们",
       collapsible: true,
-      children: ["/zh/docs/adding-badge", "/zh/docs/managing-upm-project"]
+      children: [
+        "/zh/support/",
+        "/zh/contributors/"
+      ]
     },
     {
       text: "OpenUPM维护指南",

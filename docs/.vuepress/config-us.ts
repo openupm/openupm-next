@@ -21,23 +21,24 @@ export const config: any = {
 const docSideBar = function () {
   return [
     {
-      text: "Guide",
+      text: "User Guide",
       collapsible: true,
       children: [
         "/docs/",
         "/docs/getting-started",
         "/docs/getting-started-cli",
-        "/docs/adding-upm-package",
-        "/docs/modifying-upm-package",
-        "/docs/opt-out",
       ]
     },
     {
-      text: "Support US",
+      text: "Package Creator Guide",
       collapsible: true,
       children: [
-        "/support/",
-        "/contributors/"
+        "/docs/adding-upm-package",
+        "/docs/adding-badge",
+        "/docs/troubleshooting-build-errors",
+        "/docs/modifying-upm-package",
+        "/docs/opt-out",
+        "/docs/managing-upm-project",
       ]
     },
     {
@@ -48,9 +49,12 @@ const docSideBar = function () {
       ]
     },
     {
-      text: "Package Creator Guide",
+      text: "Support US",
       collapsible: true,
-      children: ["/docs/adding-badge", "/docs/managing-upm-project"]
+      children: [
+        "/support/",
+        "/contributors/"
+      ]
     },
     {
       text: "Development Guide",
