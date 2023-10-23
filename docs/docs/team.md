@@ -3,9 +3,11 @@ pageClass: page-team
 ---
 # Team
 
-OpenUPM is a service for hosting and building open source unity package manager (upm) packages. The intention is to create an universal platform to discover, share and distribute open source upm packages, and a community along with it.
+OpenUPM is a service dedicated to hosting and building open-source Unity Package Manager (UPM) packages. The platform's primary aim is to establish a universal hub for discovering, sharing, and distributing open-source UPM packages while fostering a vibrant community.
 
-The development of OpenUPM is guided by:
+The development and maintenance of OpenUPM are led by **Favo Yang:** the primary contributor and maintainer of OpenUPM, taking care of hosting, development, and new feature implementations.
+
+OpenUPM thrives through the hard work and dedication of this team, along with contributions from the open-source community. It's a collaborative effort to make UPM package management easier and more accessible for Unity developers.
 
 <div class="tile">
   <div class="tile-icon">
