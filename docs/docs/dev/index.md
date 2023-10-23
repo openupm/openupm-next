@@ -2,6 +2,8 @@
 ---
 # Development
 
+This page may include outdated information.
+
 ## Architecture
 
 The OpenUPM service is composed of below sub-systems:
