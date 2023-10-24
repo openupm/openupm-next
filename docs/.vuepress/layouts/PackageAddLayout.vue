@@ -196,7 +196,7 @@ const fetchBranches = async () => {
     if (state.form.options.branch.some((x: any) => x.key == "master")) {
       state.form.values.branch = "master";
       onBranchChange();
-    } else if (state.form.options.some((x: any) => x.key == "main")) {
+    } else if (state.form.options.branch.some((x: any) => x.key == "main")) {
       state.form.values.branch = "main";
       onBranchChange();
     }
