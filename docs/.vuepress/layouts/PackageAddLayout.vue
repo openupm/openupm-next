@@ -115,7 +115,7 @@ const repoOwner = computed(() => {
 
 const uploadLink = computed(() => {
   const qs = querystring.stringify({
-    filename: state.packageJsonObj.name + ".yaml",
+    filename: state.packageJsonObj.name + ".yml",
     value: genYaml(),
     message: `chore(data): new package ${state.packageJsonObj.name}`,
   });
