@@ -68,8 +68,21 @@ Package owners have the option to opt out of OpenUPM by following these steps:
 
 Refer to [Unpublishing a Version](#unpublishing-a-version) to understand why we do not allow unpublishing existing versions.
 
-However, there are specific cases in which you can contact us to request the unpublishing of the entire package from the registry:
+However, there are specific cases in which you can contact us to request the unpublishing of the entire package from the registry.
 
-- The package violates our package guidelines and cannot be fixed.
+### Packages Published Less Than 72 Hours Ago
+
+For newly created packages, as long as no other packages in the OpenUPM Public Registry depend on your package, you can unpublish anytime within the first 72 hours after publishing.
+
+### Packages Published More Than 72 Hours Ago
+
+Regardless of how long ago a package was published, you can unpublish a package that meets all of the following conditions:
+
+- no other packages in the OpenUPM Public Registry depend on it.
+- it had less than 50 downloads over the last month.
+
+#### Package Violates Our Package Guidelines
+
+If a package violates our package guidelines, we can unpublish it regardless of how long ago it was published.
 
 If you have a valid reason to unpublish all versions entirely, please [create an issue](https://github.com/openupm/openupm/issues/new?title=Unpublish%20package&template=unpublish_package.md).
