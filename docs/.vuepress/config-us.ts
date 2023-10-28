@@ -27,6 +27,7 @@ const docSideBar = function () {
         "/docs/",
         "/docs/getting-started",
         "/docs/getting-started-cli",
+        "/docs/faq",
       ]
     },
     {

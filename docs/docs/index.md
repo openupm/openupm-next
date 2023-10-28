@@ -77,5 +77,13 @@ Open-source friendly services (affiliate links included)
 
 - [Digital Ocean](https://m.do.co/c/50e7f9860fa9) for cloud VM.
 - [Azure Pipelines](https://azure.microsoft.com/en-us/services/devops/pipelines/) for build pipelines.
-- [Netlify](https://github.com/netlify) for hosting the website (region US).
+- [Netlify](https://github.com/netlify) for hosting the website.
 - [Mergify](https://mergify.io/) for automated merging (use referral code `openupm-241828` to get one year of free seats).
+
+## What's Next?
+
+You can get started with OpenUPM by following the links below:
+- [Getting Started with Unity Editor](./getting-started.md)
+- [Getting Started with CLI](./getting-started-cli.md)
+
+You can also read [Frequently Asked Questions](./faq.md) and learn about how to [Adding UPM Package](./adding-upm-package.md).
