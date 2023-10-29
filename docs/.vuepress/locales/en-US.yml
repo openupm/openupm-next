@@ -31,7 +31,7 @@ fill-the-package-form: Fill the package form
 fill-the-package-form-desc: >-
   Please fill the form to provide the package information. The package must
   conform to OpenUPM's package criteria. Learn more at
-footer-copyright: Copyright © 2019-2023 Favo Yang
+footer-copyright: Copyright © 2019-present Favo Yang
 get: Get
 git-tag: Git tag
 github: GitHub
