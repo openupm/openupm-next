@@ -48,9 +48,9 @@ export enum ReleaseReason {
   // Fatal clone
   RemoteSubmoduleUnavailable = 808,
   // Connection timeout
-  ConnectionTime = 900,
+  ConnectionTimeout = 900,
   // Connection timeout
-  HeapOutOfMemroy = 901
+  HeapOutOfMemroy = 901,
 }
 
 /**
@@ -68,7 +68,8 @@ export const RetryableReleaseReason = [
   ReleaseReason.ServiceUnavailable,
   ReleaseReason.GatewayTimeout,
   ReleaseReason.BuildTimeout,
-  ReleaseReason.BuildCancellation
+  ReleaseReason.BuildCancellation,
+  ReleaseReason.ConnectionTimeout,
 ];
 
 export const Region = {
