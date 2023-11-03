@@ -1,4 +1,4 @@
-import { ReleaseReason, ReleaseState } from "./constant";
+import { ReleaseReason, ReleaseState } from './constant.js';
 
 // PackageMetadataLocalBase represents the base package metadata loaded from the yaml file.
 export interface PackageMetadataLocalBase {
@@ -68,7 +68,9 @@ export interface PackageMetadataRemote {
 }
 
 // PackageMetadata merges PackageMetadataLocal and PackageMetadataRemote.
-export interface PackageMetadata extends PackageMetadataLocal, PackageMetadataRemote { };
+export interface PackageMetadata
+  extends PackageMetadataLocal,
+    PackageMetadataRemote {}
 
 export interface PackageRelease {
   version: string;
@@ -102,7 +104,7 @@ export interface PackageRegistryInfo {
   name: string;
   versions: { [key: string]: PackageRegistryVersion };
   time: { [key: string]: string };
-  "dist-tags": { [key: string]: string };
+  'dist-tags': { [key: string]: string };
   readme: string;
 }
 
@@ -120,7 +122,7 @@ export interface PackageDependency {
 
 export interface SiteInfo {
   // GitHub repo stars
-  stars: number
+  stars: number;
 }
 
 export interface GithubUserWithScore {

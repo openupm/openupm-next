@@ -1,14 +1,17 @@
-import urlJoin from "url-join";
-import { PUBLIC_GEN_DIR, Region } from "./constant";
-import { getCachedAvatarImageFilename, getRegion } from "./utils";
-import { getPackageNamespace } from "@shared/utils";
+import urlJoin from 'url-join';
+import { PUBLIC_GEN_DIR, Region } from './constant.js';
+import {
+  getCachedAvatarImageFilename,
+  getRegion,
+  getPackageNamespace,
+} from './utils.js';
 
 /**
  * Get base domain.
  * @returns base domain
  */
 export const getBaseDomain = function (): string {
-  return getRegion() == Region.CN ? "openupm.cn" : "openupm.com";
+  return getRegion() == Region.CN ? 'openupm.cn' : 'openupm.com';
 };
 
 /**
@@ -17,7 +20,7 @@ export const getBaseDomain = function (): string {
  */
 export const getWebBaseUrl = function (): string {
   return `https://${getBaseDomain()}`;
-}
+};
 
 /**
  * Get package detail page path for package name.
@@ -26,7 +29,7 @@ export const getWebBaseUrl = function (): string {
  */
 export const getPackageDetailPagePath = function (packageName: string): string {
   return `/packages/${packageName}/`;
-}
+};
 
 /**
  * Get package detail url for package name.
@@ -36,17 +39,19 @@ export const getPackageDetailPagePath = function (packageName: string): string {
 export const getPackageDetailPageUrl = function (packageName: string): string {
   const webBaseUrl = getWebBaseUrl();
   return urlJoin(webBaseUrl, getPackageDetailPagePath(packageName));
-}
+};
 
 /**
  * Get package's related packages page path for package name.
  * @param packageName package name
  * @returns package detail page path
  */
-export const getPackageRelatedPackagesPath = function (packageName: string): string {
+export const getPackageRelatedPackagesPath = function (
+  packageName: string,
+): string {
   const scope = getPackageNamespace(packageName);
-  return urlJoin("/", PUBLIC_GEN_DIR, scope + ".json");
-}
+  return urlJoin('/', PUBLIC_GEN_DIR, scope + '.json');
+};
 
 /**
  * Get public gen path for path.
@@ -54,8 +59,8 @@ export const getPackageRelatedPackagesPath = function (packageName: string): str
  * @returns public gen path
  */
 export const getPublicGenPath = function (path: string): string {
-  return urlJoin("/", PUBLIC_GEN_DIR, path);
-}
+  return urlJoin('/', PUBLIC_GEN_DIR, path);
+};
 
 /**
  * Get public gen url for path.
@@ -65,7 +70,7 @@ export const getPublicGenPath = function (path: string): string {
 export const getPublicGenUrl = function (path: string): string {
   const webBaseUrl = getWebBaseUrl();
   return urlJoin(webBaseUrl, getPublicGenPath(path));
-}
+};
 
 /**
  * Get package list page path for topic.
@@ -75,19 +80,25 @@ export const getPublicGenUrl = function (path: string): string {
 export const getPackageListPagePath = function (topic?: string): string {
   if (topic) return `/packages/topics/${topic}/`;
   return '/packages/';
-}
+};
 
 // OpenUPM GitHub repo url.
-export const OpenUPMGitHubRepoUrl = "https://github.com/openupm/openupm";
+export const OpenUPMGitHubRepoUrl = 'https://github.com/openupm/openupm';
 
 /**
  * Get GitHub package metadata url for package name.
  * @param packageName package name
  * @returns GitHub package metadata url
  */
-export const getGitHubPackageMetadataUrl = function (packageName: string): string {
-  return urlJoin(OpenUPMGitHubRepoUrl, "/blob/master/data/packages", packageName + ".yml");
-}
+export const getGitHubPackageMetadataUrl = function (
+  packageName: string,
+): string {
+  return urlJoin(
+    OpenUPMGitHubRepoUrl,
+    '/blob/master/data/packages',
+    packageName + '.yml',
+  );
+};
 
 /**
  * Get GitHub raw file url for given github html url.
@@ -96,9 +107,9 @@ export const getGitHubPackageMetadataUrl = function (packageName: string): strin
  */
 export const getGitHubRawFileUrl = function (url: string): string {
   const gitHubBlobRe = /^https?:\/\/github\.com\/.*\/.*\/blob\//i;
-  if (gitHubBlobRe.test(url)) url = url.replace(/\/blob\//, "/raw/");
+  if (gitHubBlobRe.test(url)) url = url.replace(/\/blob\//, '/raw/');
   return url;
-}
+};
 
 /**
  * Get GitHub avatar image url for github user.
@@ -106,8 +117,11 @@ export const getGitHubRawFileUrl = function (url: string): string {
  * @param size image size in pixels
  * @returns image url
  */
-export const getGitHubAvatarUrl = function (username: string, size: number): string {
-  return urlJoin("https://github.com/", username + ".png?size=" + size);
+export const getGitHubAvatarUrl = function (
+  username: string,
+  size: number,
+): string {
+  return urlJoin('https://github.com/', username + '.png?size=' + size);
 };
 
 /**
@@ -117,7 +131,7 @@ export const getGitHubAvatarUrl = function (username: string, size: number): str
  */
 export const getAzureWebBuildUrl = function (buildId: string): string {
   return `https://dev.azure.com/openupm/openupm/_build/results?view=logs&buildId=${buildId}`;
-}
+};
 
 /**
  * Get media base url.
@@ -125,8 +139,8 @@ export const getAzureWebBuildUrl = function (buildId: string): string {
  */
 export const getMediaBaseUrl = function (): string {
   return getRegion() == Region.CN
-    ? "https://download.openupm.cn/media/"
-    : "https://openupm.sfo2.cdn.digitaloceanspaces.com/media/";
+    ? 'https://download.openupm.cn/media/'
+    : 'https://openupm.sfo2.cdn.digitaloceanspaces.com/media/';
 };
 
 /**
@@ -134,7 +148,9 @@ export const getMediaBaseUrl = function (): string {
  * @param imageFilename image filename
  * @returns image url
  */
-export const getPackageImageUrl = function (imageFilename: string): string | null {
+export const getPackageImageUrl = function (
+  imageFilename: string,
+): string | null {
   if (!imageFilename) return null;
   const mediaBaseUrl = getMediaBaseUrl();
   return urlJoin(mediaBaseUrl, imageFilename);
@@ -146,7 +162,10 @@ export const getPackageImageUrl = function (imageFilename: string): string | nul
  * @param size image size in pixels
  * @returns image url
  */
-export const getAvatarImageUrl = function (username: string, size: number): string {
+export const getAvatarImageUrl = function (
+  username: string,
+  size: number,
+): string {
   const mediaBaseUrl = getMediaBaseUrl();
   const filename = getCachedAvatarImageFilename(username, size);
   return urlJoin(mediaBaseUrl, filename);
@@ -158,15 +177,15 @@ export const getAvatarImageUrl = function (username: string, size: number): stri
  */
 export const getAPIBaseUrl = function (): string {
   return `https://api.${getBaseDomain()}`;
-}
+};
 
 /**
  * Get api base url.
  * @returns api base url
  */
 export const getPackageInfoUrl = function (name: string): string {
-  return urlJoin(getAPIBaseUrl(), "packages", name);
-}
+  return urlJoin(getAPIBaseUrl(), 'packages', name);
+};
 
 /**
  * Get registry base url.
@@ -174,7 +193,7 @@ export const getPackageInfoUrl = function (name: string): string {
  */
 export const getRegistryBaseUrl = function (): string {
   return `https://package.${getBaseDomain()}`;
-}
+};
 
 /**
  * Get package metadata url for package name.
@@ -183,31 +202,37 @@ export const getRegistryBaseUrl = function (): string {
  */
 export const getPackageMetadataUrl = function (name: string): string {
   return urlJoin(getRegistryBaseUrl(), name);
-}
+};
 
 /**
  * Get monthly downloads url for package name.
  * @param name package name
  */
 export const getMonthlyDownloadsUrl = function (name: string): string {
-  return urlJoin(getRegistryBaseUrl(), "downloads", "range", "last-month", name);
-}
+  return urlJoin(
+    getRegistryBaseUrl(),
+    'downloads',
+    'range',
+    'last-month',
+    name,
+  );
+};
 
 /**
  * Get openupm-cli repo url.
  * @returns openupm-cli repo url
  */
 export const getOpenupmCliRepoUrl = function (): string {
-  return "https://github.com/openupm/openupm-cli#openupm-cli";
-}
+  return 'https://github.com/openupm/openupm-cli#openupm-cli';
+};
 
 /**
  * Get Node.js download url.
  * @returns Node.js download url
  */
 export const getNodeJsUrl = function (): string {
-  return "https://nodejs.org/en/download/";
-}
+  return 'https://nodejs.org/en/download/';
+};
 
 const packageDetailRe = new RegExp('^/packages/([\\w.-]+)/$', 'i');
 
@@ -217,12 +242,14 @@ const packageDetailRe = new RegExp('^/packages/([\\w.-]+)/$', 'i');
  */
 export const isPackageDetailPath = function (path: string): boolean {
   return packageDetailRe.test(path);
-}
+};
 
-export const parsePackageNameFromPackageDetailPath = function (path: string): string | null {
+export const parsePackageNameFromPackageDetailPath = function (
+  path: string,
+): string | null {
   const match = packageDetailRe.exec(path);
   return match ? match[1] : null;
-}
+};
 
 const packageListRe = new RegExp('^/packages/topics/[\\w.-]+/$', 'i');
 
@@ -232,13 +259,15 @@ const packageListRe = new RegExp('^/packages/topics/[\\w.-]+/$', 'i');
  */
 export const isPackageListPath = function (path: string): boolean {
   return path === '/packages/' || packageListRe.test(path);
-}
+};
 
 export const getUnityRegistryUrl = function (): string {
-  return getRegion() == Region.CN ? "https://packages.unity.cn" : "https://packages.unity.com";
-}
+  return getRegion() == Region.CN
+    ? 'https://packages.unity.cn'
+    : 'https://packages.unity.com';
+};
 
 export const getLocaleDocsPath = function (path: string): string {
-  const regionPath = getRegion() == Region.CN ? "/zh" : "/";
+  const regionPath = getRegion() == Region.CN ? '/zh' : '/';
   return urlJoin(regionPath, path);
-}
+};

@@ -2,7 +2,8 @@ export default {
   testEnvironment: 'node',
   preset: 'ts-jest/presets/default-esm',
   transform: {
-    '^.+\\.m?[tj]s?$': ['ts-jest', { useESM: true }],
+    // Transform is disabled due to experimental ESM support. See https://jestjs.io/docs/ecmascript-modules.
+    // '^.+\\.m?[tj]s?$': ['ts-jest', { useESM: true }],
   },
   moduleNameMapper: {
     '^(\\.{1,2}/.*)\\.(m)?js$': '$1',
