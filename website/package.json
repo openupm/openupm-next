@@ -75,5 +75,8 @@
   "dependencies": {
     "cross-env": "^7.0.3",
     "spdx-license-list": "^6.6.0"
+  },
+  "volta": {
+    "node": "18.18.2"
   }
 }
