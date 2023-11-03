@@ -1,0 +1,46 @@
+{
+  "private": "true",
+  "name": "openupm-data",
+  "version": "0.0.0",
+  "description": "Tools to handle openupm data",
+  "type": "module",
+  "engines": {
+    "node": ">= 18.12 <19"
+  },
+  "devDependencies": {
+    "@types/jest": "~29.5",
+    "@types/node": "~18",
+    "@typescript-eslint/eslint-plugin": "~6.2",
+    "@typescript-eslint/parser": "~6.2",
+    "cross-env": "^7.0.3",
+    "eslint": "~8.46",
+    "eslint-config-prettier": "~9.0",
+    "eslint-plugin-jest": "~27.2",
+    "jest": "~29.7",
+    "prettier": "~3.0",
+    "rimraf": "~5.0",
+    "ts-api-utils": "~1.0",
+    "ts-jest": "~29.1",
+    "typescript": "~5.1"
+  },
+  "scripts": {
+    "start": "node build/src/main.js",
+    "clean": "rimraf coverage build tmp",
+    "prebuild": "npm run lint",
+    "build": "tsc -p tsconfig.json",
+    "build:watch": "tsc -w -p tsconfig.json",
+    "build:release": "npm run clean && tsc -p tsconfig.release.json",
+    "lint": "eslint . --ext .ts --ext .mts",
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --coverage",
+    "prettier": "prettier --config .prettierrc --write .",
+    "test:watch": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --watch"
+  },
+  "author": "Favo Yang <favoyang@users.noreply.github.com>",
+  "license": "BSD-3-Clause",
+  "dependencies": {
+    "tslib": "~2.6"
+  },
+  "volta": {
+    "node": "18.12.1"
+  }
+}
