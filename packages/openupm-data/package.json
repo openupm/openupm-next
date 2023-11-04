@@ -4,9 +4,11 @@
   "version": "0.0.0",
   "description": "Tools to handle openupm data",
   "type": "module",
+  "types": "build/types.d.ts",
   "engines": {
     "node": ">= 18.12 <19"
   },
+  "main": "build/main.js",
   "devDependencies": {
     "@types/jest": "~29.5",
     "@types/node": "~18",
@@ -31,16 +33,19 @@
     "build:watch": "tsc -w -p tsconfig.json",
     "build:release": "npm run clean && tsc -p tsconfig.release.json",
     "lint": "eslint . --ext .ts --ext .mts",
-    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --coverage",
+    "test": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --coverage",
     "prettier": "prettier --config .prettierrc --write .",
-    "test:watch": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --watch"
+    "test:watch": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --watch"
   },
   "author": "Favo Yang <favoyang@users.noreply.github.com>",
   "license": "BSD-3-Clause",
   "dependencies": {
+    "dotenv-flow": "^4.0.0",
+    "lodash-es": "^4.17.21",
+    "spdx-license-list": "^6.8.0",
     "tslib": "~2.6"
   },
   "volta": {
-    "node": "18.12.1"
+    "node": "18.18.2"
   }
 }

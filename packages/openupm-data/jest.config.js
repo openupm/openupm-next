@@ -16,4 +16,5 @@ export default {
     '!src/**/*.d.ts',
     '!src/**/*.d.mts',
   ],
+  setupFiles: ['dotenv-flow/config'],
 };

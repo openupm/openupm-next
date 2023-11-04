@@ -1,11 +1,15 @@
-import path from "path";
-import fs from "fs";
-import { promises as afs } from "fs";
-import yaml from "js-yaml";
+import path from 'path';
+import fs from 'fs';
+import { promises as afs } from 'fs';
+import yaml from 'js-yaml';
 import { countBy, flatMap, sortBy, toPairs } from 'lodash-es';
 
-import { parsePackageMetadata } from "@node/utils/package";
-import { PackageMetadataLocal, GithubUserWithScore, TopicBase } from "@shared/types";
+import { parsePackageMetadata } from './package.js';
+import {
+  PackageMetadataLocal,
+  GithubUserWithScore,
+  TopicBase,
+} from 'openupm-common';
 
 /**
  * Get the local data directory.
@@ -16,12 +20,9 @@ export const getLocalDataDir = function (): string {
   let dataDir = null;
   if (process.env.OPENUPM_DATA_PATH)
     dataDir = path.resolve(process.env.OPENUPM_DATA_PATH);
-  else
-    dataDir = path.resolve(process.cwd(), "data");
-  if (fs.existsSync(dataDir))
-    return dataDir;
-  else
-    throw new Error(`Local data directory doesn't exist at ${dataDir}`);
+  else dataDir = path.resolve(process.cwd(), 'data');
+  if (fs.existsSync(dataDir)) return dataDir;
+  else throw new Error(`Local data directory doesn't exist at ${dataDir}`);
 };
 
 /**
@@ -29,27 +30,29 @@ export const getLocalDataDir = function (): string {
  * @param options loadPackageNames options
  * @returns package name array
  */
-export const loadPackageNames = async function (options?: { sortKey?: string }): Promise<string[]> {
+export const loadPackageNames = async function (options?: {
+  sortKey?: string;
+}): Promise<string[]> {
   const { sortKey } = options || {};
-  const packagesDir = path.resolve(getLocalDataDir(), "packages");
+  const packagesDir = path.resolve(getLocalDataDir(), 'packages');
   let files = await afs.readdir(packagesDir);
   // Sort
-  if (sortKey == "mtime" || sortKey == "-mtime") {
+  if (sortKey == 'mtime' || sortKey == '-mtime') {
     files.sort(function (a, b) {
       return (
         fs.statSync(path.join(packagesDir, a)).mtime.getTime() -
         fs.statSync(path.join(packagesDir, b)).mtime.getTime()
       );
     });
-  } else if (sortKey == "name" || sortKey == "-name") {
+  } else if (sortKey == 'name' || sortKey == '-name') {
     files.sort();
   }
   // Reverse for desc
-  if (sortKey && sortKey.startsWith("-")) files.reverse();
+  if (sortKey && sortKey.startsWith('-')) files.reverse();
   // Find paths with *.ya?ml ext.
   files = files
     .filter((p) => (p.match(/.*\.(ya?ml)$/) || [])[1] !== undefined)
-    .map((p) => p.replace(/\.ya?ml$/, ""));
+    .map((p) => p.replace(/\.ya?ml$/, ''));
   const PACKAGE_LIMIT = Number(process.env.PACKAGE_LIMIT);
   if (PACKAGE_LIMIT > 0) {
     files = files.slice(0, PACKAGE_LIMIT);
@@ -62,10 +65,12 @@ export const loadPackageNames = async function (options?: { sortKey?: string }):
  * @param name package name
  * @returns package meta object
  */
-export const loadPackageMetadataLocal = async function (name: string): Promise<PackageMetadataLocal | null> {
+export const loadPackageMetadataLocal = async function (
+  name: string,
+): Promise<PackageMetadataLocal | null> {
   try {
-    const absPath = path.resolve(getLocalDataDir(), "packages", name + ".yml");
-    return parsePackageMetadata(yaml.load(await afs.readFile(absPath, "utf8")));
+    const absPath = path.resolve(getLocalDataDir(), 'packages', name + '.yml');
+    return parsePackageMetadata(yaml.load(await afs.readFile(absPath, 'utf8')));
   } catch (e) {
     console.error(e);
     return null;
@@ -78,7 +83,11 @@ export const loadPackageMetadataLocal = async function (name: string): Promise<P
  * @returns true if package metadata local file exists
  */
 export const packageMetadataLocalExists = function (name: string): boolean {
-  const absPath: string = path.resolve(getLocalDataDir(), "packages", name + ".yml");
+  const absPath: string = path.resolve(
+    getLocalDataDir(),
+    'packages',
+    name + '.yml',
+  );
   return fs.existsSync(absPath);
 };
 
@@ -87,8 +96,8 @@ export const packageMetadataLocalExists = function (name: string): boolean {
  * @returns built-in package name array
  */
 export const loadBuiltinPackageNames = async function (): Promise<string[]> {
-  const absPath = path.resolve(getLocalDataDir(), "builtin.yml");
-  const content = yaml.load(await afs.readFile(absPath, "utf8")) as any;
+  const absPath = path.resolve(getLocalDataDir(), 'builtin.yml');
+  const content = yaml.load(await afs.readFile(absPath, 'utf8'));
   return content.packages;
 };
 
@@ -97,8 +106,8 @@ export const loadBuiltinPackageNames = async function (): Promise<string[]> {
  * @returns blocked scopes array
  */
 export const loadBlockedScopes = async function (): Promise<string[]> {
-  const absPath = path.resolve(getLocalDataDir(), "blocked-scopes.yml");
-  const content = yaml.load(await afs.readFile(absPath, "utf8")) as any;
+  const absPath = path.resolve(getLocalDataDir(), 'blocked-scopes.yml');
+  const content = yaml.load(await afs.readFile(absPath, 'utf8'));
   return content.scopes;
 };
 
@@ -107,8 +116,8 @@ export const loadBlockedScopes = async function (): Promise<string[]> {
  * @returns TopicBase array
  */
 export const loadTopics = async function (): Promise<TopicBase[]> {
-  const absPath = path.resolve(getLocalDataDir(), "topics.yml");
-  const content = yaml.load(await afs.readFile(absPath, "utf8")) as any;
+  const absPath = path.resolve(getLocalDataDir(), 'topics.yml');
+  const content = yaml.load(await afs.readFile(absPath, 'utf8'));
   return content.topics;
 };
 
@@ -117,29 +126,34 @@ export const loadTopics = async function (): Promise<TopicBase[]> {
  * @param metadataLocalList package metadata array
  * @returns package hunters and owners
  */
-export const collectPackageHuntersAndOwners = async function (metadataLocalList: PackageMetadataLocal[]): Promise<{ hunters: GithubUserWithScore[], owners: GithubUserWithScore[] }> {
+export const collectPackageHuntersAndOwners = async function (
+  metadataLocalList: PackageMetadataLocal[],
+): Promise<{ hunters: GithubUserWithScore[]; owners: GithubUserWithScore[] }> {
   const getConstributors = (type: string): GithubUserWithScore[] => {
-    const entries = flatMap(metadataLocalList, pkg => {
-      if (type == "hunter")
-        return [pkg.hunter];
-      else if (type == "owner") {
-        let arr = [pkg.owner];
-        if (pkg.parentOwner && pkg.parentOwnerUrl && pkg.parentOwnerUrl.toLowerCase().includes("github"))
+    const entries = flatMap(metadataLocalList, (pkg) => {
+      if (type == 'hunter') return [pkg.hunter];
+      else if (type == 'owner') {
+        const arr = [pkg.owner];
+        if (
+          pkg.parentOwner &&
+          pkg.parentOwnerUrl &&
+          pkg.parentOwnerUrl.toLowerCase().includes('github')
+        )
           arr.push(pkg.parentOwner);
         return arr;
       } else {
         return [];
-      };
-    }).filter(x => x);
+      }
+    }).filter((x) => x);
     const counted = countBy(entries);
-    const pairs = toPairs(counted).map(x => ({
+    const pairs = toPairs(counted).map((x) => ({
       githubUser: x[0],
-      score: x[1]
+      score: x[1],
     }));
-    return sortBy(pairs, "score").reverse();
+    return sortBy(pairs, 'score').reverse();
   };
   // Package hunters
-  const hunters = getConstributors("hunter");
-  const owners = getConstributors("owner");
+  const hunters = getConstributors('hunter');
+  const owners = getConstributors('owner');
   return { hunters, owners };
-}
+};
