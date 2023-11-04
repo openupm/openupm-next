@@ -33,13 +33,14 @@
     "build:watch": "tsc -w -p tsconfig.json",
     "build:release": "npm run clean && tsc -p tsconfig.release.json",
     "lint": "eslint . --ext .ts --ext .mts",
-    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --coverage",
+    "test": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --coverage",
     "prettier": "prettier --config .prettierrc --write .",
-    "test:watch": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --watch"
+    "test:watch": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --watch"
   },
   "author": "Favo Yang <favoyang@users.noreply.github.com>",
   "license": "BSD-3-Clause",
   "dependencies": {
+    "dotenv-flow": "^4.0.0",
     "tslib": "~2.6"
   },
   "volta": {
