@@ -17,4 +17,5 @@ export default {
     '!src/**/*.d.mts',
   ],
   setupFiles: ['dotenv-flow/config'],
+  showSeed: true,
 };

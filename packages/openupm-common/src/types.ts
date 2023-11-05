@@ -1,6 +1,6 @@
 import { ReleaseReason, ReleaseState } from './constant.js';
 
-// PackageMetadataLocalBase represents the base package metadata loaded from the yaml file.
+// The package metadata YAML file format.
 export interface PackageMetadataLocalBase {
   name: string;
   repoUrl: string;
@@ -12,39 +12,38 @@ export interface PackageMetadataLocalBase {
   licenseName: string;
   image: string | null;
   topics: string[];
-  // Pipeline fields
-  gitTagPrefix: string;
-  gitTagIgnore: string;
-  minVersion: string;
-  // Locale CN fields
-  displayName_zhCN: string;
-  description_zhCN: string;
-  readme_zhCN: string;
-  // Misc
   hunter: string;
   createdAt: number;
+  // Pipeline fields
+  gitTagPrefix?: string;
+  gitTagIgnore?: string;
+  minVersion?: string;
+  // Locale CN fields
+  displayName_zhCN?: string;
+  description_zhCN?: string;
+  readme_zhCN?: string;
+  // Misc
   excludedFromList?: boolean;
 }
 
-// PackageMetadataLocal extends PackageMetadataLocalBase by adding convenience fields.
+// Extended PackageMetadataLocalBase with parsed fields.
 export interface PackageMetadataLocal extends PackageMetadataLocalBase {
-  // GitHub repo name of $owner/$repo
+  // Parsed repository name
   repo: string;
-  // GitHub owner name of $owner/$repo
+  // Parsed repository owner
   owner: string;
-  // Github owner url
+  // Github repository owner URL
   ownerUrl: string;
-  // Github hunter url
-  hunterUrl: string | null;
-  // GitHub parent repo name of $parentowner/$repo
+  // Parsed parent repository name
   parentRepo: string | null;
-  // GitHub parent owner name of $parentowner/$repo
+  // Parsed parent repository owner
   parentOwner: string | null;
-  // Github parent owner url
+  // Github parent repository owner URL
   parentOwnerUrl: string | null;
-  // TODO: for what?
+  // Readme branch name, e.g. "master" or "main"
   readmeBranch: string;
-  readmeBase: string;
+  // Github hunter URL
+  hunterUrl: string | null;
 }
 
 // PackageMetadataRemote represents the package metadata loaded from the server.

@@ -17,7 +17,7 @@ import {
  * @throws An error if the local data directory doesn't exist.
  */
 export const getLocalDataDir = function (): string {
-  let dataDir = null;
+  let dataDir = '';
   if (process.env.OPENUPM_DATA_PATH)
     dataDir = path.resolve(process.env.OPENUPM_DATA_PATH);
   else dataDir = path.resolve(process.cwd(), 'data');

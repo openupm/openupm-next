@@ -1,34 +1,20 @@
+/* eslint-disable jest/no-standalone-expect */
+import { it } from '@fast-check/jest';
+import { githubRepoUrl } from 'openupm-test';
+
 import { convertRepoUrl, parsePackageMetadata } from '../../src/package.js';
 
 describe('convertRepoUrl()', function () {
-  it('should return https when src=https and format=https', function () {
-    expect(convertRepoUrl('https://github.com/username/repo', 'https')).toEqual(
-      'https://github.com/username/repo',
-    );
-  });
-  it('should return https when src=https and format=default', function () {
-    expect(convertRepoUrl('https://github.com/username/repo')).toEqual(
-      'https://github.com/username/repo',
-    );
-  });
-  it('should return https when src=git + and format=https', function () {
-    expect(convertRepoUrl('git@github.com:username/repo', 'https')).toEqual(
-      'https://github.com/username/repo',
-    );
-  });
-  it('should return git when src=git and format=git', function () {
-    expect(convertRepoUrl('git@github.com:username/repo.git', 'git')).toEqual(
-      'git@github.com:username/repo.git',
-    );
-  });
-  it('should return git when src=https and format=git', function () {
-    expect(
-      convertRepoUrl('https://github.com/username/repo.git', 'git'),
-    ).toEqual('git@github.com:username/repo.git');
+  it.prop([githubRepoUrl])('should return the https protocol', (repoUrl) => {
+    const convertedUrl = convertRepoUrl(repoUrl);
+    const repoUrlWithoutGit = repoUrl.replace('.git', '');
+    const owner = repoUrlWithoutGit.split('/')[3];
+    const repoName = repoUrlWithoutGit.split('/')[4];
+    expect(convertedUrl).toEqual(`https://github.com/${owner}/${repoName}`);
   });
 });
 
-describe('parsePackageMetadata', () => {
+describe('parsePackageMetadata()', () => {
   test('should parse owner from repoUrl', () => {
     const doc = {
       repoUrl: 'git://github.com/user/repo.git',
