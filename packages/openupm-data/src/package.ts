@@ -1,5 +1,4 @@
 // Utilities for handling package metadata.
-import path from 'path';
 import spdx from 'spdx-license-list';
 
 import { PackageMetadataLocal } from 'openupm-types';
@@ -72,11 +71,7 @@ export const parsePackageMetadata = function (raw: any): PackageMetadataLocal {
   if (!readme) readme = 'main:README.md';
   else if (readme.indexOf(':') == -1) readme = 'main:' + readme;
   metadataLocal.readme = readme;
-  // Set readmeBranch and readmeBase
-  const [readmeBranch, readmePath] = readme.split(':');
-  const dirname = path.dirname(readmePath);
-  metadataLocal.readmeBranch = readmeBranch;
-  metadataLocal.readmeBase =
-    dirname == '.' ? readmeBranch : [readmeBranch, dirname].join('/');
+  // Set readmeBranch
+  metadataLocal.readmeBranch = readme.split(':')[0];
   return metadataLocal;
 };
