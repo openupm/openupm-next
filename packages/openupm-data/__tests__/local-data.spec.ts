@@ -6,7 +6,7 @@ import {
   loadPackageMetadataLocal,
   packageMetadataLocalExists,
 } from '../src/local-data.js';
-import { PackageMetadata, PackageMetadataLocal } from 'openupm-common';
+import { PackageMetadata, PackageMetadataLocal } from 'openupm-types';
 
 describe('loadBlockedScopes()', function () {
   it('should load blocked scopes', async function () {

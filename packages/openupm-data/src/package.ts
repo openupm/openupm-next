@@ -2,7 +2,7 @@
 import path from 'path';
 import spdx from 'spdx-license-list';
 
-import { PackageMetadataLocal } from 'openupm-common';
+import { PackageMetadataLocal } from 'openupm-types';
 
 /**
  * Get cleaned GitHub repo url.

@@ -9,7 +9,7 @@ import {
   PackageMetadataLocal,
   GithubUserWithScore,
   TopicBase,
-} from 'openupm-common';
+} from 'openupm-types';
 
 /**
  * Get the local data directory.
