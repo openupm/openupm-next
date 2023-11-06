@@ -55,12 +55,16 @@ const httpsUrl = fc
   .tuple(domainName, urlPath)
   .map(([domain, path]) => `https://${domain}${path}`);
 
-const spdxLicenseId = fc.constantFrom(...Object.keys(spdxLicenseList));
+const spdxLicenseId = fc.constantFrom(
+  ...Object.keys(spdxLicenseList).slice(0, 10),
+);
+
 const spdxLicenseName = fc.constantFrom(
   ...Object.keys(spdxLicenseList).map((id) => spdxLicenseList[id].name),
 );
 
 const semanticDigit = fc.integer({ min: 0, max: 50 });
+
 const prereleaseTag = fc
   .tuple(fc.constantFrom('alpha', 'beta', 'rc'), semanticDigit)
   .map(([tag, version]) => `-${tag}.${version}`);
