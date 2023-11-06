@@ -4,7 +4,6 @@
   "version": "0.0.0",
   "description": "Common library for openupm",
   "type": "module",
-  "types": "build/types.d.ts",
   "engines": {
     "node": ">= 18.12 <19"
   },
@@ -41,6 +40,7 @@
   "license": "BSD-3-Clause",
   "dependencies": {
     "dotenv-flow": "^4.0.0",
+    "openupm-types": "file:../openupm-types",
     "tslib": "~2.6",
     "url-join": "^5.0.0"
   },

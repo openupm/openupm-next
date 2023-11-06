@@ -1,10 +1,11 @@
-import { ValidationError } from './custom-errors.js';
 import {
   PackageMetadataLocal,
   PackageMetadataRemote,
   PackageMetadata,
-} from './types.js';
-import { Region } from './constant.js';
+  Region,
+} from 'openupm-types';
+
+import { ValidationError } from './custom-errors.js';
 import { getPackageImageUrl } from './urls.js';
 
 /**
