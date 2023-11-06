@@ -59,9 +59,7 @@ const spdxLicenseId = fc.constantFrom(
   ...Object.keys(spdxLicenseList).slice(0, 10),
 );
 
-const spdxLicenseName = fc.constantFrom(
-  ...Object.keys(spdxLicenseList).map((id) => spdxLicenseList[id].name),
-);
+const spdxLicenseName = spdxLicenseId.map((id) => spdxLicenseList[id].name);
 
 const semanticDigit = fc.integer({ min: 0, max: 50 });
 
@@ -86,8 +84,8 @@ export const packageMetadataLocalBaseObj = fc.record<PackageMetadataLocalBase>({
   displayName: fc.string(),
   description: fc.string(),
   readme: fc.string(),
-  licenseSpdxId: spdxLicenseId,
-  licenseName: spdxLicenseName,
+  licenseSpdxId: fc.option(spdxLicenseId),
+  licenseName: fc.oneof(spdxLicenseName, fc.constant('')),
   image: httpsUrl,
   topics: fc.array(fc.string()),
   hunter: githubUsername,
