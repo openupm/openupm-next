@@ -77,7 +77,7 @@ export const semanticVersion = fc
     return version;
   });
 
-export const packageMetadataLocalBaseObj = fc.record<PackageMetadataLocalBase>({
+export const packageMetadataLocalBaseArb = fc.record<PackageMetadataLocalBase>({
   name: reverseDomainName,
   repoUrl: githubRepoUrl,
   parentRepoUrl: fc.option(githubRepoUrl),
