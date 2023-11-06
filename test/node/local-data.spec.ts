@@ -42,9 +42,9 @@ describe("@node/local-data.ts", function () {
       const metadataLocal = temp as PackageMetadataLocal;
       metadataLocal.should.not.equal(null);
       metadataLocal.name.should.equal("com.littlebigfun.addressable-importer");
-      metadataLocal.readme.should.equal("main:README.md");
-      metadataLocal.readmeBranch.should.equal("main");
-      metadataLocal.readmeBase.should.equal("main");
+      metadataLocal.readme.should.equal("master:README.md");
+      metadataLocal.readmeBranch.should.equal("master");
+      metadataLocal.readmeBase.should.equal("master");
     });
   });
 
