@@ -77,13 +77,28 @@ export const semanticVersion = fc
     return version;
   });
 
+export const branch = fc.string({ minLength: 2, maxLength: 6 }).filter(isSlug);
+
+export const readmeFilename = fc.constantFrom(
+  'README.md',
+  'readme.md',
+  'Readme.md',
+);
+
+export const readme = fc.oneof(
+  fc
+    .tuple(branch, readmeFilename)
+    .map(([branch, filename]) => `${branch}:${filename}`),
+  readmeFilename,
+);
+
 export const packageMetadataLocalBaseArb = fc.record<PackageMetadataLocalBase>({
   name: reverseDomainName,
   repoUrl: githubRepoUrl,
   parentRepoUrl: fc.option(githubRepoUrl),
   displayName: fc.string(),
   description: fc.string(),
-  readme: fc.string(),
+  readme,
   licenseSpdxId: fc.option(spdxLicenseId),
   licenseName: fc.oneof(spdxLicenseName, fc.constant('')),
   image: httpsUrl,
