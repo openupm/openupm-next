@@ -1,4 +1,4 @@
-import { hello } from '../src/main.js';
+import { hello } from '../src/index.js';
 
 describe('Dummy test', () => {
   // Act before assertions

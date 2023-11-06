@@ -4,11 +4,10 @@
   "version": "0.0.0",
   "description": "Minimalistic boilerplate to quick-start Node.js development in TypeScript for openupm packages.",
   "type": "module",
-  "types": "build/types.d.ts",
   "engines": {
     "node": ">= 18.12 <19"
   },
-  "main": "build/main.js",
+  "main": "build/index.js",
   "devDependencies": {
     "@types/jest": "~29.5",
     "@types/node": "~18",
@@ -41,6 +40,7 @@
   "license": "BSD-3-Clause",
   "dependencies": {
     "dotenv-flow": "^4.0.0",
+    "openupm-types": "file:../openupm-types",
     "tslib": "~2.6"
   },
   "volta": {
