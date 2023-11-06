@@ -4,11 +4,10 @@
   "version": "0.0.0",
   "description": "Tools to handle openupm data",
   "type": "module",
-  "types": "build/types.d.ts",
   "engines": {
     "node": ">= 18.12 <19"
   },
-  "main": "build/main.js",
+  "main": "build/index.js",
   "devDependencies": {
     "@fast-check/jest": "^1.7.3",
     "@types/jest": "~29.5",

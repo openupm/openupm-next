@@ -1,3 +1,5 @@
+import { PackageMetadata, PackageMetadataLocal } from 'openupm-types';
+
 import {
   collectPackageHuntersAndOwners,
   loadBlockedScopes,
@@ -6,7 +8,6 @@ import {
   loadPackageMetadataLocal,
   packageMetadataLocalExists,
 } from '../src/local-data.js';
-import { PackageMetadata, PackageMetadataLocal } from 'openupm-types';
 
 describe('loadBlockedScopes()', function () {
   it('should load blocked scopes', async function () {
@@ -37,8 +38,8 @@ describe('loadPackage()', function () {
     const metadataLocal = temp as PackageMetadataLocal;
     expect(metadataLocal).not.toBeNull();
     expect(metadataLocal.name).toEqual('com.littlebigfun.addressable-importer');
-    expect(metadataLocal.readme).toEqual('main:README.md');
-    expect(metadataLocal.readmeBranch).toEqual('main');
+    expect(metadataLocal.readme).toEqual('master:README.md');
+    expect(metadataLocal.readmeBranch).toEqual('master');
   });
 });
 

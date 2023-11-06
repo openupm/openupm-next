@@ -4,7 +4,7 @@ import { promises as afs } from 'fs';
 import yaml from 'js-yaml';
 import { countBy, flatMap, sortBy, toPairs } from 'lodash-es';
 
-import { parsePackageMetadata } from './package.js';
+import { parsePackageMetadata } from './utils/parse-pkg.js';
 import {
   PackageMetadataLocal,
   GithubUserWithScore,
@@ -16,7 +16,7 @@ import {
  * @returns The local data directory.
  * @throws An error if the local data directory doesn't exist.
  */
-export const getLocalDataDir = function (): string {
+const getLocalDataDir = function (): string {
   let dataDir = '';
   if (process.env.OPENUPM_DATA_PATH)
     dataDir = path.resolve(process.env.OPENUPM_DATA_PATH);
