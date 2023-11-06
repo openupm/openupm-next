@@ -1,6 +1,6 @@
 {
   "private": "true",
-  "name": "openupm-package",
+  "name": "opemupm-template",
   "version": "0.0.0",
   "description": "Minimalistic boilerplate to quick-start Node.js development in TypeScript for openupm packages.",
   "type": "module",
