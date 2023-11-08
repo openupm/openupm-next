@@ -1,0 +1,17 @@
+{
+  "type": "module",
+  "name": "openupm-next",
+  "version": "1.0.0",
+  "description": "openupm-next",
+  "private": true,
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/openupm/openupm-next.git"
+  },
+  "author": "Favo Yang",
+  "license": "BSD-3-Clause",
+  "volta": {
+    "node": "18.18.2"
+  }
+}
