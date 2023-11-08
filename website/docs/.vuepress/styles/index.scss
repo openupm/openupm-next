@@ -239,6 +239,9 @@ kbd {
   pre,
   pre[class*=language-] {
     padding: 1rem 1rem;
+    code {
+      color: var(--c-text);
+    }
   }
 
   a.btn:hover {
