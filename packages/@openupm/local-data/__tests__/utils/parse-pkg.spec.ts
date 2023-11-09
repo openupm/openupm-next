@@ -1,7 +1,7 @@
 /* eslint-disable jest/no-standalone-expect */
 import { it } from '@fast-check/jest';
 import spdx from 'spdx-license-list';
-import { githubRepoUrl, packageMetadataLocalBaseArb } from 'openupm-test';
+import { githubRepoUrl, packageMetadataLocalBaseArb } from '@openupm/test';
 
 import {
   convertRepoUrl,

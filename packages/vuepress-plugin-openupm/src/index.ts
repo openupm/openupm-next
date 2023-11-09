@@ -19,7 +19,7 @@ import {
   loadPackageMetadataLocal,
   loadTopics,
   loadBlockedScopes,
-} from '@openupm/data';
+} from '@openupm/local-data';
 import {
   getPackageNamespace,
   getLocalePackageDisplayName,

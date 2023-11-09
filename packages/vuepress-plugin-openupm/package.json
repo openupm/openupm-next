@@ -36,6 +36,7 @@
   },
   "dependencies": {
     "@vuepress/core": "~1.9",
+    "@vuepress/types": "^1.9.10",
     "@vuepress/utils": "^2.0.0-alpha.1",
     "lodash-es": "~4.17",
     "spdx-license-list": "~6.8",
