@@ -28,4 +28,4 @@ coverage
 *.sw?
 
 .turbo
-data
+/data
