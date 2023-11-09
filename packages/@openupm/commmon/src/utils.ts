@@ -3,7 +3,7 @@ import {
   PackageMetadataRemote,
   PackageMetadata,
   Region,
-} from 'openupm-types';
+} from '@openupm/types';
 
 import { ValidationError } from './custom-errors.js';
 import { getPackageImageUrl } from './urls.js';

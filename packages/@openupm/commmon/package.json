@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "openupm-common",
+  "name": "@openupm/common",
   "version": "0.0.0",
   "type": "module",
   "author": "Favo Yang <favoyang@users.noreply.github.com>",

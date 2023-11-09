@@ -1,6 +1,6 @@
 import fc from 'fast-check';
 import spdxLicenseList from 'spdx-license-list';
-import { PackageMetadataLocalBase } from 'openupm-types';
+import { PackageMetadataLocalBase } from '@openupm/types';
 
 const isDomainSegment = (val: string): boolean => /^[A-Za-z0-9]+$/.test(val);
 

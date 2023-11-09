@@ -1,7 +1,7 @@
 import { App } from '@vuepress/core';
 import { fs, path } from '@vuepress/utils';
 
-import { PUBLIC_GEN_DIR } from 'openupm-types';
+import { PUBLIC_GEN_DIR } from '@openupm/types';
 
 /**
  * Write file to public dir

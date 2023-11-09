@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "openupm-next",
+  "name": "@openupm/openupm-next",
   "version": "0.0.0",
   "type": "module",
   "author": "Favo Yang <favoyang@users.noreply.github.com>",
@@ -16,7 +16,8 @@
   },
   "workspaces": [
     "apps/*",
-    "packages/*"
+    "packages/*",
+    "packages/@openupm/*"
   ],
   "volta": {
     "node": "18.18.2"

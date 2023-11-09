@@ -76,7 +76,7 @@ export const RetryableReleaseErrorCodes = [
   ReleaseErrorCode.ConnectionTimeout,
 ];
 
-// TODO: move to openupm-data package
+// TODO: move to @openupm/data package
 export const PUBLIC_GEN_DIR = 'gen';
 export const METADATA_LOCAL_LIST_FILENAME = 'metadatalocallist.json';
 export const BLOCKED_SCOPES_FILENAME = 'blockedscopes.json';

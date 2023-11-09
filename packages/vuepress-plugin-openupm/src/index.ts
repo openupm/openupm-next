@@ -12,23 +12,23 @@ import {
   BLOCKED_SCOPES_FILENAME,
   METADATA_LOCAL_LIST_FILENAME,
   SDPXLIST_FILENAME,
-} from 'openupm-types';
+} from '@openupm/types';
 import {
   collectPackageHuntersAndOwners,
   loadPackageNames,
   loadPackageMetadataLocal,
   loadTopics,
   loadBlockedScopes,
-} from 'openupm-data';
+} from '@openupm/data';
 import {
   getPackageNamespace,
   getLocalePackageDisplayName,
   getLocalePackageDescription,
-} from 'openupm-common/build/utils.js';
+} from '@openupm/common/build/utils.js';
 import {
   getPackageDetailPagePath,
   getPackageListPagePath,
-} from 'openupm-common/build/urls.js';
+} from '@openupm/common/build/urls.js';
 
 import { writePublicGen } from './utils/write-file.js';
 

@@ -1,4 +1,4 @@
-import { PackageMetadata, PackageMetadataLocal } from 'openupm-types';
+import { PackageMetadata, PackageMetadataLocal } from '@openupm/types';
 
 import {
   collectPackageHuntersAndOwners,

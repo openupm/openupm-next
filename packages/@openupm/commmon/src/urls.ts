@@ -1,5 +1,5 @@
 import urlJoin from 'url-join';
-import { PUBLIC_GEN_DIR, Region } from 'openupm-types';
+import { PUBLIC_GEN_DIR, Region } from '@openupm/types';
 
 import {
   getCachedAvatarImageFilename,

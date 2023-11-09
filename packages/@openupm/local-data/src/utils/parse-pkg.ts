@@ -2,7 +2,7 @@
 import spdx from 'spdx-license-list';
 import { assertEquals } from 'typia';
 
-import { PackageMetadataLocal, PackageMetadataLocalBase } from 'openupm-types';
+import { PackageMetadataLocal, PackageMetadataLocalBase } from '@openupm/types';
 
 /**
  * Get cleaned GitHub repo url.
