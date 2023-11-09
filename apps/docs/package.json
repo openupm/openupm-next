@@ -1,9 +1,10 @@
 {
-  "type": "module",
-  "name": "openupm-next",
-  "version": "1.0.0",
-  "description": "openupm-next in typescript",
   "private": true,
+  "type": "module",
+  "name": "openupm-docs",
+  "version": "0.0.0",
+  "author": "Favo Yang <favoyang@users.noreply.github.com>",
+  "license": "BSD-3-Clause",
   "main": "index.js",
   "scripts": {
     "precompile": "node precompile.js",
@@ -15,19 +16,6 @@
     "test:dev": "cross-env NODE_ENV=test vitest --config vite.config.test.ts",
     "test": "cross-env NODE_ENV=test vitest run --config vite.config.test.ts"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/openupm/openupm-next.git"
-  },
-  "keywords": [
-    "openupm"
-  ],
-  "author": "Favo Yang",
-  "license": "BSD-3-Clause",
-  "bugs": {
-    "url": "https://github.com/openupm/openupm-next/issues"
-  },
-  "homepage": "https://github.com/openupm/openupm-next#readme",
   "devDependencies": {
     "@intlify/unplugin-vue-i18n": "^0.11.0",
     "@types/chai": "^4.3.5",

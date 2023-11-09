@@ -1,12 +1,10 @@
 {
-  "private": "true",
+  "private": true,
   "name": "openupm-data",
   "version": "0.0.0",
-  "description": "Tools to handle openupm data",
   "type": "module",
-  "engines": {
-    "node": ">= 18.12 <19"
-  },
+  "author": "Favo Yang <favoyang@users.noreply.github.com>",
+  "license": "BSD-3-Clause",
   "main": "build/index.js",
   "devDependencies": {
     "@fast-check/jest": "^1.7.3",
@@ -42,8 +40,6 @@
     "test:watch": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --watch",
     "prepare": "ts-patch install"
   },
-  "author": "Favo Yang <favoyang@users.noreply.github.com>",
-  "license": "BSD-3-Clause",
   "dependencies": {
     "dotenv-flow": "^4.0.0",
     "lodash-es": "^4.17.21",

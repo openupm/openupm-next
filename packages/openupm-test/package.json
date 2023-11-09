@@ -1,12 +1,10 @@
 {
-  "private": "true",
+  "private": true,
   "name": "openupm-test",
   "version": "0.0.0",
-  "description": "Test utils and arbitraries packages for OpenUPM",
   "type": "module",
-  "engines": {
-    "node": ">= 18.12 <19"
-  },
+  "author": "Favo Yang <favoyang@users.noreply.github.com>",
+  "license": "BSD-3-Clause",
   "main": "build/index.js",
   "devDependencies": {
     "@fast-check/jest": "^1.7.3",
@@ -38,8 +36,6 @@
     "prettier": "prettier --config .prettierrc --write .",
     "test:watch": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --watch"
   },
-  "author": "Favo Yang <favoyang@users.noreply.github.com>",
-  "license": "BSD-3-Clause",
   "dependencies": {
     "dotenv-flow": "^4.0.0",
     "openupm-types": "file:../openupm-types",

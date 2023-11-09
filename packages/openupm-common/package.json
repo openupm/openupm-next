@@ -1,12 +1,10 @@
 {
-  "private": "true",
+  "private": true,
   "name": "openupm-common",
   "version": "0.0.0",
-  "description": "Common library for openupm",
   "type": "module",
-  "engines": {
-    "node": ">= 18.12 <19"
-  },
+  "author": "Favo Yang <favoyang@users.noreply.github.com>",
+  "license": "BSD-3-Clause",
   "main": "build/main.js",
   "devDependencies": {
     "@types/jest": "~29.5",
@@ -36,8 +34,6 @@
     "prettier": "prettier --config .prettierrc --write .",
     "test:watch": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --watch"
   },
-  "author": "Favo Yang <favoyang@users.noreply.github.com>",
-  "license": "BSD-3-Clause",
   "dependencies": {
     "dotenv-flow": "^4.0.0",
     "openupm-types": "file:../openupm-types",

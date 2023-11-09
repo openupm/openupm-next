@@ -1,13 +1,11 @@
 {
   "private": true,
   "name": "vuepress-plugin-openupm",
-  "version": "0.5.0",
-  "description": "The internal vuepress plugin for the openupm website",
-  "main": "build/index.js",
+  "version": "0.0.0",
   "type": "module",
-  "engines": {
-    "node": ">= 18.12 <19"
-  },
+  "author": "Favo Yang <favoyang@users.noreply.github.com>",
+  "license": "BSD-3-Clause",
+  "main": "build/index.js",
   "devDependencies": {
     "@types/jest": "~29.5",
     "@types/node": "~18",
@@ -36,8 +34,6 @@
     "prettier": "prettier --config .prettierrc --write .",
     "test:watch": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --watch"
   },
-  "author": "Favo Yang <favoyang@users.noreply.github.com>",
-  "license": "BSD-3-Clause",
   "dependencies": {
     "@vuepress/core": "~1.9",
     "@vuepress/utils": "^2.0.0-alpha.1",
