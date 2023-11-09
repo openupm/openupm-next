@@ -15,7 +15,6 @@
     "turbo": "latest"
   },
   "workspaces": [
-    "apps/*",
     "packages/*",
     "packages/@openupm/*"
   ],
