@@ -36,7 +36,6 @@
   },
   "dependencies": {
     "dotenv-flow": "^4.0.0",
-    "openupm-types": "file:../openupm-types",
     "tslib": "~2.6",
     "url-join": "^5.0.0"
   },

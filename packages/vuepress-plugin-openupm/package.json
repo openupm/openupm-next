@@ -38,9 +38,6 @@
     "@vuepress/core": "~1.9",
     "@vuepress/utils": "^2.0.0-alpha.1",
     "lodash-es": "~4.17",
-    "openupm-common": "file:../openupm-common",
-    "openupm-data": "file:../openupm-data",
-    "openupm-types": "file:../openupm-types",
     "spdx-license-list": "~6.8",
     "tslib": "~2.6"
   },
