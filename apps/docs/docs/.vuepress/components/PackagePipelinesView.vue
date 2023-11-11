@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n';
 import { paramCase } from "change-case";
 import urlJoin from "url-join";
 
-import { ReleaseState, ReleaseReason } from "@openupm/types";
+import { ReleaseState, ReleaseErrorCode } from "@openupm/types";
 import { getAzureWebBuildUrl } from '@openupm/common/build/urls.js';
 import { PackageRelease } from '@openupm/types';
 
@@ -13,9 +13,9 @@ const { t } = useI18n();
 // A map from release reason value (number) to note's i18n key (string)
 const releaseReasonLocaleNoteKeyMap = computed(() => {
   const map: { [key: number]: string } = {};
-  for (const key in ReleaseReason) {
+  for (const key in ReleaseErrorCode) {
     if (isNaN(Number(key))) {
-      const value = ReleaseReason[key] as unknown as number;
+      const value = ReleaseErrorCode[key] as unknown as number;
       map[value] = "release-reason-" + paramCase(key);
     }
   }
