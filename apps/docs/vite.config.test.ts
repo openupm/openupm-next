@@ -1,6 +1,6 @@
 // The vite.config.ts file is only used to configure vitest.
 
-import { defineConfig } from 'vite';
+import { defineConfig } from "vite";
 import { getDirname, path } from "@vuepress/utils";
 // import tsconfigPaths from 'vite-tsconfig-paths';
 
@@ -13,10 +13,9 @@ export default defineConfig({
   // https://github.com/aleclarson/vite-tsconfig-paths/issues/110
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './docs/.vuepress'),
-      '@node': path.resolve(__dirname, './src/node'),
-      '@shared': path.resolve(__dirname, './src/shared'),
-      '@node_modules': path.resolve(__dirname, './node_modules'),
+      "@": path.resolve(__dirname, "./docs/.vuepress"),
+      "@shared": path.resolve(__dirname, "./src/shared"),
+      "@node_modules": path.resolve(__dirname, "./node_modules"),
     },
   },
   define: {
