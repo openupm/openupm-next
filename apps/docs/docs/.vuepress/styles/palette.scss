@@ -1,6 +1,6 @@
 // Spectre.css variables
 // https://github.com/picturepan2/spectre/blob/master/src/_variables.scss
-@forward "@node_modules/spectre.css/src/variables";
+@forward "spectre.css/src/variables";
 $primary-color: #3068E5;
 $primary-color-light: lighten($primary-color, 20%);
 $warning-color: #ffc310;
