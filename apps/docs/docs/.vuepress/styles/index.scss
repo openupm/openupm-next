@@ -2,7 +2,7 @@
 @use './palette.scss' as *;
 
 // Spectre.css
-@use "node_modules/spectre.css/src/spectre"
+@use "@node_modules/spectre.css/src/spectre"
 with ($primary-color: $primary-color,
   $primary-color-light: $primary-color-light,
   $warning-color: $warning-color,
