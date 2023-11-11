@@ -154,12 +154,6 @@ const config: any = mergeWith(
       "@theme/Navbar.vue": path.resolve(__dirname, "components/Navbar.vue"),
       // https://github.com/intlify/vue-i18n-next/issues/789
       "vue-i18n": "vue-i18n/dist/vue-i18n.esm-browser.prod.js",
-      // Load vue-virtual-scroll-grid from esm build directly
-      // to avoid modify the source code package.json and set "type": "module".
-      // Otherwise build will fail with error:
-      // To load an ES module, set "type": "module" in the package.json
-      "vue-virtual-scroll-grid":
-        "node_modules/vue-virtual-scroll-grid/dist/index.es.js",
     },
     markdown: {
       code: {
