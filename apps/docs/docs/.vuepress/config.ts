@@ -163,6 +163,14 @@ const config: any = mergeWith(
     shouldPrefetch: false,
     bundler: viteBundler({
       viteOptions: {
+        define: {
+          "process.env": {
+            VITE_OPENUPM_REGION:
+              process.env.VITE_OPENUPM_REGION !== undefined
+                ? `"${process.env.VITE_OPENUPM_REGION}"`
+                : undefined,
+          },
+        },
         css: {
           preprocessorOptions: {
             scss: { quietDeps: true },
