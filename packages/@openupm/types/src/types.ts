@@ -4,16 +4,17 @@ import { ReleaseErrorCode, ReleaseState } from './constant.js';
 export interface PackageMetadataLocalBase {
   name: string;
   repoUrl: string;
-  parentRepoUrl: string | null;
   displayName: string;
   description: string;
-  readme: string;
   licenseSpdxId: string | null;
   licenseName: string;
-  image: string | null;
   topics: string[];
   hunter: string;
   createdAt: number;
+  image?: string | null;
+  imageFit?: string;
+  parentRepoUrl?: string | null;
+  readme?: string;
   // Pipeline fields
   gitTagPrefix?: string;
   gitTagIgnore?: string;

@@ -1,6 +1,6 @@
 // Utilities for handling package metadata.
 import spdx from 'spdx-license-list';
-import { assertEquals } from 'typia';
+import { assertEquals, TypeGuardError } from 'typia';
 
 import { PackageMetadataLocal, PackageMetadataLocalBase } from '@openupm/types';
 
@@ -29,7 +29,16 @@ export const convertRepoUrl = function (url: string, format?: string): string {
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const parsePackageMetadata = function (raw: any): PackageMetadataLocal {
-  const base = assertEquals<PackageMetadataLocalBase>(raw);
+  let base: PackageMetadataLocalBase;
+  try {
+    base = assertEquals<PackageMetadataLocalBase>(raw);
+  } catch (error) {
+    if (error instanceof TypeGuardError) {
+      const pkgName: string = raw && raw.name ? raw.name : 'unknown';
+      console.error('parsePackageMetadata failed:', pkgName);
+    }
+    throw error;
+  }
   // Clean repoUrl
   base.repoUrl = convertRepoUrl(base.repoUrl as string, 'https');
   // owner
@@ -56,6 +65,8 @@ export const parsePackageMetadata = function (raw: any): PackageMetadataLocal {
     parentOwner = parentRepoUrlObj.pathname.split('/')[1];
     parentOwnerUrl = `https://${parentRepoUrlObj.hostname}/${parentOwner}`;
     parentRepo = parentRepoUrlObj.pathname.split('/')[2];
+  } else {
+    base.parentRepoUrl = null;
   }
   // Set readme
   let readme = (base.readme || '').trim();
@@ -64,6 +75,10 @@ export const parsePackageMetadata = function (raw: any): PackageMetadataLocal {
   base.readme = readme;
   // Set readmeBranch
   const readmeBranch = readme.split(':')[0];
+  // Set image
+  if (base.image === undefined) base.image = null;
+  // Set imageFit
+  if (base.imageFit === undefined) base.imageFit = 'cover';
   return {
     ...base,
     repo,
