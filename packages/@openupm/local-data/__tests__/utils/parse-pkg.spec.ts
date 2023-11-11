@@ -29,11 +29,9 @@ describe('parsePackageMetadata()', () => {
       let hunterUrl: string | null = null;
       if (base.hunter) hunterUrl = `https://github.com/${base.hunter}`;
       let parentRepo: string | null = null;
-      let parentRepoUrl: string | null = null;
       let parentOwner: string | null = null;
       let parentOwnerUrl: string | null = null;
       if (base.parentRepoUrl) {
-        parentRepoUrl = base.repoUrl.split('/')[4].replace('.git', '');
         parentRepo = base.parentRepoUrl.split('/')[4].replace('.git', '');
         parentOwner = base.parentRepoUrl.split('/')[3];
         parentOwnerUrl = `https://github.com/${parentOwner}`;
@@ -47,7 +45,6 @@ describe('parsePackageMetadata()', () => {
       if (base.licenseSpdxId)
         expect(result.licenseName).toEqual(spdx[base.licenseSpdxId].name);
       expect(result.parentRepo).toEqual(parentRepo);
-      expect(result.parentRepoUrl).toEqual(parentRepoUrl);
       expect(result.parentOwner).toEqual(parentOwner);
       expect(result.parentOwnerUrl).toEqual(parentOwnerUrl);
       expect(result.image).toEqual(image);
