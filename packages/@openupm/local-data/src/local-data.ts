@@ -97,7 +97,8 @@ export const packageMetadataLocalExists = function (name: string): boolean {
  */
 export const loadBuiltinPackageNames = async function (): Promise<string[]> {
   const absPath = path.resolve(getLocalDataDir(), 'builtin.yml');
-  const content = yaml.load(await afs.readFile(absPath, 'utf8'));
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const content = yaml.load(await afs.readFile(absPath, 'utf8')) as any;
   return content.packages;
 };
 
@@ -107,7 +108,8 @@ export const loadBuiltinPackageNames = async function (): Promise<string[]> {
  */
 export const loadBlockedScopes = async function (): Promise<string[]> {
   const absPath = path.resolve(getLocalDataDir(), 'blocked-scopes.yml');
-  const content = yaml.load(await afs.readFile(absPath, 'utf8'));
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const content = yaml.load(await afs.readFile(absPath, 'utf8')) as any;
   return content.scopes;
 };
 
@@ -117,7 +119,8 @@ export const loadBlockedScopes = async function (): Promise<string[]> {
  */
 export const loadTopics = async function (): Promise<TopicBase[]> {
   const absPath = path.resolve(getLocalDataDir(), 'topics.yml');
-  const content = yaml.load(await afs.readFile(absPath, 'utf8'));
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const content = yaml.load(await afs.readFile(absPath, 'utf8')) as any;
   return content.topics;
 };
 
