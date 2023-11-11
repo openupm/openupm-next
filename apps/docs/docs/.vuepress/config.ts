@@ -149,7 +149,7 @@ const config: any = mergeWith(
     ],
     alias: {
       "@": path.resolve(__dirname),
-      "@node_modules": path.resolve(__dirname, "../../node_modules"),
+      "@node_modules": path.resolve(__dirname, "../../../../node_modules"),
       "@theme/AutoLink.vue": path.resolve(__dirname, "components/AutoLink.vue"),
       "@theme/Navbar.vue": path.resolve(__dirname, "components/Navbar.vue"),
       // https://github.com/intlify/vue-i18n-next/issues/789

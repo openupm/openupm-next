@@ -14,7 +14,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./docs/.vuepress"),
-      "@node_modules": path.resolve(__dirname, "./node_modules"),
+      "@node_modules": path.resolve(__dirname, "../../node_modules"),
     },
   },
   define: {
