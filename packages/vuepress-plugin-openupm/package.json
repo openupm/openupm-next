@@ -35,9 +35,8 @@
     "test:watch": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --watch"
   },
   "dependencies": {
-    "@vuepress/core": "~1.9",
-    "@vuepress/types": "^1.9.10",
-    "@vuepress/utils": "^2.0.0-alpha.1",
+    "@vuepress/core": "2.0.0-beta.67",
+    "@vuepress/utils": "2.0.0-beta.67",
     "lodash-es": "~4.17",
     "spdx-license-list": "~6.8",
     "tslib": "~2.6"

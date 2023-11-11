@@ -1,7 +1,7 @@
 // Plugin adds dynamic pages for openupm.
 import { groupBy } from 'lodash-es';
 import { App, createPage } from '@vuepress/core';
-import { Page } from '@vuepress/types';
+import { Page } from '@vuepress/core';
 import spdx from 'spdx-license-list';
 
 import {
