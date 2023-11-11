@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { OpenUPMGitHubRepoUrl, getLocaleDocsPath, getWebBaseUrl, getAPIBaseUrl } from '@shared/urls';
+import { OpenUPMGitHubRepoUrl, getLocaleDocsPath, getWebBaseUrl, getAPIBaseUrl } from '@openupm/common/build/urls.js';
 import { useI18n } from 'vue-i18n';
-import { getRegion } from '@shared/utils';
-import { Region } from '@shared/constant';
+import { getRegion } from '@openupm/common/build/utils.js';
+import { Region } from '@openupm/types';
 
 const { t } = useI18n();
 

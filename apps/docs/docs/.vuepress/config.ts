@@ -149,7 +149,6 @@ const config: any = mergeWith(
     ],
     alias: {
       "@": path.resolve(__dirname),
-      "@shared": path.resolve(__dirname, "../../src/shared"),
       "@node_modules": path.resolve(__dirname, "../../node_modules"),
       "@theme/AutoLink.vue": path.resolve(__dirname, "components/AutoLink.vue"),
       "@theme/Navbar.vue": path.resolve(__dirname, "components/Navbar.vue"),

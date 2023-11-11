@@ -2,9 +2,9 @@
 import { PropType, computed } from 'vue';
 import urlJoin from "url-join";
 
-import { getRegion } from '@shared/utils';
-import { Region } from '@shared/constant';
-import { PackageMetadata } from "@shared/types";
+import { getRegion } from '@openupm/common/build/utils.js';
+import { Region } from '@openupm/types';
+import { PackageMetadata } from "@openupm/types";
 
 const props = defineProps({
   isLoading: {

@@ -14,12 +14,12 @@ import PackagePipelinesView from "@/components/PackagePipelinesView.vue";
 import PackageReadmeView from "@/components/PackageReadmeView.vue";
 import PackageRelatedView from "@/components/PackageRelatedView.vue";
 import PackageVersionsView from "@/components/PackageVersionsView.vue";
-import { Region, ReleaseState } from "@shared/constant";
+import { Region, ReleaseState } from "@openupm/types";
 import { usePageFrontmatter } from "@vuepress/client";
 import { useDefaultStore } from "@/store";
-import { getPackageMetadata, getRegion } from "@shared/utils";
-import { DownloadsRange, PackageInfo, PackageMetadataLocal, PackageRegistryInfo, PackageRelease, PackageVersionViewEntry } from "@shared/types";
-import { getMonthlyDownloadsUrl, getPackageInfoUrl, getPackageMetadataUrl, getPackageRelatedPackagesPath, isPackageDetailPath } from '@shared/urls';
+import { getPackageMetadata, getRegion } from "@openupm/common/build/utils.js";
+import { DownloadsRange, PackageInfo, PackageMetadataLocal, PackageRegistryInfo, PackageRelease, PackageVersionViewEntry } from "@openupm/types";
+import { getMonthlyDownloadsUrl, getPackageInfoUrl, getPackageMetadataUrl, getPackageRelatedPackagesPath, isPackageDetailPath } from '@openupm/common/build/urls.js';
 import { fillMissingDates, isPackageExist, timeAgoFormat } from '@/utils';
 
 const route = useRoute();

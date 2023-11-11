@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 
-import { getPackageDetailPagePath } from '@shared/urls';
-import { PackageMetadataLocal } from '@shared/types';
+import { getPackageDetailPagePath } from '@openupm/common/build/urls.js';
+import { PackageMetadataLocal } from '@openupm/types';
 
 const props = defineProps({
   relatedPackages: {

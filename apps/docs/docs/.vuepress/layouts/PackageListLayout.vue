@@ -13,10 +13,10 @@ import ParentLayout from "@/layouts/WideLayout.vue";
 import VueVirtualScrollGridBackToTop from '@/components/VueVirtualScrollGridBackToTop';
 import { SortType } from "@/constant";
 import { useDefaultStore } from '@/store';
-import { PackageMetadata, Topic } from "@shared/types";
-import { getPackageMetadata } from "@shared/utils";
+import { PackageMetadata, Topic } from "@openupm/types";
+import { getPackageMetadata } from "@openupm/common/build/utils.js";
 import { translateFallback } from "@/utils";
-import { getPackageListPagePath, isPackageListPath } from "@shared/urls";
+import { getPackageListPagePath, isPackageListPath } from "@openupm/common/build/urls.js";
 import { topicsWithAll } from '@temp/topics.js';
 import { usePackageSearchSuggestions } from "@/search";
 

@@ -2,9 +2,9 @@
 import { PropType, computed } from "vue";
 
 import { generateHueFromStringInRange, timeAgoFormat } from '@/utils';
-import { PackageMetadata } from '@shared/types';
-import { getAvatarImageUrl, getGitHubAvatarUrl, getPackageDetailPagePath } from '@shared/urls';
-import { getLocalePackageDescription, getLocalePackageDisplayName } from "@shared/utils";
+import { PackageMetadata } from '@openupm/types';
+import { getAvatarImageUrl, getGitHubAvatarUrl, getPackageDetailPagePath } from '@openupm/common/build/urls.js';
+import { getLocalePackageDescription, getLocalePackageDisplayName } from "@openupm/common/build/utils.js";
 
 const props = defineProps({
   metadata: {

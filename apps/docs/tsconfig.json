@@ -21,9 +21,6 @@
       "@/*": [
         "./docs/.vuepress/*"
       ],
-      "@shared/*": [
-        "./src/shared/*"
-      ],
       "@temp/*": [
         "./docs/.vuepress/.temp/*"
       ],

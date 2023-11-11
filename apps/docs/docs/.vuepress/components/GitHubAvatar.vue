@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { PropType } from 'vue';
 
-import { getAvatarImageUrl } from "@shared/urls";
+import { getAvatarImageUrl } from "@openupm/common/build/urls.js";
 
 interface Profile {
   githubUser: string;

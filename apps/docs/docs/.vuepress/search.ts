@@ -3,7 +3,7 @@ import { isQueryMatched } from "@node_modules/@vuepress/plugin-search/lib/client
 import {
   isPackageDetailPath,
   parsePackageNameFromPackageDetailPath,
-} from "@shared/urls";
+} from "@openupm/common/build/urls.js";
 import { SearchIndex, SearchIndexItem } from "@vuepress/plugin-search";
 
 export interface PackageSearchSuggestion {

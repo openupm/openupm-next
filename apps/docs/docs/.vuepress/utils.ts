@@ -1,11 +1,11 @@
 import { isDate } from "lodash-es";
 import { formatDistanceToNow } from "date-fns";
-import { enUS, zhCN } from 'date-fns/locale';
+import { enUS, zhCN } from "date-fns/locale";
 
 import { useDefaultStore } from "@/store";
-import { Region } from "@shared/constant";
-import { getRegion } from "@shared/utils";
-import { DailyDownload } from "@shared/types";
+import { Region } from "@openupm/types";
+import { getRegion } from "@openupm/common/build/utils.js";
+import { DailyDownload } from "@openupm/types";
 import { ComposerTranslation } from "vue-i18n";
 
 /**
@@ -16,16 +16,16 @@ import { ComposerTranslation } from "vue-i18n";
 export const isPackageExist = function (name: string): boolean {
   const store = useDefaultStore();
   return name in store.packageMetadataRemoteDict;
-}
+};
 
 // Return time since string for the given date
 export const timeAgoFormat = function (date: Date | string): string {
   if (!isDate(date)) date = new Date(date);
   if (isNaN(date.getTime())) return "";
   return formatDistanceToNow(date, {
-    locale: getRegion() == Region.CN ? zhCN : enUS
+    locale: getRegion() == Region.CN ? zhCN : enUS,
   });
-}
+};
 
 /**
  * Fill in missing dates in a list of discrete stats objects with a downloads value of 0.
@@ -34,13 +34,20 @@ export const timeAgoFormat = function (date: Date | string): string {
  * @param {Date} endDate
  * @returns array of discrete stats objects with missing dates filled in
  */
-export const fillMissingDates = function (discreteStats: DailyDownload[], startDate: Date, endDate: Date): DailyDownload[] {
+export const fillMissingDates = function (
+  discreteStats: DailyDownload[],
+  startDate: Date,
+  endDate: Date,
+): DailyDownload[] {
   const filledStats = [];
   let currentDate = startDate;
   let currentIndex = 0;
   while (currentDate <= endDate) {
     const currentDay = currentDate.toISOString().substring(0, 10);
-    if (currentIndex < discreteStats.length && discreteStats[currentIndex].day === currentDay) {
+    if (
+      currentIndex < discreteStats.length &&
+      discreteStats[currentIndex].day === currentDay
+    ) {
       filledStats.push(discreteStats[currentIndex]);
       currentIndex++;
     } else {
@@ -49,7 +56,7 @@ export const fillMissingDates = function (discreteStats: DailyDownload[], startD
     currentDate.setDate(currentDate.getDate() + 1);
   }
   return filledStats;
-}
+};
 
 /**
  * Generate a hue value from a string within a specified range.
@@ -58,7 +65,11 @@ export const fillMissingDates = function (discreteStats: DailyDownload[], startD
  * @param {number} rangeMax - The maximum value of the hue range (must be <= 255).
  * @returns {number} - The value within the specified range.
  */
-export const generateHueFromStringInRange = function (str: string, rangeMin: number, rangeMax: number): number {
+export const generateHueFromStringInRange = function (
+  str: string,
+  rangeMin: number,
+  rangeMax: number,
+): number {
   if (rangeMin < 0) {
     rangeMin = 0;
   }
@@ -79,8 +90,12 @@ export const generateHueFromStringInRange = function (str: string, rangeMin: num
  * @param tkey translation key
  * @param fallback fallback string if translation failed
  */
-export const translateFallback = function (t: ComposerTranslation, tkey: string, fallback: string) {
+export const translateFallback = function (
+  t: ComposerTranslation,
+  tkey: string,
+  fallback: string,
+) {
   const tvalue = t(tkey);
   if (tvalue == tkey) return fallback;
   return tvalue;
-}
+};

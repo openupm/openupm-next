@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 import highlightjs from "highlight.js";
 
-import { getRegistryBaseUrl } from '@shared/urls';
+import { getRegistryBaseUrl } from '@openupm/common/build/urls.js';
 
 const props = defineProps({
   name: { type: String, default: "" },

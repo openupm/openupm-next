@@ -7,7 +7,7 @@ import { computed } from 'vue';
 import ParentLayout from "@/layouts/WideLayout.vue";
 import { useDefaultStore } from '@/store';
 import { usePageFrontmatter } from '@vuepress/client';
-import { OpenUPMGitHubRepoUrl, getLocaleDocsPath } from '@shared/urls';
+import { OpenUPMGitHubRepoUrl, getLocaleDocsPath } from '@openupm/common/build/urls.js';
 
 const store = useDefaultStore();
 const frontmatter = usePageFrontmatter();

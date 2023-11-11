@@ -2,8 +2,8 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import { getPackageDetailPagePath } from "@shared/urls";
-import { PackageDependency } from '@shared/types';
+import { getPackageDetailPagePath } from "@openupm/common/build/urls.js";
+import { PackageDependency } from '@openupm/types';
 
 const { t } = useI18n();
 

@@ -4,9 +4,9 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import highlightjs from "highlight.js";
 
-import { getRegion } from '@shared/utils';
-import { Region } from '@shared/constant';
-import { getNodeJsUrl, getOpenupmCliRepoUrl } from '@shared/urls';
+import { getRegion } from '@openupm/common/build/utils.js';
+import { Region } from '@openupm/types';
+import { getNodeJsUrl, getOpenupmCliRepoUrl } from '@openupm/common/build/urls.js';
 
 const { t } = useI18n();
 

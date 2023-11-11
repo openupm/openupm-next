@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PackageVersionViewEntry } from "@shared/types";
+import { PackageVersionViewEntry } from "@openupm/types";
 
 const props = defineProps({
   versions: {

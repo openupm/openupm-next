@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getLocaleDocsPath } from '@shared/urls';
+import { getLocaleDocsPath } from '@openupm/common/build/urls.js';
 import { capitalize } from 'lodash-es';
 import { onBeforeUnmount, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';

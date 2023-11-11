@@ -12,11 +12,11 @@ import VueScrollTo from "vue-scrollto";
 
 import ParentLayout from "@/layouts/WideLayout.vue";
 import { useDefaultStore } from '@/store';
-import { FormFieldOption, License, Topic } from "@shared/types";
-import { getPublicGenPath, getUnityRegistryUrl } from "@shared/urls";
-import { isPackageBlockedByScope, isPackageRequiresManualVerification, validPackageName } from "@shared/utils";
+import { FormFieldOption, License, Topic } from "@openupm/types";
+import { getPublicGenPath, getUnityRegistryUrl } from "@openupm/common/build/urls.js";
+import { isPackageBlockedByScope, isPackageRequiresManualVerification, validPackageName } from "@openupm/common/build/utils.js";
 import { topicsWithAll } from '@temp/topics.js';
-import { BLOCKED_SCOPES_FILENAME, SDPXLIST_FILENAME } from "@shared/constant";
+import { BLOCKED_SCOPES_FILENAME, SDPXLIST_FILENAME } from "@openupm/types";
 
 const store = useDefaultStore();
 const { t } = useI18n();

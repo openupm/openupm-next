@@ -4,9 +4,9 @@ import { useI18n } from 'vue-i18n';
 import { paramCase } from "change-case";
 import urlJoin from "url-join";
 
-import { ReleaseState, ReleaseReason } from "@shared/constant";
-import { getAzureWebBuildUrl } from '@shared/urls';
-import { PackageRelease } from '@shared/types';
+import { ReleaseState, ReleaseReason } from "@openupm/types";
+import { getAzureWebBuildUrl } from '@openupm/common/build/urls.js';
+import { PackageRelease } from '@openupm/types';
 
 const { t } = useI18n();
 

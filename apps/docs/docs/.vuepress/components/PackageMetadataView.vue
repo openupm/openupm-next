@@ -5,8 +5,8 @@ import { PropType, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { timeAgoFormat } from '@/utils';
-import { getAvatarImageUrl, getGitHubPackageMetadataUrl, getPackageDetailPageUrl } from '@shared/urls';
-import { DownloadsRange, PackageInfo, PackageMetadata, PackageRegistryInfo } from "@shared/types";
+import { getAvatarImageUrl, getGitHubPackageMetadataUrl, getPackageDetailPageUrl } from '@openupm/common/build/urls.js';
+import { DownloadsRange, PackageInfo, PackageMetadata, PackageRegistryInfo } from "@openupm/types";
 
 const { t } = useI18n();
 

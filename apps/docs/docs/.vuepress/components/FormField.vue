@@ -39,7 +39,7 @@
 </template>
 
 <script setup lang="ts">
-import { FormFieldOption } from '@shared/types';
+import { FormFieldOption } from '@openupm/types';
 import { capitalize } from 'lodash-es';
 import { ref, computed } from 'vue';
 
