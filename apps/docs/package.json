@@ -11,6 +11,7 @@
     "docs:build": "cross-env NODE_OPTIONS='-r dotenv-flow/config --experimental-modules --es-module-specifier-resolution=node --max-old-space-size=14000' vuepress build docs",
     "docs:build:limit": "cross-env PACKAGE_LIMIT=5 NODE_OPTIONS='-r dotenv-flow/config --experimental-modules --es-module-specifier-resolution=node --max-old-space-size=14000' vuepress build docs",
     "docs:serve": "ws -d .vuepress/dist --cors.origin '*'",
+    "lint": "eslint . --ext .ts --ext .mts --ext .vue",
     "test:dev": "cross-env NODE_ENV=test vitest --config vite.config.test.ts",
     "test": "cross-env NODE_ENV=test vitest run --config vite.config.test.ts"
   },
@@ -31,6 +32,9 @@
     "change-case": "^4.1.2",
     "copy-to-clipboard": "^3.3.3",
     "cross-env": "^7.0.3",
+    "eslint": "~8.46",
+    "eslint-config-prettier": "~9.0",
+    "eslint-plugin-jest": "~27.2",
     "date-fns": "^2.30.0",
     "dotenv-flow": "^4.0.1",
     "escape-html": "^1.0.3",

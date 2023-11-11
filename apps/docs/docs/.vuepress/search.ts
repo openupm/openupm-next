@@ -1,17 +1,26 @@
-import type { PageHeader } from '@vuepress/shared'
-import { computed } from 'vue'
-import { isQueryMatched } from '@node_modules/@vuepress/plugin-search/lib/client/utils'
-import { isPackageDetailPath, parsePackageNameFromPackageDetailPath } from '@shared/urls'
-import { SearchIndex, SearchIndexItem } from '@vuepress/plugin-search'
+import { computed } from "vue";
+import { isQueryMatched } from "@node_modules/@vuepress/plugin-search/lib/client/utils";
+import {
+  isPackageDetailPath,
+  parsePackageNameFromPackageDetailPath,
+} from "@shared/urls";
+import { SearchIndex, SearchIndexItem } from "@vuepress/plugin-search";
 
 export interface PackageSearchSuggestion {
-  name: string
+  name: string;
 }
 
-export const usePackageSearchSuggestions = (searchIndex: SearchIndex, query: string, maxSuggestions?: number): PackageSearchSuggestion[] => {
+export const usePackageSearchSuggestions = (
+  searchIndex: SearchIndex,
+  query: string,
+  maxSuggestions?: number,
+): PackageSearchSuggestion[] => {
   // filter search index of package detail pages
   const packageSearchIndex = computed(() =>
-    searchIndex.filter((item: SearchIndexItem) => isPackageDetailPath(item.path)));
+    searchIndex.filter((item: SearchIndexItem) =>
+      isPackageDetailPath(item.path),
+    ),
+  );
   // if query is empty, return empty suggestions
   const searchStr = cleanToken(query.trim().toLowerCase());
   if (!searchStr) return [];
@@ -21,18 +30,27 @@ export const usePackageSearchSuggestions = (searchIndex: SearchIndex, query: str
     if (maxSuggestions !== undefined && suggestions.length >= maxSuggestions)
       break;
     // match page title and extra fields
-    if (isQueryMatched(searchStr, [searchIndexItem.title, ...searchIndexItem.extraFields])) {
-      const packageName = parsePackageNameFromPackageDetailPath(searchIndexItem.path);
+    if (
+      isQueryMatched(searchStr, [
+        searchIndexItem.title,
+        ...searchIndexItem.extraFields,
+      ])
+    ) {
+      const packageName = parsePackageNameFromPackageDetailPath(
+        searchIndexItem.path,
+      );
       if (packageName)
         suggestions.push({
           name: parsePackageNameFromPackageDetailPath(searchIndexItem.path)!,
         });
       else
-        console.warn(`Failed to parse package name from path ${searchIndexItem.path}`);
+        console.warn(
+          `Failed to parse package name from path ${searchIndexItem.path}`,
+        );
     }
   }
   return suggestions;
-}
+};
 
 /**
  * Clean a token by removing a few plural cases that can benefit from being singularized
@@ -47,12 +65,18 @@ export const usePackageSearchSuggestions = (searchIndex: SearchIndex, query: str
 const cleanToken = (searchStr: string): string => {
   searchStr = searchStr.trim().toLowerCase();
   const tokens = searchStr.split(/\s+/);
-  const cleanedTokens = tokens.map(token => {
-    if (token.endsWith('ses') || token.endsWith('xes') || token.endsWith('zes') || token.endsWith('ches') || token.endsWith('shes'))
+  const cleanedTokens = tokens.map((token) => {
+    if (
+      token.endsWith("ses") ||
+      token.endsWith("xes") ||
+      token.endsWith("zes") ||
+      token.endsWith("ches") ||
+      token.endsWith("shes")
+    )
       return token.slice(0, -2);
     // If token ends in "s", remove the "s"
-    else if (token.endsWith('s')) token = token.slice(0, -1);
+    else if (token.endsWith("s")) token = token.slice(0, -1);
     return token;
   });
-  return cleanedTokens.join(' ');
-}
+  return cleanedTokens.join(" ");
+};

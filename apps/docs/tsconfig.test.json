@@ -1,0 +1,8 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "env.d.ts",
+    "vite.config.test.ts",
+    "__tests__/**/*"
+  ]
+}
