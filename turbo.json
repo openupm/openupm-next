@@ -5,17 +5,13 @@
   ],
   "pipeline": {
     "build": {
-      "dependsOn": [
-        "^build"
-      ],
       "outputs": [
         "build/**"
       ]
     },
     "build:release": {
       "dependsOn": [
-        "clean",
-        "^build"
+        "clean"
       ],
       "outputs": [
         "build/**"
