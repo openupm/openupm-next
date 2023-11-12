@@ -84,7 +84,6 @@ const releaseEntries = computed(() => {
       const tkey = releaseReasonLocaleNoteKeyMap.value[entry.reason];
       const tvalue = t(tkey);
       entry.errorMessage = tkey == tvalue ? "" : tvalue;
-      console.log(entry.errorMessage);
     }
     return entry;
   });
