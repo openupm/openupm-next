@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { getLocaleDocsPath } from '@openupm/common/build/urls.js';
 import { capitalize } from 'lodash-es';
-import { onBeforeUnmount, onMounted } from 'vue';
+import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
 
-const initCookieConsent = () => {
+const initCookieConsent = (): void => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const cookieconsent = (window as any).cookieconsent;
   if (cookieconsent === undefined) {
     console.error("Cookie Consent script not loaded yet.");
@@ -35,7 +36,9 @@ const initCookieConsent = () => {
 onMounted(() => { initCookieConsent(); });
 </script>
 
-<template></template>
+<template>
+  <div class="cookie-consent-init"></div>
+</template>
 
 <i18n locale="en-US" lang="yaml">
   cookie-consent-dismiss: Got it!

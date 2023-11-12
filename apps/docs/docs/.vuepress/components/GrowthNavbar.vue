@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-import numeral from 'numeral';
-
 import { useDefaultStore } from '@/store';
 
 const store = useDefaultStore();

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import urlJoin from "url-join";
 import { isArray, mergeWith } from "lodash-es";
 import { defaultTheme } from "vuepress";
@@ -35,7 +36,7 @@ if (VITE_OPENUPM_REGION != Region.CN) {
 const THEME_COLOR = "#3068E5";
 
 // Merge customizer to concat arrays
-const mergeCustomizer = (obj: any, src: any) => {
+const mergeCustomizer = (obj: any, src: any): any => {
   if (isArray(obj)) return obj.concat(src);
 };
 
@@ -138,6 +139,7 @@ const config: any = mergeWith(
       }),
       sitemapPlugin({
         hostname: themeConfig.domain,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         modifyTimeGetter: (page, app) => {
           return new Date().toISOString();
         },

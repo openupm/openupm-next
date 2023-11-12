@@ -1,6 +1,7 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
 import { computed } from 'vue';
-import { OpenUPMGitHubRepoUrl, getLocaleDocsPath, getWebBaseUrl, getAPIBaseUrl } from '@openupm/common/build/urls.js';
+import { OpenUPMGitHubRepoUrl, getLocaleDocsPath } from '@openupm/common/build/urls.js';
 import { useI18n } from 'vue-i18n';
 import { getRegion } from '@openupm/common/build/utils.js';
 import { Region } from '@openupm/types';

@@ -57,6 +57,7 @@ const openupmCliRepoLink = computed(() => ({
         <AutoLink :item="openupmCliRepoLink" />.
       </p>
       <div class="theme-default-content custom">
+        <!-- eslint-disable-next-line vue/no-v-html -->
         <div class="language-sh" v-html="highlighted">
         </div>
       </div>

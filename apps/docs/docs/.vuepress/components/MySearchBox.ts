@@ -6,111 +6,113 @@
  * - change the component name to MySearchBox.
  * - fix: search index not reset when press escape key.
  */
-import { useRouteLocale } from '@vuepress/client'
-import { computed, defineComponent, h, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouteLocale } from "@vuepress/client";
+import { computed, defineComponent, h, ref } from "vue";
+import { useRouter } from "vue-router";
 import {
   useHotKeys,
   useSearchIndex,
   useSearchSuggestions,
   useSuggestionsFocus,
   SearchSuggestion,
-} from '@node_modules/@vuepress/plugin-search/lib/client/composables'
+} from "@node_modules/@vuepress/plugin-search/lib/client/composables";
 
 export default defineComponent({
-  name: 'MySearchBox',
+  name: "MySearchBox",
 
-  setup(props) {
+  setup() {
     const locales = computed(() => ({
-      '/': {
-        placeholder: 'Search ctrl+k',
+      "/": {
+        placeholder: "Search ctrl+k",
       },
-      '/zh/': {
-        placeholder: '搜索 ctrl+k',
+      "/zh/": {
+        placeholder: "搜索 ctrl+k",
       },
     }));
     const hotKeys = computed(() => [{ key: "k", ctrl: true }]);
     const maxSuggestions = computed(() => 10);
 
-    const router = useRouter()
-    const routeLocale = useRouteLocale()
-    const searchIndex = useSearchIndex()
+    const router = useRouter();
+    const routeLocale = useRouteLocale();
+    const searchIndex = useSearchIndex();
 
-    const input = ref<HTMLInputElement | null>(null)
-    const isActive = ref(false)
-    const query = ref('')
-    const locale = computed(() => locales.value[routeLocale.value] ?? {})
+    const input = ref<HTMLInputElement | null>(null);
+    const isActive = ref(false);
+    const query = ref("");
+    const locale = computed(() => locales.value[routeLocale.value] ?? {});
 
     const originalSuggestions = useSearchSuggestions({
       searchIndex,
       routeLocale,
       query,
       maxSuggestions,
-    })
+    });
 
     const suggestions = computed(() => {
       if (query.value) {
-        return ([
-          {
-            link: "/packages/?q=" + query.value,
-            title: "Search the package list...",
-          }
-        ] as SearchSuggestion[]).concat(originalSuggestions.value)
+        return (
+          [
+            {
+              link: "/packages/?q=" + query.value,
+              title: "Search the package list...",
+            },
+          ] as SearchSuggestion[]
+        ).concat(originalSuggestions.value);
       }
       return originalSuggestions.value;
-    })
+    });
 
     const { focusIndex, focusNext, focusPrev } =
-      useSuggestionsFocus(suggestions)
-    useHotKeys({ input, hotKeys })
+      useSuggestionsFocus(suggestions);
+    useHotKeys({ input, hotKeys });
 
     const showSuggestions = computed(
       () => isActive.value && !!suggestions.value.length,
-    )
+    );
     const onArrowUp = (): void => {
       if (!showSuggestions.value) {
-        return
+        return;
       }
-      focusPrev()
-    }
+      focusPrev();
+    };
     const onArrowDown = (): void => {
       if (!showSuggestions.value) {
-        return
+        return;
       }
-      focusNext()
-    }
+      focusNext();
+    };
     const onEscape = (): void => {
       focusIndex.value = 0;
-    }
+    };
     const goTo = (index: number): void => {
       if (!showSuggestions.value) {
-        return
+        return;
       }
 
-      const suggestion = suggestions.value[index]
+      const suggestion = suggestions.value[index];
       if (!suggestion) {
-        return
+        return;
       }
 
       router.push(suggestion.link).then(() => {
-        query.value = ''
-        focusIndex.value = 0
-      })
-    }
+        query.value = "";
+        focusIndex.value = 0;
+      });
+    };
 
-    return () =>
+    return (): JSX.Element =>
       h(
-        'form',
+        "form",
         {
-          class: 'search-box',
-          role: 'search',
+          class: "search-box",
+          role: "search",
         },
         [
-          h('input', {
+          h("input", {
             ref: input,
-            type: 'search',
+            type: "search",
             placeholder: locale.value.placeholder,
-            autocomplete: 'off',
+            autocomplete: "off",
             spellcheck: false,
             value: query.value,
             onFocus: () => (isActive.value = true),
@@ -118,68 +120,68 @@ export default defineComponent({
             onInput: (event) => (query.value = event.target.value),
             onKeydown: (event) => {
               switch (event.key) {
-                case 'ArrowUp': {
-                  onArrowUp()
-                  break
+                case "ArrowUp": {
+                  onArrowUp();
+                  break;
                 }
-                case 'ArrowDown': {
-                  onArrowDown()
-                  break
+                case "ArrowDown": {
+                  onArrowDown();
+                  break;
                 }
-                case 'Enter': {
-                  event.preventDefault()
-                  goTo(focusIndex.value)
-                  break
+                case "Enter": {
+                  event.preventDefault();
+                  goTo(focusIndex.value);
+                  break;
                 }
-                case 'Escape': {
-                  onEscape()
-                  break
+                case "Escape": {
+                  onEscape();
+                  break;
                 }
               }
             },
           }),
           showSuggestions.value &&
-          h(
-            'ul',
-            {
-              class: 'suggestions',
-              onMouseleave: () => (focusIndex.value = -1),
-            },
-            suggestions.value.map(({ link, title, header }, index) =>
-              h(
-                'li',
-                {
-                  class: [
-                    'suggestion',
-                    {
-                      focus: focusIndex.value === index,
-                    },
-                  ],
-                  onMouseenter: () => (focusIndex.value = index),
-                  onMousedown: () => goTo(index),
-                },
+            h(
+              "ul",
+              {
+                class: "suggestions",
+                onMouseleave: () => (focusIndex.value = -1),
+              },
+              suggestions.value.map(({ link, title, header }, index) =>
                 h(
-                  'a',
+                  "li",
                   {
-                    href: link,
-                    onClick: (event) => event.preventDefault(),
-                  },
-                  [
-                    h(
-                      'span',
+                    class: [
+                      "suggestion",
                       {
-                        class: 'page-title',
+                        focus: focusIndex.value === index,
                       },
-                      title,
-                    ),
-                    header &&
-                    h('span', { class: 'page-header' }, `> ${header}`),
-                  ],
+                    ],
+                    onMouseenter: () => (focusIndex.value = index),
+                    onMousedown: () => goTo(index),
+                  },
+                  h(
+                    "a",
+                    {
+                      href: link,
+                      onClick: (event) => event.preventDefault(),
+                    },
+                    [
+                      h(
+                        "span",
+                        {
+                          class: "page-title",
+                        },
+                        title,
+                      ),
+                      header &&
+                        h("span", { class: "page-header" }, `> ${header}`),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
         ],
-      )
+      );
   },
-})
+});

@@ -35,8 +35,9 @@ const readyPackageCount = computed(() => {
 });
 
 const features = computed(() => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const items = (frontmatter.value as any).features as { title: string, desc: string }[];
-  return items.map((item: any) => {
+  return items.map(item => {
     return {
       title: item.title,
       desc: template(item.desc)({ package_count: readyPackageCount.value }),

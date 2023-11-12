@@ -3,7 +3,6 @@ import { orderBy, capitalize, groupBy } from "lodash-es";
 import { computed, watch, onMounted, ref } from "vue";
 import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n'
-import { useMq } from "vue3-mq";
 import { usePageFrontmatter } from "@vuepress/client";
 import Grid from '@node_modules/vue-virtual-scroll-grid/dist/index.es.js';
 import { PageProvider } from '@node_modules/vue-virtual-scroll-grid/pipeline';
@@ -13,9 +12,8 @@ import ParentLayout from "@/layouts/WideLayout.vue";
 import VueVirtualScrollGridBackToTop from '@/components/VueVirtualScrollGridBackToTop';
 import { SortType } from "@/constant";
 import { useDefaultStore } from '@/store';
-import { PackageMetadata, Topic } from "@openupm/types";
+import { Topic } from "@openupm/types";
 import { getPackageMetadata } from "@openupm/common/build/utils.js";
-import { translateFallback } from "@/utils";
 import { getPackageListPagePath, isPackageListPath } from "@openupm/common/build/urls.js";
 import { topicsWithAll } from '@temp/topics.js';
 import { usePackageSearchSuggestions } from "@/search";
@@ -24,13 +22,10 @@ const route = useRoute();
 const router = useRouter();
 const store = useDefaultStore();
 const { t } = useI18n();
-const mq = useMq();
 const frontmatter = usePageFrontmatter();
 
 const sortType = ref(SortType.downloads)
 const searchTerm = ref("");
-const cardGridItems = ref(4);
-const cardScrollerRef = ref(null);
 
 const sortTypeList = computed(() => {
   const items = [
@@ -72,7 +67,7 @@ const topicGroups = computed(() => {
   const theAllEntry = items[0];
   const itemsWithoutAllEntry = items.slice(1);
   const groupedItems = Object.values(groupBy(itemsWithoutAllEntry, (item) => item.text.charAt(0).toUpperCase()));
-  const sortedItems = orderBy(groupedItems, [(item) => item[0].text.charAt(0).toUpperCase()]);
+  const sortedItems = orderBy(groupedItems, [(item): string => item[0].text.charAt(0).toUpperCase()]);
   sortedItems.unshift([theAllEntry]);
   return sortedItems;
 });
@@ -153,43 +148,21 @@ const gridPageProvider = computed(() => {
 });
 
 // Grid item key for virtual scroll grid.
-const getGridKey = (item: any) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const getGridKey = (item: any): string => {
   if (item.value) return item.value.name;
-  return item.index;
+  return item.index.toString();
 };
-
-// Probe metadata for virtual scroll grid to estimate the size of grid item.
-const probeMetadata = computed(() => {
-  return {
-    name: "com.example.probe",
-    displayName: "probe",
-    description: "The probe slot is used to measure the visual size of grid item. It has no prop. You can pass the same element/component for the placeholder slot. If not provided, you must set a fixed height to grid-template-rows on your CSS grid, e.g. 200px. If provided, make sure it is styled with the same dimensions as rendered items in the default or placeholder slot. Otherwise, the view wouldn't be rendered properly, or the rendering could be very slow.",
-    licenseSpdxId: "mit",
-    licenseName: "MIT License",
-    image: null,
-    imageFilename: null,
-    topics: [],
-    hunter: "openupm",
-    repo: "favoyang/com.example.probe",
-    owner: "favoyang",
-    ver: "0.0.0",
-    time: (new Date()).getTime(),
-    stars: 1000,
-    pstars: 0,
-    unity: "2019.4",
-    dl30d: 1000,
-  } as any as PackageMetadata;
-});
 /* #endregion */
 
-const onSearchTermClose = () => {
+const onSearchTermClose = (): void => {
   searchTerm.value = "";
 };
 
 /**
  * Parse query string to set initial values.
  */
-const parseQuery = () => {
+const parseQuery = (): void => {
   // parse search term
   let newSearchTerm = route.query.q?.toString();
   if (newSearchTerm !== undefined) searchTerm.value = newSearchTerm;
@@ -203,7 +176,7 @@ const parseQuery = () => {
 };
 
 const query = computed(() => {
-  const query = {} as any;
+  const query: Record<string, string> = {};
   if (sortType.value) query.sort = sortType.value;
   if (searchTerm.value) query.q = searchTerm.value;
   return query;
@@ -212,7 +185,7 @@ const query = computed(() => {
 /**
  * Update router for current state
  */
-const updateRouter = () => {
+const updateRouter = (): void => {
   router.push({
     path: getPackageListPagePath(topicSlug.value),
     query: query.value,
@@ -224,12 +197,14 @@ onMounted(() => {
   parseQuery();
 });
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 watch(() => route.path, (newPath, oldPath) => {
   if (isPackageListPath(newPath)) {
     parseQuery();
   }
 });
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 watch(() => route.query, (newQuery, oldQuery) => {
   if (isPackageListPath(route.path)) {
     parseQuery();
@@ -314,13 +289,13 @@ watch(() => searchTerm.value, () => {
               </div>
               <div v-else>
                 <client-only>
-                  <div class="no-data" v-if="!metadataEntries.length">
+                  <div v-if="!metadataEntries.length" class="no-data">
                     {{ noDataAvailableText }}
                   </div>
-                  <div v-else class="grid-wrapper" ref="gridWrapperElement">
+                  <div v-else ref="gridWrapperElement" class="grid-wrapper">
                     <Grid class="grid" :length="metadataEntries.length" :page-size="gridPageSize"
                       :page-provider="gridPageProvider" :get-key="getGridKey">
-                      <template v-slot:probe>
+                      <template #probe>
                         <!-- The virtual grid is designed to be used with a network provider.
                           To get an accurate estimation, the default slot needs to be rendered
                           after the probe slots. However, since our provider returns data instantly,
@@ -328,7 +303,7 @@ watch(() => searchTerm.value, () => {
                           from loading too slowly and producing an incorrect estimation. -->
                         <div style="min-height: 14rem;"></div>
                       </template>
-                      <template v-slot:default="{ item, style }">
+                      <template #default="{ item, style }">
                         <PackageCard :metadata="item" :style="style" />
                       </template>
                     </Grid>

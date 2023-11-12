@@ -9,5 +9,5 @@ const secondaryColor = computed(() => isDarkMode.value ? '#6c6c6c' : '#ecebeb');
 </script>
 
 <template>
-  <ListLoader :primaryColor="primaryColor" :secondaryColor="secondaryColor" />
+  <ListLoader :primary-color="primaryColor" :secondary-color="secondaryColor" />
 </template>

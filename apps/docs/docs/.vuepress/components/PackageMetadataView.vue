@@ -213,7 +213,7 @@ const editLink = computed(() => {
       </section>
       <section class="col-6 col-downloads">
         <div class="metadata-title"></div>
-        <Sparkline v-bind:data-points="monthlyDownloadsList" class="monthly-downloads-chart"></Sparkline>
+        <Sparkline :data-points="monthlyDownloadsList" class="monthly-downloads-chart"></Sparkline>
       </section>
       <section class="col-6">
         <div class="metadata-title"><i class="fab fa-github"></i> Stars</div>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import copy from "copy-to-clipboard";
-import { computed, onMounted, ref } from "vue";
+import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
@@ -22,7 +22,7 @@ const copiedTooltip = computed(() => {
 
 const copied = ref(false);
 
-const copyIt = () => {
+const copyIt = (): void => {
   copy(props.copyText, { format: "text/plain" });
   copied.value = true;
   setTimeout(() => {

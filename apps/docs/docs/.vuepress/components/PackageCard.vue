@@ -24,13 +24,13 @@ const ownerAvatarUrl = computed(() => {
   return getAvatarImageUrl(props.metadata.owner, avatarSize);
 });
 
-const parentOwnerAvatarUrl = computed(() => {
-  if (!props.metadata.parentOwner) return null;
-  const avatarSize = 48;
-  if (props.preferRawAvatarUrl)
-    return getGitHubAvatarUrl(props.metadata.parentOwner, avatarSize);
-  return getAvatarImageUrl(props.metadata.parentOwner, avatarSize);
-});
+// const parentOwnerAvatarUrl = computed(() => {
+//   if (!props.metadata.parentOwner) return null;
+//   const avatarSize = 48;
+//   if (props.preferRawAvatarUrl)
+//     return getGitHubAvatarUrl(props.metadata.parentOwner, avatarSize);
+//   return getAvatarImageUrl(props.metadata.parentOwner, avatarSize);
+// });
 
 const timeAgoText = computed(() => {
   return timeAgoFormat(new Date(props.metadata.time));

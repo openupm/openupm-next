@@ -7,6 +7,7 @@ const DefaultImagePlaceholder =
 const props = defineProps({
   placeholder: {
     type: String,
+    // eslint-disable-next-line vue/valid-define-props
     default: DefaultImagePlaceholder
   },
   errorMessage: {
@@ -15,7 +16,8 @@ const props = defineProps({
   }
 });
 
-const imageNotFound = (el: HTMLImageElement) => {
+const imageNotFound = (el: HTMLImageElement): void => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const src = (el.attributes as any).src.value;
   console.log(props.errorMessage + src);
   el.src = DefaultImagePlaceholder;
@@ -24,7 +26,7 @@ const imageNotFound = (el: HTMLImageElement) => {
 </script>
 
 <template>
-  <VLazyImage v-bind="$attrs" :src-placeholder="placeholder" @error.native="imageNotFound" />
+  <VLazyImage v-bind="$attrs" :src-placeholder="placeholder" @error="imageNotFound" />
 </template>
 
 <style lang="scss" scoped>

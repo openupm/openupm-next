@@ -77,7 +77,7 @@ const initState = (): State => ({
   __sameScopePackagesFetched: false,
 });
 
-const resetState = () => {
+const resetState = (): void => {
   Object.assign(state, initState());
 }
 
@@ -103,6 +103,7 @@ const currentSubPageSlug = computed(() => {
 });
 
 // Scroll to the top of the page when the sub page changes.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 watch(currentSubPageSlug, (newValue, oldValue) => {
   VueScrollTo.scrollTo(".theme-default-content", 500, { offset: -150 });
 });
@@ -299,6 +300,7 @@ const subPageMetadataProps = computed(() => {
 });
 
 const topics = computed(() => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (frontmatter.value.topics as any[]).map(topic => {
     const tkey = topic.slug;
     const tvalue = t(tkey);
@@ -314,6 +316,7 @@ onMounted(() => {
   fetchAllData();
 });
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 watch(() => route.path, (newPath, oldPath) => {
   if (isPackageDetailPath(newPath)) {
     resetState();
@@ -326,7 +329,7 @@ watch(() => route.path, (newPath, oldPath) => {
 /**
  * Fetch all data.
  */
-const fetchAllData = async () => {
+const fetchAllData = async (): Promise<void> => {
   await fetchPackageInfo();
   await fetchRegistryInfo();
   await fetchMonthlyDownloads();
@@ -336,7 +339,7 @@ const fetchAllData = async () => {
 /**
  * Fetch monthly downloads.
  */
-const fetchMonthlyDownloads = async () => {
+const fetchMonthlyDownloads = async (): Promise<void> => {
   try {
     const resp = await axios.get(
       getMonthlyDownloadsUrl(packageMetadata.value.name),
@@ -362,7 +365,7 @@ const fetchMonthlyDownloads = async () => {
 /**
  * Fetch package info.
  */
-const fetchPackageInfo = async () => {
+const fetchPackageInfo = async (): Promise<void> => {
   try {
     const resp = await axios.get(
       getPackageInfoUrl(packageMetadata.value.name),
@@ -379,7 +382,7 @@ const fetchPackageInfo = async () => {
 /**
  * Fetch registry info.
  */
-const fetchRegistryInfo = async () => {
+const fetchRegistryInfo = async (): Promise<void> => {
   try {
     let resp = await axios.get(
       getPackageMetadataUrl(packageMetadata.value.name),
@@ -396,7 +399,7 @@ const fetchRegistryInfo = async () => {
 /**
  * Fetch related packages.
  */
-const fetchRelatedPackages = async () => {
+const fetchRelatedPackages = async (): Promise<void> => {
   try {
     let resp = await axios.get(
       getPackageRelatedPackagesPath(packageMetadata.value.name),
@@ -415,7 +418,7 @@ const fetchRelatedPackages = async () => {
  * @param subPage Sub page slug.
  * @returns Router link query.
  */
-const buildRouterLinkQuery = function (subPage: string): any {
+const buildRouterLinkQuery = function (subPage: string): Record<string, string> {
   const query = { subPage };
   return query;
 };

@@ -6,14 +6,14 @@ import urlJoin from "url-join";
 import yaml from "js-yaml";
 
 import { capitalize, cloneDeep } from "lodash-es";
-import { computed, watch, onMounted, ref, reactive } from "vue";
+import { computed, onMounted, ref, reactive } from "vue";
 import { useI18n } from 'vue-i18n'
 import VueScrollTo from "vue-scrollto";
 
 import ParentLayout from "@/layouts/WideLayout.vue";
 import { useDefaultStore } from '@/store';
 import { FormFieldOption, License, Topic } from "@openupm/types";
-import { getPublicGenPath, getUnityRegistryUrl } from "@openupm/common/build/urls.js";
+import { getPublicGenPath } from "@openupm/common/build/urls.js";
 import { isPackageBlockedByScope, isPackageRequiresManualVerification, validPackageName } from "@openupm/common/build/utils.js";
 import { topicsWithAll } from '@temp/topics.js';
 import { BLOCKED_SCOPES_FILENAME, SDPXLIST_FILENAME } from "@openupm/types";
@@ -36,28 +36,53 @@ const PackageFormSchema = Joi.object({
   image: Joi.string().allow("").default(""),
 });
 
-const initState = function () {
-  const obj = {
+interface PackageAddFormState {
+  errors: Record<string, string>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  values: Record<string, any>;
+  required: Record<string, boolean>;
+  options: {
+    topics: FormFieldOption[];
+    branch: FormFieldOption[];
+    packageJson: FormFieldOption[];
+    readme: FormFieldOption[];
+  };
+}
+
+interface PackageAddState {
+  form: PackageAddFormState;
+  isSubmitting: boolean;
+  hideMetaFields: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  repoInfo: Record<string, any>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  packageJsonObj: Record<string, any>;
+}
+
+const initState = function (): PackageAddState {
+  const obj: PackageAddState = {
     form: {
       errors: {},
       values: {},
       required: {},
       options: {
-        topics: topicsWithAll.slice(1, topicsWithAll.length - 1).map((x: Topic) => ({
-          key: x.slug,
-          text: x.name,
-          selected: false,
-        })),
+        topics: topicsWithAll
+          .slice(1, topicsWithAll.length - 1)
+          .map((x: Topic) => ({
+            key: x.slug,
+            text: x.name,
+            selected: false,
+          })),
         branch: [],
         packageJson: [],
         readme: [],
-      } as { [key: string]: FormFieldOption[] },
+      },
     },
     isSubmitting: false,
     hideMetaFields: true,
     repoInfo: {},
-    packageJsonObj: {} as any,
-  } as any;
+    packageJsonObj: {},
+  };
   resetForm(obj.form);
   return obj;
 };
@@ -67,7 +92,7 @@ const initState = function () {
  * @param form form data
  * @param skipFields fields to skip
  */
-const resetForm = (form: any, skipFields?: string[]) => {
+const resetForm = (form: PackageAddFormState, skipFields?: string[]): void => {
   // Reset values, errors.
   // PackageFormSchema.describe() is not available in browser environment, so we have to use $_terms.
   for (const schemaKey of PackageFormSchema.$_terms.keys) {
@@ -87,7 +112,7 @@ const resetForm = (form: any, skipFields?: string[]) => {
 /**
  * Reset form errors.
  */
-const resetFormErrors = (skipFields?: string[]) => {
+const resetFormErrors = (skipFields?: string[]): void => {
   const errors = state.form.errors;
   Object.keys(errors).forEach((key) => {
     if (skipFields && skipFields.includes(key)) return;
@@ -125,7 +150,7 @@ const uploadLink = computed(() => {
   };
 });
 
-const fetchRepoInfo = async () => {
+const fetchRepoInfo = async (): Promise<void> => {
   try {
     // Clean error message.
     resetFormErrors();
@@ -161,7 +186,7 @@ const fetchRepoInfo = async () => {
   }
 };
 
-const fetchBranches = async () => {
+const fetchBranches = async (): Promise<void> => {
   state.form.options.branch = [];
   try {
     // Clean error message.
@@ -170,11 +195,13 @@ const fetchBranches = async () => {
       urlJoin("https://api.github.com/repos/", state.form.values.repo, "branches") +
       "?per_page=100";
     // Traversing with pagination
+    // eslint-disable-next-line no-constant-condition
     while (true) {
       let resp = await axios.get(url, {
         headers: { Accept: "application/vnd.github.v3.json" },
       });
       const branches = resp.data
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .map((x: any) => x.name)
         .filter((x: string) => !x.startsWith("all-contributors/"));
       for (const item of branches) state.form.options.branch.push({ key: item, text: item });
@@ -184,7 +211,7 @@ const fetchBranches = async () => {
         const links = resp.headers.link.split(",");
         for (let link of links) {
           link = link.trim();
-          const re = /<(https.*)>; rel=\"next\"/g;
+          const re = /<(https.*)>; rel="next"/g;
           const match = re.exec(link);
           if (match) nextUrl = match[1];
         }
@@ -193,10 +220,10 @@ const fetchBranches = async () => {
       else break;
     }
     // Assign the default branch
-    if (state.form.options.branch.some((x: any) => x.key == "master")) {
+    if (state.form.options.branch.some(x => x.key == "master")) {
       state.form.values.branch = "master";
       onBranchChange();
-    } else if (state.form.options.branch.some((x: any) => x.key == "main")) {
+    } else if (state.form.options.branch.some(x => x.key == "main")) {
       state.form.values.branch = "main";
       onBranchChange();
     }
@@ -208,7 +235,7 @@ const fetchBranches = async () => {
   }
 };
 
-const fetchGitTrees = async () => {
+const fetchGitTrees = async (): Promise<void> => {
   if (!state.form.values.branch) return;
   state.form.options.packageJson = [];
   state.form.options.readme = [];
@@ -229,6 +256,7 @@ const fetchGitTrees = async () => {
     });
     // Assign data to packageJson
     const paths = resp.data.tree
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .map((x: any) => x.path)
       .filter((x: string) => x.endsWith("package.json"));
     state.form.options.packageJson = paths.map((x: string) => ({ key: x, text: x }));
@@ -245,7 +273,8 @@ const fetchGitTrees = async () => {
     }
     // Assign data to readme
     const markdownRe = /.(md|markdown)$/i;
-    const readmePaths = resp.data.tree
+    const readmePaths: string[] = resp.data.tree
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .map((x: any) => x.path)
       .filter((x: string) => markdownRe.test(x));
     state.form.options.readme = readmePaths.map((x: string) => ({ key: x, text: x }));
@@ -256,7 +285,7 @@ const fetchGitTrees = async () => {
     } else if (readmePaths.includes("README.md")) {
       state.form.values.readme = "README.md";
     } else {
-      const filteredPath = readmePaths.filter((x: any) => x.endsWith("README.md"));
+      const filteredPath = readmePaths.filter(x => x.endsWith("README.md"));
       if (filteredPath.length > 0) {
         state.form.values.readme = filteredPath[0];
       }
@@ -269,7 +298,7 @@ const fetchGitTrees = async () => {
   }
 };
 
-const fetchPackageJson = async () => {
+const fetchPackageJson = async (): Promise<void> => {
   try {
     // Clean error message.
     state.form.errors.packageJson = "";
@@ -305,9 +334,6 @@ const fetchPackageJson = async () => {
     if (state.packageJsonObj.license && !state.form.values.licenseName) {
       state.form.values.licenseName = state.packageJsonObj.license;
     }
-    // Verify unity registry
-    // Unity registry didn't enable the cross origin requests, then the check cannot be done in a browser.
-    // await verifyPackageExistInUnityRegistry(packageName);
   } catch (error) {
     const errorObj = error as Error;
     if (errorObj.message.includes("404"))
@@ -318,7 +344,7 @@ const fetchPackageJson = async () => {
   }
 };
 
-const fetchBlockedScopes = async () => {
+const fetchBlockedScopes = async (): Promise<void> => {
   try {
     isLoadingBlockedScopes.value = true;
     const resp = await axios.get(
@@ -333,7 +359,7 @@ const fetchBlockedScopes = async () => {
   }
 }
 
-const fetchLicenses = async () => {
+const fetchLicenses = async (): Promise<void> => {
   try {
     isLoadingLicenses.value = true;
     const resp = await axios.get(
@@ -348,19 +374,11 @@ const fetchLicenses = async () => {
   }
 }
 
-const verifyPackageExistInUnityRegistry = async (packageName: string) => {
-  try {
-    let url = urlJoin(getUnityRegistryUrl(), packageName);
-    let resp = await axios.get(url);
-    throw new Error(t("package-already-exists-in-unity-registry"));
-  } catch (error) { }
-};
-
 /**
  * Verify package form.
  * @returns true if the form is clean.
  */
-const verifyPackage = () => {
+const verifyPackage = (): boolean => {
   // Verify form except a few already verified fields.
   resetFormErrors(["repo", "branch", "readme", "packageJson"]);
   const result = PackageFormSchema.validate(state.form.values, {
@@ -395,7 +413,7 @@ const hasFormError = computed(() => {
 /**
  * Try to fill license id field if license name is provided.
  */
-const guessLicenseId = () => {
+const guessLicenseId = (): void => {
   if (state.form.values.licenseName.value) {
     const items = licenses.value.filter((x) =>
       x.name.toLowerCase() == state.form.values.licenseName.toLowerCase() ||
@@ -409,7 +427,7 @@ const guessLicenseId = () => {
   }
 };
 
-const onRepoChange = () => {
+const onRepoChange = (): void => {
   // Cleanify repo
   let repo = state.form.values.repo;
   state.form.values.repo = repo
@@ -420,17 +438,17 @@ const onRepoChange = () => {
   state.hideMetaFields = true;
 };
 
-const onBranchChange = () => {
+const onBranchChange = (): void => {
   fetchGitTrees();
 };
 
-const onPackageJsonPathChange = () => {
+const onPackageJsonPathChange = (): void => {
   if (state.form.values.packageJson) {
     fetchPackageJson();
   }
 };
 
-const onAnalyzeRepo = () => {
+const onAnalyzeRepo = (): void => {
   let repo = state.form.values.repo;
   if (repo) {
     resetForm(state.form, ["repo"]);
@@ -449,21 +467,21 @@ const onAnalyzeRepo = () => {
   }
 };
 
-const onTopicsChange = () => {
+const onTopicsChange = (): void => {
   const form = state.form;
   form.values.topics = form.options.topics
     .filter((x: FormFieldOption) => x.selected)
     .map((x: FormFieldOption) => x.key);
 };
 
-const onUpload = (event: Event) => {
+const onUpload = (event: Event): void => {
   verifyPackage();
   // Prevent the link from opening if the form is not clean.
   if (hasFormError.value) event.preventDefault();
   // Return undefined to allow the link to continue.
 };
 
-const genYaml = () => {
+const genYaml = (): string => {
   const form = state.form;
   const repoInfo = state.repoInfo;
   const packageJsonObj = state.packageJsonObj;
@@ -495,6 +513,7 @@ const extraPackageNameWarning = computed(() => {
     if (isPackageRequiresManualVerification(pkgName))
       return t("package-name-manual-verification");
   }
+  return "";
 });
 
 const isLoading = computed(() => {
@@ -509,7 +528,7 @@ const metadata = computed(() => {
     image: state.form.values.image || null,
     stars: state.repoInfo.stargazers_count || 0,
     owner: repoOwner.value,
-  } as any;
+  };
 });
 
 // Hooks
@@ -529,7 +548,7 @@ onMounted(() => {
           <PlaceholderLoader />
         </div>
       </div>
-      <form id="id_form" v-else novalidate @submit.prevent>
+      <form v-else id="id_form" novalidate @submit.prevent>
         <!-- A dummy button is needed here to capture any input field that triggers a keyboard "Enter" key pressed event. But why... -->
         <button class="hide" @click.prevent></button>
         <div class="columns">
@@ -563,7 +582,7 @@ onMounted(() => {
               <FormField :form="state.form" field="licenseName" :label='capitalize(t("license-name"))' type="text"
                 :hint="t('license-name-desc')" />
               <FormField :form="state.form" field="hunter" :label='capitalize(t("discovered-by"))'
-                :inputGroupText='t("hunter-input-group-text")' type="text" :hint="t('hunter-desc')"
+                :input-group-text='t("hunter-input-group-text")' type="text" :hint="t('hunter-desc')"
                 :placeholder="$t('hunter-placeholder')" />
             </div>
           </div>

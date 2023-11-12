@@ -21,6 +21,7 @@ const props = defineProps({
     required: true
   },
   items: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     type: Array<any>,
     default: () => []
   }

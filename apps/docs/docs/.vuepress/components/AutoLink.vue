@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, computed, toRef, PropType } from 'vue'
+import { computed, PropType } from 'vue'
 import ParentComponent from '@vuepress/theme-default/components/AutoLink.vue';
 
 interface AutoLinkItem {

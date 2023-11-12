@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import { useI18n } from "vue-i18n";
 
-const { t } = useI18n();
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const props = defineProps({
   name: {
     type: String,
@@ -25,6 +23,7 @@ const props = defineProps({
       <PlaceholderLoader />
     </div>
     <div v-else>
+      <!-- eslint-disable-next-line vue/no-v-html -->
       <div v-if="readmeHtml" v-html="readmeHtml"></div>
       <p v-else>{{ $t("readme-to-found") }}</p>
     </div>

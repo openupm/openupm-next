@@ -40,7 +40,7 @@ export const fillMissingDates = function (
   endDate: Date,
 ): DailyDownload[] {
   const filledStats = [];
-  let currentDate = startDate;
+  const currentDate = startDate;
   let currentIndex = 0;
   while (currentDate <= endDate) {
     const currentDay = currentDate.toISOString().substring(0, 10);
@@ -94,7 +94,7 @@ export const translateFallback = function (
   t: ComposerTranslation,
   tkey: string,
   fallback: string,
-) {
+): string {
   const tvalue = t(tkey);
   if (tvalue == tkey) return fallback;
   return tvalue;

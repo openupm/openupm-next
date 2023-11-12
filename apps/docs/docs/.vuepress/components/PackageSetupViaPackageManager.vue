@@ -39,6 +39,7 @@ const manifest = computed(() => {
         scopes: props.scopes,
       },
     ],
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     dependencies: {} as any,
   };
   jsonData.dependencies[props.name] = props.version;
@@ -102,6 +103,7 @@ const modalId = "modal-manualinstallation";
         <AutoLink :item="upmManifestProjectLink" />
       </p>
       <div class="theme-default-content custom">
+        <!-- eslint-disable-next-line vue/no-v-html -->
         <div class="language-json" v-html="manifest"></div>
       </div>
     </template>

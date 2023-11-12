@@ -19,6 +19,7 @@ export const useDefaultStore = defineStore("pinia-default", {
     return {
       packageMetadataRemoteDict: {} as Record<string, PackageMetadataRemote>,
       packageMetadataLocalList: [] as PackageMetadataLocal[],
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       recentPackages: [] as any[],
       siteInfo: { stars: 0 } as SiteInfo,
       __packageMetadataRemoteDictFetchTime: 0,
@@ -36,7 +37,7 @@ export const useDefaultStore = defineStore("pinia-default", {
     },
     readyPackageCount: (state) => {
       let num = 0;
-      for (var name in state.packageMetadataRemoteDict) {
+      for (const name in state.packageMetadataRemoteDict) {
         const metadata = state.packageMetadataRemoteDict[name];
         if (metadata.ver) {
           num += 1;
@@ -62,6 +63,7 @@ export const useDefaultStore = defineStore("pinia-default", {
           headers: { Accept: "application/json" },
         });
         this.__packageMetadataRemoteDictFetchTime = new Date().getTime();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         this.packageMetadataRemoteDict = mapValues(resp.data, (value: any) =>
           parsePackageMetadataRemote(value),
         );

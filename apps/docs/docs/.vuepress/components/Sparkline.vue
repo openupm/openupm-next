@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <!-- Modified from https://gist.github.com/Frenchcooc/e4748ad6275984a01868153e3c0d8a1e -->
 <script setup lang="ts">
 import { computed } from 'vue';
@@ -35,6 +36,7 @@ const shape = computed(() => {
     return `M 0 ${stroke} L 0 ${stroke} L ${width} ${stroke}`;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const path = [] as any[];
 
   coordinates.forEach((point) =>

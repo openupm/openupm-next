@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { PackageVersionViewEntry } from "@openupm/types";
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const props = defineProps({
   versions: {
     type: Array<PackageVersionViewEntry>,
