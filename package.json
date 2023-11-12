@@ -7,6 +7,8 @@
   "license": "BSD-3-Clause",
   "scripts": {
     "build": "turbo run build",
+    "build:release": "turbo run build:release",
+    "clean": "turbo run clean",
     "lint": "turbo run lint",
     "test": "turbo run test",
     "turbo": "turbo"

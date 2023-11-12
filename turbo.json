@@ -9,9 +9,19 @@
         "^build"
       ],
       "outputs": [
-        ".vuepress/**"
+        "build/**"
       ]
     },
+    "build:release": {
+      "dependsOn": [
+        "clean",
+        "^build"
+      ],
+      "outputs": [
+        "build/**"
+      ]
+    },
+    "clean": {},
     "lint": {},
     "test": {
       "dependsOn": [
