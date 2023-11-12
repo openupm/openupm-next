@@ -1,11 +1,15 @@
 {
   "env": {
-    "browser": false,
+    "browser": true,
     "es6": true,
     "node": true
   },
-  "parser": "@typescript-eslint/parser",
+  "parser": "vue-eslint-parser",
   "parserOptions": {
+    "parser": "@typescript-eslint/parser",
+    "extraFileExtensions": [
+      ".vue"
+    ],
     "project": "tsconfig.test.json",
     "sourceType": "module",
     "ecmaVersion": 2020
@@ -16,6 +20,7 @@
   ],
   "extends": [
     "eslint:recommended",
+    "plugin:vue/vue3-recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:jest/recommended",
     "prettier"
