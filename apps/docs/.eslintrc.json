@@ -1,0 +1,36 @@
+{
+  "env": {
+    "browser": true,
+    "es6": true,
+    "node": true
+  },
+  "parser": "vue-eslint-parser",
+  "parserOptions": {
+    "parser": "@typescript-eslint/parser",
+    "extraFileExtensions": [
+      ".vue"
+    ],
+    "project": "tsconfig.test.json",
+    "sourceType": "module",
+    "ecmaVersion": 2020
+  },
+  "plugins": [
+    "@typescript-eslint",
+    "jest"
+  ],
+  "extends": [
+    "eslint:recommended",
+    "plugin:vue/vue3-recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:jest/recommended",
+    "prettier"
+  ],
+  "rules": {
+    // The following rule is enabled only to supplement the inline suppression
+    // examples, and because it is not a recommended rule, you should either
+    // disable it, or understand what it enforces.
+    // https://typescript-eslint.io/rules/explicit-function-return-type/
+    "@typescript-eslint/explicit-function-return-type": "warn",
+    "vue/first-attribute-linebreak": "off"
+  }
+}

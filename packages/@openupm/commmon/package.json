@@ -1,0 +1,47 @@
+{
+  "private": true,
+  "name": "@openupm/common",
+  "version": "0.0.0",
+  "type": "module",
+  "author": "Favo Yang <favoyang@users.noreply.github.com>",
+  "license": "BSD-3-Clause",
+  "main": "build/main.js",
+  "devDependencies": {
+    "@types/jest": "~29.5",
+    "@types/node": "~18",
+    "@typescript-eslint/eslint-plugin": "~6.2",
+    "@typescript-eslint/parser": "~6.2",
+    "cross-env": "^7.0.3",
+    "eslint": "~8.46",
+    "eslint-config-prettier": "~9.0",
+    "eslint-plugin-jest": "~27.2",
+    "jest": "~29.7",
+    "prettier": "~3.0",
+    "rimraf": "~5.0",
+    "ts-api-utils": "~1.0",
+    "ts-jest": "~29.1",
+    "typescript": "~5.1",
+    "@openupm/test": "*"
+  },
+  "scripts": {
+    "start": "node build/main.js",
+    "clean": "rimraf coverage build tmp",
+    "prebuild": "npm run lint",
+    "build": "tsc -p tsconfig.json",
+    "build:watch": "tsc -w -p tsconfig.json",
+    "build:release": "tsc -p tsconfig.release.json",
+    "lint": "eslint . --ext .ts --ext .mts",
+    "test": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --coverage",
+    "prettier": "prettier --config .prettierrc --write .",
+    "test:watch": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --watch"
+  },
+  "dependencies": {
+    "dotenv-flow": "^4.0.0",
+    "tslib": "~2.6",
+    "url-join": "^5.0.0",
+    "@openupm/types": "*"
+  },
+  "volta": {
+    "node": "18.18.2"
+  }
+}

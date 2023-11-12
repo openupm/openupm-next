@@ -9,13 +9,15 @@ lerna-debug.log*
 
 node_modules/
 .DS_Store
-build
 dist
 dist-ssr
 coverage
 *.local
 .temp
 .cache
+
+/cypress/videos/
+/cypress/screenshots/
 
 # Editor directories and files
 .vscode/*
@@ -27,5 +29,7 @@ coverage
 *.sln
 *.sw?
 
-.turbo
-/data
+docs/.vuepress/dist
+docs/.vuepress/public/gen/*.json
+data
+bundle-analyse.html

@@ -1,0 +1,40 @@
+{
+  "compilerOptions": {
+    "outDir": "dist",
+    "baseUrl": ".",
+    "target": "ES2017",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "strict": true,
+    "lib": [
+      "ESNext",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "types": [
+      "@vuepress/client/types"
+    ],
+    "paths": {
+      "@/*": [
+        "./docs/.vuepress/*"
+      ],
+      "@temp/*": [
+        "./docs/.vuepress/.temp/*"
+      ],
+    }
+  },
+  "include": [
+    "env.d.ts",
+    "docs/.vuepress/*.ts",
+    "docs/.vuepress/*.vue",
+    "docs/.vuepress/**/*.ts",
+    "docs/.vuepress/**/*.vue",
+  ],
+  "exclude": [
+    ".temp",
+    "dist"
+  ]
+}
