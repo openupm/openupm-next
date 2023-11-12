@@ -14,7 +14,7 @@ jobs:
           redis-version: 5.x
       - name: ping redis
         run: redis-cli ping
-      - name: checkout main repo
+      - name: checkout the current branch
         uses: actions/checkout@v3
         with:
           ref: ${{ github.ref }}
@@ -34,6 +34,8 @@ jobs:
           timeout_minutes: 3
           max_attempts: 3
           command: npm install
+      - name: npm run build
+        run: npm run build
       - name: npm run test
         run: npm run test
 
@@ -60,18 +62,21 @@ jobs:
           timeout_minutes: 3
           max_attempts: 3
           command: npm install
+      - name: npm run build
+        run: npm run build
       - name: npm run docs:build
         run: VITE_OPENUPM_REGION=us npm run docs:build
+        working-directory: apps/docs
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
           name: bundle-analysis-report
-          path: bundle-analyse.html
+          path: apps/docs/bundle-analyse.html
       - name: deploy to openupm-next-website repo
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           repository-name: openupm/openupm-next-website
-          folder: docs/.vuepress/dist
+          folder: apps/docs/docs/.vuepress/dist
           single-commit: true
           ssh-key: ${{ secrets.OPENUPM_NEXT_WEBSITE_DEPLOY_KEY }}
 
@@ -98,22 +103,25 @@ jobs:
           timeout_minutes: 3
           max_attempts: 3
           command: npm install
+      - name: npm run build
+        run: npm run build
       - name: npm run docs:build
         run: |
           # Overwrite homepage page with localized version
           cp docs/zh/index.md docs/index.md
           # Build website
           VITE_OPENUPM_REGION=cn npm run docs:build
+        working-directory: apps/docs
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
           name: bundle-analysis-report-cn
-          path: bundle-analyse.html
+          path: apps/docs/bundle-analyse.html
       - name: deploy to openupm-next-website-cn repo
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           repository-name: openupm/openupm-next-website-cn
-          folder: docs/.vuepress/dist
+          folder: apps/docs/docs/.vuepress/dist
           single-commit: true
           ssh-key: ${{ secrets.OPENUPM_NEXT_WEBSITE_CN_DEPLOY_KEY }}
 
