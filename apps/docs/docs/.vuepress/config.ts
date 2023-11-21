@@ -27,10 +27,11 @@ const regionConfig: any =
 
 // Page patterns https://v2.vuepress.vuejs.org/reference/config.html#pagepatterns
 const pagePatterns = ["**/*.md", "!.vuepress", "!node_modules"];
-if (VITE_OPENUPM_REGION != Region.CN) {
-  pagePatterns.push("!zh/*.md");
-  pagePatterns.push("!zh/**/*.md");
-}
+// Use negated patterns seems caused a bug in vite compilation
+// if (VITE_OPENUPM_REGION != Region.CN) {
+//   pagePatterns.push("!zh/*.md");
+//   pagePatterns.push("!zh/**/*.md");
+// }
 
 // Theme color
 const THEME_COLOR = "#3068E5";
