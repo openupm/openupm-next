@@ -63,7 +63,11 @@ jobs:
       - name: npm run build:release
         run: npm run build:release
       - name: npm run docs:build
-        run: VITE_OPENUPM_REGION=us npm run docs:build
+        run: |
+          # Remove /zh/* pages
+          rm -rf docs/zh
+          # Build website
+          VITE_OPENUPM_REGION=us npm run docs:build
         working-directory: apps/docs
       - name: Upload artifact
         uses: actions/upload-artifact@v3
