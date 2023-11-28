@@ -568,7 +568,8 @@ onMounted(() => {
           <div class="column col-6 col-sm-12" :class="{ hide: state.hideMetaFields }">
             <div class="form-zone">
               <h5 class="form-zone-title">{{ $capitalize($t("basic")) }}</h5>
-              <FormField :form="state.form" field="branch" :label='capitalize(t("branch"))' type="select" />
+              <FormField :form="state.form" field="branch" :label='capitalize(t("branch"))' type="select"
+                @change="onBranchChange" />
               <FormField :form="state.form" field="packageJson" :label='capitalize(t("select-package-json"))'
                 type="select" :class="{ hide: !state.form.values.branch }" @change="onPackageJsonPathChange">
                 <template #hintafter>
