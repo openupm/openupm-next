@@ -13,6 +13,7 @@ Codebase for OpenUPM website and services.
 | Package Name | Description     |
 | ------------ | --------------- |
 | `docs`       | OpenUPM website |
+| `web`        | API web server  |
 
 `packages/` - ecosystem packages
 
@@ -22,7 +23,9 @@ Codebase for OpenUPM website and services.
 | `@openupm/types`          | TypeScript type definitions.                                                                                                      |
 | `@openupm/test`           | Test arbitraries for Fast-check.                                                                                                  |
 | `@openupm/common`         | Shared code for Node.js and VuePress.                                                                                             |
+| `@openupm/server-common`  | Shared code for Node.js server.                                                                                                   |
 | `@openupm/local-data`     | Handles [local data](https://github.com/openupm/openupm/tree/master/data) such as package metadata YAML files, topics, backers... |
+| `pkg-template`            | Package template for @openupm/apps                                                                                                |
 
 ## Install
 
