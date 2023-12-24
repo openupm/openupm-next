@@ -1,0 +1,12 @@
+{
+  // Debug flag.
+  "debug": true,
+  // Web app service port.
+  "port": 3600,
+  // Redis.
+  "redis": {
+    "host": "127.0.0.1",
+    "port": 6379,
+    "db": 0
+  }
+}
