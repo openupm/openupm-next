@@ -1,55 +1,50 @@
 import config from 'config';
-import express, { Express, Request, Response, NextFunction } from 'express';
-import bodyParser from 'body-parser';
+import Fastify, { FastifyInstance } from 'fastify';
+import cors from '@fastify/cors';
 
 import createLogger from '@openupm/server-common/build/log.js';
 import redis from '@openupm/server-common/build/redis.js';
+import adsRouter from './routers/ads.js';
+import feedsRouter from './routers/feeds.js';
+import siteInfoRouter from './routers/siteInfo.js';
+import packagesRouter from './routers/packages.js';
 
 // Logger init
-const logger = createLogger('api');
+const logger = createLogger('apiserver');
 
 // Touch the redis.client property to prepare the connection as soon as possible
 redis.client;
 
-const app: Express = express();
+// Create server
+const server: FastifyInstance = Fastify({
+  logger: true,
+});
 
-// Restful
-app.use(bodyParser.json());
-app.use(function (req: Request, res: Response, next: NextFunction) {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE');
-  res.header('Access-Control-Expose-Headers', 'Content-Length');
-  res.header(
-    'Access-Control-Allow-Headers',
+// Cors
+await server.register(cors, {
+  origin: '*',
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  allowedHeaders:
     'Accept,Authorization,Content-Type,X-Requested-With,Range,Origin',
-  );
-  if (req.method === 'OPTIONS') {
-    return res.send(200);
-  } else {
-    return next();
-  }
+  exposedHeaders: 'Content-Length',
+  credentials: true,
 });
 
 // Index
-app.get('/', (_req: Request, res: Response) => {
-  res.json({ message: 'OpenUPM API Server' });
+server.get('/', () => {
+  return { message: 'OpenUPM API Server' };
 });
 
-app.listen(config.port, () => {
+// Routers
+adsRouter(server);
+feedsRouter(server);
+siteInfoRouter(server);
+packagesRouter(server);
+
+// Start server
+server.listen({ port: config.port }, () => {
   logger.info(`Server is running at http://localhost:${config.port}`);
 });
 
 // const packagesView = require("./views/packagesView");
-// const adsView = require("./views/adsView");
-// const feedsView = require("./views/feedsView");
 // const siteView = require("./views/siteView");
-// const redis = require("./db/redis");
-
-// // Routers
-// app.use("/packages/", packagesView);
-// app.use("/ads/", adsView);
-// app.use("/feeds/", feedsView);
-// app.use("/site/", siteView);
-
-// module.exports = { app };
