@@ -20,7 +20,7 @@ const getLocalDataDir = function (): string {
   let dataDir = '';
   if (process.env.OPENUPM_DATA_PATH)
     dataDir = path.resolve(process.env.OPENUPM_DATA_PATH);
-  else dataDir = path.resolve(process.cwd(), 'data');
+  else dataDir = path.resolve('/data/openupm-data/');
   if (fs.existsSync(dataDir)) return dataDir;
   else throw new Error(`Local data directory doesn't exist at ${dataDir}`);
 };
