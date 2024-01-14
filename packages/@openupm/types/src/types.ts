@@ -73,18 +73,28 @@ export interface PackageMetadata
     PackageMetadataRemote {}
 
 export interface PackageRelease {
-  version: string;
-  commit: string;
-  tag: string;
   buildId: string;
-  state: ReleaseState;
+  commit: string;
   reason: ReleaseErrorCode;
+  state: ReleaseState;
+  tag: string;
   updatedAt: number;
+  version: string;
 }
 
+export const releaseFields: (keyof PackageRelease)[] = [
+  'buildId',
+  'commit',
+  'reason',
+  'state',
+  'tag',
+  'updatedAt',
+  'version',
+];
+
 export interface PackageInfo {
-  releases: PackageRelease[];
   invalidTags: string[];
+  releases: PackageRelease[];
   readmeHtml: string | null;
   readmeHtml_zhCN: string | null;
   scopes: string[];
