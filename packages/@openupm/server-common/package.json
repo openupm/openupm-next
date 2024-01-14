@@ -35,10 +35,14 @@
     "test:watch": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --watch"
   },
   "dependencies": {
+    "aws-sdk": "^2.1532.0",
     "bunyan": "^1.8.15",
     "config": "^3.3.9",
     "dotenv-flow": "^4.0.0",
+    "feed": "^4.2.2",
     "ioredis": "^5.3.2",
+    "lodash-es": "^4.17.21",
+    "sharp": "^0.33.1",
     "tslib": "~2.6"
   },
   "volta": {
