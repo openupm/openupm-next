@@ -1,6 +1,5 @@
 import sharp from 'sharp';
 import config from 'config';
-// FIXME: check config.xxx
 
 import { InvalidTag } from '@openupm/types';
 

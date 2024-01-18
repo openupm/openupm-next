@@ -1,4 +1,5 @@
 import path from 'path';
+import config from 'config';
 import fs from 'fs';
 import { promises as afs } from 'fs';
 import yaml from 'js-yaml';
@@ -16,11 +17,11 @@ import {
  * @returns The local data directory.
  * @throws An error if the local data directory doesn't exist.
  */
-const getLocalDataDir = function (): string {
+export const getLocalDataDir = function (): string {
   let dataDir = '';
   if (process.env.OPENUPM_DATA_PATH)
     dataDir = path.resolve(process.env.OPENUPM_DATA_PATH);
-  else dataDir = path.resolve('/data/openupm-data/');
+  else dataDir = config.dataDir || '';
   if (fs.existsSync(dataDir)) return dataDir;
   else throw new Error(`Local data directory doesn't exist at ${dataDir}`);
 };

@@ -12,14 +12,17 @@ import { Readable } from 'stream';
 import { ReadableStream } from 'stream/web';
 import { finished } from 'stream/promises';
 
+import { getLocalDataDir } from '@openupm/local-data';
 import redis from '../redis.js';
 import { uploadFile } from './s3.js';
 import createLogger from '../log.js';
 const logger = createLogger('redis');
 
-// FIXME: use config.dataDir
-const dataDir: string = config.dataDir || '';
-const mediaDir: string = path.resolve(dataDir, 'media');
+// Get the media directory.
+const getMediaDir = function (): string {
+  const dataDir = getLocalDataDir();
+  return path.resolve(dataDir, 'media');
+};
 
 // The stored media entry in redis
 interface MediaStoreEntry {
@@ -60,7 +63,7 @@ export const getImage = async function (
   const size = parseInt(obj.size) || 0;
   const filename =
     obj.filename || getMediaFilename(imageUrl, width, height, fit, size);
-  const filePath = path.join(mediaDir, filename);
+  const filePath = path.join(getMediaDir(), filename);
   const s3Path = getMediaS3Path(filename);
   const expire = parseInt(obj.expire) || 0;
   const available = new Date().getTime() <= expire;
@@ -104,7 +107,7 @@ export const addImage = async function (
     height,
     fit,
   );
-  const tmpFilePath: string = path.join(mediaDir, tmpFilename);
+  const tmpFilePath: string = path.join(getMediaDir(), tmpFilename);
   await _downloadImageUrl(imageUrl, tmpFilePath);
 
   try {
@@ -126,7 +129,7 @@ export const addImage = async function (
     // process the image
     if (!filename)
       filename = getMediaFilename(imageUrl, width, height, fit, newSize);
-    const filePath: string = path.join(mediaDir, filename);
+    const filePath: string = path.join(getMediaDir(), filename);
     await _processImage(
       tmpFilePath,
       filePath,
