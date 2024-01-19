@@ -12,8 +12,16 @@ import { ReleaseModel, releaseModelFields } from '@openupm/types';
 
 import redis from '../redis.js';
 
-// The release key prefix in redis.
-const releaseKey = 'rel:';
+const REDIS_KEY_RELEASE_PREFIX = 'rel:';
+
+/**
+ * Get the redis key for a release hashset.
+ * @param {string} packageName - The name of the package.
+ * @returns {string} The key for the package.
+ */
+export const getRedisKeyForRelease = function (packageName: string): string {
+  return REDIS_KEY_RELEASE_PREFIX + packageName;
+};
 
 /**
  * Saves a release object to Redis.
@@ -24,7 +32,10 @@ const releaseKey = 'rel:';
  * @returns The updated release object.
  * @throws Error if the packageName or version is missing in the release object.
  */
-export async function save(obj: ReleaseModel): Promise<ReleaseModel> {
+export async function save(
+  obj: Partial<ReleaseModel> &
+    Required<Pick<ReleaseModel, 'packageName' | 'version'>>,
+): Promise<ReleaseModel> {
   if (!obj.packageName || !obj.version)
     throw new Error(
       `Can not create or update release with packageName=${obj.packageName} version=${obj.version}`,
@@ -47,10 +58,10 @@ export async function save(obj: ReleaseModel): Promise<ReleaseModel> {
   Object.assign(record, pick(obj, releaseModelFields));
   record.updatedAt = now;
   const jsonText = JSON.stringify(record, null, 0);
-  const key = releaseKey + record.packageName;
+  const key = getRedisKeyForRelease(record.packageName);
   await redis.client!.hset(key, record.version, jsonText);
   Object.assign(obj, record);
-  return obj;
+  return obj as ReleaseModel;
 }
 
 /**
@@ -68,7 +79,7 @@ export async function remove(
     throw new Error(
       `Can not remove release with packageName=${packageName} version=${version}`,
     );
-  const key = releaseKey + packageName;
+  const key = getRedisKeyForRelease(packageName);
   await redis.client!.hdel(key, version);
 }
 
@@ -83,7 +94,7 @@ export async function fetchOne(
   packageName: string,
   version: string,
 ): Promise<ReleaseModel | null> {
-  const key = releaseKey + packageName;
+  const key = getRedisKeyForRelease(packageName);
   const obj = await redis.client!.hget(key, version);
   if (obj === null) return null;
   return JSON.parse(obj) as ReleaseModel;
@@ -117,7 +128,7 @@ export async function fetchOneOrThrow(
  * @returns An array of all release objects for the package.
  */
 export async function fetchAll(packageName: string): Promise<ReleaseModel[]> {
-  const key = releaseKey + packageName;
+  const key = getRedisKeyForRelease(packageName);
   const objs = await redis.client!.hgetall(key);
   return Object.values(objs).map((x) => JSON.parse(x) as ReleaseModel);
 }

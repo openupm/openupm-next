@@ -8,9 +8,9 @@ import { loadPackageMetadataLocal } from '@openupm/local-data';
 import redis from '../redis.js';
 import { getImage } from '../utils/media.js';
 
-const allPackagesExtraKey = 'pkgs:extra';
-const recentPackagesKey = 'pkgs:recent';
-const packageKey = 'pkg:';
+const REDIS_KEY_ALL_PACKAGES_EXTRA = 'pkgs:extra';
+const REDIS_KEY_PACKAGES_RECENT = 'pkgs:recent';
+const REDIS_KEY_PACKAGE_EXTRA_PREFIX = 'pkg:';
 export const propKeys: { [key: string]: string } = {
   stars: 'stars',
   monthlyDownloads: 'monthlyDownloads',
@@ -32,6 +32,17 @@ export const propKeys: { [key: string]: string } = {
 };
 
 /**
+ * Get the redis key for a package extra hashset.
+ * @param {string} packageName - The name of the package.
+ * @returns {string} The key for the package.
+ */
+export const getRedisKeyForPackageExtra = function (
+  packageName: string,
+): string {
+  return REDIS_KEY_PACKAGE_EXTRA_PREFIX + packageName;
+};
+
+/**
  * Set the value of a property for a given package.
  * @param {string} packageName - The name of the package.
  * @param {string} propKey - The key of the property.
@@ -43,7 +54,7 @@ const setValue = async function (
   propKey: string,
   propVal: string,
 ): Promise<void> {
-  const key: string = packageKey + packageName;
+  const key: string = getRedisKeyForPackageExtra(packageName);
   await redis.client!.hset(key, propKey, propVal);
 };
 
@@ -57,7 +68,7 @@ const getValue = async function (
   packageName: string,
   propKey: string,
 ): Promise<string | null> {
-  const key: string = packageKey + packageName;
+  const key: string = getRedisKeyForPackageExtra(packageName);
   return await redis.client!.hget(key, propKey);
 };
 
@@ -67,7 +78,7 @@ const getValue = async function (
  * @param {string} lang - The ISO 639-1 standard language code.
  * @returns {string} The property key for the specified language.
  */
-const getPropKeyForLang = function (
+export const getPropKeyForLang = function (
   propKey: string,
   lang: string = 'en-US',
 ): string {
@@ -393,7 +404,7 @@ export const setMonthlyDownloads = async function (
  */
 export const setAggregatedExtraData = async function (obj): Promise<void> {
   const jsonText = JSON.stringify(obj, null, 0);
-  await redis.client!.set(allPackagesExtraKey, jsonText);
+  await redis.client!.set(REDIS_KEY_ALL_PACKAGES_EXTRA, jsonText);
 };
 
 /**
@@ -401,7 +412,7 @@ export const setAggregatedExtraData = async function (obj): Promise<void> {
  * @returns {Promise<object>} - A Promise that resolves to the aggregated extra data.
  */
 export const getAggregatedExtraData = async function (): Promise<object> {
-  const jsonText = await redis.client?.get(allPackagesExtraKey);
+  const jsonText = await redis.client?.get(REDIS_KEY_ALL_PACKAGES_EXTRA);
   return jsonText === null ? {} : JSON.parse(jsonText || '{}');
 };
 
@@ -411,13 +422,13 @@ export const getAggregatedExtraData = async function (): Promise<object> {
  */
 export const setRecentPackages = async function (arr: string[]): Promise<void> {
   const jsonText = JSON.stringify(arr, null, 0);
-  await redis.client!.set(recentPackagesKey, jsonText);
+  await redis.client!.set(REDIS_KEY_PACKAGES_RECENT, jsonText);
 };
 
 /**
  * Get recent packages.
  */
 export const getRecentPackages = async function (): Promise<string[]> {
-  const jsonText = await redis.client!.get(recentPackagesKey);
+  const jsonText = await redis.client!.get(REDIS_KEY_PACKAGES_RECENT);
   return jsonText === null ? [] : JSON.parse(jsonText);
 };
