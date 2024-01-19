@@ -1,4 +1,9 @@
 {
   // Data directory.
   dataDir: '/data/openupm-data',
+
+  // Redis
+  redis: {
+    db: 1,
+  },
 }
