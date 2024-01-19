@@ -21,8 +21,12 @@ export default function router(server: FastifyInstance): void {
     },
   );
 
-  server.get('/feeds/updates/json', async function () {
-    const data = await getFeedRecentUpdate('json1');
-    return data;
-  });
+  server.get(
+    '/feeds/updates/json',
+    async function (_req: FastifyRequest, res: FastifyReply) {
+      const data = await getFeedRecentUpdate('json1');
+      res.header('Content-Type', 'application/json');
+      return data;
+    },
+  );
 }
