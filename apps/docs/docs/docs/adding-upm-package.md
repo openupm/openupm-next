@@ -83,9 +83,13 @@ Package hunters can utilize the [package add form](/packages/add/) to simplify t
 
 ![Package Add Form](./images/package-add-form-v2.png)
 
+For users new to this repository, you will first be prompted to fork it in order to submit a pull request.
+
+![Fork repository](./images/fork-repository.png)
+
 Please adhere to one of the specified pull request title formats: either `Create <package-name>.yml` or `chore(data): new package <package-name>`. With this format, the pull request will be automatically merged. The CI system will run a test to verify the submitted file, update the website, and trigger the build pipelines. It's worth noting that first-time contributors who are new to GitHub will require moderator approval for the pull request to initiate the test. We aim to approve such requests within 24 hours.
 
-After a brief pause, during which the build pipelines complete their tasks (usually within half an hour), you can access the package's detailed page at the URL `https://openupm.com/packages/com.your-org.package-name` and review the build results in the **version history** and **build issues** sections. You can also search for your package name on the homepage to locate it. If you encounter any issues, please leave a comment on the pull request, and we'll do our best to assist you. If you prefer a chat, feel free to join our Discord server via this link: [https://discord.gg/FnUgWEP](https://discord.gg/FnUgWEP).
+After a brief pause, during which the build pipelines complete their tasks (usually ranging from 15 minutes to half an hour, depending on the size of your repository), you can access the package's detailed page at the URL `https://openupm.com/packages/com.your-org.package-name` and review the build results in the **version history** and **build issues** sections. You can also search for your package name on the homepage to locate it. If you encounter any issues, please leave a comment on the pull request, and we'll do our best to assist you. If you prefer a chat, feel free to join our Discord server via this link: [https://discord.gg/FnUgWEP](https://discord.gg/FnUgWEP).
 
 ## Troubleshooting
 
