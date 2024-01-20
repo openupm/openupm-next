@@ -33,11 +33,33 @@ import {
 
 import { writePublicGen } from './utils/write-file.js';
 
+type Contributor = GithubUserWithScore & {
+  text: string;
+  abbr: string;
+};
+
+type PluginData = {
+  blockedScopes: string[];
+  hunters: Contributor[];
+  metadataLocalList: PackageMetadataLocal[];
+  metadataGroupByNamespace: Record<string, PackageMetadataLocal[]>;
+  owners: Contributor[];
+  sdpxList: License[];
+  topicsWithAll: Topic[];
+};
+
+type VuePressPlugin = {
+  name: string;
+  onInitialized: (app: App) => Promise<void>;
+  extendsPage: (page: Page) => Promise<void>;
+  onPrepared: (app: App) => Promise<void>;
+};
+
 /**
  * Plugin data.
  * Prepare plugin data (requires target>=ES2017 to allow await on top level)
  */
-const PLUGIN_DATA = await (async () => {
+const PLUGIN_DATA = await (async (): Promise<PluginData> => {
   // Load packages metadata local list.
   const packageNames = await loadPackageNames({ sortKey: 'name' });
   const metadataLocalList = (
@@ -64,9 +86,11 @@ const PLUGIN_DATA = await (async () => {
     }),
   );
   // Collect package hunters and owners.
-  let { hunters, owners } =
+  const huntersAndOwners =
     await collectPackageHuntersAndOwners(metadataLocalList);
-  const prepareContributors = (contributors: GithubUserWithScore[]) => {
+  const prepareContributors = (
+    contributors: GithubUserWithScore[],
+  ): Contributor[] => {
     return contributors.map((x) => {
       return {
         ...x,
@@ -75,8 +99,8 @@ const PLUGIN_DATA = await (async () => {
       };
     });
   };
-  hunters = prepareContributors(hunters);
-  owners = prepareContributors(owners);
+  const hunters = prepareContributors(huntersAndOwners.hunters);
+  const owners = prepareContributors(huntersAndOwners.owners);
   // Blocked scopes
   const blockedScopes = await loadBlockedScopes();
   // Spdx
@@ -186,7 +210,7 @@ const addPages = (app: App, pages: Page[]): void => {
   for (const page of pages) app.pages.push(page);
 };
 
-export default () => ({
+export default (): VuePressPlugin => ({
   name: 'vuepress-plugin-openupm',
   async onInitialized(app: App): Promise<void> {
     addPages(app, await createDetailPages(app));
