@@ -9,10 +9,11 @@ lerna-debug.log*
 
 node_modules/
 .DS_Store
-build
-dist
-dist-ssr
-coverage
+build/
+dist/
+dist-ssr/
+out/
+coverage/
 *.local
 .temp
 .cache
