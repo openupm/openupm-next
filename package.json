@@ -11,7 +11,10 @@
     "clean": "turbo run clean",
     "lint": "turbo run lint",
     "test": "turbo run test",
-    "turbo": "turbo"
+    "turbo": "turbo",
+    "docker:build:web": "sudo docker buildx build -t favoyang/openupm-web . -f ./apps/web/Dockerfile",
+    "docker:run:web": "sudo docker run -it --rm --network=host favoyang/openupm-web",
+    "docker:push:web": "docker push favoyang/openupm-web:latest"
   },
   "devDependencies": {
     "turbo": "latest"
