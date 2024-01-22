@@ -35,7 +35,7 @@ jobs:
           max_attempts: 3
           command: npm install
       - name: npm run test
-        run: npm run test
+        run: OPENUPM_DATA_PATH="${{ github.workspace }}/data" npm run test
 
   build-website-us:
     runs-on: macos-latest
