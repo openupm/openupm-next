@@ -15,7 +15,7 @@ import { finished } from 'stream/promises';
 import { getLocalDataDir } from '@openupm/local-data';
 import redis from '../redis.js';
 import { uploadFile } from './s3.js';
-import createLogger from '../log.js';
+import { createLogger } from '../log.js';
 const logger = createLogger('redis');
 
 // Get the media directory.

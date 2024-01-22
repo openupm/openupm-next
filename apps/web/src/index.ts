@@ -1,6 +1,6 @@
 import config from 'config';
 
-import createLogger from '@openupm/server-common/build/log.js';
+import { createLogger } from '@openupm/server-common/build/log.js';
 import { app } from './apiServer.js';
 
 // Logger init

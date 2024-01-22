@@ -1,7 +1,12 @@
 import bunyan from 'bunyan';
+import config from 'config';
 
 // Create logger for given module
-function createLogger(name: string): bunyan {
+export function createLogger(name: string): bunyan {
+  let logLevel: string = config.logLevel || 'info';
+  if (process.env.OPENUPM_DEBUG) {
+    logLevel = 'debug';
+  }
   if (process.env.NODE_ENV === 'test') {
     return bunyan.createLogger({
       name,
@@ -14,7 +19,7 @@ function createLogger(name: string): bunyan {
       serializers: bunyan.stdSerializers,
       streams: [
         {
-          level: process.env.OPENUPM_DEBUG ? 'debug' : 'info',
+          level: logLevel,
           stream: process.stdout,
         },
         { level: 'error', stream: process.stderr },
@@ -22,5 +27,3 @@ function createLogger(name: string): bunyan {
     });
   }
 }
-
-export default createLogger;
