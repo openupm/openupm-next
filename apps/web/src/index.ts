@@ -7,6 +7,12 @@ import { app } from './apiServer.js';
 const logger = createLogger('apiserver');
 
 // Start server
-app.listen({ port: config.port }, () => {
-  logger.info(`Server is running at http://localhost:${config.port}`);
-});
+app.listen(
+  {
+    host: '0.0.0.0',
+    port: config.port,
+  },
+  () => {
+    logger.info(`Server is running at http://localhost:${config.port}`);
+  },
+);
