@@ -1,0 +1,7 @@
+{
+  // Debug flag.
+  debug: true,
+
+  // Data directory.
+  dataDir: "/data/openupm-data",
+}
