@@ -12,7 +12,8 @@ redis.client;
 
 // Create server
 export const app: FastifyInstance = Fastify({
-  logger: true,
+  logger: { level: 'info' },
+  disableRequestLogging: true,
 });
 
 // Cors
