@@ -40,3 +40,10 @@ manifest updated, please open unity project to apply changes
 ::: tip 免责声明
 OpenUPM 是一个独立的开源服务，与 Unity Technologies Inc. 没有关联。
 :::
+
+<footer class="footer text-center mt-2">
+  <p style="font-size: 0.55rem">
+    <a href="http://beian.miit.gov.cn/">京ICP备18005908号-2</a> |
+    <a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=11010502045830">京公网安备11010502045830号</a>
+  </p>
+</footer>
