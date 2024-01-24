@@ -125,4 +125,7 @@
 
   // Unity Affiliate
   unityAffiliateId: '1011lJJH',
+
+  // Ads
+  packageDetailAdsCount: 2,
 }

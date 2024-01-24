@@ -272,3 +272,12 @@ export const getLocaleDocsPath = function (path: string): string {
   const regionPath = getRegion() == Region.CN ? '/zh' : '/';
   return urlJoin(regionPath, path);
 };
+
+/**
+ * Get the URL for the package ad placement.
+ * @param packageName The name of the package.
+ * @returns The URL for the package ad placement.
+ */
+export function getPackageAdPlacementUrl(packageName: string): string {
+  return urlJoin(getAPIBaseUrl(), 'ads', 'pkg', packageName);
+}

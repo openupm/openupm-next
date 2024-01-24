@@ -17,10 +17,12 @@ import PackageVersionsView from "@/components/PackageVersionsView.vue";
 import { Region, ReleaseState } from "@openupm/types";
 import { usePageFrontmatter } from "@vuepress/client";
 import { useDefaultStore } from "@/store";
+import { AdPlacementData } from "@openupm/types";
 import { getPackageMetadata, getRegion } from "@openupm/common/build/utils.js";
 import { DownloadsRange, PackageInfo, PackageMetadataLocal, PackageRegistryInfo, PackageRelease, PackageVersionViewEntry } from "@openupm/types";
-import { getMonthlyDownloadsUrl, getPackageInfoUrl, getPackageMetadataUrl, getPackageRelatedPackagesPath, isPackageDetailPath } from '@openupm/common/build/urls.js';
+import { getMonthlyDownloadsUrl, getPackageInfoUrl, getPackageMetadataUrl, getPackageRelatedPackagesPath, isPackageDetailPath, getPackageAdPlacementUrl } from '@openupm/common/build/urls.js';
 import { fillMissingDates, isPackageExist, timeAgoFormat } from '@/utils';
+import UnityAssetAdPlacement from '@/components/UnityAssetAdPlacement.vue';
 
 const route = useRoute();
 const { t } = useI18n();
@@ -46,6 +48,7 @@ interface State {
   __registryInfoFetched: boolean,
   __monthlyDownloadsFetched: boolean,
   __sameScopePackagesFetched: boolean,
+  adPlacementDataList: AdPlacementData[],
 };
 
 const initState = (): State => ({
@@ -75,6 +78,7 @@ const initState = (): State => ({
   __registryInfoFetched: false,
   __monthlyDownloadsFetched: false,
   __sameScopePackagesFetched: false,
+  adPlacementDataList: [],
 });
 
 const resetState = (): void => {
@@ -330,6 +334,7 @@ watch(() => route.path, (newPath, oldPath) => {
  * Fetch all data.
  */
 const fetchAllData = async (): Promise<void> => {
+  fetchAdPlacementData();
   await fetchPackageInfo();
   await fetchRegistryInfo();
   await fetchMonthlyDownloads();
@@ -414,6 +419,22 @@ const fetchRelatedPackages = async (): Promise<void> => {
 }
 
 /**
+ * Fetch ad placement datas.
+ */
+const fetchAdPlacementData = async (): Promise<void> => {
+  try {
+    const resp = await axios.get(
+      getPackageAdPlacementUrl(packageMetadata.value.name),
+      { headers: { Accept: "application/json" } }
+    );
+    const data = resp.data as AdPlacementData[];
+    state.adPlacementDataList = data;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+/**
  * Build router link query.
  * @param subPage Sub page slug.
  * @returns Router link query.
@@ -441,6 +462,12 @@ const buildRouterLinkQuery = function (subPage: string): Record<string, string> 
               </div>
             </div>
           </ul>
+          <div class="ml-2 mr-2 pt-2">
+            <template v-for="(item, index) in state.adPlacementDataList" :key="index">
+              <UnityAssetAdPlacement :title="item.title" :image="item.image" :price="item.price" :url="item.url"
+                class="mb-2" />
+            </template>
+          </div>
         </section>
       </ClientOnly>
     </template>
