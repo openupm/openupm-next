@@ -1,5 +1,6 @@
 import { AdAssetStore } from '@openupm/types';
-import redis from '../../src/redis.js';
+import redis from '@openupm/server-common/build/redis.js';
+
 import {
   getAdAssetStore,
   getAdPackageToAssetStore,

@@ -1,6 +1,6 @@
 import { AdAssetStore } from '@openupm/types';
 
-import redis from '../redis.js';
+import redis from '@openupm/server-common/build/redis.js';
 
 /**
  * Each ad-assetstore is stored in redis as a key-value pair.

@@ -31,3 +31,15 @@ export function convertAdAssetStoreToAdPlacementData(
   };
   return obj;
 }
+
+/**
+ * Fetches an AdAssetStore for a given package name.
+ * @param packageName The name of the package to fetch an AdAssetStore for.
+ * @returns The AdAssetStore object.
+ */
+export async function fetchAdPackageToAssetStore(
+  packageName: string,
+): Promise<AdAssetStore | null> {
+  console.log(packageName);
+  return null;
+}
