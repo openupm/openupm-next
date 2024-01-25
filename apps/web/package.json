@@ -38,6 +38,7 @@
   },
   "dependencies": {
     "@fastify/cors": "^8.5.0",
+    "@openupm/ads": "*",
     "@openupm/server-common": "*",
     "config": "^3.3.9",
     "dotenv-flow": "^4.0.0",

@@ -6,8 +6,8 @@ import redis from '@openupm/server-common/build/redis.js';
 import {
   getAdAssetStore,
   getAdPackageToAssetStore,
-} from '@openupm/server-common/build/models/ad.js';
-import { convertAdAssetStoreToAdPlacementData } from '@openupm/server-common/build/utils/ad.js';
+} from '@openupm/ads/build/models/ad.js';
+import { convertAdAssetStoreToAdPlacementData } from '@openupm/ads/build/utils/convert.js';
 
 export default function router(server: FastifyInstance): void {
   server.get('/ads/custom', async () => {
@@ -21,16 +21,20 @@ export default function router(server: FastifyInstance): void {
     '/ads/pkg/:pkgName',
     async (req: FastifyRequest<{ Params: { pkgName: string } }>) => {
       const pkgName = req.params.pkgName;
+      // Fetch ad-assetstore for the package
       const ids = await getAdPackageToAssetStore(pkgName);
       const result = (
         await Promise.all(ids.map((item) => getAdAssetStore(item)))
       ).filter((item) => item !== null) as AdAssetStore[];
+      // Pick random ads up to the limit
       const randomPickedResult = result
         .sort(() => Math.random() - 0.5)
         .slice(0, config.packageDetailAdsCount);
+      // Convert to AdPlacementData
       const data: AdPlacementData[] = randomPickedResult.map(
         convertAdAssetStoreToAdPlacementData,
       );
+      // Format price
       data.forEach((item) => {
         item.price = '$' + item.price;
       });
