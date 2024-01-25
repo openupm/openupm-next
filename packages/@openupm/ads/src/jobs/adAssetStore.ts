@@ -1,7 +1,7 @@
 import { createCommand } from '@commander-js/extra-typings';
 
 import { loadPackageNames } from '@openupm/local-data';
-import { fetchAdPackageToAssetStore } from '../utils/ad.js';
+import { fetchAdPackageToAssetStore } from '../utils/fetch.js';
 
 const program = createCommand();
 

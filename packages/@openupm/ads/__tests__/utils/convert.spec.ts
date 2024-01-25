@@ -1,5 +1,5 @@
 import config from 'config';
-import { convertAdAssetStoreToAdPlacementData } from '../../src/utils/ad.js';
+import { convertAdAssetStoreToAdPlacementData } from '../../src/utils/convert.js';
 
 describe('convertAdAssetStoreToAdPlacementData', function () {
   it('should convert AdAssetStore to AdPlacementData', async function () {

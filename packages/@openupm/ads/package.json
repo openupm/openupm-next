@@ -41,6 +41,10 @@
     "commander": "^11.1.0",
     "config": "^3.3.10",
     "dotenv-flow": "^4.0.0",
+    "nlcst-to-string": "^4.0.0",
+    "retext": "^9.0.0",
+    "retext-keywords": "^8.0.1",
+    "retext-pos": "^5.0.0",
     "tslib": "~2.6"
   },
   "volta": {

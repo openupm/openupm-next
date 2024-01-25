@@ -1,4 +1,11 @@
 {
   // Data directory.
   dataDir: '/data/openupm-data',
+
+  // Ad keyword maximum limit.
+  adKeywordMaxLimit: 5,
+
+  // Ad keyword maximum keyphrases token limit.
+  // For example, "unity package manager" has 3 tokens.
+  adKeywordMaxKeyphrasesTokenLimit: 2,
 }
