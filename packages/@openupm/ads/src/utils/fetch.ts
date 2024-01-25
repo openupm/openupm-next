@@ -1,6 +1,6 @@
 // import config from 'config';
 
-import { AdAssetStore } from '@openupm/types';
+import { AdAssetStore, PackageMetadataLocal } from '@openupm/types';
 import { loadPackageMetadataLocal } from '@openupm/local-data';
 
 import { getKeywords } from './keyword.js';
@@ -18,14 +18,23 @@ export async function fetchAdPackageToAssetStore(
     console.warn(`package ${packageName} not found`);
     return null;
   }
+  // Get text for the package.
+  const text = getTextForPackage(pkg);
+  // Get keywords for the text.
+  const result = await getKeywords(text);
+  // Merge keywords and keyphrases into a single array
+  const keywords = [...result.keyphrases, ...result.keywords];
+  if (keywords.length) console.log(keywords.join(', '));
+  // TODO: fetch ad-assetstore for the package
+  console.log();
+  return null;
+}
+
+function getTextForPackage(pkg: PackageMetadataLocal): string {
   let name = pkg.displayName;
   if (!name) {
     name = pkg.name.split('.').splice(-1)[0].split('-').join(' ');
   }
   const text = `${name} ${pkg.description}`;
-  const result = await getKeywords(text);
-  if (result.keywords.length) console.log(result.keywords.join(', '));
-  if (result.keyphrases.length) console.log(result.keyphrases.join(', '));
-  console.log();
-  return null;
+  return text;
 }
