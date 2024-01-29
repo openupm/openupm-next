@@ -189,7 +189,6 @@ export interface AdAssetStore {
   title: string;
   category: string;
   image: string;
-  image2?: string;
   icon: string;
   price: string;
 }
