@@ -5,8 +5,8 @@ import { AdPlacementData, AdAssetStore } from '@openupm/types';
 import redis from '@openupm/server-common/build/redis.js';
 import {
   getAdAssetStore,
-  getAdPackageToAssetStore,
-} from '@openupm/ads/build/models/ad.js';
+  getPackageToAdAssetStoreIds,
+} from '@openupm/ads/build/models/index.js';
 import { convertAdAssetStoreToAdPlacementData } from '@openupm/ads/build/utils/convert.js';
 
 export default function router(server: FastifyInstance): void {
@@ -22,7 +22,7 @@ export default function router(server: FastifyInstance): void {
     async (req: FastifyRequest<{ Params: { pkgName: string } }>) => {
       const pkgName = req.params.pkgName;
       // Fetch ad-assetstore for the package
-      const ids = await getAdPackageToAssetStore(pkgName);
+      const ids = await getPackageToAdAssetStoreIds(pkgName);
       const result = (
         await Promise.all(ids.map((item) => getAdAssetStore(item)))
       ).filter((item) => item !== null) as AdAssetStore[];
