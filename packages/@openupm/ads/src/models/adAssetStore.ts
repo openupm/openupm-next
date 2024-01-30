@@ -25,9 +25,9 @@ export const getRedisKeyForAdAssetStore = function (id: string): string {
  * @returns {Promise<AdAssetStore | null>} - A promise that resolves to an AdAssetStore.
  */
 export async function getAdAssetStore(
-  packageName: string,
+  id: string,
 ): Promise<AdAssetStore | null> {
-  const key = getRedisKeyForAdAssetStore(packageName);
+  const key = getRedisKeyForAdAssetStore(id);
   const jsonText = await redis.client!.get(key);
   if (jsonText !== null) return JSON.parse(jsonText);
   return null;
@@ -40,10 +40,10 @@ export async function getAdAssetStore(
  * @returns {Promise<void>} - A promise that resolves when the ad asset store is successfully set.
  */
 export const setAdAssetStore = async function (
-  packageName: string,
+  id: string,
   data: AdAssetStore,
 ): Promise<void> {
   const jsonText = JSON.stringify(data, null, 0);
-  const key: string = getRedisKeyForAdAssetStore(packageName);
+  const key: string = getRedisKeyForAdAssetStore(id);
   await redis.client!.set(key, jsonText);
 };
