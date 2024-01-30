@@ -1,8 +1,10 @@
 import { createCommand } from '@commander-js/extra-typings';
-
 import { loadPackageNames } from '@openupm/local-data';
-import { fetchAdPackageToAssetStore } from '../utils/fetch.js';
+import { createLogger } from '@openupm/server-common/build/log.js';
 
+import { fetchPackageToAdAssetStoreIds } from '../utils/fetch.js';
+
+const logger = createLogger('adAssetStore');
 const program = createCommand();
 
 program
@@ -11,11 +13,12 @@ program
   .option('-a, --all', 'fetch all packages')
   .description('fetch ad-assetstore for given packages')
   .action(async function (pkgs, options) {
-    const retCode = await fetchAdPackageToAssetStoreCLI(pkgs, options);
+    const retCode = await fetchPackageToAdAssetStoreIdsCLI(pkgs, options);
     if (retCode !== 0) process.exit(retCode);
+    else process.exit(0);
   });
 
-async function fetchAdPackageToAssetStoreCLI(
+async function fetchPackageToAdAssetStoreIdsCLI(
   packageNames: string[],
   options: Record<string, unknown>,
 ): Promise<number> {
@@ -23,8 +26,8 @@ async function fetchAdPackageToAssetStoreCLI(
   if (options.all) packageNames = await loadPackageNames({ sortKey: 'name' });
   // Process each package
   for (const packageName of packageNames) {
-    console.info(`fetching ad-assetstore for ${packageName}`);
-    await fetchAdPackageToAssetStore(packageName);
+    logger.info(`fetching ad-assetstore ids for ${packageName}`);
+    await fetchPackageToAdAssetStoreIds(packageName, logger);
   }
   return 0;
 }

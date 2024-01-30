@@ -8,4 +8,10 @@
   // Ad keyword maximum keyphrases token limit.
   // For example, "unity package manager" has 3 tokens.
   adKeywordMaxKeyphrasesTokenLimit: 2,
+
+  // The content per page for the asset store search API.
+  adSearchAssetStorePageSize: 20,
+
+  // The limited size of ad-assetstore list for each package.
+  packageToAdAssetStoreIdListSize: 5,
 }
