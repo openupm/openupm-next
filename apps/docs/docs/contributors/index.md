@@ -27,6 +27,8 @@ backers:
   githubUser: zombieyang
 - text: ComradeVanti
   githubUser: ComradeVanti
+- name: Pavel "am1goo" Shestakov
+  githubUser: am1goo
 - text: BOBBO-NET
   githubUser: BOBBO-NET
   expires: 2023-08-31
