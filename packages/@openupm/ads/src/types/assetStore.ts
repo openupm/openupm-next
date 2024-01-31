@@ -50,18 +50,17 @@ export type AssetStorePackage = {
   };
   version: string;
   keyimage: {
-    icon: string;
-    small: string | null;
-    small_legacy: string | null;
-    small_v2: string | null;
     big_legacy: string | null;
-    icon75: string | null;
+    big_v2: string;
     big: string | null;
     facebook: string | null;
-    medium: string | null;
-    package_version_id: string;
-    big_v2: string;
+    icon: string;
     icon25: string | null;
+    icon75: string | null;
+    medium: string | null;
+    small_legacy: string | null;
+    small_v2: string | null;
+    small: string | null;
   };
   price_usd: string;
   title_english: string;
