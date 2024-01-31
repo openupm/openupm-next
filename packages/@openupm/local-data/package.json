@@ -8,6 +8,7 @@
   "main": "build/index.js",
   "devDependencies": {
     "@fast-check/jest": "^1.7.3",
+    "@openupm/test": "*",
     "@types/jest": "~29.5",
     "@types/node": "~18",
     "@typescript-eslint/eslint-plugin": "~6.2",
@@ -22,10 +23,7 @@
     "rimraf": "~5.0",
     "ts-api-utils": "~1.0",
     "ts-jest": "~29.1",
-    "ts-node": "^10.9.1",
-    "ts-patch": "^3.0.2",
-    "typescript": "~5.1",
-    "@openupm/test": "*"
+    "typescript": "~5.1"
   },
   "scripts": {
     "start": "node build/src/main.js",
@@ -37,16 +35,14 @@
     "lint": "eslint . --ext .ts --ext .mts",
     "test": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --coverage",
     "prettier": "prettier --config .prettierrc --write .",
-    "test:watch": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --watch",
-    "prepare": "ts-patch install"
+    "test:watch": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --watch"
   },
   "dependencies": {
+    "@openupm/types": "*",
     "dotenv-flow": "^4.0.0",
     "lodash-es": "^4.17.21",
     "spdx-license-list": "^6.8.0",
-    "tslib": "~2.6",
-    "typia": "^5.2.4",
-    "@openupm/types": "*"
+    "tslib": "~2.6"
   },
   "volta": {
     "node": "18.18.2"
