@@ -1,7 +1,8 @@
-import bunyan from 'bunyan';
 import config from 'config';
+import fetch from 'node-fetch';
+import { Logger } from 'ts-log';
 
-import { AdAssetStore, PackageMetadataLocal } from '@openupm/types';
+import { AdAssetStore } from '@openupm/types';
 import { loadPackageMetadataLocal } from '@openupm/local-data';
 
 import { getKeywords } from './keyword.js';
@@ -11,6 +12,7 @@ import {
 } from '../types/assetStore.js';
 import { setAdAssetStore } from '../models/adAssetStore.js';
 import { convertAssetStorePackageToAdAssetStore } from './convert.js';
+import { collectTextFromPackage } from './collectText.js';
 import { setPackageToAdAssetStoreIds } from '../models/packageToAdAssetStoreIds.js';
 
 /**
@@ -21,7 +23,7 @@ import { setPackageToAdAssetStoreIds } from '../models/packageToAdAssetStoreIds.
  */
 export async function fetchPackageToAdAssetStoreIds(
   packageName: string,
-  logger: bunyan,
+  logger: Logger,
 ): Promise<string[] | null> {
   const pkg = await loadPackageMetadataLocal(packageName);
   if (pkg === null) {
@@ -76,22 +78,6 @@ export async function fetchPackageToAdAssetStoreIds(
 }
 
 /**
- * Collects text from a package, including
- * - displayName or words from the package name's last section.
- * - description.
- * @param pkg The package to collect text from.
- * @returns The collected text.
- */
-export function collectTextFromPackage(pkg: PackageMetadataLocal): string {
-  let name = pkg.displayName;
-  if (!name) {
-    name = pkg.name.split('.').splice(-1)[0].split('-').join(' ');
-  }
-  const text = `${name} ${pkg.description}`;
-  return text;
-}
-
-/**
  * Searches asset store for a given keyword.
  * @param keyword The keyword to search for.
  * @returns The search result.
@@ -126,7 +112,7 @@ export async function searchAssetStore(
  * @param keyword The keyword to search for.
  * @returns The search url.
  */
-function getSearchUrl(keyword: string): string {
+export function getSearchUrl(keyword: string): string {
   const url = new URL(
     'https://api.assetstore.unity3d.com/affiliate/link-maker-api/search',
   );
