@@ -6,7 +6,7 @@
 
 OpenUPM requires packages to meet the following criteria:
 
-1. **Package Name:** The package name must adhere to the [Unity Package Manager naming convention](https://docs.unity3d.com/Manual/cus-naming.html) by using "reverse domain name notation" with at least three segments, like `com.yourname.package-name`. Avoid using a scope that might cause confusion for others. For instance, do not use the `com.unity` scope unless you are affiliated with Unity Technologies. The same applies to scopes like `com.github` and other well-known scopes. Additionally, refrain from using the `com.example` scope, as it is reserved for internal testing purposes.
+1. **Package Name:** The package name must adhere to the [Unity Package Manager naming convention](https://docs.unity3d.com/Manual/cus-naming.html) by using "reverse domain name notation" with at least three segments, like `com.yourname.package-name`. Please make sure the package name matches the name in the `package.json` file. Avoid using a scope that might cause confusion for others. For instance, do not use the `com.unity` scope unless you are affiliated with Unity Technologies. The same applies to scopes like `com.github` and other well-known scopes. Additionally, refrain from using the `com.example` scope, as it is reserved for internal testing purposes.
 
 2. **Unity Terms and Package Guidelines:** The package should comply with [Unity Terms](https://unity3d.com/legal/terms-of-service/software) and [Package Guidelines](https://unity.com/legal/terms-of-service/software/package-guidelines).
 
