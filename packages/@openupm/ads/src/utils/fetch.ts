@@ -1,7 +1,7 @@
 import config from 'config';
 import fetch from 'node-fetch';
 import { Logger } from 'ts-log';
-import { pRateLimit } from 'p-ratelimit';
+import { pRateLimit } from 'p-ratelimit/build/src/rateLimit.js';
 
 import { loadPackageMetadataLocal } from '@openupm/local-data';
 import { getKeywords } from './keyword.js';
