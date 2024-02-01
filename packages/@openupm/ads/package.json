@@ -36,6 +36,9 @@
     "prettier": "prettier --config .prettierrc --write .",
     "test:watch": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --watch"
   },
+  "bin": {
+    "adAssetStore": "build/jobs/adAssetStore.js"
+  },
   "dependencies": {
     "@commander-js/extra-typings": "^11.1.0",
     "@openupm/local-data": "*",

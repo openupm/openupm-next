@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { createCommand } from '@commander-js/extra-typings';
 import { loadPackageNames } from '@openupm/local-data';
 import { createLogger } from '@openupm/server-common/build/log.js';
