@@ -1,6 +1,7 @@
 import config from 'config';
 import fetch from 'node-fetch';
 import { Logger } from 'ts-log';
+import { pRateLimit } from 'p-ratelimit';
 
 import { loadPackageMetadataLocal } from '@openupm/local-data';
 import { getKeywords } from './keyword.js';
@@ -39,7 +40,9 @@ export async function fetchPackageToAdAssetStoreIds(
   const adAssetStoreIds: string[] = [];
   for (const keyword of keywords) {
     // Search asset store for the keyword.
-    const result = await searchAssetStore(keyword);
+    const result = await searchAssetStoreRateLimit(() =>
+      searchAssetStore(keyword),
+    );
     // Sort result by hotness descending.
     const assetStorePackages: AssetStorePackage[] = result.results
       .sort((a, b) => {
@@ -65,12 +68,17 @@ export async function fetchPackageToAdAssetStoreIds(
     if (adAssetStoreIds.length >= config.packageToAdAssetStoreIdListSize) break;
   }
   if (adAssetStoreIds.length === 0) return null;
-    // save package to adAssetStore id list.
+  // save package to adAssetStore id list.
   const ids = adAssetStoreIds.slice(0, config.packageToAdAssetStoreIdListSize);
-      await setPackageToAdAssetStoreIds(packageName, ids);
+  await setPackageToAdAssetStoreIds(packageName, ids);
   logger.info(`saved adAssetStore id list [${ids}] for package ${packageName}`);
   return adAssetStoreIds;
 }
+
+const searchAssetStoreRateLimit = pRateLimit({
+  interval: 1000, // ms
+  rate: 1,
+});
 
 /**
  * Searches asset store for a given keyword.
