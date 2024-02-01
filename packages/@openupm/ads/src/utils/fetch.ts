@@ -2,9 +2,7 @@ import config from 'config';
 import fetch from 'node-fetch';
 import { Logger } from 'ts-log';
 
-import { AdAssetStore } from '@openupm/types';
 import { loadPackageMetadataLocal } from '@openupm/local-data';
-
 import { getKeywords } from './keyword.js';
 import {
   AssetStorePackage,
@@ -38,6 +36,7 @@ export async function fetchPackageToAdAssetStoreIds(
   const keywords = [...result.keyphrases, ...result.keywords];
   if (keywords.length) logger.info(`keywords: ${keywords.join(', ')}`);
   // fetch ad-assetstore list for the keywords.
+  const adAssetStoreIds: string[] = [];
   for (const keyword of keywords) {
     // Search asset store for the keyword.
     const result = await searchAssetStore(keyword);
@@ -49,32 +48,28 @@ export async function fetchPackageToAdAssetStoreIds(
       // Filter out free packages.
       .filter((assetStorePackage) => {
         return assetStorePackage.price_usd !== '0.00';
-      })
-      // Limit the size of the list.
-      .slice(0, config.packageToAdAssetStoreIdListSize);
+      });
     logger.info(
       `found ${assetStorePackages.length} paid adAssetStores for the keyword '${keyword}'`,
     );
-    const adAssetStoreItems: AdAssetStore[] = [];
+    // Convert search result to adAssetStore and save it.
     for (const AssetStorePackage of assetStorePackages) {
       const adAssetStore =
         convertAssetStorePackageToAdAssetStore(AssetStorePackage);
-      adAssetStoreItems.push(adAssetStore);
-      // Save adAssetStore.
       await setAdAssetStore(adAssetStore.id, adAssetStore);
       logger.debug(`saved adAssetStore ${adAssetStore.id}`);
+      // Add the id to adAssetStoreIds.
+      adAssetStoreIds.push(adAssetStore.id);
     }
-    // save package to adAssetStore id list.
-    if (adAssetStoreItems.length > 0) {
-      const ids = adAssetStoreItems.map((item) => item.id);
-      await setPackageToAdAssetStoreIds(packageName, ids);
-      logger.info(
-        `saved adAssetStore id list [${ids}] for package ${packageName}`,
-      );
-      return ids;
-    }
+    // Break if the list is full.
+    if (adAssetStoreIds.length >= config.packageToAdAssetStoreIdListSize) break;
   }
-  return null;
+  if (adAssetStoreIds.length === 0) return null;
+    // save package to adAssetStore id list.
+  const ids = adAssetStoreIds.slice(0, config.packageToAdAssetStoreIdListSize);
+      await setPackageToAdAssetStoreIds(packageName, ids);
+  logger.info(`saved adAssetStore id list [${ids}] for package ${packageName}`);
+  return adAssetStoreIds;
 }
 
 /**

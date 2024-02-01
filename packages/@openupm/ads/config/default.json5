@@ -13,5 +13,5 @@
   adSearchAssetStorePageSize: 20,
 
   // The limited size of ad-assetstore list for each package.
-  packageToAdAssetStoreIdListSize: 5,
+  packageToAdAssetStoreIdListSize: 10,
 }
