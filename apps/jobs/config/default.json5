@@ -23,9 +23,6 @@
     mediaBucket: 'openupm',
   },
 
-  // Unity Affiliate
-  unityAffiliateId: '1011lJJH',
-
   // How many ads to show for each package detail page.
   packageDetailAdsCount: 2,
 
