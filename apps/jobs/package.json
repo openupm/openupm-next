@@ -43,6 +43,7 @@
     "@openupm/ads": "*",
     "@openupm/server-common": "*",
     "config": "^3.3.9",
+    "cron": "^3.1.6",
     "dotenv-flow": "^4.0.0",
     "tslib": "~2.6"
   },

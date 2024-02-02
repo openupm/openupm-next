@@ -10,11 +10,12 @@ const logger = createLogger('adAssetStore');
  * @param all If true, fetch all packages
  */
 export async function fetchPackageToAdAssetStoreIdsJob(
-  packageNames: string[],
-  all: boolean,
+  packageNames: string[] | null,
+  all?: boolean,
 ): Promise<void> {
   // Check if all packages should be fetched
   if (all) packageNames = await loadPackageNames({ sortKey: 'name' });
+  if (!packageNames) return;
   // Process each package
   for (const packageName of packageNames) {
     logger.info(`fetching ad-assetstore ids for ${packageName}`);
