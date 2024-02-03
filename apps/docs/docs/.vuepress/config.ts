@@ -170,7 +170,7 @@ const config: any = mergeWith(
           "process.env": {
             VITE_OPENUPM_REGION:
               process.env.VITE_OPENUPM_REGION !== undefined
-                ? `"${process.env.VITE_OPENUPM_REGION}"`
+                ? `${process.env.VITE_OPENUPM_REGION}`
                 : undefined,
           },
         },
