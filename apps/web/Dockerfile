@@ -10,8 +10,13 @@ RUN apk add --no-cache libc6-compat
 
 # Set working directory
 WORKDIR /app
+# Install turbo
 RUN npm install -g turbo
+# Copy the project
 COPY . .
+# Clean and prune
+RUN turbo run clean
+RUN rm -rf out
 RUN turbo prune @openupm/web --docker
 
 ######## Installer ########
@@ -32,6 +37,10 @@ RUN npm install
 COPY --from=builder /app/out/full/ .
 COPY turbo.json turbo.json
 RUN npm run build -- --filter=@openupm/web
+
+# Re-install dependencies for the app, so that .bin links work for packages just built
+WORKDIR /app/apps/web
+RUN npm install
 
 ######## Runner ########
 FROM base AS runner
