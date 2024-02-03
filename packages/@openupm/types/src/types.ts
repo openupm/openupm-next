@@ -173,3 +173,22 @@ export interface FormFieldOption {
   text: string;
   selected?: boolean;
 }
+
+// AdPlacementData represents the data for an ad placement on web pages.
+export interface AdPlacementData {
+  title: string;
+  image: string;
+  price: string;
+  url: string;
+}
+
+// AdAssetStore represents the data for an asset store advertisement.
+export interface AdAssetStore {
+  id: string;
+  slug: string;
+  title: string;
+  category: string;
+  image: string;
+  icon: string;
+  price: string;
+}

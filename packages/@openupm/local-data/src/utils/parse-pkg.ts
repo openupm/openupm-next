@@ -1,8 +1,11 @@
 // Utilities for handling package metadata.
+import { ZodError } from 'zod';
 import spdx from 'spdx-license-list';
-import { assertEquals, TypeGuardError } from 'typia';
-
-import { PackageMetadataLocal, PackageMetadataLocalBase } from '@openupm/types';
+import {
+  PackageMetadataLocal,
+  PackageMetadataLocalBase,
+  PackageMetadataLocalBaseSchema,
+} from '@openupm/types';
 
 /**
  * Get cleaned GitHub repo url.
@@ -31,9 +34,9 @@ export const convertRepoUrl = function (url: string, format?: string): string {
 export const parsePackageMetadata = function (raw: any): PackageMetadataLocal {
   let base: PackageMetadataLocalBase;
   try {
-    base = assertEquals<PackageMetadataLocalBase>(raw);
+    base = PackageMetadataLocalBaseSchema.parse(raw);
   } catch (error) {
-    if (error instanceof TypeGuardError) {
+    if (error instanceof ZodError) {
       const pkgName: string = raw && raw.name ? raw.name : 'unknown';
       console.error('parsePackageMetadata failed:', pkgName);
     }

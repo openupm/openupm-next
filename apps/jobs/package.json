@@ -1,0 +1,53 @@
+{
+  "private": true,
+  "name": "@openupm/jobs",
+  "version": "0.0.0",
+  "type": "module",
+  "author": "Favo Yang <favoyang@users.noreply.github.com>",
+  "license": "BSD-3-Clause",
+  "main": "build/index.js",
+  "devDependencies": {
+    "@types/jest": "~29.5",
+    "@types/node": "~18",
+    "@typescript-eslint/eslint-plugin": "~6.2",
+    "@typescript-eslint/parser": "~6.2",
+    "cross-env": "^7.0.3",
+    "eslint": "~8.46",
+    "eslint-config-prettier": "~9.0",
+    "eslint-plugin-jest": "~27.2",
+    "jest": "~29.7",
+    "nodemon": "^3.0.2",
+    "prettier": "~3.0",
+    "rimraf": "~5.0",
+    "ts-api-utils": "~1.0",
+    "ts-jest": "~29.1",
+    "typescript": "~5.1"
+  },
+  "scripts": {
+    "start": "node build/index.js",
+    "start:dev": "nodemon --watch config --watch build --watch ../../packages build/index.js",
+    "clean": "rimraf coverage build tmp",
+    "prebuild": "npm run lint",
+    "build": "tsc -p tsconfig.json",
+    "build:watch": "tsc -w -p tsconfig.json",
+    "build:release": "tsc -p tsconfig.release.json",
+    "lint": "eslint . --ext .ts --ext .mts",
+    "test": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --coverage",
+    "prettier": "prettier --config .prettierrc --write .",
+    "test:watch": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --watch",
+    "docker:build": "sudo docker buildx build -t favoyang/openupm-jobs ../.. -f Dockerfile",
+    "docker:run": "sudo docker run -it --rm --network=host favoyang/openupm-jobs",
+    "docker:push": "docker push favoyang/openupm-jobs:latest"
+  },
+  "dependencies": {
+    "@openupm/ads": "*",
+    "@openupm/server-common": "*",
+    "config": "^3.3.9",
+    "cron": "^3.1.6",
+    "dotenv-flow": "^4.0.0",
+    "tslib": "~2.6"
+  },
+  "volta": {
+    "node": "18.18.2"
+  }
+}

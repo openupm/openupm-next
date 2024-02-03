@@ -1,0 +1,12 @@
+{
+  // Redis
+  redis: {
+    db: 1,
+  },
+
+  // Unity Affiliate
+  unityAffiliateId: '0000000',
+
+  // The limited size of ad-assetstore list for each package.
+  packageToAdAssetStoreIdListSize: 2,
+}

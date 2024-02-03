@@ -3,6 +3,7 @@ import { PUBLIC_GEN_DIR, Region } from '@openupm/types';
 
 import {
   getCachedAvatarImageFilename,
+  getEnv,
   getRegion,
   getPackageNamespace,
 } from './utils.js';
@@ -177,6 +178,8 @@ export const getAvatarImageUrl = function (
  * @returns api base url
  */
 export const getAPIBaseUrl = function (): string {
+  const apiServerUrl = getEnv('VITE_OPENUPM_API_SERVER_URL');
+  if (apiServerUrl) return apiServerUrl;
   return `https://api.${getBaseDomain()}`;
 };
 
@@ -272,3 +275,12 @@ export const getLocaleDocsPath = function (path: string): string {
   const regionPath = getRegion() == Region.CN ? '/zh' : '/';
   return urlJoin(regionPath, path);
 };
+
+/**
+ * Get the URL for the package ad placement.
+ * @param packageName The name of the package.
+ * @returns The URL for the package ad placement.
+ */
+export function getPackageAdPlacementUrl(packageName: string): string {
+  return urlJoin(getAPIBaseUrl(), 'ads', 'pkg', packageName);
+}

@@ -22,6 +22,9 @@
       ]
     },
     "clean": {},
+    "docker:build": {},
+    "docker:run": {},
+    "docker:push": {},
     "lint": {},
     "test": {
       "dependsOn": [
