@@ -3,6 +3,7 @@ import { PUBLIC_GEN_DIR, Region } from '@openupm/types';
 
 import {
   getCachedAvatarImageFilename,
+  getEnv,
   getRegion,
   getPackageNamespace,
 } from './utils.js';
@@ -177,6 +178,8 @@ export const getAvatarImageUrl = function (
  * @returns api base url
  */
 export const getAPIBaseUrl = function (): string {
+  const apiServerUrl = getEnv('VITE_OPENUPM_API_SERVER_URL');
+  if (apiServerUrl) return apiServerUrl;
   return `https://api.${getBaseDomain()}`;
 };
 
