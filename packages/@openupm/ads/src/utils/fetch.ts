@@ -1,5 +1,6 @@
 import config from 'config';
-import fetch from 'node-fetch';
+import fetch, { AbortError } from 'node-fetch';
+import { AbortController } from 'abort-controller';
 import { Logger } from 'ts-log';
 import { pRateLimit } from 'p-ratelimit/build/src/rateLimit.js';
 
@@ -76,6 +77,7 @@ export async function fetchPackageToAdAssetStoreIds(
 }
 
 const searchAssetStoreRateLimit = pRateLimit(config.searchAssetStoreRateLimit);
+const searchAssetStoreTimeout = 10 * 1000; // ms
 
 /**
  * Searches asset store for a given keyword.
@@ -87,24 +89,40 @@ export async function searchAssetStore(
 ): Promise<AssetStoreSearchResult> {
   const fullUrl = getSearchUrl(keyword);
   const refererUrl = getRefererUrl(keyword);
-  const resp = await fetch(fullUrl, {
-    headers: {
-      accept: '*/*',
-      'accept-language': 'en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7',
-      'sec-ch-ua':
-        '"Not A(Brand";v="99", "Google Chrome";v="121", "Chromium";v="121"',
-      'sec-ch-ua-mobile': '?0',
-      'sec-ch-ua-platform': '"Windows"',
-      'sec-fetch-dest': 'empty',
-      'sec-fetch-mode': 'cors',
-      'sec-fetch-site': 'same-origin',
-      Referer: refererUrl,
-      'Referrer-Policy': 'strict-origin-when-cross-origin',
-    },
-    method: 'GET',
-  });
-  const result = (await resp.json()) as AssetStoreSearchResult;
-  return result;
+  // Timeout and abort controller.
+  const controller = new AbortController();
+  const timeout = setTimeout(() => {
+    controller.abort();
+  }, searchAssetStoreTimeout);
+  try {
+    const resp = await fetch(fullUrl, {
+      headers: {
+        accept: '*/*',
+        'accept-language': 'en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7',
+        'sec-ch-ua':
+          '"Not A(Brand";v="99", "Google Chrome";v="121", "Chromium";v="121"',
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-platform': '"Windows"',
+        'sec-fetch-dest': 'empty',
+        'sec-fetch-mode': 'cors',
+        'sec-fetch-site': 'same-origin',
+        Referer: refererUrl,
+        'Referrer-Policy': 'strict-origin-when-cross-origin',
+      },
+      method: 'GET',
+      signal: controller.signal,
+    });
+    const result = (await resp.json()) as AssetStoreSearchResult;
+    return result;
+  } catch (err) {
+    // If the error is an abort error, throw a timeout error.
+    if (err instanceof AbortError) {
+      throw new Error(`searchAssetStore timeout for keyword ${keyword}`);
+    }
+    throw err;
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 /**
