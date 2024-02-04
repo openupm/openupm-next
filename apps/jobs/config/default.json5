@@ -41,7 +41,7 @@
 
   // The rate limit for the asset store search API.
   searchAssetStoreRateLimit: {
-    interval: 5000, // ms
+    interval: 4000, // ms
     rate: 1,
   },
 }
