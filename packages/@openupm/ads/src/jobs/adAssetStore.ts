@@ -18,7 +18,14 @@ export async function fetchPackageToAdAssetStoreIdsJob(
   if (!packageNames) return;
   // Process each package
   for (const packageName of packageNames) {
-    logger.info(`fetching ad-assetstore ids for ${packageName}`);
-    await fetchPackageToAdAssetStoreIds(packageName, logger);
+    try {
+      logger.info(`fetching ad-assetstore ids for ${packageName}`);
+      await fetchPackageToAdAssetStoreIds(packageName, logger);
+    } catch (err) {
+      logger.error(
+        { err: err },
+        `failed to fetch ad-assetstore ids for ${packageName}`,
+      );
+    }
   }
 }
