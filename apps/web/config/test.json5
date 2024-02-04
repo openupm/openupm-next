@@ -2,5 +2,7 @@
   // Redis
   redis: {
     db: 1,
+    // enable offline queue mode for testing
+    enableOfflineQueue: true,
   },
 }
