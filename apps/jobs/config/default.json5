@@ -38,4 +38,10 @@
 
   // The limited size of ad-assetstore list for each package.
   packageToAdAssetStoreIdListSize: 10,
+
+  // The rate limit for the asset store search API.
+  searchAssetStoreRateLimit: {
+    interval: 5000, // ms
+    rate: 1,
+  },
 }

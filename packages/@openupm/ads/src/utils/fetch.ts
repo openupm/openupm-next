@@ -75,10 +75,7 @@ export async function fetchPackageToAdAssetStoreIds(
   return adAssetStoreIds;
 }
 
-const searchAssetStoreRateLimit = pRateLimit({
-  interval: 1000, // ms
-  rate: 1,
-});
+const searchAssetStoreRateLimit = pRateLimit(config.searchAssetStoreRateLimit);
 
 /**
  * Searches asset store for a given keyword.
