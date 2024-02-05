@@ -139,3 +139,27 @@ jobs:
           hosts: ${{ secrets.SERVER_CN_USER }}@${{ secrets.SERVER_CN_HOST }}
           command: |
             /home/openupm/openupm-devops/scripts/deploy-website-cn.sh
+
+  docker-web:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.repository == 'openupm/openupm-next' && github.event_name == 'push'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: favoyang/openupm-web
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: apps/web/Dockerfile
+          push: false
+          tags: favoyang/openupm-web:latest
