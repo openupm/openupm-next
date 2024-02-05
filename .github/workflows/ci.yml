@@ -164,3 +164,4 @@ jobs:
           file: apps/web/Dockerfile
           push: false
           tags: favoyang/openupm-web:latest
+          labels: ${{ steps.meta.outputs.labels }}
