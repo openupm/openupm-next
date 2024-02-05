@@ -19,8 +19,6 @@ backers:
   githubUser: adrenak
 - text: Mike Wuetherick
   githubUser: gekidoslair
-- text: Koji Hasegawa
-  githubUser: nowsprinting
 - text: Andreas Atteneder
   githubUser: atteneder
 - text: 僵尸浩
@@ -29,6 +27,9 @@ backers:
   githubUser: ComradeVanti
 - text: Pavel "am1goo" Shestakov
   githubUser: am1goo
+- text: Koji Hasegawa
+  githubUser: nowsprinting
+  expires: 2024-02-01
 - text: BOBBO-NET
   githubUser: BOBBO-NET
   expires: 2023-08-31
