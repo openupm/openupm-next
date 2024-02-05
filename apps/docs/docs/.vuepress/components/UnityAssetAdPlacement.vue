@@ -21,7 +21,7 @@ const props = defineProps({
 
 <template>
   <div class="ad-placement">
-    <span class="ad-mark pl-1 pr-1">Aff</span>
+    <span class="ad-mark pl-1 pr-1">Ad</span>
     <div class="ad-img-container">
       <a :href="url" class="ad-img-link" rel="noopener nofollow">
         <img :src="image" alt="Ad Image" class="img-responsive" />
