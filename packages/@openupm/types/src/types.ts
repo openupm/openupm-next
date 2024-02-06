@@ -157,6 +157,7 @@ export interface DownloadsRange {
 export interface TopicBase {
   name: string;
   slug: string;
+  keywords: string[];
 }
 
 export interface Topic extends TopicBase {

@@ -75,6 +75,7 @@ const PLUGIN_DATA = await (async (): Promise<PluginData> => {
     {
       name: 'All',
       slug: '',
+      keywords: [] as string[],
       urlPath: getPackageListPagePath(),
     },
   ].concat(
