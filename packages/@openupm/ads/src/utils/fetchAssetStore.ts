@@ -56,7 +56,7 @@ export async function fetchAdAssetStoreListForKeywords(
     // Break if the list is full.
     if (adAssetStoreIds.length >= limit) break;
   }
-  return adAssetStoreIds;
+  return adAssetStoreIds.slice(0, limit);
 }
 
 /**

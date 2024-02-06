@@ -37,8 +37,9 @@ export async function fetchPackageToAdAssetStoreIds(
   );
   if (adAssetStoreIds.length === 0) return null;
   // save package to adAssetStore id list.
-  const ids = adAssetStoreIds.slice(0, config.packageToAdAssetStoreIdListSize);
-  await setPackageToAdAssetStoreIds(packageName, ids);
-  logger.info(`saved adAssetStore id list [${ids}] for package ${packageName}`);
+  await setPackageToAdAssetStoreIds(packageName, adAssetStoreIds);
+  logger.info(
+    `saved adAssetStore id list [${adAssetStoreIds}] for package ${packageName}`,
+  );
   return adAssetStoreIds;
 }
