@@ -5,14 +5,15 @@ import redis from '@openupm/server-common/build/redis.js';
 
 import {
   getRedisKeyForAdAssetStore,
-  getRedisKeyForPackageToAdAssetStoreIds,
+  getRedisKeyForTopicToAdAssetStoreIds,
 } from '../../src/models/index.js';
-import { fetchPackageToAdAssetStoreIds } from '../../src/utils/fetchPackageToAdAssetStoreIds.js';
+import { fetchTopicToAdAssetStoreIds } from '../../src/utils/fetchTopicToAdAssetStoreIds.js';
 import { getSearchUrl } from '../../src/utils/fetchAssetStore.js';
 import {
   AssetStoreSearchResult,
   AssetStorePackage,
 } from '../../src/types/assetStore.js';
+import { TopicBase } from '@openupm/types';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function mockAssetStorePackage(initials: any): AssetStorePackage {
@@ -72,7 +73,11 @@ function mockAssetStorePackage(initials: any): AssetStorePackage {
   return { ...obj, ...initials };
 }
 
-const SAMPLE_PACKAGE_NAME = 'com.littlebigfun.addressable-importer';
+const SAMPLE_TOPIC: TopicBase = {
+  name: 'AI',
+  slug: 'ai',
+  keywords: ['ai'],
+};
 const SAMPLE_ASSET_STORE_ID_1 = '000001';
 const SAMPLE_ASSET_STORE_ID_2 = '000002';
 
@@ -84,7 +89,7 @@ describe('fetchPackageToAdAssetStoreIds', function () {
   afterEach(async () => {
     nock.restore();
     await redis.client!.del(
-      getRedisKeyForPackageToAdAssetStoreIds(SAMPLE_PACKAGE_NAME),
+      getRedisKeyForTopicToAdAssetStoreIds(SAMPLE_TOPIC.slug),
     );
     for (const assetStoreId of [
       SAMPLE_ASSET_STORE_ID_1,
@@ -98,12 +103,12 @@ describe('fetchPackageToAdAssetStoreIds', function () {
     await redis.close();
   });
 
-  it('should fetch package to ad asset store ids', async () => {
+  it('should fetch topic to ad asset store ids', async () => {
     // Mock the network request
-    const packageName = SAMPLE_PACKAGE_NAME;
-    const keyword = 'addressable';
+    const topic = SAMPLE_TOPIC;
+    const keyword = SAMPLE_TOPIC.keywords[0];
     // Mock the network request using nock and ts-mockito
-    const searchUrl = getSearchUrl(keyword, 'relevance');
+    const searchUrl = getSearchUrl(keyword, 'popularity');
     const url = new URL(searchUrl);
     const package1 = mockAssetStorePackage({
       id: SAMPLE_ASSET_STORE_ID_1,
@@ -124,7 +129,7 @@ describe('fetchPackageToAdAssetStoreIds', function () {
     // Mock the logger
     const mockLogger = mock<Logger>();
     // Test the function
-    const result = await fetchPackageToAdAssetStoreIds(packageName, mockLogger);
+    const result = await fetchTopicToAdAssetStoreIds(topic, mockLogger);
     expect(result).toEqual([package2.id, package1.id]);
   });
 });

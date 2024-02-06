@@ -11,26 +11,30 @@ import {
 import { setAdAssetStore } from '../models/adAssetStore.js';
 import { convertAssetStorePackageToAdAssetStore } from './convert.js';
 
+export type SearchOrderOption = 'relevance' | 'popularity';
+
 const searchAssetStoreRateLimit = pRateLimit(config.searchAssetStoreRateLimit);
 const searchAssetStoreTimeout = 10 * 1000; // ms
 
 /**
  * Searches asset store for given keywords, and return the saved ad-assetstore id list.
  * @param keywords The keywords to search for.
+ * @param orderBy The order of the search result.
  * @param limit The maximum number of ad-assetstore ids to return.
  * @returns The ad-assetstore id list.
  */
 export async function fetchAdAssetStoreListForKeywords(
   keywords: string[],
+  orderBy: SearchOrderOption,
   limit: number,
   logger: Logger,
 ): Promise<string[]> {
   // fetch ad-assetstore list for given keywords.
-  const adAssetStoreIds: string[] = [];
+  const adAssetStoreSet = new Set<string>();
   for (const keyword of keywords) {
     // Search asset store for the keyword.
     const result = await searchAssetStoreRateLimit(() =>
-      searchAssetStore(keyword),
+      searchAssetStore(keyword, orderBy),
     );
     // Sort result by hotness descending.
     const assetStorePackages: AssetStorePackage[] = result.results
@@ -51,23 +55,25 @@ export async function fetchAdAssetStoreListForKeywords(
       await setAdAssetStore(adAssetStore.id, adAssetStore);
       logger.debug(`saved adAssetStore ${adAssetStore.id}`);
       // Add the id to adAssetStoreIds.
-      adAssetStoreIds.push(adAssetStore.id);
+      adAssetStoreSet.add(adAssetStore.id);
     }
     // Break if the list is full.
-    if (adAssetStoreIds.length >= limit) break;
+    if (adAssetStoreSet.size >= limit) break;
   }
-  return adAssetStoreIds.slice(0, limit);
+  return Array.from(adAssetStoreSet).slice(0, limit);
 }
 
 /**
  * Searches asset store for a given keyword.
  * @param keyword The keyword to search for.
+ * @param orderBy The order of the search result.
  * @returns The search result.
  */
 export async function searchAssetStore(
   keyword: string,
+  orderBy: SearchOrderOption,
 ): Promise<AssetStoreSearchResult> {
-  const fullUrl = getSearchUrl(keyword);
+  const fullUrl = getSearchUrl(keyword, orderBy);
   const refererUrl = getRefererUrl(keyword);
   // Timeout and abort controller.
   const controller = new AbortController();
@@ -110,14 +116,17 @@ export async function searchAssetStore(
  * @param keyword The keyword to search for.
  * @returns The search url.
  */
-export function getSearchUrl(keyword: string): string {
+export function getSearchUrl(
+  keyword: string,
+  orderBy: SearchOrderOption,
+): string {
   const url = new URL(
     'https://api.assetstore.unity3d.com/affiliate/link-maker-api/search',
   );
   const params = new URLSearchParams({
     q: keyword,
     page: '1',
-    order_by: 'relevance',
+    order_by: orderBy,
     rows: config.adKeywordMaxLimit.toString(),
   });
   params.append('q', 'type:content');

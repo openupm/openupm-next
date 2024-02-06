@@ -81,3 +81,5 @@ export const PUBLIC_GEN_DIR = 'gen';
 export const METADATA_LOCAL_LIST_FILENAME = 'metadatalocallist.json';
 export const BLOCKED_SCOPES_FILENAME = 'blockedscopes.json';
 export const SDPXLIST_FILENAME = 'spdxlist.json';
+
+export const TOPIC_ALL_SLUG = 'all';

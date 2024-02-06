@@ -32,6 +32,7 @@ export async function fetchPackageToAdAssetStoreIds(
   // fetch ad-assetstore list for the keywords.
   const adAssetStoreIds: string[] = await fetchAdAssetStoreListForKeywords(
     keywords,
+    'relevance',
     config.packageToAdAssetStoreIdListSize,
     logger,
   );
