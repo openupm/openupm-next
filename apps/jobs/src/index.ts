@@ -1,6 +1,9 @@
 import { CronJob } from 'cron';
 import { createLogger } from '@openupm/server-common/build/log.js';
-import { fetchPackageToAdAssetStoreIdsJob } from '@openupm/ads/build/jobs/adAssetStore.js';
+import {
+  fetchPackageToAdAssetStoreIdsJob,
+  fetchTopicToAdAssetStoreIdsJob,
+} from '@openupm/ads/build/jobs/adAssetStore.js';
 
 const logger = createLogger('@openupm/jobs');
 
@@ -19,6 +22,19 @@ function main(): void {
     },
     () => {
       console.log('fetchPackageToAdAssetStoreIdsJob is completed.');
+    },
+    true, // start
+  );
+  // fetchTopicToAdAssetStoreIdsJob
+  new CronJob(
+    '0 18 * * *',
+    async () => {
+      logger.info('fetchTopicToAdAssetStoreIdsJob starts.');
+      await fetchTopicToAdAssetStoreIdsJob([], true);
+      logger.info('fetchTopicToAdAssetStoreIdsJob ends.');
+    },
+    () => {
+      console.log('fetchTopicToAdAssetStoreIdsJob is completed.');
     },
     true, // start
   );
