@@ -7,10 +7,8 @@ import {
   getRedisKeyForAdAssetStore,
   getRedisKeyForPackageToAdAssetStoreIds,
 } from '../../src/models/index.js';
-import {
-  fetchPackageToAdAssetStoreIds,
-  getSearchUrl,
-} from '../../src/utils/fetch.js';
+import { fetchPackageToAdAssetStoreIds } from '../../src/utils/fetchPackageToAdAssetStoreIds.js';
+import { getSearchUrl } from '../../src/utils/fetchAssetStore.js';
 import {
   AssetStoreSearchResult,
   AssetStorePackage,

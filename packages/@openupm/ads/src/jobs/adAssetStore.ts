@@ -1,6 +1,6 @@
 import { loadPackageNames } from '@openupm/local-data';
 import { createLogger } from '@openupm/server-common/build/log.js';
-import { fetchPackageToAdAssetStoreIds } from '../utils/fetch.js';
+import { fetchPackageToAdAssetStoreIds } from '../utils/fetchPackageToAdAssetStoreIds.js';
 
 const logger = createLogger('adAssetStore');
 

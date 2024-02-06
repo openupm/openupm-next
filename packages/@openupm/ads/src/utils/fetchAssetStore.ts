@@ -4,40 +4,28 @@ import { AbortController } from 'abort-controller';
 import { Logger } from 'ts-log';
 import { pRateLimit } from 'p-ratelimit/build/src/rateLimit.js';
 
-import { loadPackageMetadataLocal } from '@openupm/local-data';
-import { getKeywords } from './keyword.js';
 import {
   AssetStorePackage,
   AssetStoreSearchResult,
 } from '../types/assetStore.js';
 import { setAdAssetStore } from '../models/adAssetStore.js';
 import { convertAssetStorePackageToAdAssetStore } from './convert.js';
-import { collectTextFromPackage } from './collectText.js';
-import { setPackageToAdAssetStoreIds } from '../models/packageToAdAssetStoreIds.js';
+
+const searchAssetStoreRateLimit = pRateLimit(config.searchAssetStoreRateLimit);
+const searchAssetStoreTimeout = 10 * 1000; // ms
 
 /**
- * Fetches AdAssetStore id list for a given package name.
- * @param packageName The name of the package.
- * @param logger The logger.
- * @returns The AdAssetStore id list.
+ * Searches asset store for given keywords, and return the saved ad-assetstore id list.
+ * @param keywords The keywords to search for.
+ * @param limit The maximum number of ad-assetstore ids to return.
+ * @returns The ad-assetstore id list.
  */
-export async function fetchPackageToAdAssetStoreIds(
-  packageName: string,
+export async function fetchAdAssetStoreListForKeywords(
+  keywords: string[],
+  limit: number,
   logger: Logger,
-): Promise<string[] | null> {
-  const pkg = await loadPackageMetadataLocal(packageName);
-  if (pkg === null) {
-    logger.warn(`package ${packageName} not found`);
-    return null;
-  }
-  // Get text for the package.
-  const text = collectTextFromPackage(pkg);
-  // Get keywords for the text.
-  const result = await getKeywords(text);
-  // Merge keywords and keyphrases into a single array.
-  const keywords = [...result.keyphrases, ...result.keywords];
-  if (keywords.length) logger.info(`keywords: ${keywords.join(', ')}`);
-  // fetch ad-assetstore list for the keywords.
+): Promise<string[]> {
+  // fetch ad-assetstore list for given keywords.
   const adAssetStoreIds: string[] = [];
   for (const keyword of keywords) {
     // Search asset store for the keyword.
@@ -54,7 +42,7 @@ export async function fetchPackageToAdAssetStoreIds(
         return assetStorePackage.price_usd !== '0.00';
       });
     logger.info(
-      `found ${assetStorePackages.length} paid adAssetStores for the keyword '${keyword}'`,
+      `found ${assetStorePackages.length} paid adAssetStores for keyword '${keyword}'`,
     );
     // Convert search result to adAssetStore and save it.
     for (const AssetStorePackage of assetStorePackages) {
@@ -66,18 +54,10 @@ export async function fetchPackageToAdAssetStoreIds(
       adAssetStoreIds.push(adAssetStore.id);
     }
     // Break if the list is full.
-    if (adAssetStoreIds.length >= config.packageToAdAssetStoreIdListSize) break;
+    if (adAssetStoreIds.length >= limit) break;
   }
-  if (adAssetStoreIds.length === 0) return null;
-  // save package to adAssetStore id list.
-  const ids = adAssetStoreIds.slice(0, config.packageToAdAssetStoreIdListSize);
-  await setPackageToAdAssetStoreIds(packageName, ids);
-  logger.info(`saved adAssetStore id list [${ids}] for package ${packageName}`);
   return adAssetStoreIds;
 }
-
-const searchAssetStoreRateLimit = pRateLimit(config.searchAssetStoreRateLimit);
-const searchAssetStoreTimeout = 10 * 1000; // ms
 
 /**
  * Searches asset store for a given keyword.
