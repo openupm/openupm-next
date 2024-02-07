@@ -23,12 +23,12 @@ const props = defineProps({
   <div class="ad-placement">
     <span class="ad-mark pl-1 pr-1">Ad</span>
     <div class="ad-img-container">
-      <a :href="url" class="ad-img-link" rel="noopener nofollow">
+      <a :href="url" class="ad-img-link" rel="noopener nofollow" target="_blank">
         <img :src="image" alt="Ad Image" class="img-responsive" />
       </a>
     </div>
     <div class="">
-      <a :href="url" class="ad-link" rel="noopener nofollow">
+      <a :href="url" class="ad-link" rel="noopener nofollow" target="_blank">
         <span class="ad-title">{{ title }}</span>
       </a>
       <span class="ad-price pl-1">{{ price }}</span>
