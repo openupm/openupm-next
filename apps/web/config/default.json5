@@ -129,4 +129,7 @@
 
   // How many ads to show for each package detail page.
   packageDetailAdsCount: 2,
+
+  // How many ads to show for each package list page.
+  packageListAdsCount: 25,
 }

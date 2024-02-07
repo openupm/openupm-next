@@ -38,4 +38,25 @@ export default function router(server: FastifyInstance): void {
       return data;
     },
   );
+
+  server.get(
+    '/ads/topic/:topicSlug',
+    async (req: FastifyRequest<{ Params: { topicSlug: string } }>) => {
+      const topicSlug = req.params.topicSlug;
+      // Fetch ad-assetstore for the package
+      const ids = await getTopicToAdAssetStoreIds(topicSlug);
+      const result = (
+        await Promise.all(ids.map((item) => getAdAssetStore(item)))
+      ).filter((item) => item !== null) as AdAssetStore[];
+      // Pick random ads up to the limit
+      const randomPickedResult = result
+        .sort(() => Math.random() - 0.5)
+        .slice(0, config.packageListAdsCount);
+      // Convert to AdPlacementData
+      const data: AdPlacementData[] = randomPickedResult.map(
+        convertAdAssetStoreToAdPlacementData,
+      );
+      return data;
+    },
+  );
 }
