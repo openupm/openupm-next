@@ -6,6 +6,7 @@ import redis from '@openupm/server-common/build/redis.js';
 import {
   getAdAssetStore,
   getPackageToAdAssetStoreIds,
+  getTopicToAdAssetStoreIds,
 } from '@openupm/ads/build/models/index.js';
 import { convertAdAssetStoreToAdPlacementData } from '@openupm/ads/build/utils/convert.js';
 
@@ -34,10 +35,6 @@ export default function router(server: FastifyInstance): void {
       const data: AdPlacementData[] = randomPickedResult.map(
         convertAdAssetStoreToAdPlacementData,
       );
-      // Format price
-      data.forEach((item) => {
-        item.price = '$' + item.price;
-      });
       return data;
     },
   );
