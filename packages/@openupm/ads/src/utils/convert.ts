@@ -27,7 +27,11 @@ export function convertAdAssetStoreToAdPlacementData(
   const obj: AdPlacementData = {
     title: adAssetStore.title,
     image: adAssetStore.image || '',
-    price: adAssetStore.price,
+    // Add currency symbol to price
+    price:
+      adAssetStore.price === 'free'
+        ? adAssetStore.price
+        : '$' + adAssetStore.price,
     url: getUrlForAdAssetStore(adAssetStore),
   };
   return obj;

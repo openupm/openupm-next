@@ -14,12 +14,29 @@ describe('convertAdAssetStoreToAdPlacementData', function () {
       category: 'category',
       image: 'image',
       icon: 'icon',
-      price: 'price',
+      price: 'free',
     });
     expect(result).toEqual({
       title: 'title',
       image: 'image',
-      price: 'price',
+      price: 'free',
+      url: `https://prf.hn/click/camref:${config.unityAffiliateId}/destination:https://assetstore.unity.com/packages/slug/slug`,
+    });
+  });
+  it('should add currency symbol to price', async function () {
+    const result = convertAdAssetStoreToAdPlacementData({
+      id: 'id',
+      slug: 'slug',
+      title: 'title',
+      category: 'category',
+      image: 'image',
+      icon: 'icon',
+      price: '9.99',
+    });
+    expect(result).toEqual({
+      title: 'title',
+      image: 'image',
+      price: '$9.99',
       url: `https://prf.hn/click/camref:${config.unityAffiliateId}/destination:https://assetstore.unity.com/packages/slug/slug`,
     });
   });
