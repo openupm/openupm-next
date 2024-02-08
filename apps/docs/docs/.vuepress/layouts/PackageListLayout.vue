@@ -365,8 +365,7 @@ watch(() => topicSlug.value, () => {
                           <PackageCard :metadata="item.value" :style="style" />
                         </template>
                         <template v-if="item.type === 'ad'">
-                          <UnityAssetAdPlacement :style="style" :title="item.value.title" :image="item.value.image"
-                            :price="item.value.price" :url="item.value.url" />
+                          <UnityAssetAdPlacement :style="style" :data="item.value" />
                         </template>
                       </template>
                     </Grid>

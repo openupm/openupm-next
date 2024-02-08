@@ -66,8 +66,10 @@ describeWithRedis('/ads/pkg/:pkgName', () => {
       title: 'an asset',
       icon: 'http://example.com/image.png',
       image: 'http://example.com/image.png',
-      price: 'free',
+      price: '0.00',
       category: 'blar/blar',
+      ratingAverage: 0,
+      ratingCount: null,
     };
     await setAdAssetStore(adAssetStore.id, adAssetStore);
     await setPackageToAdAssetStoreIds(SAMPLE_PACKAGE_NAME, [adAssetStore.id]);
@@ -90,8 +92,10 @@ describeWithRedis('/ads/topic/:topicSlug', () => {
       title: 'an asset',
       icon: 'http://example.com/image.png',
       image: 'http://example.com/image.png',
-      price: 'free',
+      price: '0.00',
       category: 'blar/blar',
+      ratingAverage: 0,
+      ratingCount: null,
     };
     await setAdAssetStore(adAssetStore.id, adAssetStore);
     await setTopicToAdAssetStoreIds(SAMPLE_TOPIC_SLUG, [adAssetStore.id]);

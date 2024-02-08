@@ -464,8 +464,7 @@ const buildRouterLinkQuery = function (subPage: string): Record<string, string> 
           </ul>
           <div class="ml-2 mr-2 pt-2">
             <template v-for="(item, index) in state.adPlacementDataList" :key="index">
-              <UnityAssetAdPlacement :title="item.title" :image="item.image" :price="item.price" :url="item.url"
-                class="mb-2" />
+              <UnityAssetAdPlacement :data="item" class="mb-2" />
             </template>
           </div>
         </section>

@@ -28,11 +28,11 @@ export function convertAdAssetStoreToAdPlacementData(
     title: adAssetStore.title,
     image: adAssetStore.image || '',
     // Add currency symbol to price
-    price:
-      adAssetStore.price === 'free'
-        ? adAssetStore.price
-        : '$' + adAssetStore.price,
+    price: adAssetStore.price === '0.00' ? 'Free' : '$' + adAssetStore.price,
     url: getUrlForAdAssetStore(adAssetStore),
+    ratingAverage: adAssetStore.ratingAverage || 0,
+    ratingCount: adAssetStore.ratingCount || null,
+    publisher: adAssetStore.publisher || '',
   };
   return obj;
 }
@@ -58,6 +58,9 @@ export function convertAssetStorePackageToAdAssetStore(
       '',
     icon: assetStorePackage.icon || assetStorePackage.keyimage.icon || '',
     price: assetStorePackage.price_usd,
+    ratingAverage: assetStorePackage.rating.average || 0,
+    ratingCount: assetStorePackage.rating.count || null,
+    publisher: assetStorePackage.publisher.label_english || '',
   };
   return obj;
 }

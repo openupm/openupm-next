@@ -1,21 +1,17 @@
 <script setup lang="ts">
+import { AdPlacementData } from '@openupm/types';
+import { PropType, computed } from 'vue';
+
 const props = defineProps({
-  image: {
-    type: String,
+  data: {
+    type: Object as PropType<AdPlacementData>,
     required: true,
   },
-  title: {
-    type: String,
-    required: true,
-  },
-  price: {
-    type: String,
-    required: true,
-  },
-  url: {
-    type: String,
-    required: true,
-  },
+});
+
+// Calculate the value of 5 - the average rating
+const ratingAverageLeft = computed(() => {
+  return 5 - (props.data.ratingAverage || 0);
 });
 </script>
 
@@ -23,15 +19,22 @@ const props = defineProps({
   <div class="ad-placement">
     <span class="ad-mark pl-1 pr-1">Ad</span>
     <div class="ad-img-container">
-      <a :href="url" class="ad-img-link" rel="noopener nofollow" target="_blank">
-        <img :src="image" alt="Ad Image" class="img-responsive" />
+      <a :href="data.url" class="ad-img-link" rel="noopener nofollow" target="_blank">
+        <img :src="data.image" alt="Ad Image" class="img-responsive" />
       </a>
     </div>
     <div class="">
-      <a :href="url" class="ad-link" rel="noopener nofollow" target="_blank">
-        <span class="ad-title">{{ title }}</span>
+      <a :href="data.url" class="ad-link" rel="noopener nofollow" target="_blank">
+        <span class="ad-title text-bold">{{ data.title }}</span>
       </a>
-      <span class="ad-price pl-1">{{ price }}</span>
+    </div>
+    <div class="ad-meta">
+      <template v-if="data.ratingAverage && data.ratingCount">
+        <i class="fas fa-star" v-for="index in data.ratingAverage" :key="index"></i>
+        <i class="far fa-star" v-for="index in ratingAverageLeft" :key="index"></i>
+        <span class="pl-1 pr-2">({{ data.ratingCount }})</span>
+      </template>
+      <span class="ad-price text-bold">{{ data.price }}</span>
     </div>
   </div>
 </template>
@@ -60,7 +63,8 @@ const props = defineProps({
   /* 3:2 aspect ratio*/
 }
 
-.ad-link {
+.ad-link,
+.ad-meta {
   font-size: 0.7rem;
 }
 

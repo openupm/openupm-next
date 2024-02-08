@@ -1,27 +1,22 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { AdPlacementData } from '@openupm/types';
+import { PropType, computed } from 'vue';
 
 const props = defineProps({
-  image: {
-    type: String,
-    required: true,
-  },
-  title: {
-    type: String,
-    required: true,
-  },
-  price: {
-    type: String,
-    required: true,
-  },
-  url: {
-    type: String,
+  data: {
+    type: Object as PropType<AdPlacementData>,
     required: true,
   },
 });
 
+// Remove the dollar sign from the price
 const priceNumber = computed(() => {
-  return props.price.replace('$', '');
+  return props.data.price.replace('$', '');
+});
+
+// Calculate the value of 5 - the average rating
+const ratingAverageLeft = computed(() => {
+  return 5 - (props.data.ratingAverage || 0);
 });
 </script>
 
@@ -29,18 +24,22 @@ const priceNumber = computed(() => {
   <div class="ad-placement">
     <span class="ad-mark pl-1 pr-1">Ad</span>
     <div class="ad-img-container">
-      <a :href="url" class="ad-img-link" rel="noopener nofollow" target="_blank">
-        <img :src="image" alt="Ad Image" class="img-responsive" />
+      <a :href="data.url" class="ad-img-link" rel="noopener nofollow" target="_blank">
+        <img :src="data.image" alt="Ad Image" class="img-responsive" />
       </a>
     </div>
     <div class="ad-link-container">
       <div class="h5">
-        <a :href="url" class="ad-link" rel="noopener nofollow" target="_blank">
-          <span class="ad-title">{{ title }}</span>
+        <a :href="data.url" class="ad-link" rel="noopener nofollow" target="_blank">
+          <span class="ad-title">{{ data.title }}</span>
         </a>
       </div>
       <span class="chip">
         <i class="fas fa-dollar-sign"></i>{{ priceNumber }}</span>
+      <span v-if="data.ratingAverage && data.ratingCount" class="chip">
+        <i class="fas fa-star" v-for="index in data.ratingAverage" :key="index"></i>
+        <i class="far fa-star" v-for="index in ratingAverageLeft" :key="index"></i>
+        <span class="pl-1">{{ data.ratingCount }}</span></span>
     </div>
   </div>
 </template>
@@ -90,6 +89,11 @@ const priceNumber = computed(() => {
   .chip {
     font-size: $font-size-xs;
     height: 0.8rem;
+
+    .fas.fa-star,
+    .far.fa-star {
+      margin-right: 0.05rem;
+    }
   }
 }
 

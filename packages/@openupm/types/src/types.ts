@@ -181,6 +181,9 @@ export interface AdPlacementData {
   image: string;
   price: string;
   url: string;
+  ratingCount: number | null;
+  ratingAverage: number;
+  publisher: string;
 }
 
 // AdAssetStore represents the data for an asset store advertisement.
@@ -192,6 +195,9 @@ export interface AdAssetStore {
   image: string;
   icon: string;
   price: string;
+  ratingCount: number | null;
+  ratingAverage: number;
+  publisher: string;
 }
 
 export type PageType = 'home' | 'pkgdetail' | 'pkglist' | 'doc' | 'blog';

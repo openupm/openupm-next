@@ -13,14 +13,20 @@ describe('convertAdAssetStoreToAdPlacementData', function () {
       title: 'title',
       category: 'category',
       image: 'image',
-      icon: 'icon',
-      price: 'free',
+      icon: '',
+      price: '0.00',
+      ratingAverage: 0,
+      ratingCount: null,
+      publisher: 'publisher',
     });
     expect(result).toEqual({
       title: 'title',
       image: 'image',
-      price: 'free',
+      price: 'Free',
       url: `https://prf.hn/click/camref:${config.unityAffiliateId}/destination:https://assetstore.unity.com/packages/slug/slug`,
+      ratingAverage: 0,
+      ratingCount: null,
+      publisher: 'publisher',
     });
   });
   it('should add currency symbol to price', async function () {
@@ -32,12 +38,18 @@ describe('convertAdAssetStoreToAdPlacementData', function () {
       image: 'image',
       icon: 'icon',
       price: '9.99',
+      ratingAverage: 0,
+      ratingCount: null,
+      publisher: 'publisher',
     });
     expect(result).toEqual({
       title: 'title',
       image: 'image',
       price: '$9.99',
       url: `https://prf.hn/click/camref:${config.unityAffiliateId}/destination:https://assetstore.unity.com/packages/slug/slug`,
+      ratingAverage: 0,
+      ratingCount: null,
+      publisher: 'publisher',
     });
   });
 });
@@ -48,6 +60,10 @@ describe('convertAssetStorePackageToAdAssetStore', () => {
       id: '1',
       slug: 'example-slug',
       title: 'Example Title',
+      rating: {
+        average: 0,
+        count: null,
+      },
       category: {
         slug_v2: 'example-category',
         label_english: '',
@@ -68,6 +84,15 @@ describe('convertAssetStorePackageToAdAssetStore', () => {
         small_v2: '',
         small: '',
       },
+      publisher: {
+        label_english: 'publisher-name',
+        label: '',
+        slug: '',
+        url: '',
+        id: '',
+        support_email: '',
+        support_url: '',
+      },
       icon: 'example-icon-url',
       price_usd: '9.99',
     };
@@ -79,6 +104,9 @@ describe('convertAssetStorePackageToAdAssetStore', () => {
       image: 'example-image-url',
       icon: 'example-icon-url',
       price: '9.99',
+      ratingAverage: 0,
+      ratingCount: null,
+      publisher: 'publisher-name',
     };
     const result = convertAssetStorePackageToAdAssetStore(
       assetStorePackage as AssetStorePackage,
