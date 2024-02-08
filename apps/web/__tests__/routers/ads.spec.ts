@@ -70,6 +70,7 @@ describeWithRedis('/ads/pkg/:pkgName', () => {
       category: 'blar/blar',
       ratingAverage: 0,
       ratingCount: null,
+      publisher: 'publisher',
     };
     await setAdAssetStore(adAssetStore.id, adAssetStore);
     await setPackageToAdAssetStoreIds(SAMPLE_PACKAGE_NAME, [adAssetStore.id]);
@@ -96,6 +97,7 @@ describeWithRedis('/ads/topic/:topicSlug', () => {
       category: 'blar/blar',
       ratingAverage: 0,
       ratingCount: null,
+      publisher: 'publisher',
     };
     await setAdAssetStore(adAssetStore.id, adAssetStore);
     await setTopicToAdAssetStoreIds(SAMPLE_TOPIC_SLUG, [adAssetStore.id]);

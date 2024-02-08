@@ -43,6 +43,7 @@ describeWithRedis('ad assetstore', () => {
       category: 'blar/blar',
       ratingAverage: 0,
       ratingCount: null,
+      publisher: 'publisher',
     };
     await setAdAssetStore(SAMPLE_AD_ASSET_STORE_ID, data);
     const result = await getAdAssetStore(SAMPLE_AD_ASSET_STORE_ID);
