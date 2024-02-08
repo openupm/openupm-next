@@ -193,3 +193,5 @@ export interface AdAssetStore {
   icon: string;
   price: string;
 }
+
+export type PageType = 'home' | 'pkgdetail' | 'pkglist' | 'doc' | 'blog';

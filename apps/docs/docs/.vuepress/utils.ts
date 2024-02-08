@@ -3,7 +3,7 @@ import { formatDistanceToNow } from "date-fns";
 import { enUS, zhCN } from "date-fns/locale";
 
 import { useDefaultStore } from "@/store";
-import { Region } from "@openupm/types";
+import { PageType, Region } from "@openupm/types";
 import { getRegion } from "@openupm/common/build/utils.js";
 import { DailyDownload } from "@openupm/types";
 import { ComposerTranslation } from "vue-i18n";
@@ -98,4 +98,23 @@ export const translateFallback = function (
   const tvalue = t(tkey);
   if (tvalue == tkey) return fallback;
   return tvalue;
+};
+
+/**
+ * Log an event to Google Analytics
+ * @param action The action to log
+ * @param params The action parameters
+ */
+export const logEvent = function (action: string, params: any): void {
+  (window as any).gtag("event", action, params);
+};
+
+/**
+ * Log an ad event to Google Analytics
+ */
+export const logAdClickEvent = function (pageType: PageType): void {
+  logEvent("adclick", {
+    pageType,
+    pageUrl: window.location.href,
+  });
 };
