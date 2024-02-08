@@ -80,6 +80,9 @@ const ratingAverageLeft = computed(() => {
   .h5 {
     font-size: $font-size-md;
     margin-bottom: 0.2rem;
+    max-height: 2.2rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
 
     >a {
       font-weight: 600;
