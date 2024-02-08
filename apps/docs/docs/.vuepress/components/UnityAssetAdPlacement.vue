@@ -54,10 +54,10 @@ const props = defineProps({
   display: block;
 }
 
-ad-img-container {
+.ad-img-container {
   height: 0;
   padding-bottom: 66.67%;
-  /* 2/3 aspect ratio (3:2) */
+  /* 3:2 aspect ratio*/
 }
 
 .ad-link {

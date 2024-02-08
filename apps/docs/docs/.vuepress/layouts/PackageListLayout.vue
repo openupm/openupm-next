@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import axios from "axios";
 import { orderBy, capitalize, groupBy } from "lodash-es";
-import { computed, watch, onMounted, ref } from "vue";
+import { computed, watch, onMounted, reactive, ref } from "vue";
 import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n'
 import { usePageFrontmatter } from "@vuepress/client";
@@ -12,11 +13,12 @@ import ParentLayout from "@/layouts/WideLayout.vue";
 import VueVirtualScrollGridBackToTop from '@/components/VueVirtualScrollGridBackToTop';
 import { SortType } from "@/constant";
 import { useDefaultStore } from '@/store';
-import { Topic } from "@openupm/types";
+import { AdPlacementData, PackageMetadata, TOPIC_ALL_SLUG, Topic } from "@openupm/types";
 import { getPackageMetadata } from "@openupm/common/build/utils.js";
-import { getPackageListPagePath, isPackageListPath } from "@openupm/common/build/urls.js";
+import { getPackageListPagePath, isPackageListPath, getTopicAdPlacementUrl } from "@openupm/common/build/urls.js";
 import { topicsWithAll } from '@temp/topics.js';
 import { usePackageSearchSuggestions } from "@/search";
+import UnityAssetAdPlacement from '@/components/UnityAssetAdPlacementForPackageList.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -103,6 +105,36 @@ const metadataEntries = computed(() => {
   return items;
 });
 
+// Store ad placement data for the current topic.
+const adPlacementDataList = reactive([
+] as AdPlacementData[]);
+
+// List item type that hold package metadata or ad placement data.
+type ListItem = {
+  type: "package" | "ad";
+  value: PackageMetadata | AdPlacementData;
+};
+
+/* The ListItems to be displayed in the grid.
+ * It includes both package metadata and ad placement data.
+ * Ad placement data is inserted repeatly for every a few items.
+ */
+const listItems = computed(() => {
+  const items = [] as ListItem[];
+  const adInterval = 6;
+  let adIndex = 0;
+  for (let i = 0; i < metadataEntries.value.length; i++) {
+    items.push({ type: "package", value: metadataEntries.value[i] });
+    if (adPlacementDataList.length > 0) {
+      if ((i + 1) % adInterval === 0) {
+        items.push({ type: "ad", value: adPlacementDataList[adIndex] });
+        adIndex = (adIndex + 1) % adPlacementDataList.length;
+      }
+    }
+  }
+  return items;
+});
+
 const isLoading = computed(() => {
   return !store.isMetadataReady;
 });
@@ -132,17 +164,17 @@ const gridWrapperElement = ref(null);
 // Dummy grid page size is fixed to 40, since everything is already loaded in meatadataEntries.
 const gridPageSize = ref(40);
 
-// Grid page provider for virtual scroll grid that returns a slice of metadataEntries.
+// Grid page provider for virtual scroll grid that returns a slice of listItems.
 const gridPageProvider = computed(() => {
-  // Keep a local reference of metadataEntries to ensure reactivity. Vue's dependency tracking system
+  // Keep a local reference of listItems to ensure reactivity. Vue's dependency tracking system
   // cannot detect reactive variables inside a function that is returned from a computed property. This
   // is because the function is not executed until it is called, so Vue has no way of knowing which
   // reactive variables it depends on.
-  const _metadataEntries = metadataEntries.value;
+  const _listItems = listItems.value;
   const provider: PageProvider = async (pageNumber: number, pageSize: number) => {
     const start = pageNumber * pageSize;
     const end = start + pageSize;
-    return _metadataEntries.slice(start, end);
+    return _listItems.slice(start, end);
   };
   return provider;
 });
@@ -192,9 +224,30 @@ const updateRouter = (): void => {
   });
 };
 
+/**
+ * Fetch ad placement data for the current topic.
+ */
+const fetchAdPlacementData = async (): Promise<void> => {
+  let slug = topicSlug.value;
+  if (topicSlug.value === "") slug = TOPIC_ALL_SLUG;
+  try {
+    const resp = await axios.get(
+      getTopicAdPlacementUrl(slug),
+      { headers: { Accept: "application/json" } }
+    );
+    const data = resp.data as AdPlacementData[];
+    // Clear and push new data to adPlacementDataList.
+    adPlacementDataList.splice(0);
+    adPlacementDataList.push(...data);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 // Hooks
 onMounted(() => {
   parseQuery();
+  fetchAdPlacementData();
 });
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -217,6 +270,10 @@ watch(() => sortType.value, () => {
 
 watch(() => searchTerm.value, () => {
   updateRouter();
+});
+
+watch(() => topicSlug.value, () => {
+  fetchAdPlacementData();
 });
 </script>
 
@@ -293,7 +350,7 @@ watch(() => searchTerm.value, () => {
                     {{ noDataAvailableText }}
                   </div>
                   <div v-else ref="gridWrapperElement" class="grid-wrapper">
-                    <Grid class="grid" :length="metadataEntries.length" :page-size="gridPageSize"
+                    <Grid class="grid" :length="listItems.length" :page-size="gridPageSize"
                       :page-provider="gridPageProvider" :get-key="getGridKey">
                       <template #probe>
                         <!-- The virtual grid is designed to be used with a network provider.
@@ -304,7 +361,13 @@ watch(() => searchTerm.value, () => {
                         <div style="min-height: 14rem;"></div>
                       </template>
                       <template #default="{ item, style }">
-                        <PackageCard :metadata="item" :style="style" />
+                        <template v-if="item.type === 'package'">
+                          <PackageCard :metadata="item.value" :style="style" />
+                        </template>
+                        <template v-if="item.type === 'ad'">
+                          <UnityAssetAdPlacement :style="style" :title="item.value.title" :image="item.value.image"
+                            :price="item.value.price" :url="item.value.url" />
+                        </template>
                       </template>
                     </Grid>
                   </div>

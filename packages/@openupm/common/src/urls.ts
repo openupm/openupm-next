@@ -284,3 +284,12 @@ export const getLocaleDocsPath = function (path: string): string {
 export function getPackageAdPlacementUrl(packageName: string): string {
   return urlJoin(getAPIBaseUrl(), 'ads', 'pkg', packageName);
 }
+
+/**
+ * Get the URL for the topic ad placement.
+ * @param topicSlug The slug of the topic.
+ * @returns The URL for the topic ad placement.
+ */
+export function getTopicAdPlacementUrl(topicSlug: string): string {
+  return urlJoin(getAPIBaseUrl(), 'ads', 'topic', topicSlug);
+}
