@@ -10,6 +10,8 @@ import {
 } from '../types/assetStore.js';
 import { setAdAssetStore } from '../models/adAssetStore.js';
 import { convertAssetStorePackageToAdAssetStore } from './convert.js';
+import { AdAssetStore } from '@openupm/types';
+import { fetchAssetStoreFinalPrice } from './fetchAssetStoreDiscount.js';
 
 export type SearchOrderOption = 'relevance' | 'popularity';
 
@@ -21,6 +23,7 @@ const searchAssetStoreTimeout = 10 * 1000; // ms
  * @param keywords The keywords to search for.
  * @param orderBy The order of the search result.
  * @param limit The maximum number of ad-assetstore ids to return.
+ * @param logger The logger.
  * @returns The ad-assetstore id list.
  */
 export async function fetchAdAssetStoreListForKeywords(
@@ -52,6 +55,7 @@ export async function fetchAdAssetStoreListForKeywords(
     for (const AssetStorePackage of assetStorePackages) {
       const adAssetStore =
         convertAssetStorePackageToAdAssetStore(AssetStorePackage);
+      await updateFinalPrice(adAssetStore, logger);
       await setAdAssetStore(adAssetStore.id, adAssetStore);
       logger.debug(`saved adAssetStore ${adAssetStore.id}`);
       // Add the id to adAssetStoreIds.
@@ -149,4 +153,24 @@ function getRefererUrl(keyword: string): string {
   });
   const fullUrl = `${url}?${params}`;
   return fullUrl;
+}
+
+/**
+ * Update final price for AdAssetStore.
+ * @param adAssetStore The AdAssetStore object to update final price.
+ * @param logger The logger.
+ */
+export async function updateFinalPrice(
+  adAssetStore: AdAssetStore,
+  logger: Logger,
+): Promise<void> {
+  try {
+    const finalPrice = await fetchAssetStoreFinalPrice(adAssetStore.id);
+    if (finalPrice) adAssetStore.price = finalPrice;
+  } catch (err) {
+    logger.error(
+      { err: err },
+      `failed to update final price for ad-assetstore ${adAssetStore.id}`,
+    );
+  }
 }

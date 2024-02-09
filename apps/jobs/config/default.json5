@@ -47,4 +47,10 @@
     interval: 4000, // ms
     rate: 1,
   },
+
+  // The rate limit for the asset store linkmaker embed API.
+  fetchLinkerMakerEmbedRateLimit: {
+    interval: 2000, // ms
+    rate: 1,
+  },
 }

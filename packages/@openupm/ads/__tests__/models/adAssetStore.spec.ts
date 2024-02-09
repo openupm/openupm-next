@@ -39,6 +39,7 @@ describeWithRedis('ad assetstore', () => {
       title: 'an asset',
       icon: 'http://example.com/image.png',
       image: 'http://example.com/image.png',
+      originalPrice: '0.00',
       price: '0.00',
       category: 'blar/blar',
       ratingAverage: 0,

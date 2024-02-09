@@ -179,6 +179,7 @@ export interface FormFieldOption {
 export interface AdPlacementData {
   title: string;
   image: string;
+  originalPrice: string;
   price: string;
   url: string;
   ratingCount: number | null;
@@ -194,6 +195,7 @@ export interface AdAssetStore {
   category: string;
   image: string;
   icon: string;
+  originalPrice: string;
   price: string;
   ratingCount: number | null;
   ratingAverage: number;

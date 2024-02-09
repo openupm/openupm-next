@@ -4,6 +4,7 @@ import { mock } from 'ts-mockito';
 import redis from '@openupm/server-common/build/redis.js';
 
 import {
+  getAdAssetStore,
   getRedisKeyForAdAssetStore,
   getRedisKeyForTopicToAdAssetStoreIds,
 } from '../../src/models/index.js';
@@ -14,6 +15,7 @@ import {
   AssetStorePackage,
 } from '../../src/types/assetStore.js';
 import { TopicBase } from '@openupm/types';
+import { getLinkmakerEmbedUrl } from '../../src/utils/fetchAssetStoreDiscount';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function mockAssetStorePackage(initials: any): AssetStorePackage {
@@ -73,6 +75,11 @@ function mockAssetStorePackage(initials: any): AssetStorePackage {
   return { ...obj, ...initials };
 }
 
+// Mock linkmaker embed response content.
+function mockLinkmakerEmbedContent(finalPrice: string) {
+  return `originalPrice: { itemId: "...", originalPrice: "...", finalPrice: "${finalPrice}"},`;
+}
+
 const SAMPLE_TOPIC: TopicBase = {
   name: 'AI',
   slug: 'ai',
@@ -107,7 +114,7 @@ describe('fetchPackageToAdAssetStoreIds', function () {
     // Mock the network request
     const topic = SAMPLE_TOPIC;
     const keyword = SAMPLE_TOPIC.keywords[0];
-    // Mock the network request using nock and ts-mockito
+    // Mock the search request
     const searchUrl = getSearchUrl(keyword, 'popularity');
     const url = new URL(searchUrl);
     const package1 = mockAssetStorePackage({
@@ -126,10 +133,27 @@ describe('fetchPackageToAdAssetStoreIds', function () {
     };
     const mockResponseData = JSON.stringify(data);
     nock(url.origin).get(url.pathname).query(true).reply(200, mockResponseData);
+    // Mock the linkmaker embed request
+    const originalPrice = package1.price_usd;
+    const finalPrice = originalPrice;
+    const linkmakerEmbedUrl1 = new URL(getLinkmakerEmbedUrl(package1.id));
+    nock(linkmakerEmbedUrl1.origin)
+      .get(linkmakerEmbedUrl1.pathname)
+      .query(true)
+      .reply(200, mockLinkmakerEmbedContent(finalPrice));
+    const linkmakerEmbedUrl2 = new URL(getLinkmakerEmbedUrl(package2.id));
+    nock(linkmakerEmbedUrl2.origin)
+      .get(linkmakerEmbedUrl2.pathname)
+      .query(true)
+      .reply(200, mockLinkmakerEmbedContent(finalPrice));
     // Mock the logger
     const mockLogger = mock<Logger>();
     // Test the function
     const result = await fetchTopicToAdAssetStoreIds(topic, mockLogger);
     expect(result).toEqual([package2.id, package1.id]);
+    const adAssetStore1 = await getAdAssetStore(package1.id);
+    expect(adAssetStore1).not.toBeNull();
+    expect(adAssetStore1!.price).toEqual(finalPrice);
+    expect(adAssetStore1!.originalPrice).toEqual(originalPrice);
   });
 });

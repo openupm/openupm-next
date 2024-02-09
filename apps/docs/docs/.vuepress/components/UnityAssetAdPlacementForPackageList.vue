@@ -14,9 +14,19 @@ const priceNumber = computed(() => {
   return props.data.price.replace('$', '');
 });
 
+// Remove the dollar sign from the original price
+const originalPriceNumber = computed(() => {
+  return props.data.originalPrice.replace('$', '');
+});
+
 // Calculate the value of 5 - the average rating
 const ratingAverageLeft = computed(() => {
   return 5 - (props.data.ratingAverage || 0);
+});
+
+// has discount
+const hasDiscount = computed(() => {
+  return props.data.originalPrice && props.data.price && props.data.originalPrice !== props.data.price;
 });
 </script>
 
@@ -35,7 +45,8 @@ const ratingAverageLeft = computed(() => {
         </a>
       </div>
       <span class="chip">
-        <i class="fas fa-dollar-sign"></i>{{ priceNumber }}</span>
+        <i class="fas fa-dollar-sign"></i>{{ priceNumber }}<del class="pl-2" v-if="hasDiscount">{{ originalPriceNumber
+        }}</del></span>
       <span v-if="data.ratingAverage && data.ratingCount" class="chip">
         <i class="fas fa-star" v-for="index in data.ratingAverage" :key="index"></i>
         <i class="far fa-star" v-for="index in ratingAverageLeft" :key="index"></i>

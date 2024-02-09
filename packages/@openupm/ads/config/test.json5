@@ -16,4 +16,11 @@
     interval: 10, // ms
     rate: 1,
   },
+
+  // Less limit for the test environment.
+  // The rate limit for the asset store linkmaker embed API.
+  fetchLinkerMakerEmbedRateLimit: {
+    interval: 10, // ms
+    rate: 1,
+  },
 }

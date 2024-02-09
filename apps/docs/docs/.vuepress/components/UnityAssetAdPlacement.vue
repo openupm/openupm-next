@@ -13,6 +13,11 @@ const props = defineProps({
 const ratingAverageLeft = computed(() => {
   return 5 - (props.data.ratingAverage || 0);
 });
+
+// has discount
+const hasDiscount = computed(() => {
+  return props.data.originalPrice && props.data.price && props.data.originalPrice !== props.data.price;
+});
 </script>
 
 <template>
@@ -35,6 +40,7 @@ const ratingAverageLeft = computed(() => {
         <span class="pl-1 pr-2">({{ data.ratingCount }})</span>
       </template>
       <span class="ad-price text-bold">{{ data.price }}</span>
+      <del v-if="hasDiscount" class="ad-price text-bold pl-2">{{ data.originalPrice }}</del>
     </div>
   </div>
 </template>

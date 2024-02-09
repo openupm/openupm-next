@@ -27,6 +27,9 @@ export function convertAdAssetStoreToAdPlacementData(
   const obj: AdPlacementData = {
     title: adAssetStore.title,
     image: adAssetStore.image || '',
+    // Add currency symbol to originalPrice
+    originalPrice:
+      adAssetStore.originalPrice === '0.00' ? 'Free' : '$' + adAssetStore.price,
     // Add currency symbol to price
     price: adAssetStore.price === '0.00' ? 'Free' : '$' + adAssetStore.price,
     url: getUrlForAdAssetStore(adAssetStore),
@@ -57,6 +60,7 @@ export function convertAssetStorePackageToAdAssetStore(
       assetStorePackage.keyimage.medium ||
       '',
     icon: assetStorePackage.icon || assetStorePackage.keyimage.icon || '',
+    originalPrice: assetStorePackage.price_usd,
     price: assetStorePackage.price_usd,
     ratingAverage: assetStorePackage.rating.average || 0,
     ratingCount: assetStorePackage.rating.count || null,
