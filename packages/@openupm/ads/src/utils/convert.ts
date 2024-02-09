@@ -39,6 +39,8 @@ export function convertAdAssetStoreToAdPlacementData(
     ratingCount: adAssetStore.ratingCount || null,
     publisher: adAssetStore.publisher || '',
   };
+  // Fix old data that originalPrice can be undefined.
+  if (!adAssetStore.originalPrice) obj.originalPrice = obj.price;
   return obj;
 }
 

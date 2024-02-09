@@ -4,6 +4,7 @@ import {
   convertAssetStorePackageToAdAssetStore,
 } from '../../src/utils/convert.js';
 import { AssetStorePackage } from '../../src/types/assetStore';
+import { AdAssetStore } from '@openupm/types';
 
 describe('convertAdAssetStoreToAdPlacementData', function () {
   it('should convert AdAssetStore to AdPlacementData', async function () {
@@ -49,6 +50,34 @@ describe('convertAdAssetStoreToAdPlacementData', function () {
       title: 'title',
       image: 'image',
       originalPrice: '$19.99',
+      price: '$9.99',
+      url: `https://prf.hn/click/camref:${config.unityAffiliateId}/destination:https://assetstore.unity.com/packages/slug/slug`,
+      ratingAverage: 0,
+      ratingCount: null,
+      publisher: 'publisher',
+    });
+  });
+  it('should handle old data that originalPrice can be undefined', async function () {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const adAssetStore: any = {
+      id: 'id',
+      slug: 'slug',
+      title: 'title',
+      category: 'category',
+      image: 'image',
+      icon: 'icon',
+      originalPrice: '19.99',
+      price: '9.99',
+      ratingAverage: 0,
+      ratingCount: null,
+      publisher: 'publisher',
+    } as AdAssetStore;
+    adAssetStore.originalPrice = undefined;
+    const result = convertAdAssetStoreToAdPlacementData(adAssetStore);
+    expect(result).toEqual({
+      title: 'title',
+      image: 'image',
+      originalPrice: '$9.99',
       price: '$9.99',
       url: `https://prf.hn/click/camref:${config.unityAffiliateId}/destination:https://assetstore.unity.com/packages/slug/slug`,
       ratingAverage: 0,
