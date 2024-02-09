@@ -29,7 +29,9 @@ export function convertAdAssetStoreToAdPlacementData(
     image: adAssetStore.image || '',
     // Add currency symbol to originalPrice
     originalPrice:
-      adAssetStore.originalPrice === '0.00' ? 'Free' : '$' + adAssetStore.price,
+      adAssetStore.originalPrice === '0.00'
+        ? 'Free'
+        : '$' + adAssetStore.originalPrice,
     // Add currency symbol to price
     price: adAssetStore.price === '0.00' ? 'Free' : '$' + adAssetStore.price,
     url: getUrlForAdAssetStore(adAssetStore),

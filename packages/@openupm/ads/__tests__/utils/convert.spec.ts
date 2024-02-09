@@ -39,7 +39,7 @@ describe('convertAdAssetStoreToAdPlacementData', function () {
       category: 'category',
       image: 'image',
       icon: 'icon',
-      originalPrice: '9.99',
+      originalPrice: '19.99',
       price: '9.99',
       ratingAverage: 0,
       ratingCount: null,
@@ -48,7 +48,7 @@ describe('convertAdAssetStoreToAdPlacementData', function () {
     expect(result).toEqual({
       title: 'title',
       image: 'image',
-      originalPrice: '$9.99',
+      originalPrice: '$19.99',
       price: '$9.99',
       url: `https://prf.hn/click/camref:${config.unityAffiliateId}/destination:https://assetstore.unity.com/packages/slug/slug`,
       ratingAverage: 0,
