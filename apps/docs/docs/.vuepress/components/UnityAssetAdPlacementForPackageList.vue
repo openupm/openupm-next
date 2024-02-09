@@ -79,8 +79,8 @@ const hasDiscount = computed(() => {
 .ad-img-container {
   height: 0;
   padding-bottom: 66.67%;
-  overflow: hidden;
   /* 3:2 aspect ratio */
+  overflow-y: hidden;
 }
 
 .ad-link-container {
