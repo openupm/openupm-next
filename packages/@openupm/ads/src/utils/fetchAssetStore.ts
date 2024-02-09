@@ -165,8 +165,14 @@ export async function updateFinalPrice(
   logger: Logger,
 ): Promise<void> {
   try {
+    logger.info(`updating final price for ad-assetstore ${adAssetStore.id}`);
     const finalPrice = await fetchAssetStoreFinalPrice(adAssetStore.id);
     if (finalPrice) adAssetStore.price = finalPrice;
+    if (adAssetStore.price !== adAssetStore.originalPrice) {
+      logger.info(
+        `price updated for ad-assetstore ${adAssetStore.id} from ${adAssetStore.originalPrice} to ${adAssetStore.price}`,
+      );
+    }
   } catch (err) {
     logger.error(
       { err: err },
