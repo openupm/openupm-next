@@ -10,7 +10,7 @@
     "docs:dev": "cross-env NODE_OPTIONS='-r dotenv-flow/config' vuepress dev docs",
     "docs:build": "cross-env NODE_OPTIONS='-r dotenv-flow/config --experimental-modules --es-module-specifier-resolution=node --max-old-space-size=14000' vuepress build docs",
     "docs:build:limit": "cross-env PACKAGE_LIMIT=5 NODE_OPTIONS='-r dotenv-flow/config --experimental-modules --es-module-specifier-resolution=node --max-old-space-size=14000' vuepress build docs",
-    "docs:serve": "ws -d .vuepress/dist --cors.origin '*'",
+    "docs:serve": "ws -d docs/.vuepress/dist --cors.origin '*'",
     "lint": "eslint . --ext .ts --ext .mts --ext .vue",
     "test:dev": "cross-env NODE_ENV=test vitest --config vite.config.test.ts",
     "test": "cross-env NODE_ENV=test vitest run --config vite.config.test.ts"
