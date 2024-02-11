@@ -48,6 +48,16 @@ export default defineClientConfig({
     app.component("NavbarSearch", () => {
       return null;
     });
+    /* Register router error handler to handle dynamically imported module fetch error.
+     * But there is no way to tell if the user is offline or the website get redeployed.
+     * As a trade-off we just refresh the page when the error happens.
+     */
+    router.onError((err) => {
+      console.error(err);
+      if (/Failed to fetch dynamically imported module/.test(err.message)) {
+        window.location.href = window.location.href;
+      }
+    });
   },
   setup() {
     const fetchSiteData = (): void => {
