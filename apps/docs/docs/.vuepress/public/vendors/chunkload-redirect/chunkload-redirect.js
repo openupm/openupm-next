@@ -2,15 +2,11 @@
  * Modified from https://raw.githubusercontent.com/cwaring/vuepress-plugin-chunkload-redirect/main/clientRootMixin.js
  */
 function unhandledRejection(e) {
-  if (/loading chunk \d* failed./i.test(e.reason)) {
-    const targetPath = this.$router.history.pending.fullPath;
-    if (targetPath) {
-      console.log('Reloading page to handle loading chunk error...');
-      window.removeEventListener('unhandledrejection', unhandledRejection);
-      window.location.pathname = targetPath;
-    }
-  }
+  console.error("unhandledrejection", e);
+  if (/loading chunk \d* failed./i.test(e.reason))
+    window.location.href = window.location.href;
 }
 
 // catch unhandledRejection from promise
-window.addEventListener('unhandledrejection', unhandledRejection);
+window.removeEventListener("unhandledrejection", unhandledRejection);
+window.addEventListener("unhandledrejection", unhandledRejection);
