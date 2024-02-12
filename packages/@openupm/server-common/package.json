@@ -29,21 +29,29 @@
     "build": "tsc -p tsconfig.json",
     "build:watch": "tsc -w -p tsconfig.json",
     "build:release": "tsc -p tsconfig.release.json",
+    "postbuild": "chmod +x build/jobs/*CLI.js",
     "lint": "eslint . --ext .ts --ext .mts",
     "test": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --coverage",
     "prettier": "prettier --config .prettierrc --write .",
     "test:watch": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --watch"
   },
+  "bin": {
+    "checkPackage": "build/jobs/checkPackageCLI.js"
+  },
   "dependencies": {
+    "@commander-js/extra-typings": "^11.1.0",
     "@openupm/local-data": "*",
     "@openupm/types": "*",
+    "abort-controller": "^3.0.0",
     "aws-sdk": "^2.1532.0",
     "bunyan": "^1.8.15",
+    "commander": "^11.1.0",
     "config": "^3.3.9",
     "dotenv-flow": "^4.0.0",
     "feed": "^4.2.2",
     "ioredis": "^5.3.2",
     "lodash-es": "^4.17.21",
+    "p-ratelimit": "^1.0.1",
     "sharp": "^0.33.1",
     "tslib": "~2.6"
   },
