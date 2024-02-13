@@ -52,8 +52,13 @@ export const config: any = {
       "window.dataLayer = window.dataLayer || [];\nfunction gtag(){dataLayer.push(arguments);}\ngtag('js', new Date());\ngtag('config', 'G-HBWCQ2KGQ5');",
     ],
     // Google AdSense
-    // ["script", { src: "//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js" }],
-    // ["script", {}, '(adsbygoogle=window.adsbygoogle||[]).push({google_ad_client:"ca-pub-7925911236569822",enable_page_level_ads:true});']
+    [
+      "script",
+      {
+        src: "//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1509006252899759",
+        crossorigin: "anonymous",
+      },
+    ],
   ],
 };
 
