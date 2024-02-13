@@ -1,12 +1,12 @@
 import config from 'config';
 import fetch, { AbortError } from 'node-fetch';
-import { AbortController } from 'abort-controller';
 import { pRateLimit } from 'p-ratelimit/build/src/rateLimit.js';
+
+import { runWithTimeoutSignal } from '@openupm/server-common/build/utils/runWithTimeoutSignal.js';
 
 const fetchLinkerMakerEmbedRateLimit = pRateLimit(
   config.fetchLinkerMakerEmbedRateLimit,
 );
-const fetchLinkmakerEmbedTimeout = 10 * 1000; // ms
 
 /**
  * Fetch the asset store final price for the given AssetStorePackage id.
@@ -45,39 +45,34 @@ export function parseAssetStoreFinalPrice(content: string): string | null {
 export async function fetchLinkmakerEmbed(id: string): Promise<string> {
   const fullUrl = getLinkmakerEmbedUrl(id);
   const refererUrl = getRefererUrl();
-  // Timeout and abort controller.
-  const controller = new AbortController();
-  const timeout = setTimeout(() => {
-    controller.abort();
-  }, fetchLinkmakerEmbedTimeout);
   try {
-    const resp = await fetch(fullUrl, {
-      headers: {
-        accept: '*/*',
-        'accept-language': 'en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7',
-        'sec-ch-ua':
-          '"Not A(Brand";v="99", "Google Chrome";v="121", "Chromium";v="121"',
-        'sec-ch-ua-mobile': '?0',
-        'sec-ch-ua-platform': '"Windows"',
-        'sec-fetch-dest': 'empty',
-        'sec-fetch-mode': 'cors',
-        'sec-fetch-site': 'same-origin',
-        Referer: refererUrl,
-        'Referrer-Policy': 'strict-origin-when-cross-origin',
-      },
-      method: 'GET',
-      signal: controller.signal,
+    return await runWithTimeoutSignal(async (signal) => {
+      const resp = await fetch(fullUrl, {
+        headers: {
+          accept: '*/*',
+          'accept-language': 'en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7',
+          'sec-ch-ua':
+            '"Not A(Brand";v="99", "Google Chrome";v="121", "Chromium";v="121"',
+          'sec-ch-ua-mobile': '?0',
+          'sec-ch-ua-platform': '"Windows"',
+          'sec-fetch-dest': 'empty',
+          'sec-fetch-mode': 'cors',
+          'sec-fetch-site': 'same-origin',
+          Referer: refererUrl,
+          'Referrer-Policy': 'strict-origin-when-cross-origin',
+        },
+        method: 'GET',
+        signal,
+      });
+      const result = await resp.text();
+      return result;
     });
-    const result = await resp.text();
-    return result;
   } catch (err) {
     // If the error is an abort error, throw a timeout error.
     if (err instanceof AbortError) {
       throw new Error(`fetchLinkmakerEmbed timeout for id ${id}`);
     }
     throw err;
-  } finally {
-    clearTimeout(timeout);
   }
 }
 

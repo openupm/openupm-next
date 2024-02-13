@@ -1,22 +1,21 @@
 import config from 'config';
 import fetch, { AbortError } from 'node-fetch';
-import { AbortController } from 'abort-controller';
 import { Logger } from 'ts-log';
 import { pRateLimit } from 'p-ratelimit/build/src/rateLimit.js';
 
+import { AdAssetStore } from '@openupm/types';
+import { runWithTimeoutSignal } from '@openupm/server-common/build/utils/runWithTimeoutSignal.js';
 import {
   AssetStorePackage,
   AssetStoreSearchResult,
 } from '../types/assetStore.js';
 import { setAdAssetStore } from '../models/adAssetStore.js';
 import { convertAssetStorePackageToAdAssetStore } from './convert.js';
-import { AdAssetStore } from '@openupm/types';
 import { fetchAssetStoreFinalPrice } from './fetchAssetStoreDiscount.js';
 
 export type SearchOrderOption = 'relevance' | 'popularity';
 
 const searchAssetStoreRateLimit = pRateLimit(config.searchAssetStoreRateLimit);
-const searchAssetStoreTimeout = 10 * 1000; // ms
 
 /**
  * Searches asset store for given keywords, and return the saved ad-assetstore id list.
@@ -79,39 +78,34 @@ export async function searchAssetStore(
 ): Promise<AssetStoreSearchResult> {
   const fullUrl = getSearchUrl(keyword, orderBy);
   const refererUrl = getRefererUrl(keyword);
-  // Timeout and abort controller.
-  const controller = new AbortController();
-  const timeout = setTimeout(() => {
-    controller.abort();
-  }, searchAssetStoreTimeout);
   try {
-    const resp = await fetch(fullUrl, {
-      headers: {
-        accept: '*/*',
-        'accept-language': 'en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7',
-        'sec-ch-ua':
-          '"Not A(Brand";v="99", "Google Chrome";v="121", "Chromium";v="121"',
-        'sec-ch-ua-mobile': '?0',
-        'sec-ch-ua-platform': '"Windows"',
-        'sec-fetch-dest': 'empty',
-        'sec-fetch-mode': 'cors',
-        'sec-fetch-site': 'same-origin',
-        Referer: refererUrl,
-        'Referrer-Policy': 'strict-origin-when-cross-origin',
-      },
-      method: 'GET',
-      signal: controller.signal,
+    return await runWithTimeoutSignal(async (signal) => {
+      const resp = await fetch(fullUrl, {
+        headers: {
+          accept: '*/*',
+          'accept-language': 'en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7',
+          'sec-ch-ua':
+            '"Not A(Brand";v="99", "Google Chrome";v="121", "Chromium";v="121"',
+          'sec-ch-ua-mobile': '?0',
+          'sec-ch-ua-platform': '"Windows"',
+          'sec-fetch-dest': 'empty',
+          'sec-fetch-mode': 'cors',
+          'sec-fetch-site': 'same-origin',
+          Referer: refererUrl,
+          'Referrer-Policy': 'strict-origin-when-cross-origin',
+        },
+        method: 'GET',
+        signal,
+      });
+      const result = (await resp.json()) as AssetStoreSearchResult;
+      return result;
     });
-    const result = (await resp.json()) as AssetStoreSearchResult;
-    return result;
   } catch (err) {
     // If the error is an abort error, throw a timeout error.
     if (err instanceof AbortError) {
       throw new Error(`searchAssetStore timeout for keyword ${keyword}`);
     }
     throw err;
-  } finally {
-    clearTimeout(timeout);
   }
 }
 
