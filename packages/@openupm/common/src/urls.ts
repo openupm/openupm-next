@@ -204,7 +204,7 @@ export const getRegistryBaseUrl = function (): string {
  * @param name package name
  * @returns package metadata url
  */
-export const getPackageMetadataUrl = function (name: string): string {
+export const getPackumentUrl = function (name: string): string {
   return urlJoin(getRegistryBaseUrl(), name);
 };
 

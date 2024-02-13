@@ -100,7 +100,7 @@ export interface PackageInfo {
   scopes: string[];
 }
 
-export interface PackageRegistryVersion {
+export interface PackumentVersion {
   name: string;
   displayName: string;
   version: string;
@@ -110,9 +110,9 @@ export interface PackageRegistryVersion {
   readmeFilename: string;
 }
 
-export interface PackageRegistryInfo {
+export interface Packument {
   name: string;
-  versions: { [key: string]: PackageRegistryVersion };
+  versions: { [key: string]: PackumentVersion };
   time: { [key: string]: string };
   'dist-tags': { [key: string]: string };
   readme: string;

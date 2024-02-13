@@ -19,8 +19,8 @@ import { usePageFrontmatter } from "@vuepress/client";
 import { useDefaultStore } from "@/store";
 import { AdPlacementData } from "@openupm/types";
 import { getPackageMetadata, getRegion } from "@openupm/common/build/utils.js";
-import { DownloadsRange, PackageInfo, PackageMetadataLocal, PackageRegistryInfo, PackageRelease, PackageVersionViewEntry } from "@openupm/types";
-import { getMonthlyDownloadsUrl, getPackageInfoUrl, getPackageMetadataUrl, getPackageRelatedPackagesPath, isPackageDetailPath, getPackageAdPlacementUrl } from '@openupm/common/build/urls.js';
+import { DownloadsRange, PackageInfo, PackageMetadataLocal, Packument, PackageRelease, PackageVersionViewEntry } from "@openupm/types";
+import { getMonthlyDownloadsUrl, getPackageInfoUrl, getPackumentUrl, getPackageRelatedPackagesPath, isPackageDetailPath, getPackageAdPlacementUrl } from '@openupm/common/build/urls.js';
 import { fillMissingDates, isPackageExist, timeAgoFormat } from '@/utils';
 import UnityAssetAdPlacement from '@/components/UnityAssetAdPlacement.vue';
 
@@ -40,12 +40,12 @@ const SubPageSlug = {
 // State
 interface State {
   packageInfo: PackageInfo,
-  registryInfo: PackageRegistryInfo,
+  packument: Packument,
   monthlyDownloads: DownloadsRange,
   sameScopePackages: PackageMetadataLocal[],
   subPage: string,
   __packageInfoFetched: boolean,
-  __registryInfoFetched: boolean,
+  __packumentFetched: boolean,
   __monthlyDownloadsFetched: boolean,
   __sameScopePackagesFetched: boolean,
   adPlacementDataList: AdPlacementData[],
@@ -59,7 +59,7 @@ const initState = (): State => ({
     readmeHtml_zhCN: null,
     scopes: [],
   },
-  registryInfo: {
+  packument: {
     name: "",
     versions: {},
     time: {},
@@ -75,7 +75,7 @@ const initState = (): State => ({
   sameScopePackages: [],
   subPage: SubPageSlug.readme,
   __packageInfoFetched: false,
-  __registryInfoFetched: false,
+  __packumentFetched: false,
   __monthlyDownloadsFetched: false,
   __sameScopePackagesFetched: false,
   adPlacementDataList: [],
@@ -120,7 +120,7 @@ const currentSubPage = computed(() => {
 });
 
 const dependencies = computed(() => {
-  const versions = state.registryInfo.versions || {};
+  const versions = state.packument.versions || {};
   const versionInfo = packageVersion.value ? versions[packageVersion.value] : null;
   const obj = versionInfo && versionInfo.dependencies ? versionInfo.dependencies : {};
   return map(obj, (version, name) => ({ name, version }));
@@ -158,14 +158,14 @@ const packageReleases = computed(() => {
 });
 
 const packageVersion = computed(() => {
-  const distTags = state.registryInfo["dist-tags"];
+  const distTags = state.packument["dist-tags"];
   if (distTags && distTags.latest) return distTags.latest;
   else return null;
 });
 
 const packageVersions = computed(() => {
-  const versions = state.registryInfo.versions || {};
-  const times = state.registryInfo.time;
+  const versions = state.packument.versions || {};
+  const times = state.packument.time;
   const versionKeys = Object.keys(versions).reverse();
   return versionKeys.map(x => {
     return {
@@ -229,11 +229,11 @@ const subPages = computed(() => {
       props: {
         metadata: packageMetadata.value,
         packageInfo: state.packageInfo,
-        registryInfo: state.registryInfo,
+        packument: state.packument,
         monthlyDownloads: state.monthlyDownloads,
         hasNotSucceededBuild: hasNotSucceededBuild.value,
         packageInfoFetched: state.__packageInfoFetched,
-        registryInfoFetched: state.__registryInfoFetched,
+        packumentFetched: state.__packumentFetched,
         monthlyDownloadsFetched: state.__monthlyDownloadsFetched,
       }
     },
@@ -246,7 +246,7 @@ const subPages = computed(() => {
       component: PackageDependenciesView,
       props: {
         dependencies: dependencies.value,
-        isLoading: !state.__registryInfoFetched,
+        isLoading: !state.__packumentFetched,
       }
     },
     {
@@ -257,7 +257,7 @@ const subPages = computed(() => {
       component: PackageVersionsView,
       props: {
         versions: packageVersions.value,
-        isLoading: !state.__registryInfoFetched,
+        isLoading: !state.__packumentFetched,
       }
     },
     {
@@ -336,7 +336,7 @@ watch(() => route.path, (newPath, oldPath) => {
 const fetchAllData = async (): Promise<void> => {
   fetchAdPlacementData();
   await fetchPackageInfo();
-  await fetchRegistryInfo();
+  await fetchPackument();
   await fetchMonthlyDownloads();
   await fetchRelatedPackages();
 };
@@ -385,19 +385,19 @@ const fetchPackageInfo = async (): Promise<void> => {
 };
 
 /**
- * Fetch registry info.
+ * Fetch packument.
  */
-const fetchRegistryInfo = async (): Promise<void> => {
+const fetchPackument = async (): Promise<void> => {
   try {
     let resp = await axios.get(
-      getPackageMetadataUrl(packageMetadata.value.name),
+      getPackumentUrl(packageMetadata.value.name),
       { headers: { Accept: "application/json" } }
     );
-    state.registryInfo = resp.data;
+    state.packument = resp.data;
   } catch (error) {
     console.error(error);
   } finally {
-    state.__registryInfoFetched = true;
+    state.__packumentFetched = true;
   }
 };
 

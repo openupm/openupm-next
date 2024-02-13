@@ -6,7 +6,7 @@ import { useI18n } from 'vue-i18n';
 
 import { timeAgoFormat } from '@/utils';
 import { getAvatarImageUrl, getGitHubPackageMetadataUrl, getPackageDetailPageUrl } from '@openupm/common/build/urls.js';
-import { DownloadsRange, PackageInfo, PackageMetadata, PackageRegistryInfo } from "@openupm/types";
+import { DownloadsRange, PackageInfo, PackageMetadata, Packument } from "@openupm/types";
 
 const { t } = useI18n();
 
@@ -19,7 +19,7 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  registryInfoFetched: {
+  packumentFetched: {
     type: Boolean,
     default: false,
   },
@@ -35,8 +35,8 @@ const props = defineProps({
     type: Object as PropType<PackageInfo>,
     default: () => { },
   },
-  registryInfo: {
-    type: Object as PropType<PackageRegistryInfo>,
+  packument: {
+    type: Object as PropType<Packument>,
     default: () => { },
   },
   monthlyDownloads: {
@@ -91,7 +91,7 @@ const hunterNavLink = computed(() => {
 });
 
 const isLoadingPackageSetup = computed(() => {
-  return !props.registryInfoFetched || !props.packageInfoFetched;
+  return !props.packumentFetched || !props.packageInfoFetched;
 });
 
 const monthlyDownloadsCount = computed(() => {
@@ -141,7 +141,7 @@ const parentRepoNavLink = computed(() => {
 });
 
 const publishedAt = computed(() => {
-  const time = props.registryInfo.time || {};
+  const time = props.packument.time || {};
   if (version.value) {
     const dateTimeStr = time[version.value];
     if (!dateTimeStr) return null;
@@ -169,7 +169,7 @@ const reportLink = computed(() => {
 });
 
 const unityVersion = computed(() => {
-  const versions = props.registryInfo.versions || {};
+  const versions = props.packument.versions || {};
   if (version.value) {
     const entry = versions[version.value];
     if (!entry || !entry.unity) return null;
@@ -179,7 +179,7 @@ const unityVersion = computed(() => {
 });
 
 const version = computed(() => {
-  const distTags = props.registryInfo["dist-tags"];
+  const distTags = props.packument["dist-tags"];
   if (distTags && distTags.latest) return distTags.latest;
   else return null;
 });
