@@ -19,6 +19,7 @@ import { getPackageListPagePath, isPackageListPath, getTopicAdPlacementUrl } fro
 import { topicsWithAll } from '@temp/topics.js';
 import { usePackageSearchSuggestions } from "@/search";
 import UnityAssetAdPlacement from '@/components/UnityAssetAdPlacementForPackageList.vue';
+import UnityProSidebarAd from '@/components/UnityProSidebarAd.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -281,7 +282,8 @@ watch(() => topicSlug.value, () => {
   <ParentLayout class="package-list">
     <template #sidebar-top>
       <ClientOnly>
-        <section class="quicklink-section first">
+        <UnityProSidebarAd />
+        <section class="quicklink-section mt-1">
           <ul class="menu">
             <li class="menu-item mb-0">
               <div class="btn-group btn-group-block">
@@ -476,12 +478,6 @@ watch(() => topicSlug.value, () => {
 
   .no-data {
     margin: 0.6rem 0.4rem;
-  }
-}
-
-.sidebar {
-  section.first {
-    margin-top: 0.6rem;
   }
 }
 

@@ -23,6 +23,7 @@ import { DownloadsRange, PackageInfo, PackageMetadataLocal, Packument, PackageRe
 import { getMonthlyDownloadsUrl, getPackageInfoUrl, getPackumentUrl, getPackageRelatedPackagesPath, isPackageDetailPath, getPackageAdPlacementUrl } from '@openupm/common/build/urls.js';
 import { fillMissingDates, isPackageExist, timeAgoFormat } from '@/utils';
 import UnityAssetAdPlacement from '@/components/UnityAssetAdPlacement.vue';
+import UnityProSidebarAd from '@/components/UnityProSidebarAd.vue';
 
 const route = useRoute();
 const { t } = useI18n();
@@ -449,6 +450,7 @@ const buildRouterLinkQuery = function (subPage: string): Record<string, string> 
   <ParentLayout class="package-detail">
     <template #sidebar-top>
       <ClientOnly>
+        <UnityProSidebarAd />
         <section class="subpage-section">
           <ul class="menu">
             <div class="columns">
@@ -523,7 +525,7 @@ const buildRouterLinkQuery = function (subPage: string): Record<string, string> 
     .subpage-section {
       .menu {
         padding: 0.4rem;
-        margin: 0.8rem 0.4rem 0.4rem 0.4rem;
+        margin: 0.2rem 0.4rem 0.4rem 0.4rem;
       }
     }
   }
