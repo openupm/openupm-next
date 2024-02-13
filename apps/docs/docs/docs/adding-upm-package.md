@@ -28,6 +28,8 @@ OpenUPM requires packages to meet the following criteria:
 
 By adhering to these guidelines, package maintainers can contribute to a thriving ecosystem of Unity packages on OpenUPM, benefiting developers and users alike. Packages that do not meet these criteria will be rejected or removed from the OpenUPM platform.
 
+11. **Package Retention Policy**: The package should have at least one release within 3 months of being submitted to OpenUPM. Otherwise, it will be removed from the service.
+
 ## Repository Folder Structures
 
 There are two typical folder structures for UPM repositories, and OpenUPM build pipelines can handle both of them:
