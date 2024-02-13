@@ -70,7 +70,7 @@ const openupmCliRepoLink = computed(() => ({
   install-via-command-line-interface: install via Command-Line Interface
   go-to-unity-project: go to your Unity project directory
   install-package: Install package
-  nodejs-link-text: Node.js 14.18 or above
+  nodejs-link-text: Node.js v16 or above
 </i18n>
 
 <i18n locale="zh-CN" lang="yaml">
@@ -78,5 +78,5 @@ const openupmCliRepoLink = computed(() => ({
   install-openupm-cli: 安装 openupm-cli
   go-to-unity-project: 进入Unity工程目录
   install-package: 安装软件包
-  nodejs-link-text: Node.js 14.18 或以上版本
+  nodejs-link-text: Node.js v16 或以上版本
 </i18n>
