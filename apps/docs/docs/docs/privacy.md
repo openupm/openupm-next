@@ -143,9 +143,13 @@ Some of these services may be used to collect information about your online acti
 
 OpenUPM's website uses Google Analytics to collect and analyze data about visitors to its websites. You can read [the privacy policy for Google Analytics online](https://www.google.com/analytics/terms/). You can opt-out of Google Analytics by installing a [free browser extension](https://tools.google.com/dlpage/gaoptout).
 
-### OpenUPM uses Gravatar.
+### OpenUPM uses Google AdSense.
 
-The website uses [Gravatar](https://gravatar.com), a free online service from [Automattic](https://automattic.com/) for hosting user avatar pictures. When you request a page on the OpenUPM website that shows an avatar, your computer also sends a request to Gravatar. You can read [the privacy policy for Gravatar online](http://gravatar.com/privacy).
+The website uses [Google AdSense](https://www.google.com/adsense/start/), an online service from [Google](https://www.google.com/) for displaying targeted advertisements. When you request a page on the OpenUPM website that shows an advertisement, your computer also sends a request to Google AdSense. You can read [the privacy policy for Google AdSense online](https://policies.google.com/technologies/ads).
+
+### OpenUPM uses Partnerize.
+
+The website uses [Partnerize](https://partnerize.com/), a leading partnership automation solution for global brands. When you interact with a page on the OpenUPM website that includes a Partnerize feature, your computer also sends a request to Partnerize. You can read [the privacy policy for Partnerize online](https://partnerize.com/en/privacy-policy).
 
 ### OpenUPM uses content delivery networks.
 
@@ -163,10 +167,6 @@ OpenUPM uses [GitHub](https://github.com) to manage package requests and issues.
 
 OpenUPM uses [Azure Pipelines](https://dev.azure.com/) to manage the build pipelines. You can read [the privacy policy for Azure Pipelines](https://docs.microsoft.com/en-us/microsoft-365/compliance/gdpr-dsr-vsts) online.
 
-### OpenUPM uses email management services.
-
-OpenUPM uses [MailChimp](https://mailchimp.com) to send emails to users, such as newsletters. You can read [the privacy policy for MailChimp online](https://mailchimp.com/legal/privacy/).
-
 ## How can I find out about changes?
 
-You can review the history of changes in [the GitHub page](https://github.com/openupm/openupm/commits/master/docs/docs/privacy.md).
+You can review the history of changes in [the GitHub page](https://github.com/openupm/openupm-next/commits/main/apps/docs/docs/docs/privacy.md).
