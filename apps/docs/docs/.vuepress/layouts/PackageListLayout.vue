@@ -20,6 +20,7 @@ import { topicsWithAll } from '@temp/topics.js';
 import { usePackageSearchSuggestions } from "@/search";
 import UnityAssetAdPlacement from '@/components/UnityAssetAdPlacementForPackageList.vue';
 import UnityProSidebarAd from '@/components/UnityProSidebarAd.vue';
+import AdsenseInfeedForPackageList from "@/components/AdsenseInfeedForPackageList.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -367,6 +368,7 @@ watch(() => topicSlug.value, () => {
                           <PackageCard :metadata="item.value" :style="style" />
                         </template>
                         <template v-if="item.type === 'ad'">
+                          <!-- <AdsenseInfeedForPackageList :style="style" :data="item.value" /> -->
                           <UnityAssetAdPlacement :style="style" :data="item.value" />
                         </template>
                       </template>

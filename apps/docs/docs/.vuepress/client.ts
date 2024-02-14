@@ -6,6 +6,7 @@ import { createI18n } from "vue-i18n";
 import { defineClientConfig } from "@vuepress/client";
 import messages from "@intlify/unplugin-vue-i18n/messages";
 import { Breakpoints, Vue3Mq } from "vue3-mq";
+import ScriptX from "vue-scriptx";
 
 import { useDefaultStore } from "@/store";
 import { GlobalFilters } from "@/vue-plugins/global-filters";
@@ -44,6 +45,8 @@ export default defineClientConfig({
       xxl: 1281,
     };
     app.use(Vue3Mq, { breakpoints });
+    // vue-scriptx
+    app.use(ScriptX);
     // hide NavbarSearch component
     app.component("NavbarSearch", () => {
       return null;

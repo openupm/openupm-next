@@ -62,6 +62,7 @@
     "vue": "^3.3.4",
     "vue-content-loader": "^2.0.1",
     "vue-i18n": "^9.2.2",
+    "vue-scriptx": "^0.2.5",
     "vue-scrollto": "^2.20.0",
     "vue-virtual-scroll-grid": "^1.10.2",
     "vue3-mq": "^3.1.3",
