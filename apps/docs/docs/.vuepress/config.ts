@@ -197,7 +197,7 @@ const config: any = mergeWith(
           }),
         ],
         ssr: {
-          noExternal: ["vue-i18n"],
+          noExternal: ["vue-i18n", "vue-scriptx"],
         },
       },
     }),
