@@ -21,6 +21,7 @@ import { usePackageSearchSuggestions } from "@/search";
 import UnityAssetAdPlacement from '@/components/UnityAssetAdPlacementForPackageList.vue';
 import UnityProSidebarAd from '@/components/UnityProSidebarAd.vue';
 import AdsenseInfeedForPackageList from "@/components/AdsenseInfeedForPackageList.vue";
+import UnityAssetStoreSale from '@/components/UnityAssetStoreSale.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -284,6 +285,7 @@ watch(() => topicSlug.value, () => {
     <template #sidebar-top>
       <ClientOnly>
         <UnityProSidebarAd />
+        <UnityAssetStoreSale />
         <section class="quicklink-section mt-1">
           <ul class="menu">
             <li class="menu-item mb-0">
