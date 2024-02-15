@@ -3,7 +3,7 @@
 - [OpenUPM Next](#openupm-next)
   - [Layout](#layout)
   - [Install](#install)
-  - [Usage](#usage)
+  - [Development](#development)
 
 Codebase for OpenUPM website and services.
 
@@ -14,6 +14,7 @@ Codebase for OpenUPM website and services.
 | ------------ | --------------- |
 | `docs`       | OpenUPM website |
 | `web`        | API web server  |
+| `job`        | cron job server |
 
 `packages/` - ecosystem packages
 
@@ -25,6 +26,7 @@ Codebase for OpenUPM website and services.
 | `@openupm/common`         | Shared code for Node.js and VuePress.                                                                                             |
 | `@openupm/server-common`  | Shared code for Node.js server.                                                                                                   |
 | `@openupm/local-data`     | Handles [local data](https://github.com/openupm/openupm/tree/master/data) such as package metadata YAML files, topics, backers... |
+| `@openupm/ads`            | ad backend                                                                                                                        |
 | `pkg-template`            | Package template for @openupm/apps                                                                                                |
 
 ## Install
@@ -41,18 +43,28 @@ Then install dependencies:
 npm install
 ```
 
-## Usage
+## Development
 
+Build and test:
 ```
-# Lint
-npm run lint
-
-# Test
-npm run test
-
 # Build
 npm run build
 
-# Build release
-npm run build:release
+# Test
+npm run test
+```
+
+Run the docs website:
+```
+cd apps/docs
+npm run docs:dev
+```
+
+Test the local web API server:
+```
+cd apps/web
+npm run start
+
+cd apps/docs
+VITE_OPENUPM_API_SERVER_URL=http://localhost:3600 npm run docs:dev
 ```
