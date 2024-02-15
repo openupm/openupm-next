@@ -21,7 +21,8 @@
     "noImplicitAny": false,
     "noImplicitThis": false,
     "strictNullChecks": true,
-    "declaration": true
+    "declaration": true,
+    "skipLibCheck": true
   },
   "include": [
     "src/**/*"

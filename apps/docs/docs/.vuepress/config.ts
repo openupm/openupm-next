@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import urlJoin from "url-join";
 import { isArray, mergeWith } from "lodash-es";
-import { defaultTheme } from "vuepress";
+import { defaultTheme } from "@vuepress/theme-default";
 import { getDirname, path } from "@vuepress/utils";
 import { registerComponentsPlugin } from "@vuepress/plugin-register-components";
 import { searchPlugin } from "@vuepress/plugin-search";
 import { viteBundler } from "@vuepress/bundler-vite";
 import VueI18nPlugin from "@intlify/unplugin-vue-i18n/vite";
 import { visualizer } from "rollup-plugin-visualizer";
-import { seoPlugin } from "vuepress-plugin-seo2";
-import { sitemapPlugin } from "vuepress-plugin-sitemap2";
+import { seoPlugin } from "@vuepress/plugin-seo";
+import { sitemapPlugin } from "@vuepress/plugin-sitemap";
 import { mediumZoomPlugin } from "@vuepress/plugin-medium-zoom";
 
 import OpenupmPlugin from "vuepress-plugin-openupm";

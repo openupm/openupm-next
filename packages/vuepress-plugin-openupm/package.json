@@ -35,13 +35,17 @@
     "test:watch": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --watch"
   },
   "dependencies": {
-    "@vuepress/core": "2.0.0-beta.68",
-    "@vuepress/utils": "2.0.0-beta.68",
+    "vue": "^3.4.19",
+    "@vuepress/core": "2.0.0-rc.7",
+    "@vuepress/utils": "2.0.0-rc.7",
     "lodash-es": "~4.17",
     "spdx-license-list": "~6.8",
     "tslib": "~2.6",
     "@openupm/types": "*",
     "@openupm/local-data": "*"
+  },
+  "peerDependencies": {
+    "vuepress": "2.0.0-rc.7"
   },
   "volta": {
     "node": "18.18.2"
