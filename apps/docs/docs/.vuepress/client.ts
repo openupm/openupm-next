@@ -3,7 +3,7 @@ import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 import { onMounted, watch } from "vue";
 import { useRoute } from "vue-router";
 import { createI18n } from "vue-i18n";
-import { defineClientConfig } from "@vuepress/client";
+import { defineClientConfig } from "vuepress/client";
 import messages from "@intlify/unplugin-vue-i18n/messages";
 import { Breakpoints, Vue3Mq } from "vue3-mq";
 import ScriptX from "vue-scriptx";

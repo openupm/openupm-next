@@ -10,8 +10,8 @@ import {
   watchEffect,
 } from "vue";
 
-import "@node_modules/@vuepress/plugin-back-to-top/lib/client/styles/vars.css";
-import "@node_modules/@vuepress/plugin-back-to-top/lib/client/styles/back-to-top.css";
+import "@/styles/back-to-top/vars.css";
+import "@/styles/back-to-top/back-to-top.css";
 
 export const BackToTop = defineComponent({
   name: "VueVirtualScrollGridBackToTop",
