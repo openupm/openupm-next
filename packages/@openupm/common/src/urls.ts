@@ -108,8 +108,8 @@ export const getGitHubPackageMetadataUrl = function (
  * @returns GitHub raw file url
  */
 export const getGitHubRawFileUrl = function (url: string): string {
-  const gitHubBlobRe = /^https?:\/\/github\.com\/.*\/.*\/blob\//i;
-  if (gitHubBlobRe.test(url)) url = url.replace(/\/blob\//, '/raw/');
+  const githubBlobRe = /^https?:\/\/github\.com\/.*\/.*\/blob\//i;
+  if (githubBlobRe.test(url)) url = url.replace(/\/blob\//, '/raw/');
   return url;
 };
 
