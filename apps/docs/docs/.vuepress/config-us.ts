@@ -102,6 +102,11 @@ const docSideBar = function (): any {
       ],
     },
     {
+      text: "Host Your Private Registry",
+      collapsible: true,
+      children: ["/docs/host-private-upm-registry-15-minutes"],
+    },
+    {
       text: "NuGet",
       collapsible: true,
       children: ["/nuget/"],
