@@ -171,6 +171,15 @@ kbd {
   font-size: $font-size-md;
 }
 
+h1 a:visited,
+h2 a:visited,
+h3 a:visited,
+h4 a:visited,
+h5 a:visited,
+h6 a:visited {
+  color: inherit;
+}
+
 .theme-default-content {
 
   h1,
