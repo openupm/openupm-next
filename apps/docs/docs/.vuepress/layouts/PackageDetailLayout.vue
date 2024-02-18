@@ -450,6 +450,7 @@ const buildRouterLinkQuery = function (subPage: string): Record<string, string> 
   <ParentLayout class="package-detail">
     <template #sidebar-top>
       <ClientOnly>
+        <HostPrivateRegistrySidebarAd />
         <UnityProSidebarAd />
         <section class="subpage-section">
           <ul class="menu">

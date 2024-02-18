@@ -284,6 +284,7 @@ watch(() => topicSlug.value, () => {
   <ParentLayout class="package-list">
     <template #sidebar-top>
       <ClientOnly>
+        <HostPrivateRegistrySidebarAd />
         <UnityProSidebarAd />
         <UnityAssetStoreSale />
         <section class="quicklink-section mt-1">

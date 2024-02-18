@@ -192,18 +192,16 @@ export const themeConfig: any = {
       ],
     },
     {
+      text: "Private Registry",
+      link: "/docs/host-private-upm-registry-15-minutes",
+      icon: "fas fa-server",
+      iconLeft: true,
+    },
+    {
       text: "CLI",
       link: "https://github.com/openupm/openupm-cli#openupm-cli",
       icon: "fa fa-keyboard",
       iconLeft: true,
-    },
-    {
-      text: "Region",
-      ariaLabel: "Region Menu",
-      children: [
-        { text: "Global", link: "/" },
-        { text: "China/中文区", link: "https://openupm.cn" },
-      ],
     },
   ],
   sidebar: {
