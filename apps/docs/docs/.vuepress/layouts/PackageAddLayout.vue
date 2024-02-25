@@ -14,6 +14,7 @@ import ParentLayout from "@/layouts/WideLayout.vue";
 import { useDefaultStore } from '@/store';
 import { FormFieldOption, License, Topic } from "@openupm/types";
 import { getPublicGenPath } from "@openupm/common/build/urls.js";
+import { getVersionFromTag } from "@openupm/common/build/semver.js";
 import { isPackageBlockedByScope, isPackageRequiresManualVerification, validPackageName } from "@openupm/common/build/utils.js";
 import { topicsWithAll } from '@temp/topics.js';
 import { BLOCKED_SCOPES_FILENAME, SDPXLIST_FILENAME } from "@openupm/types";
@@ -174,6 +175,8 @@ const fetchRepoInfo = async (): Promise<void> => {
       state.form.values.licenseId = repoInfo.license.spdx_id;
       state.form.values.licenseName = repoInfo.license.name;
     }
+    // Run fetGitTags without await.
+    fetchGitTags();
   } catch (error) {
     const errorObj = error as Error;
     if (errorObj.message.includes("404"))
@@ -297,6 +300,33 @@ const fetchGitTrees = async (): Promise<void> => {
     else state.form.errors.packageJson = errorObj.message;
   }
 };
+
+const fetchGitTags = async (): Promise<void> => {
+  try {
+    // Fetch.
+    const url = urlJoin(
+      "https://api.github.com/repos/",
+      state.form.values.repo,
+      "tags",
+    );
+    const resp = await axios.get(url, {
+      headers: { Accept: "application/vnd.github.v3.json" },
+    });
+    // Assign data to packageJson
+    const gitTags = resp.data
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .map((x: any) => x.name)
+      .filter((x: string) => getVersionFromTag(x) !== null);
+    if (gitTags.length == 0) {
+      state.form.errors.repo = t("git-tag-not-found");
+    }
+  } catch (error) {
+    const errorObj = error as Error;
+    if (errorObj.message.includes("403"))
+      state.form.errors.packageJson = t("error-403");
+    else state.form.errors.packageJson = errorObj.message;
+  }
+}
 
 const fetchPackageJson = async (): Promise<void> => {
   try {
@@ -721,6 +751,7 @@ onMounted(() => {
   git-tag-ignore: Git tag ignore pattern
   git-tag-ignore-desc: 'The regular expression to exclude Git tags.'
   git-tag-ignore-placeholder: leave empty to include all tags
+  git-tag-not-found: Cannot find any valid Git tags in the repository. Please ensure that the repository has at least one valid semantic version Git tag.
   git-tag-prefix: Git tag prefix
   git-tag-prefix-desc: "Filter Git tags for monorepo by using a prefix that separates the semver with a slash, hyphen, or underscore. Example: 'com.example.pkg/'."
   git-tag-prefix-placeholder: leave empty to include all tags
