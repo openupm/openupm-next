@@ -7,7 +7,6 @@ import { useI18n } from 'vue-i18n';
 import { timeAgoFormat } from '@/utils';
 import { getAvatarImageUrl, getGitHubPackageMetadataUrl, getPackageDetailPageUrl } from '@openupm/common/build/urls.js';
 import { DownloadsRange, PackageInfo, PackageMetadata, Packument } from "@openupm/types";
-import AdsenseDisplayForPackageDetail from '@/components/AdsenseDisplayForPackageDetail.vue';
 
 const { t } = useI18n();
 
@@ -195,7 +194,7 @@ const editLink = computed(() => {
 
 <template>
   <div class="meta-section container">
-    <!-- <AdsenseDisplayForPackageDetail /> -->
+    <AdsenseDisplayForPackageDetail />
     <div class="columns">
       <PackageSetup :has-not-succeeded-build="hasNotSucceededBuild" :is-loading="isLoadingPackageSetup"
         :metadata="metadata" :version="version || ''" :scopes="scopes" />

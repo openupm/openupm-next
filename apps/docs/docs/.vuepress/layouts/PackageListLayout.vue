@@ -20,7 +20,6 @@ import { topicsWithAll } from '@temp/topics.js';
 import { usePackageSearchSuggestions } from "@/search";
 import UnityAssetAdPlacement from '@/components/UnityAssetAdPlacementForPackageList.vue';
 import UnityProSidebarAd from '@/components/UnityProSidebarAd.vue';
-import AdsenseInfeedForPackageList from "@/components/AdsenseInfeedForPackageList.vue";
 import UnityAssetStoreSale from '@/components/UnityAssetStoreSale.vue';
 
 const route = useRoute();
