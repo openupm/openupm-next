@@ -22,8 +22,6 @@ export function addAdsenseInArticleAds(containerElement: HTMLElement): void {
       // Create a new <div> element for the ad
       const adElement = document.createElement("div");
       insertAdsenseScript(adElement);
-      // Add a style with border
-      adElement.style.border = "1px solid red";
       // Insert the ad after the current paragraph
       paragraph.parentNode!.insertBefore(adElement, paragraph.nextSibling);
 
