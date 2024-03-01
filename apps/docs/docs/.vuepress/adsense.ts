@@ -27,7 +27,7 @@ export function addAdsenseInArticleAds(containerElement: HTMLElement): void {
 
       // Reset the paragraph count and calculate the next ad position
       paragraphCount = 0;
-      nextAdPosition = getRandomInt(15, 20);
+      nextAdPosition = getRandomInt(10, 15);
     }
   });
 }
