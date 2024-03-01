@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const props = defineProps({
   name: {
@@ -23,8 +22,7 @@ const props = defineProps({
       <PlaceholderLoader />
     </div>
     <div v-else>
-      <!-- eslint-disable-next-line vue/no-v-html -->
-      <div v-if="readmeHtml" v-html="readmeHtml"></div>
+      <ReadmeHtml v-if="readmeHtml" :content="readmeHtml" />
       <p v-else>{{ $t("readme-to-found") }}</p>
     </div>
   </div>
