@@ -8,6 +8,8 @@ export function addAdsenseInArticleAds(containerElement: HTMLElement): void {
   const paragraphs = containerElement.querySelectorAll("p, h1, h2, h3, h4, h5");
   // Track of how many paragraphs we've processed
   let paragraphCount = 0;
+  // Track of how many ads we've inserted
+  let adCount = 0;
   // Calculate the position of the next ad
   let nextAdPosition = 7;
 
@@ -17,13 +19,19 @@ export function addAdsenseInArticleAds(containerElement: HTMLElement): void {
     paragraphCount++;
 
     // Check if the current paragraph is at a position where we should insert an ad
-    // We're choosing a random number between 5 and 8 to determine the position
-    if (paragraphCount === nextAdPosition || index === paragraphs.length - 1) {
+    // - choosing a random number to determine the position.
+    // - also check if inserting at the last paragraph is appropriate.
+    if (
+      paragraphCount === nextAdPosition ||
+      (index === paragraphs.length - 1 && (adCount === 0 || paragraphCount > 9))
+    ) {
       // Create a new <div> element for the ad
       const adElement = document.createElement("div");
       insertAdsenseScript(adElement);
       // Insert the ad after the current paragraph
       paragraph.parentNode!.insertBefore(adElement, paragraph.nextSibling);
+      // Increment the ad count
+      adCount += 1;
 
       // Reset the paragraph count and calculate the next ad position
       paragraphCount = 0;
