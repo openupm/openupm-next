@@ -120,8 +120,7 @@ const features = computed(() => {
   .features {
     border: none;
     margin-top: 0;
-    margin-bottom: 1rem !important;
-    // margin-bottom: 1rem;
+    margin-bottom: 1.5rem !important;
     padding: 0;
     margin-bottom: 3rem;
 
