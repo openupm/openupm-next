@@ -2,6 +2,7 @@
 layout: PackageAddLayout
 title: "Package Add"
 editLink: false
+showContentTopAd: false
 ---
 
 # Submitting an Open Source UPM Package

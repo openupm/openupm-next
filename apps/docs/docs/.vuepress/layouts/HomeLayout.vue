@@ -72,6 +72,9 @@ const features = computed(() => {
           </div>
         </div>
       </div>
+
+      <AdsenseDisplayForHomepage />
+
     </template>
   </ParentLayout>
 </template>
