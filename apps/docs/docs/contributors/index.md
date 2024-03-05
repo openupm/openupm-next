@@ -29,7 +29,6 @@ backers:
   githubUser: am1goo
 - text: Koji Hasegawa
   githubUser: nowsprinting
-  expires: 2024-02-01
 - text: BOBBO-NET
   githubUser: BOBBO-NET
   expires: 2023-08-31
