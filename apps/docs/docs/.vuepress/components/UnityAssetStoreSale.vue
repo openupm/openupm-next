@@ -16,6 +16,13 @@ const candidates = [
     start: "February 14, 2024, 8:00:00 GMT-0800",
     end: "February 28, 2024, 7:59:00 GMT-0800"
   },
+  {
+    title: 'March Flash Deals',
+    url: 'https://assetstore.unity.com/?on_sale=true&orderBy=1&rows=96&aid=1011lJJH',
+    image: '/images/ads/flash deals-320x100.png',
+    start: "March 7, 2024, 8:00:00 GMT-0800",
+    end: "March 14, 2024, 7:59:00 GMT-0800"
+  },
 ].reverse();
 
 const ad = computed(() => {
@@ -27,6 +34,7 @@ const ad = computed(() => {
   });
 });
 </script>
+
 <template>
   <section v-if="ad" class="sidebarad-section ml-2 mr-2 mt-2">
     <div class="columns">
@@ -39,6 +47,7 @@ const ad = computed(() => {
     </div>
   </section>
 </template>
+
 <style lang="scss" scoped>
 .sidebarad-section {
   .ad-mark {
