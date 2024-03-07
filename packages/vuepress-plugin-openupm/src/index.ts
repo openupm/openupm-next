@@ -1,6 +1,6 @@
 // Plugin adds dynamic pages for openupm.
 import { groupBy } from 'lodash-es';
-import { App, HeadConfig, createPage } from '@vuepress/core';
+import { App, createPage } from '@vuepress/core';
 import { Page } from '@vuepress/core';
 import spdx from 'spdx-license-list';
 
@@ -28,7 +28,6 @@ import {
 import {
   getPackageDetailPagePath,
   getPackageListPagePath,
-  getPackageDetailPageUrl,
 } from '@openupm/common/build/urls.js';
 
 import { writePublicGen } from './utils/write-file.js';
@@ -154,15 +153,6 @@ const createDetailPages = async function (app: App): Promise<Page[]> {
       topics: topicsWithAll.filter(
         (x) => x.slug && metadataLocal.topics.includes(x.slug),
       ),
-      head: [
-        [
-          'link',
-          {
-            rel: 'canonical',
-            href: getPackageDetailPageUrl(metadataLocal.name),
-          },
-        ],
-      ] as HeadConfig[],
     };
     const pageOptions = {
       path: getPackageDetailPagePath(metadataLocal.name),

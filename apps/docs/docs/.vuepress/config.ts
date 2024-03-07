@@ -137,6 +137,7 @@ const config: any = mergeWith(
           themeConfig.domain,
           "/images/openupm-twitter.png",
         ),
+        canonical: themeConfig.domain,
       }),
       sitemapPlugin({
         hostname: themeConfig.domain,
