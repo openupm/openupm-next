@@ -18,7 +18,7 @@ const candidates = [
   },
   {
     title: 'March Flash Deals',
-    url: 'https://assetstore.unity.com/?on_sale=true&orderBy=1&rows=96&aid=1011lJJH',
+    url: 'https://assetstore.unity.com/?flashdeals=true&aid=1011lJJH',
     image: '/images/ads/flash deals-320x100.png',
     start: "March 7, 2024, 8:00:00 GMT-0800",
     end: "March 14, 2024, 7:59:00 GMT-0800"
