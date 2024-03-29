@@ -223,11 +223,11 @@ const fetchBranches = async (): Promise<void> => {
       else break;
     }
     // Assign the default branch
-    if (state.form.options.branch.some(x => x.key == "master")) {
-      state.form.values.branch = "master";
-      onBranchChange();
-    } else if (state.form.options.branch.some(x => x.key == "main")) {
+    if (state.form.options.branch.some(x => x.key == "main")) {
       state.form.values.branch = "main";
+      onBranchChange();
+    } else if (state.form.options.branch.some(x => x.key == "master")) {
+      state.form.values.branch = "master";
       onBranchChange();
     }
   } catch (error) {
@@ -531,7 +531,7 @@ const genYaml = (): string => {
     minVersion: form.values.minVersion,
     readme: form.values.readme
       ? form.values.branch + ":" + form.values.readme
-      : "master:README.md",
+      : "main:README.md",
     createdAt: new Date().getTime(),
   };
   return yaml.dump(content);
