@@ -2,7 +2,7 @@
 title: "Quick Guide: Host Your Private Unity Scoped Registry in Just 15 Minutes"
 description: Learn how to easily set up a private scoped registry (UPM registry) for your Unity projects with our step-by-step guide in just 15 minutes.
 ---
-# Host Your First Private UPM Registry in Just 15 Minutes
+# Host Your Private Unity Scoped Registry in Just 15 Minutes
 
 Whether you're a solo developer or part of a team, you've likely encountered the headache of managing reusable codes. Ensuring that your packages are easily accessible, version-controlled, and securely shared within your team is no small feat. A private Unity Package Manager (UPM) registry could be the solution you're looking for.
 
