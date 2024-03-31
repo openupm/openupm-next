@@ -1,6 +1,6 @@
 ---
-title: "Quick Guide: Host Your First Private UPM Registry in Just 15 Minutes"
-description: Learn how to easily set up a private UPM registry for your Unity projects. Follow our step-by-step guide to get your first private UPM registry hosted in just 15 minutes.
+title: "Quick Guide: Host Your Private Unity Scoped Registry in Just 15 Minutes"
+description: Learn how to easily set up a private scoped registry (UPM registry) for your Unity projects with our step-by-step guide in just 15 minutes.
 ---
 # Host Your First Private UPM Registry in Just 15 Minutes
 

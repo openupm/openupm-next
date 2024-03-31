@@ -35,7 +35,8 @@ export const config: any = {
       "meta",
       {
         name: "keywords",
-        content: "openupm,upm,registry,unity,package,manager,open source",
+        content:
+          "openupm,open upm,upm,unity package manager,unity package,scoped registry,unity,open source,unity assets,asset store,unity store,free resource",
       },
     ],
     // GA4
