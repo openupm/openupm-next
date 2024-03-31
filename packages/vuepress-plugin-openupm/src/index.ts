@@ -134,8 +134,8 @@ const createDetailPages = async function (app: App): Promise<Page[]> {
   for (const metadataLocal of metadataLocalList) {
     const displayName = getLocalePackageDisplayName(metadataLocal);
     const title = displayName
-      ? `📦 ${displayName} - ${metadataLocal.name}`
-      : `📦 ${metadataLocal.name}`;
+      ? `📦 ${displayName} Unity Package | ${metadataLocal.name}`
+      : `📦 ${metadataLocal.name} Unity Package`;
     const description = getLocalePackageDescription(metadataLocal);
     const cover = metadataLocal.image;
     const author = metadataLocal.owner;
