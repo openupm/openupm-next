@@ -20,6 +20,7 @@ import { topicsWithAll } from '@temp/topics.js';
 import { usePackageSearchSuggestions } from "@/search";
 import UnityAssetAdPlacement from '@/components/UnityAssetAdPlacementForPackageList.vue';
 import UnityProSidebarAd from '@/components/UnityProSidebarAd.vue';
+import DonationSidebarAd from '@/components/DonationSidebarAd.vue';
 import UnityAssetStoreSale from '@/components/UnityAssetStoreSale.vue';
 
 const route = useRoute();
@@ -283,7 +284,7 @@ watch(() => topicSlug.value, () => {
   <ParentLayout class="package-list">
     <template #sidebar-top>
       <ClientOnly>
-        <HostPrivateRegistrySidebarAd />
+        <DonationSidebarAd />
         <UnityProSidebarAd />
         <UnityAssetStoreSale />
         <section class="quicklink-section mt-1">

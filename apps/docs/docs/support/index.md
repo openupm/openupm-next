@@ -3,7 +3,7 @@ pageClass: page-support-openupm
 ---
 # Support OpenUPM
 
-OpenUPM is an open-source service that is offered to the community for free. However, hosting, maintaining, and developing new features for the project requires resources. You can support the development of OpenUPM via the following methods:
+OpenUPM is a vibrant, open-source service freely available to our amazing community! While it's free to use, the magic behind it—hosting, maintenance, and innovation—needs a sprinkle of support. You can empower OpenUPM's growth and contribute to its bright future through various support methods! Let's innovate together! 🚀💖
 
 ## Help the Community Grow
 
@@ -11,10 +11,13 @@ You can contribute to the growth and success of the OpenUPM community in several
 
 <div class="columns columns-grow">
   <div class="column col-6 text-center">
-    <a href="https://github.com/openupm/openupm" rel="noopener noreferrer"><i class="fa fa-star c-star"></i>Star on Github</a>
+    <a href="https://www.patreon.com/openupm" rel="noopener noreferrer"><i class="fab fa-patreon c-patreon"></i>Donate on Patreon</a>
   </div>
   <div class="column col-6 text-center">
-    <a href="https://www.patreon.com/openupm" rel="noopener noreferrer"><i class="fab fa-patreon c-patreon"></i>Donate on Patreon</a>
+    <a href="https://github.com/sponsors/openupm" rel="noopener noreferrer"><i class="fab fa-github"></i>Donate on GitHub</a>
+  </div>
+  <div class="column col-6 text-center">
+    <a href="https://github.com/openupm/openupm" rel="noopener noreferrer"><i class="fa fa-star c-star"></i>Star on Github</a>
   </div>
   <div class="column col-6 text-center">
     <a href="/packages/add/"><i class="fas fa-plus-circle text-primary"></i>Hunt UPM Packages</a>
@@ -24,21 +27,23 @@ You can contribute to the growth and success of the OpenUPM community in several
   </div>
 </div>
 
-## Donations
+## Donations Welcome! 🎉
 
-OpenUPM welcomes donations and contributions from the community to support its development and sustainability. There are several ways you can contribute to OpenUPM:
+We're thrilled to announce that OpenUPM is open for donations and contributions from our vibrant community! Your support is the heartbeat of our development and sustainability, and there are numerous joyful ways to contribute to OpenUPM:
 
-- **One-time Donations:** You can make a one-time donation through [PayPal](https://www.paypal.me/favoyang) to support OpenUPM.
+- **🌟 Recurring Pledges with Patreon:** Become a shining star in our community by making recurring pledges on [Patreon](https://www.patreon.com/openupm). Not only will you be fueling the future of OpenUPM, but you'll also enjoy exclusive perks! Imagine having your name or your company's logo proudly displayed on our GitHub repository or website. Your continuous support is key to our journey!
 
-- **Recurring Pledges:** By becoming a backer or sponsor on [Patreon](https://www.patreon.com/openupm), you can make recurring pledges. In addition to supporting OpenUPM, you may also receive exclusive perks, such as having your name listed in the OpenUPM GitHub repository or having your company logo displayed on the OpenUPM website. This ongoing support is crucial for the continued development of OpenUPM.
+- **💖 Recurring Pledges with GitHub Sponsors:** Join the circle of support through [GitHub Sponsors](https://github.com/sponsors/openupm) and make a lasting impact! Your contributions help maintain the vibrancy and growth of OpenUPM, ensuring it remains a cornerstone for developers like you.
 
-- **Service Sponsorship:** Companies can choose to sponsor OpenUPM by providing services or software of equal value to their recurring pledges. This sponsorship level also includes the same rewards as Patreon backers. For inquiries about service sponsorship, please contact [hello@openupm.com](mailto:hello@openupm.com).
+- **🎁 One-time Donations:** Feeling the spirit of giving? A one-time donation through [PayPal](https://www.paypal.me/favoyang) is a fantastic way to show your support for OpenUPM. Every bit helps us soar to new heights!
 
-If your business relies on OpenUPM for a revenue-generating product, sponsoring OpenUPM development makes sense as it ensures the project's health and active maintenance, which is beneficial for your product. It also enhances your visibility within the OpenUPM community and can help attract OpenUPM developers.
+- **🤝 Service Sponsorship:** Companies can become pillars of our community by offering service sponsorships. This not only provides invaluable support to OpenUPM but also aligns your brand with innovation and community spirit. Interested? Reach out to us at [hello@openupm.com](mailto:hello@openupm.com).
 
-Individual users who have benefited from using OpenUPM and appreciate its role in enhancing productivity can also consider making a donation to show their support.
+Whether your business thrives on OpenUPM or you're an individual who's found value and productivity boosts through our platform, your sponsorship is a testament to the strength and unity of our community. It's a way to ensure the longevity and success of a project that benefits us all, enhancing visibility and fostering connections within the OpenUPM ecosystem.
 
-Your contributions, whether one-time or ongoing, are greatly appreciated and contribute to the sustainability and development of OpenUPM. Thank you for being a part of the OpenUPM community!
+We're immensely grateful for every contribution, big or small. Your generosity fuels our mission and helps keep OpenUPM flourishing. Thank you for being an integral part of our journey. Let's continue to create and innovate together in the OpenUPM community! 🚀
+
+Discover the incredible individuals powering our journey - visit [contributors page](/contributors/) to meet our amazing contributors! 🌟
 
 <style lang="scss" scoped>
 .page-support-openupm {

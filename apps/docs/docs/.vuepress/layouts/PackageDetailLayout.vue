@@ -24,6 +24,7 @@ import { getMonthlyDownloadsUrl, getPackageInfoUrl, getPackumentUrl, getPackageR
 import { fillMissingDates, isPackageExist, timeAgoFormat } from '@/utils';
 import UnityAssetAdPlacement from '@/components/UnityAssetAdPlacement.vue';
 import UnityProSidebarAd from '@/components/UnityProSidebarAd.vue';
+import DonationSidebarAd from '@/components/DonationSidebarAd.vue';
 
 const route = useRoute();
 const { t } = useI18n();
@@ -450,7 +451,7 @@ const buildRouterLinkQuery = function (subPage: string): Record<string, string> 
   <ParentLayout class="package-detail">
     <template #sidebar-top>
       <ClientOnly>
-        <HostPrivateRegistrySidebarAd />
+        <DonationSidebarAd />
         <UnityProSidebarAd />
         <section class="subpage-section">
           <ul class="menu">
