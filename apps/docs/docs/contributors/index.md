@@ -23,6 +23,7 @@ backers:
   githubUser: atteneder
 - text: 僵尸浩
   githubUser: zombieyang
+  expires: 2024-04-30
 - text: ComradeVanti
   githubUser: ComradeVanti
 - text: Pavel "am1goo" Shestakov
