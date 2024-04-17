@@ -23,6 +23,13 @@ const candidates = [
     start: "March 7, 2024, 8:00:00 GMT-0800",
     end: "March 14, 2024, 7:59:00 GMT-0800"
   },
+  {
+    title: 'Spring Sale',
+    url: 'https://assetstore.unity.com/?flashdeals=true&aid=1011lJJH',
+    image: '/images/ads/ss-affiliate-320x100.png',
+    start: "April 17, 2024, 8:00:00 GMT-0800",
+    end: "May 8, 2024, 7:59:00 GMT-0800"
+  },
 ].reverse();
 
 const ad = computed(() => {
