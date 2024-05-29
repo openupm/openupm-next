@@ -30,6 +30,13 @@ const candidates = [
     start: "April 17, 2024, 8:00:00 GMT-0800",
     end: "May 8, 2024, 7:59:00 GMT-0800"
   },
+  {
+    title: 'Template Toolkit Sale',
+    url: 'https://assetstore.unity.com/?on_sale=true&orderBy=1&rows=96&aid=1011lJJH',
+    image: '/images/ads/template-toolkit-sale-336x280.png',
+    start: "May 29, 2024, 8:00:00 GMT-0800",
+    end: "June 12, 2024, 7:59:00 GMT-0800"
+  },
 ].reverse();
 
 const ad = computed(() => {
