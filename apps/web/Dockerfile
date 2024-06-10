@@ -11,7 +11,7 @@ RUN apk add --no-cache libc6-compat
 # Set working directory
 WORKDIR /app
 # Install turbo
-RUN npm install -g turbo rimraf
+RUN npm install -g turbo@1.13.4 rimraf
 # Copy the project
 COPY . .
 # Clean and prune
