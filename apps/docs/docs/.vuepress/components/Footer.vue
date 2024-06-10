@@ -81,17 +81,6 @@ const icpLink = computed(() => ({
   link: "https://beian.miit.gov.cn/#/Integrated/index",
   text: " 京ICP备18005908号-2"
 }));
-
-const regionLinks = computed(() => [
-  {
-    link: "https://openupm.com",
-    text: t("region-us")
-  },
-  {
-    link: "https://openupm.cn",
-    text: t("region-cn")
-  }
-]);
 </script>
 
 <template>
@@ -127,14 +116,6 @@ const regionLinks = computed(() => [
               <h5>{{ $t("connect") }}</h5>
               <ul>
                 <li v-for="(link, index) in connectLinks" :key="index">
-                  <AutoLink :item="link" />
-                </li>
-              </ul>
-            </div>
-            <div class="column col-4 col-md-4 col-sm-6">
-              <h5>{{ $t("region") }}</h5>
-              <ul>
-                <li v-for="(link, index) in regionLinks" :key="index">
                   <AutoLink :item="link" />
                 </li>
               </ul>

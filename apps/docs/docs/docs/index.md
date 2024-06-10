@@ -34,10 +34,6 @@ Furthermore, we've created a command-line tool known as [openupm-cli](https://gi
 
 For a guide on using the command-line tool, check out [Getting Started with CLI](./getting-started-cli.md).
 
-## Regions
-
-OpenUPM is a global service, and we currently offer two regions: the global region and the [China region](https://openupm.cn). The China region is hosted in mainland China and provides a localized website along with a mirrored registry server at `https://package.openupm.cn`. This mirror registry is synced with the global region every few hours.
-
 ## Alternatives
 
 This section provides a brief overview of the alternatives to OpenUPM and how they compare. We hope this information will help you decide which solution is best for your needs.

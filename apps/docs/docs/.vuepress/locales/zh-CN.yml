@@ -100,8 +100,6 @@ readme: 简介
 readme-to-found: 暂时未能加载软件包简介，请稍后重试。
 last-publish: 最后发布
 region: 区域
-region-cn: 中国区
-region-us: 国际区
 related-packages: 相关软件包
 release-reason-bad-gateway: 服务器无效网关
 release-reason-bad-request: 服务器无效请求

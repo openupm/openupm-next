@@ -24,7 +24,7 @@ discord: Discord
 discovered-by: discovered by
 display-name-zhcn: Display name (Chinese)
 donate: donate
-english-text: 'English text:'
+english-text: "English text:"
 experimental: experimental
 field-none: None
 fill-the-package-form: Fill the package form
@@ -76,8 +76,6 @@ readme: readme
 readme-to-found: Readme is not available, please try again later.
 last-publish: last publish
 region: Region
-region-cn: China
-region-us: United States
 related-packages: related packages
 release-reason-bad-gateway: server bad gateway
 release-reason-bad-request: server bad request
