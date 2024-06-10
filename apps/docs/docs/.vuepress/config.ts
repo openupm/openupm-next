@@ -61,6 +61,15 @@ const themeConfig: any = mergeWith(
   mergeCustomizer,
 );
 
+const DummyPlugin = (name: string) => {
+  return {
+    name,
+    onInitialized: (app: any) => Promise<void>,
+    extendsPage: (page: any) => Promise<void>,
+    onPrepared: (app: any) => Promise<void>,
+  };
+};
+
 // Merge config with regionConfig.config
 const config: any = mergeWith(
   {
@@ -130,7 +139,9 @@ const config: any = mergeWith(
         componentsDir: path.resolve(__dirname, "./components"),
       }),
       searchPlugin({}),
-      OpenupmPlugin(),
+      VITE_OPENUPM_REGION == Region.US
+        ? OpenupmPlugin()
+        : DummyPlugin("dummy-openupm-plugin"),
       seoPlugin({
         hostname: themeConfig.domain,
         fallBackImage: urlJoin(

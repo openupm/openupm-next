@@ -1,42 +1,34 @@
 ---
-layout: HomeLayout
 editLink: false
+showContentTopAd: false
+showSearch: false
+navbar: false
 title: Unity开源软件包仓库
-description: OpenUPM是一个托管的开源UPM包管理器，提供了自动化的构建服务。
-heroText: Unity开源软件包仓库
-features:
-- title: 开源软件包
-  desc: 托管由社区精心挑选的超过 <%= package_count %> 个开源软件包。
-- title: 自动化版本发布
-  desc: 自动跟踪 Git 标签以简化发布流程，确保软件包保持更新。
-- title: 命令行界面
-  desc: 通过 OpenUPM-CLI 工具赋予命令行爱好者高效的 UPM registry交互能力。
 ---
-### 命令行工具入门（可选的）
+# OpenUPM中文网服务停止公告及迁移指南
 
-```sh
-# 从NPM安装 openupm-cli
-$ npm install -g openupm-cli
-# 或者使用Yarn
-$ yarn global add openupm-cli
+基于一些原因，运营了3年半的OpenUPM中文网（含package.openupm.cn的镜像服务）要和大家说再见了。感谢所有支持过该服务的朋友。
 
-# 进入Unity工程目录
-$ cd YOUR_UNITY_PROJECT_FOLDER
+[openupm.com](https://openupm.com)的主站还将正常运营。需要迁移的用户请参考以下步骤：
 
-# 搜索软件包
-$ openupm-cn search addressable-importer
-┌──────────────────────────────────────────┬────────────────────┬────────────┐
-│ Name                                     │ Version            │ Date       │
-├──────────────────────────────────────────┼────────────────────┼────────────┤
-│ com.littlebigfun.addressable-importer    │ 0.16.1             │ 2023-02-08 │
-└──────────────────────────────────────────┴────────────────────┴────────────┘
+1. 访问[openupm.com](https://openupm.com)来代替openupm.cn。
 
-# 安装软件包
-$ openupm-cn add com.littlebigfun.addressable-importer
-added: com.littlebigfun.addressable-importer@0.4.1
-manifest updated, please open unity project to apply changes
-```
+2. 将`Packages/manifest.json`文件里的`package.openupm.cn`替换为`package.openupm.com`。
 
-::: tip 免责声明
-OpenUPM 是一个独立的开源服务，与 Unity Technologies Inc. 没有关联。
-:::
+3. 如果你使用openupm-cli，将`openupm-cn`替换为`openupm`。
+
+若你所在的区域无法访问相关服务，请参考以下步骤进行`package eject`，以保证项目的正常运行：
+
+1. 打开`Packages/manifest.json`文件，记录下所使用openupm的scope。
+2. 将`Library/PackageCache`目录中所有匹配的内容，移动到`Packages`目录下。
+4. 删除`Packages/manifest.json`文件中openupm的相关内容。
+
+感谢大家的支持，再会！
+
+----
+
+<div style="text-align: center; margin-top: 2rem;">
+<small>版权所有 © 2019-至今 Favo Yang</small> •
+<small>京ICP备18005908号-2</small> •
+<small>京公网安备 11010502045830号</small>
+</div>

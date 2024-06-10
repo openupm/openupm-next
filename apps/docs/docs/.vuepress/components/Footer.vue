@@ -141,12 +141,13 @@ const regionLinks = computed(() => [
             </div>
           </div>
         </div>
-        <div v-if="!isRegionCN" class="column col-5 col-md-12 col-sm-12">
+        <div class="column col-5 col-md-12 col-sm-12">
           <h5>&nbsp;</h5>
           <div>
             <ul>
               <li class="mb-2">
-                <a href="https://m.do.co/c/50e7f9860fa9" rel="noopener noreferrer" aria-label="Powerred by DigitalOcean">
+                <a href="https://m.do.co/c/50e7f9860fa9" rel="noopener noreferrer"
+                  aria-label="Powerred by DigitalOcean">
                   <img
                     src="https://opensource.nyc3.cdn.digitaloceanspaces.com/attribution/assets/PoweredByDO/DO_Powered_by_Badge_white.svg"
                     alt="Powerred by DigitalOcean" width="180" />
