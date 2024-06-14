@@ -37,6 +37,13 @@ const candidates = [
     start: "May 29, 2024, 8:00:00 GMT-0800",
     end: "June 12, 2024, 7:59:00 GMT-0800"
   },
+  {
+    title: 'Template Toolkit Sale',
+    url: 'https://assetstore.unity.com/?on_sale=true&orderBy=1&rows=96&aid=1011lJJH',
+    image: 'https://gen-as-admin-prd.storage.googleapis.com/genesis-admin-banners/banner-3aef9db7-0f45-4d83-af7b-23326014a6b0',
+    start: "June 12, 2024, 8:00:00 GMT-0800",
+    end: "June 26, 2024, 7:59:00 GMT-0800"
+  },
 ].reverse();
 
 const ad = computed(() => {
