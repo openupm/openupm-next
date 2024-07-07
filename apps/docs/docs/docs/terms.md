@@ -79,26 +79,17 @@ Administrators at openupm reserve the right to delete content hosted on the serv
 
 ## Commercial Content
 
-The public registry is about packages. All manner of useful packages is welcome, from hobby projects to competitive products, enterprise infrastructure, and tools to the latest fun hack or work of software art.
+For commercial package developers, you should be aware that certain practices are disallowed by The Unity Package Guidelines.
 
-At the same time, the public registry, the website, and important conventions like README go beyond just code. Developers use all of those channels to communicate more broadly about code, who is developing it, why, and how.
+https://unity.com/legal/terms-of-service/software/package-guidelines
 
-That communication is important, and welcome, so long as it respects that the public registry, the website. You are free to use the services for commercial projects, to advance your career, and for other business purposes. But you may not leverage content or system conventions to make the public registry, website, or CLI put business before code.
+Notice that the restrictions on commercial content is only applied to a scoped regsitry like OpenUPM, not to GitHub repositories or the asset store packages. Which means you can develop a commercial package and:
+- host it on GitHub.
+- host it on your private registry for your designated users.
+- host the free-and-opensource version on OpenUPM and the paid version/service on the asset store.
+- host the free-and-opensource version on OpenUPM and do not promote the paid version/service within the free version.
 
-These kinds of commercial content are generally acceptable in README files and other documentation:
-
-1. Credits, acknowledgments, attributions, and other recognitions of contributions to packages.
-1. Information on how to pay, donate to and otherwise support package development, package developers, and package steward organizations.
-1. Logos from, and links to, organizations developing, stewarding, or sponsoring package development.
-1. Information on paid products and services related to packages, such as enhanced versions, add-ons, commercial license terms, training, integration, or support.
-
-These kinds of commercial content generally aren't acceptable:
-
-1. README, package.json, or other content displaying advertisements.
-1. Packages that display ads at runtime, on installation, or at other stages of the software development lifecycle. Packages with code that can be used to display ads are fine. Packages that themselves display ads are not.
-1. Packages that function primarily as ads, with only placeholder or negligible code, data, and other technical content.
-
-These examples are just examples. Openupm will continue to apply its judgment when deciding what content is acceptable. OpenUPM will continue to expect you to apply your judgment when choosing what you share and how.
+Those are possible practices, but you should consult with your lawyer to make sure you are not violating the Unity Package Guidelines.
 
 ## Your Content
 
