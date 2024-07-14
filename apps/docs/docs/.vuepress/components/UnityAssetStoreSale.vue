@@ -44,6 +44,20 @@ const candidates = [
     start: "June 12, 2024, 8:00:00 GMT-0800",
     end: "June 26, 2024, 7:59:00 GMT-0800"
   },
+  {
+    title: 'Flash Deals',
+    url: 'https://assetstore.unity.com/?flashdeals=true&aid=1011lJJH',
+    image: '/images/ads/flash deals-320x100.png',
+    start: "July 17, 2024, 8:00:00 GMT-0800",
+    end: "July 24, 2024, 7:59:00 GMT-0800"
+  },
+  {
+    title: 'Dev Days of Summer Sale',
+    url: 'https://assetstore.unity.com/?on_sale=true&orderBy=1&rows=96&aid=1011lJJH',
+    image: '/images/ads/flash deals-320x100.png',
+    start: "July 24, 2024, 8:00:00 GMT-0800",
+    end: "Augest 21, 2024, 7:59:00 GMT-0800"
+  },
 ].reverse();
 
 const ad = computed(() => {
