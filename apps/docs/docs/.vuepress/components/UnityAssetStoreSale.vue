@@ -54,7 +54,7 @@ const candidates = [
   {
     title: 'Dev Days of Summer Sale',
     url: 'https://assetstore.unity.com/?on_sale=true&orderBy=1&rows=96&aid=1011lJJH',
-    image: '/images/ads/flash deals-320x100.png',
+    image: '/images/ads/SummerSale-300x250-Var2.jpg',
     start: "July 24, 2024, 8:00:00 GMT-0800",
     end: "Augest 21, 2024, 7:59:00 GMT-0800"
   },
