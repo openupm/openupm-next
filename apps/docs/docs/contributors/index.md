@@ -28,6 +28,7 @@ backers:
   githubUser: ComradeVanti
 - text: Pavel "am1goo" Shestakov
   githubUser: am1goo
+  expires: 2024-08-06
 - text: Koji Hasegawa
   githubUser: nowsprinting
 - text: BOBBO-NET
@@ -60,6 +61,8 @@ backers:
 - text: Dima Dukhnich
   githubUser: dimmduh
   expires: 2022-02-31
+- text: Matheus Amazonas
+  githubUser: matheusamazonas
 ---
 # Contributors
 
