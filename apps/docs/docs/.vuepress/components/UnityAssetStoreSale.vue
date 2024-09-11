@@ -58,6 +58,20 @@ const candidates = [
     start: "July 24, 2024, 8:00:00 GMT-0800",
     end: "Augest 21, 2024, 7:59:00 GMT-0800"
   },
+  {
+    title: 'September Surprise Sale',
+    url: 'https://assetstore.unity.com/?on_sale=true&orderBy=1&rows=96&aid=1011lJJH',
+    image: '/images/ads/sep-surprise-sale.png',
+    start: "September 10, 2024, 8:00:00 GMT-0800",
+    end: "September 18, 2024, 7:59:00 GMT-0800"
+  },
+  {
+    title: 'Asset Refresh Sale',
+    url: 'https://assetstore.unity.com/?on_sale=true&orderBy=1&rows=96&aid=1011lJJH',
+    image: '/images/ads/sep-surprise-sale.png',
+    start: "September 18, 2024, 8:00:00 GMT-0800",
+    end: "October 2, 2024, 7:59:00 GMT-0800"
+  },
 ].reverse();
 
 const ad = computed(() => {
