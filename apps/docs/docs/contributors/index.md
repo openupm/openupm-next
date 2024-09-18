@@ -42,7 +42,6 @@ backers:
   expires: 2020-09-01
 - text: Gleb Skibitsky
   githubUser: skibitsky
-  expires: 2021-01-05
 - text: Alex Sh
   githubUser: Hermesiss
   expires: 2022-03-31
@@ -61,8 +60,6 @@ backers:
 - text: Dima Dukhnich
   githubUser: dimmduh
   expires: 2022-02-31
-- text: Matheus Amazonas
-  githubUser: matheusamazonas
 ---
 # Contributors
 
