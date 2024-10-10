@@ -49,6 +49,7 @@ When you visit [openupm.com](https://openupm.com) and other OpenUPM websites, Op
 - the web browser software you use
 - the kind of computer you use
 - the website that referred you
+- how you use our website
 
 OpenUPM uses data about how you use the website to:
 
@@ -59,6 +60,7 @@ OpenUPM uses data about how you use the website to:
 - compile statistics on the kinds of software and computers visitors use
 - compile statistics on visitor searches and needs, to guide the development of new website pages and functionality
 - decide who to contact about product announcements, service changes, and new features
+- improve our products and advertising
 
 OpenUPM usually deletes website log entries with identifiable information within a few weeks but keeps entries for visitors with OpenUPM accounts, and visitors using paid services like Enterprise registries, longer. OpenUPM reviews log entries for those users twice a year and deletes entries when they're no longer needed.
 
@@ -146,6 +148,12 @@ OpenUPM's website uses Google Analytics to collect and analyze data about visito
 ### OpenUPM uses Google AdSense.
 
 The website uses [Google AdSense](https://www.google.com/adsense/start/), an online service from [Google](https://www.google.com/) for displaying targeted advertisements. When you request a page on the OpenUPM website that shows an advertisement, your computer also sends a request to Google AdSense. You can read [the privacy policy for Google AdSense online](https://policies.google.com/technologies/ads).
+
+### OpenUPM uses Microsoft Clarity.
+
+We improve our products and advertising by using Microsoft Clarity to see how you use our website. By using our site, you agree that we and Microsoft can collect and use this data. 
+
+We partner with Microsoft Clarity and Microsoft Advertising to capture how you use and interact with our website through behavioral metrics, heatmaps, and session replay to improve and market our products/services. Website usage data is captured using first and third-party cookies and other tracking technologies to determine the popularity of products/services and online activity. Additionally, we use this information for site optimization, fraud/security purposes, and advertising. For more information about how Microsoft collects and uses your data, visit the [Microsoft Privacy Statement](https://www.microsoft.com/en-US/privacy/privacystatement).
 
 ### OpenUPM uses Partnerize.
 
