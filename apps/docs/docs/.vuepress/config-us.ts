@@ -149,7 +149,10 @@ export const themeConfig: any = {
   domain: `https://openupm.com`,
   navbar: [
     { text: "Packages", link: "/packages/" },
-    { text: "NuGet", link: "/nuget/" },
+    {
+      text: "Discounts & Deals",
+      link: "https://assetstore.unity.com/?on_sale=true&orderBy=1&rows=96&aid=1011lJJH",
+    },
     { text: "Docs", link: "/docs/" },
     {
       text: "Support",
@@ -201,12 +204,6 @@ export const themeConfig: any = {
           iconLeft: true,
         },
       ],
-    },
-    {
-      text: "Private Registry",
-      link: "/docs/host-private-upm-registry-15-minutes",
-      icon: "fas fa-server",
-      iconLeft: true,
     },
     {
       text: "CLI",
