@@ -149,12 +149,6 @@ OpenUPM's website uses Google Analytics to collect and analyze data about visito
 
 The website uses [Google AdSense](https://www.google.com/adsense/start/), an online service from [Google](https://www.google.com/) for displaying targeted advertisements. When you request a page on the OpenUPM website that shows an advertisement, your computer also sends a request to Google AdSense. You can read [the privacy policy for Google AdSense online](https://policies.google.com/technologies/ads).
 
-### OpenUPM uses Microsoft Clarity.
-
-We improve our products and advertising by using Microsoft Clarity to see how you use our website. By using our site, you agree that we and Microsoft can collect and use this data. 
-
-We partner with Microsoft Clarity and Microsoft Advertising to capture how you use and interact with our website through behavioral metrics, heatmaps, and session replay to improve and market our products/services. Website usage data is captured using first and third-party cookies and other tracking technologies to determine the popularity of products/services and online activity. Additionally, we use this information for site optimization, fraud/security purposes, and advertising. For more information about how Microsoft collects and uses your data, visit the [Microsoft Privacy Statement](https://www.microsoft.com/en-US/privacy/privacystatement).
-
 ### OpenUPM uses Partnerize.
 
 The website uses [Partnerize](https://partnerize.com/), a leading partnership automation solution for global brands. When you interact with a page on the OpenUPM website that includes a Partnerize feature, your computer also sends a request to Partnerize. You can read [the privacy policy for Partnerize online](https://partnerize.com/en/privacy-policy).
