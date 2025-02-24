@@ -194,7 +194,6 @@ const editLink = computed(() => {
 
 <template>
   <div class="meta-section container">
-    <AdsenseDisplayForPackageDetail />
     <div class="columns">
       <PackageSetup :has-not-succeeded-build="hasNotSucceededBuild" :is-loading="isLoadingPackageSetup"
         :metadata="metadata" :version="version || ''" :scopes="scopes" />
@@ -313,6 +312,7 @@ const editLink = computed(() => {
         <AutoLink :item="editLink" />
       </section>
     </div>
+    <AdsenseDisplayForPackageDetail />
   </div>
 </template>
 
