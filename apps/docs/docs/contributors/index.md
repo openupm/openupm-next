@@ -60,6 +60,9 @@ backers:
 - text: Dima Dukhnich
   githubUser: dimmduh
   expires: 2022-02-31
+- text: Paul
+  githubUser: runette
+  expires: 2026-02-31
 ---
 # Contributors
 
