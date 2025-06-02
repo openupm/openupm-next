@@ -12,6 +12,8 @@ OpenUPM requires packages to meet the following criteria:
 
 3. **Open-Source and GitHub Hosting:** The package must be open-source and hosted on GitHub. It is recommended to select a license from the [spdx license list](https://spdx.org/licenses). If the package uses dual licenses or has other constraints, ensure that these are clearly presented to the user.
 
+   > ⚠️ **Important Warning:** Submitting content from the Unity Asset Store (published under Unity Asset Store EULA) without an explicit open-source license from the original author is strictly prohibited. This could lead to serious legal consequences, including potential community bans and legal action. Always ensure you have proper authorization and licensing rights before submitting any package.
+
 4. **Functionality and Usefulness:** The package should be functional and useful. Test packages are not accepted due to limited resources. It's advised to import your package via Git URL and test it before submission.
 
 5. **Semantic Versioning:** The package should use [semantic versioning (semver)](https://semver.org/). For example, `1.1.0`, `1.1.1-preview`, `v1.1.2`. You can create Git tags using the [GitHub release](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository#creating-a-release) feature or automate the process using [GitHub actions](https://medium.com/openupm/how-to-maintain-upm-package-part-2-f352fbf5f87c).
@@ -26,9 +28,23 @@ OpenUPM requires packages to meet the following criteria:
 
 10. **Uplinked NuGet Packages:** We strongly encourage you to submit NuGet packages to [UnityNuGet](/nuget/) that have been uplinked by the OpenUPM registry. However, if you have a specific need to publish a NuGet package directly on OpenUPM, please use your own scope, such as `com.yourname.nuget-package-name`.
 
-By adhering to these guidelines, package maintainers can contribute to a thriving ecosystem of Unity packages on OpenUPM, benefiting developers and users alike. Packages that do not meet these criteria will be rejected or removed from the OpenUPM platform.
-
 11. **Package Retention Policy**: The package should have at least one release within 3 months of being submitted to OpenUPM. Otherwise, it will be removed from the service.
+
+12. **Re-branding Policy**: Mass re-branding of existing packages with minimal contributions is not allowed, as it fragments the already small Unity open-source community. Instead, we encourage contributing to the original repositories. However, re-branding with your own scope is permitted in specific cases:
+    - When the original author doesn't create Git tags
+    - When the original package doesn't support UPM format
+    - When you've made significant improvements or modifications to the original package
+
+    In these cases, please clearly indicate the original package in your documentation and maintain proper attribution.
+
+13. **Topic Classification**: The `topics` field in the package metadata should accurately reflect the package's functionality and purpose. Adding unrelated topics or attempting to promote your package across all topic categories is considered spam and may result in:
+    - Removal of the package from OpenUPM
+    - Temporary or permanent ban from the community
+    - Rejection of future package submissions
+
+    Please select only relevant topics that genuinely describe your package's features and capabilities. You can find all available topics at [https://github.com/openupm/openupm/blob/master/data/topics.yml](https://github.com/openupm/openupm/blob/master/data/topics.yml).
+
+By adhering to these guidelines, package maintainers can contribute to a thriving ecosystem of Unity packages on OpenUPM, benefiting developers and users alike. Packages that do not meet these criteria will be rejected or removed from the OpenUPM platform.
 
 ## Repository Folder Structures
 
@@ -62,7 +78,7 @@ licenseName: MIT License
 topics:
   - utilities
 # Filtering Git tags based on their prefix (this is not a regular expression).
-# It’s particularly useful for monorepos to distinguish between Git tags. i.e. 'com.example.foo/'.
+# It's particularly useful for monorepos to distinguish between Git tags. i.e. 'com.example.foo/'.
 gitTagPrefix: ''
 # The regular expression that specifies intentionally untracked Git tags that should be ignored
 gitTagIgnore: '-master$'
