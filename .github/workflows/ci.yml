@@ -5,7 +5,7 @@ on: [push, pull_request, workflow_dispatch]
 jobs:
   test:
     runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, 'skip ci')"
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
     name: CI
     steps:
       - name: setup redis
@@ -40,7 +40,7 @@ jobs:
   build-website-us:
     runs-on: macos-latest
     needs: test
-    if: github.ref == 'refs/heads/main' && github.repository == 'openupm/openupm-next'
+    if: github.ref == 'refs/heads/main' && github.repository == 'openupm/openupm-next' && !contains(github.event.head_commit.message, '[skip website]')
     steps:
       - name: checkout main repo
         uses: actions/checkout@v3
@@ -93,19 +93,20 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: favoyang/openupm-web
-      - name: Login to DockerHub
+          images: ghcr.io/${{ github.repository }}/openupm-web
+      - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
           context: .
           file: apps/web/Dockerfile
           push: true
-          tags: favoyang/openupm-web:latest
+          tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
   docker-jobs:
@@ -119,17 +120,18 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: favoyang/openupm-jobs
-      - name: Login to DockerHub
+          images: ghcr.io/${{ github.repository }}/openupm-jobs
+      - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
           context: .
           file: apps/jobs/Dockerfile
           push: true
-          tags: favoyang/openupm-jobs:latest
+          tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
