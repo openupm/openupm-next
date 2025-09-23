@@ -44,6 +44,7 @@ RUN npm install
 
 ######## Runner ########
 FROM base AS runner
+LABEL service="upm-web"
 
 # Don't run production as root
 RUN addgroup --system --gid 1001 runner
