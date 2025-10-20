@@ -4,6 +4,7 @@ import fs from 'fs';
 import { promises as afs } from 'fs';
 import yaml from 'js-yaml';
 import { countBy, flatMap, sortBy, toPairs } from 'lodash-es';
+import { ZodError } from 'zod';
 
 import { parsePackageMetadata } from './utils/parse-pkg.js';
 import {
@@ -73,6 +74,7 @@ export const loadPackageMetadataLocal = async function (
     const absPath = path.resolve(getLocalDataDir(), 'packages', name + '.yml');
     return parsePackageMetadata(yaml.load(await afs.readFile(absPath, 'utf8')));
   } catch (e) {
+    if (e instanceof ZodError) throw e;
     console.error(e);
     return null;
   }
