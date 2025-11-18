@@ -44,7 +44,7 @@ const sponsors = computed(() => {
 
 <template>
   <div class="sponsor-container">
-    <div v-for="(profile, index) in sponsors" :key="index" class="sponsor-item">
+    <div v-for="(profile, index) in sponsors" :key="profile.slug" class="sponsor-item">
       <a :href="profile.url" rel="noopener" :aria-label="profile.text">
         <LazyImage v-if="profile.image" :src="profile.image" :alt="profile.text" :title="profile.text" class="img-responsive"
           :style="{ minWidth: profile.minWidth || '0' }" />
