@@ -76,6 +76,7 @@ const features = computed(() => {
 </template>
 
 <style lang="scss">
+@use '@/styles/palette' as *;
 .homepage {
 
   .hero {
@@ -84,9 +85,12 @@ const features = computed(() => {
     }
   }
 
-  .theme-default-content { 
+  .theme-default-content {
     h1 {
       font-weight: bold;
+      background: -webkit-linear-gradient(315deg, $primary-color 10%, #2fc5cd);
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
     h2 {
       border-bottom: none;
