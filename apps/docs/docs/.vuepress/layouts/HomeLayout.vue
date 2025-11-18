@@ -63,6 +63,7 @@ const features = computed(() => {
       </header>
 
       <div class="features">
+        <h2 class="hide">Features</h2>
         <div class="columns">
           <div v-for="(feature, index) in features" :key="index" class="feature-item col-4 col-md-12">
             <h3>{{ feature.title }}</h3>
@@ -80,10 +81,16 @@ const features = computed(() => {
 
 <style lang="scss">
 .homepage {
+
   .hero {
     .external-link-icon {
       display: none;
     }
+  }
+
+  .theme-default-content h2 {
+    font-size: 1.08rem;
+    border-bottom: none;
   }
 }
 </style>
@@ -92,6 +99,7 @@ const features = computed(() => {
 @use '@/styles/palette' as *;
 
 .homepage {
+
   .hero {
     padding-bottom: 0;
 

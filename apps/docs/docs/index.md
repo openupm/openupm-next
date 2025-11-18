@@ -15,7 +15,7 @@ features:
 ---
 <AdsenseDisplayForHomepage />
 
-### Get Started with openupm-cli
+## Get Started with OpenUPM-CLI
 
 OpenUPM can be used directly as a registry through standard Unity Package Manager workflows, however, with the CLI, package installation and updates become faster, reducing manual steps and improving productivity.
 ```sh
