@@ -38,7 +38,9 @@ const sponsors = computed(() => {
     });
   
   // Shuffle the sponsors randomly on each page refresh
-  return shuffleArray(filteredSponsors);
+  // TODO: Re-enable shuffling once production issue is resolved
+  // return shuffleArray(filteredSponsors);
+  return filteredSponsors;
 });
 </script>
 
