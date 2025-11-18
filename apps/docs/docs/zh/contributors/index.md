@@ -73,12 +73,12 @@ backers:
 
 ## 支持者 🙏
 
-<SponsorList level="backer" :items="$page.frontmatter.backers" />
+<GitHubUserList :items="$page.frontmatter.backers" />
 
 ## Top 100 包猎人 🔎
 
-<SponsorList level="hunters" :items="$page.frontmatter.hunters" />
+<GitHubUserList :items="$page.frontmatter.hunters" />
 
 ## Top 100 包拥有者 🐱‍💻
 
-<SponsorList level="owners" :items="$page.frontmatter.owners" />
+<GitHubUserList :items="$page.frontmatter.owners" />
