@@ -12,12 +12,31 @@ features:
   desc: Automatically tracks Git tags to streamline the publishing process and ensure packages are always up-to-date.
 - title: Command-Line Interface
   desc: Empower command-line lovers with the OpenUPM-CLI tool for seamless UPM registry interaction.
+sponsors:
+- text: Digital Ocean
+  slug: digital-ocean
+  url: https://m.do.co/c/50e7f9860fa9
+  image: https://opensource.nyc3.cdn.digitaloceanspaces.com/attribution/assets/SVG/DO_Logo_horizontal_blue.svg
+  minWidth: 9rem
+- text: Host your infrastructure on a DDoS protected VPS from Evolution Host
+  slug: evolutionhost
+  url: https://https://evolution-host.com/
+  image: /images/evolution-host-logo-001.png
+- text: Netlify
+  slug: netlify
+  url: https://www.netlify.com/
+  image: https://www.netlify.com/img/global/badges/netlify-dark.svg
 ---
-<AdsenseDisplayForHomepage />
+## Sponsors
+
+<SponsorList level="service" :items="$page.frontmatter.sponsors" />
 
 ## Get Started with OpenUPM-CLI
 
 OpenUPM can be used directly as a registry through standard Unity Package Manager workflows, however, with the CLI, package installation and updates become faster, reducing manual steps and improving productivity.
+
+<AdsenseDisplayForHomepage />
+
 ```sh
 # Install openupm-cli
 $ npm install -g openupm-cli

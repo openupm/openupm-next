@@ -65,11 +65,7 @@ backers:
 
 ## 服务赞助商 🖥️
 
-<SponsorList level="service" :items="$page.frontmatter.serviceSponsors" />
-
-<!-- ## 铜级赞助商 🥉
-
-<SponsorList level="bronze" :items="$page.frontmatter.bronzeSponsors" /> -->
+<SponsorList :items="$page.frontmatter.serviceSponsors" />
 
 ## 支持者 🙏
 

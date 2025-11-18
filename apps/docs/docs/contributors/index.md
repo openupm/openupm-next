@@ -5,6 +5,10 @@ sponsors:
   url: https://m.do.co/c/50e7f9860fa9
   image: https://opensource.nyc3.cdn.digitaloceanspaces.com/attribution/assets/SVG/DO_Logo_horizontal_blue.svg
   minWidth: 9rem
+- text: Host your infrastructure on a DDoS protected VPS from Evolution Host
+  slug: evolutionhost
+  url: https://https://evolution-host.com/
+  image: /images/evolution-host-logo-001.png
 - text: Netlify
   slug: netlify
   url: https://www.netlify.com/

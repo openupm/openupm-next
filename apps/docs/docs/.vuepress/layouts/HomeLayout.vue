@@ -61,9 +61,7 @@ const features = computed(() => {
           </div>
         </div>
       </header>
-
       <div class="features">
-        <h2 class="hide">Features</h2>
         <div class="columns">
           <div v-for="(feature, index) in features" :key="index" class="feature-item col-4 col-md-12">
             <h3>{{ feature.title }}</h3>
@@ -73,8 +71,6 @@ const features = computed(() => {
           </div>
         </div>
       </div>
-
-
     </template>
   </ParentLayout>
 </template>
@@ -88,9 +84,14 @@ const features = computed(() => {
     }
   }
 
-  .theme-default-content h2 {
-    font-size: 1.08rem;
-    border-bottom: none;
+  .theme-default-content { 
+    h1 {
+      font-weight: bold;
+    }
+    h2 {
+      border-bottom: none;
+      font-weight: bold;
+    }
   }
 }
 </style>
