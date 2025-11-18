@@ -13,12 +13,14 @@ features:
 - title: Command-Line Interface
   desc: Empower command-line lovers with the OpenUPM-CLI tool for seamless UPM registry interaction.
 ---
-### Get Started with CLI (Optional)
+<AdsenseDisplayForHomepage />
 
+### Get Started with openupm-cli
+
+OpenUPM can be used directly as a registry through standard Unity Package Manager workflows, however, with the CLI, package installation and updates become faster, reducing manual steps and improving productivity.
 ```sh
 # Install openupm-cli
 $ npm install -g openupm-cli
-# OR yarn global add openupm-cli
 
 # Enter your Unity project folder
 $ cd YOUR_UNITY_PROJECT_FOLDER
@@ -33,8 +35,8 @@ $ openupm search addressable-importer
 
 # Install package
 $ openupm add com.littlebigfun.addressable-importer
-added: com.littlebigfun.addressable-importer@0.4.1
-manifest updated, please open unity project to apply changes
+added com.littlebigfun.addressable-importer@0.16.1
+please open Unity project to apply changes.
 ```
 
 ::: tip DISCLAIMER

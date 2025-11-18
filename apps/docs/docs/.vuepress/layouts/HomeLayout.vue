@@ -55,8 +55,8 @@ const features = computed(() => {
           <div>
             <h1 id="main-title">{{ frontmatter.heroText }}</h1>
             <p class="actions">
-              <AutoLink class="btn btn-lg btn-default" :item="githubLink" />
-              <AutoLink class="btn btn-lg btn-primary" :item="guideLink" />
+              <AutoLink class="btn btn-lg btn-default" :item="guideLink" />
+              <AutoLink class="btn btn-lg btn-primary" :item="githubLink" />
             </p>
           </div>
         </div>
@@ -73,7 +73,6 @@ const features = computed(() => {
         </div>
       </div>
 
-      <AdsenseDisplayForHomepage />
 
     </template>
   </ParentLayout>
