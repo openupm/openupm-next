@@ -62,25 +62,5 @@ const sponsors = computed(() => {
   vertical-align: middle;
   margin: 0 0.5rem 0.5rem 0;
   max-width: 10rem;
-
-  &.sponsor-diamond {
-    max-width: 15rem;
-  }
-
-  &.sponsor-gold {
-    max-width: 15rem;
-  }
-
-  &.sponsor-silver {
-    max-width: 12rem;
-  }
-
-  &.sponsor-bronze {
-    max-width: 9rem;
-  }
-
-  &.sponsor-service {
-    max-width: 9rem;
-  }
 }
 </style>

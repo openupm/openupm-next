@@ -1,5 +1,5 @@
 ---
-serviceSponsors:
+sponsors:
 - text: Digital Ocean
   slug: digital-ocean
   url: https://m.do.co/c/50e7f9860fa9
@@ -9,11 +9,6 @@ serviceSponsors:
   slug: netlify
   url: https://www.netlify.com/
   image: https://www.netlify.com/img/global/badges/netlify-dark.svg
-bronzeSponsors:
-- text: Vatsal Ambastha
-  slug: vatsal-ambastha
-  githubUser: adrenak
-  expires: 2021-05-30
 backers:
 - text: Vatsal Ambastha
   githubUser: adrenak
@@ -68,22 +63,18 @@ backers:
 
 A heartfelt thank you to all our contributors! 🌟 If you'd like to be honored on this page and support our mission, please visit [support page](/support/) to discover how you can make a difference. 💖
 
-## Service Sponsors 🖥️
+## Sponsors
 
-<SponsorList level="service" :items="$page.frontmatter.serviceSponsors" />
+<SponsorList level="service" :items="$page.frontmatter.sponsors" />
 
-<!-- ## Bronze Sponsors 🥉
+## Backers
 
-<SponsorList level="bronze" :items="$page.frontmatter.bronzeSponsors" /> -->
+<GitHubUserList :items="$page.frontmatter.backers" />
 
-## Backers 🙏
+## Top 100 Package Hunters
 
-<SponsorList level="backer" :items="$page.frontmatter.backers" />
+<GitHubUserList :items="$page.frontmatter.hunters" />
 
-## Top 100 Package Hunters 🔎
+## Top 100 Package Owners
 
-<SponsorList level="hunters" :items="$page.frontmatter.hunters" />
-
-## Top 100 Package Owners 🐱‍💻
-
-<SponsorList level="owners" :items="$page.frontmatter.owners" />
+<GitHubUserList :items="$page.frontmatter.owners" />
