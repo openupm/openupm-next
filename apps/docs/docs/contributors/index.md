@@ -65,7 +65,7 @@ A heartfelt thank you to all our contributors! 🌟 If you'd like to be honored 
 
 ## Sponsors
 
-<SponsorList level="service" :items="$page.frontmatter.sponsors" />
+<SponsorList :items="$page.frontmatter.sponsors" />
 
 ## Backers
 
