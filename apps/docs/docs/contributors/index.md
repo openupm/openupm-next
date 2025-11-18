@@ -1,6 +1,6 @@
 ---
 sponsors:
-- text: Digital Ocean
+- text: Powerred by DigitalOcean
   slug: digital-ocean
   url: https://m.do.co/c/50e7f9860fa9
   image: https://opensource.nyc3.cdn.digitaloceanspaces.com/attribution/assets/SVG/DO_Logo_horizontal_blue.svg
@@ -9,7 +9,7 @@ sponsors:
   slug: evolutionhost
   url: https://https://evolution-host.com/
   image: /images/evolution-host-logo-001.png
-- text: Netlify
+- text: Deploys by Netlify
   slug: netlify
   url: https://www.netlify.com/
   image: https://www.netlify.com/img/global/badges/netlify-dark.svg

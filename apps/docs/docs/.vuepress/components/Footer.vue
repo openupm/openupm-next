@@ -89,6 +89,10 @@ const icpLink = computed(() => ({
       <div class="columns">
         <div class="column col-3 col-md-6 col-sm-12">
           <h5>OpenUPM</h5>
+          <p class="disclaimer">
+            <span class="disclaimer-title text-bold">Disclaimer <br /></span>
+            OpenUPM is an autonomous, open-source service and is not associated with Unity Technologies Inc.
+          </p>
           <p>{{ description }}</p>
           <ul>
             <li>{{ $t("footer-copyright") }}</li>
@@ -123,7 +127,7 @@ const icpLink = computed(() => ({
           </div>
         </div>
         <div class="column col-5 col-md-12 col-sm-12">
-          <h5>&nbsp;</h5>
+          <!-- <h5>&nbsp;</h5>
           <div>
             <ul>
               <li class="mb-2">
@@ -140,7 +144,7 @@ const icpLink = computed(() => ({
                 </a>
               </li>
             </ul>
-          </div>
+          </div> -->
         </div>
       </div>
     </div>
@@ -156,6 +160,11 @@ const icpLink = computed(() => ({
 
   a {
     color: var(--c-text-footer);
+  }
+
+  .disclaimer {
+    border-left: 0.2rem solid var(--c-tip);
+    padding-left: 0.5rem;
   }
 
   .page-footer-box {
