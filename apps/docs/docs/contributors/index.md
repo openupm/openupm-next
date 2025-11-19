@@ -6,7 +6,7 @@ sponsors:
   image: https://opensource.nyc3.cdn.digitaloceanspaces.com/attribution/assets/SVG/DO_Logo_horizontal_blue.svg
 - text: Host your infrastructure on a DDoS protected VPS from Evolution Host
   slug: evolutionhost
-  url: https://https://evolution-host.com/
+  url: https://evolution-host.com/
   image: /images/evolution-host-logo-001.png
 - text: Deploys by Netlify
   slug: netlify
