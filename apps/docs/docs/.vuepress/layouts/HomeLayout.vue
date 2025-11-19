@@ -167,8 +167,7 @@ const features = computed(() => {
       .hero-body {
         .actions {
           .btn {
-            // width: auto;
-            min-width: 7rem;
+            width: 7rem;
           }
 
           .btn:not(:last-child) {

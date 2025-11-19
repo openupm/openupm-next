@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, nextTick, onMounted, ref, watch } from 'vue';
 
 interface Sponsor {
   text: string;
@@ -28,35 +28,47 @@ const shuffleArray = <T>(array: T[]): T[] => {
   return shuffled;
 };
 
-const sponsors = computed(() => {
-  const filteredSponsors = props.items
-    .filter((x: Sponsor) => {
-      if (x.expires) {
-        return Date.parse(x.expires) >= new Date().getTime();
-      }
-      return true;
-    });
-  
-  // Shuffle the sponsors randomly on each page refresh
-  // TODO: Re-enable shuffling once production issue is resolved
-  // return shuffleArray(filteredSponsors);
-  return filteredSponsors;
+const filteredSponsors = computed(() => props.items.filter((x: Sponsor) => {
+  if (x.expires) {
+    return Date.parse(x.expires) >= new Date().getTime();
+  }
+  return true;
+}));
+
+const sponsors = computed(() => filteredSponsors.value);
+const randomizedSponsors = ref<Sponsor[]>(filteredSponsors.value);
+const hasHydrated = ref(false);
+
+const shuffleAndStore = (source = filteredSponsors.value) => {
+  randomizedSponsors.value = shuffleArray(source);
+};
+
+onMounted(async () => {
+  await nextTick();
+  hasHydrated.value = true;
+  shuffleAndStore(filteredSponsors.value);
+  watch(
+    filteredSponsors,
+    (nextSponsors) => shuffleAndStore(nextSponsors),
+    { immediate: false },
+  );
 });
 </script>
 
 <template>
-  <div class="sponsor-container">
-    <div v-for="(profile, index) in sponsors" class="sponsor-item">
-      <a :href="profile.url" rel="noopener" :aria-label="profile.text">
-        <LazyImage v-if="profile.image" :src="profile.image" :alt="profile.text" :title="profile.text" class="img-responsive"
-          :style="{ minWidth: profile.minWidth || '0' }" />
-        <span class="hide">{{ profile.text }}</span>
-      </a>
+  <div>
+    <div v-if="hasHydrated" key="client" class="sponsor-container">
+      <SponsorItem v-for="profile in randomizedSponsors" :key="profile.slug" :profile="profile" />
+    </div>
+    <div v-else key="server" class="sponsor-container">
+      <SponsorItem v-for="profile in sponsors" :key="profile.slug" :profile="profile" />
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
+@use '@/styles/palette' as *;
+
 .sponsor-container {
   display: flex;
   flex-wrap: wrap;
@@ -65,20 +77,9 @@ const sponsors = computed(() => {
   margin: 0 0 1.2rem 0;
 }
 
-.sponsor-item {
-  flex: 0 0 33.333%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  max-width: 10rem;
-  padding: 0.25rem;
-  
-  a {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 100%;
+@media (max-width: $MQMobileNarrow) {
+  .sponsor-container {
+    justify-content: flex-start;
   }
 }
 </style>
