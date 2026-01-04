@@ -14,12 +14,13 @@ export async function runWithTimeoutSignal<T>(
   const controller = new AbortController();
   const signal = controller.signal;
   if (!timeout) timeout = DEFAULT_TIMEOUT;
-  setTimeout(() => {
+  const timer = setTimeout(() => {
     controller.abort();
   }, timeout);
+  if (typeof timer.unref === 'function') timer.unref();
   try {
     return await fn(signal);
   } finally {
-    clearTimeout(timeout);
+    clearTimeout(timer);
   }
 }
