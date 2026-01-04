@@ -19,7 +19,6 @@ import { getPackageListPagePath, isPackageListPath, getTopicAdPlacementUrl } fro
 import { topicsWithAll } from '@temp/topics.js';
 import { usePackageSearchSuggestions } from "@/search";
 import UnityAssetAdPlacement from '@/components/UnityAssetAdPlacementForPackageList.vue';
-import UnityProSidebarAd from '@/components/UnityProSidebarAd.vue';
 import DonationSidebarAd from '@/components/DonationSidebarAd.vue';
 import UnityAssetStoreSale from '@/components/UnityAssetStoreSale.vue';
 
@@ -285,7 +284,6 @@ watch(() => topicSlug.value, () => {
     <template #sidebar-top>
       <ClientOnly>
         <DonationSidebarAd />
-        <UnityProSidebarAd />
         <UnityAssetStoreSale />
         <section class="quicklink-section mt-1">
           <ul class="menu">

@@ -23,7 +23,6 @@ import { DownloadsRange, PackageInfo, PackageMetadataLocal, Packument, PackageRe
 import { getMonthlyDownloadsUrl, getPackageInfoUrl, getPackumentUrl, getPackageRelatedPackagesPath, isPackageDetailPath, getPackageAdPlacementUrl } from '@openupm/common/build/urls.js';
 import { fillMissingDates, isPackageExist, timeAgoFormat } from '@/utils';
 import UnityAssetAdPlacement from '@/components/UnityAssetAdPlacement.vue';
-import UnityProSidebarAd from '@/components/UnityProSidebarAd.vue';
 import DonationSidebarAd from '@/components/DonationSidebarAd.vue';
 
 const route = useRoute();
@@ -452,7 +451,6 @@ const buildRouterLinkQuery = function (subPage: string): Record<string, string> 
     <template #sidebar-top>
       <ClientOnly>
         <DonationSidebarAd />
-        <UnityProSidebarAd />
         <section class="subpage-section">
           <ul class="menu">
             <div class="columns">
