@@ -151,9 +151,6 @@ export const getPackageMetadata = function (
 export const getLocalePackageDisplayName = function (
   metadata: PackageMetadataLocal,
 ): string {
-  const region = getRegion();
-  if (region == Region.CN)
-    return metadata.displayName_zhCN || metadata.displayName || '';
   return metadata.displayName || '';
 };
 
@@ -165,9 +162,6 @@ export const getLocalePackageDisplayName = function (
 export const getLocalePackageDescription = function (
   metadata: PackageMetadataLocal,
 ): string {
-  const region = getRegion();
-  if (region == Region.CN)
-    return metadata.description_zhCN || metadata.description || '';
   return metadata.description || '';
 };
 

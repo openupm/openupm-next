@@ -82,9 +82,8 @@ export const getPropKeyForLang = function (
   propKey: string,
   lang: string = 'en-US',
 ): string {
-  if (lang === 'en-US') return propKey;
-  else if (lang === 'zh-CN') return propKey + '_zhCN';
-  else throw new Error('Not implemented yet');
+  if (!lang || lang === 'en-US') return propKey;
+  throw new Error('Not implemented yet');
 };
 
 export const setInvalidTags = async function (

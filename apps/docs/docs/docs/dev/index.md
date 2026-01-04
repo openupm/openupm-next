@@ -100,20 +100,3 @@ yarn server:dev
 ## Package Curated List
 
 OpenUPM uses git as a database to maintain the package curated list. Each package is described as a YAML file.
-
-## i18n
-
-The website supports two regions with different configurations:
-
-| Region | Language | Fallback Language |
-| ------ | -------- | ----------------- |
-| US     | en-US    | n/a               |
-| CN     | zh-CN    | en-US             |
-
-- The documentation level translations are located at `docs/zh`.
-- The component level translations are located at `docs/.vuepress/locales`. [i18n-ally](https://github.com/antfu/i18n-ally) is powerful i18n extensions for VS Code to edit locale files.
-- To develop the CN region:
-
-  ```
-  VITE_OPENUPM_REGION=cn npm run docs:dev
-  ```

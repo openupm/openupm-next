@@ -2,8 +2,6 @@
 import { PropType, computed } from 'vue';
 import urlJoin from "url-join";
 
-import { getRegion } from '@openupm/common/build/utils.js';
-import { Region } from '@openupm/types';
 import { PackageMetadata } from "@openupm/types";
 
 const props = defineProps({
@@ -30,9 +28,7 @@ const props = defineProps({
 });
 
 const installCli = computed(() => {
-  const region = getRegion();
-  const cli = region == Region.CN ? "openupm-cn" : "openupm";
-  return `${cli} add ${props.metadata.name}`;
+  return `openupm add ${props.metadata.name}`;
 });
 
 const pipelinesLink = computed(() => {
@@ -189,14 +185,4 @@ const repoTagsNavLink = computed(() => {
   no-release-title: no releases published
   no-release-desc: This typically occurs when a repository is first imported. But if all builds have been processed and failed, the package will not appear on the package listing until a successful first release is built.
   manual-installation: manual installation
-</i18n>
-
-<i18n locale="zh-CN" lang="yaml">
-  install-via-command-line-interface: 安装方式：命令行工具
-  install-via-package-manager: 安装方式：包管理器
-  no-valid-tag-title: 没有有效的Git标签
-  no-valid-tag-desc: OpenUPM仅跟踪遵循semver约定的Git标签。如果未检测到有效的Git标签，则该软件包将不会列在软件包列表中。
-  no-release-title: 没有版本发布
-  no-release-desc: 这通常发生在首次导入软件仓库时。但是，如果所有构建都已处理并失败，则在构建成功的第一个版本发布之前，该软件包将不会出现在软件包列表中。
-  manual-installation: 手动安装
 </i18n>

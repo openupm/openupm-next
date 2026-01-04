@@ -41,11 +41,6 @@ describeWithRedis('getInvalidTags', () => {
 });
 
 describe('getPropKeyForLang', () => {
-  it('zh-CN', () => {
-    const val = getPropKeyForLang('name', 'zh-CN');
-    expect(val).toEqual('name_zhCN');
-  });
-
   it('en-US', () => {
     const val = getPropKeyForLang('name', 'en-US');
     expect(val).toEqual('name');
@@ -57,9 +52,8 @@ describe('getPropKeyForLang', () => {
   });
 
   it('empty string', () => {
-    expect(() => {
-      getPropKeyForLang('name', '');
-    }).toThrow();
+    const val = getPropKeyForLang('name', '');
+    expect(val).toEqual('name');
   });
 
   it('unsupported lang', () => {

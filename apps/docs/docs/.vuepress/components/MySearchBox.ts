@@ -25,9 +25,6 @@ export default defineComponent({
       "/": {
         placeholder: "Search ctrl+k",
       },
-      "/zh/": {
-        placeholder: "搜索 ctrl+k",
-      },
     }));
     const hotKeys = computed(() => [{ key: "k", ctrl: true }]);
     const maxSuggestions = computed(() => 10);

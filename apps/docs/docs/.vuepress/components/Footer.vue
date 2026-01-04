@@ -1,26 +1,20 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
 import { computed } from 'vue';
-import { OpenUPMGitHubRepoUrl, getLocaleDocsPath } from '@openupm/common/build/urls.js';
+import { OpenUPMGitHubRepoUrl } from '@openupm/common/build/urls.js';
 import { useI18n } from 'vue-i18n';
-import { getRegion } from '@openupm/common/build/utils.js';
-import { Region } from '@openupm/types';
 
 const { t } = useI18n();
 
-const isRegionCN = computed(() => {
-  return getRegion() === Region.CN;
-});
-
 const aboutLinks = computed(() => [
-  { link: getLocaleDocsPath("/docs/team"), text: t("team") },
+  { link: "/docs/team", text: t("team") },
   {
-    link: getLocaleDocsPath("/docs/code-of-conduct"),
+    link: "/docs/code-of-conduct",
     text: t("code-of-conduct")
   },
-  { link: getLocaleDocsPath("/docs/terms"), text: t("terms-of-use") },
+  { link: "/docs/terms", text: t("terms-of-use") },
   {
-    link: getLocaleDocsPath("/docs/privacy"),
+    link: "/docs/privacy",
     text: t("privacy-policy")
   },
   {
@@ -72,15 +66,6 @@ const connectLinks = computed(() => {
 
 const description = computed(() => t("site-desc"));
 
-const nismspLink = computed(() => ({
-  link: "http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=11010502045830",
-  text: "京公网安备 11010502045830号"
-}));
-
-const icpLink = computed(() => ({
-  link: "https://beian.miit.gov.cn/#/Integrated/index",
-  text: " 京ICP备18005908号-2"
-}));
 </script>
 
 <template>
@@ -96,14 +81,6 @@ const icpLink = computed(() => ({
           <p>{{ description }}</p>
           <ul>
             <li>{{ $t("footer-copyright") }}</li>
-            <template v-if="isRegionCN">
-              <li>
-                <AutoLink class :item="icpLink" />
-              </li>
-              <li class="icon-guohui">
-                <AutoLink class :item="nismspLink" />
-              </li>
-            </template>
           </ul>
         </div>
         <div class="column col-4 col-md-6 col-sm-12">
@@ -194,10 +171,6 @@ const icpLink = computed(() => ({
         margin-top: 0;
       }
 
-      li.icon-guohui {
-        background: url('/images/guohui.png') no-repeat left center;
-        padding-left: 1.2rem;
-      }
     }
   }
 }
@@ -214,8 +187,4 @@ const icpLink = computed(() => ({
 
 <i18n locale="en-US" lang="yaml">
   site-desc: OpenUPM is a managed UPM registry that provides automatic build services for open-source Unity packages.
-</i18n>
-
-<i18n locale="zh-CN" lang="yaml">
-  site-desc: OpenUPM是一个托管的开源UPM包管理器，提供了自动化的构建服务。
 </i18n>

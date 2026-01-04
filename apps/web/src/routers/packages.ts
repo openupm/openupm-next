@@ -61,9 +61,8 @@ export default function router(server: FastifyInstance): void {
       const invalidTags: string[] = (await getInvalidTags(pkgName)).map(
         (x) => x.tag,
       );
-      // Get readme(s)
+      // Get readme
       const readmeHtml = await getReadmeHtml(pkgName);
-      const readmeHtml_zhCN = await getReadmeHtml(pkgName, 'zh-CN');
       // Get package scopes
       const scopes = await getScopes(pkgName);
       // Return as JSON
@@ -71,7 +70,6 @@ export default function router(server: FastifyInstance): void {
         invalidTags,
         releases,
         readmeHtml,
-        readmeHtml_zhCN,
         scopes,
       };
       res.send(data);

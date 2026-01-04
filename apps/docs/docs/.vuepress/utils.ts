@@ -1,10 +1,9 @@
 import { isDate } from "lodash-es";
 import { formatDistanceToNow } from "date-fns";
-import { enUS, zhCN } from "date-fns/locale";
+import { enUS } from "date-fns/locale";
 
 import { useDefaultStore } from "@/store";
-import { PageType, Region } from "@openupm/types";
-import { getRegion } from "@openupm/common/build/utils.js";
+import { PageType } from "@openupm/types";
 import { DailyDownload } from "@openupm/types";
 import { ComposerTranslation } from "vue-i18n";
 
@@ -22,9 +21,7 @@ export const isPackageExist = function (name: string): boolean {
 export const timeAgoFormat = function (date: Date | string): string {
   if (!isDate(date)) date = new Date(date);
   if (isNaN(date.getTime())) return "";
-  return formatDistanceToNow(date, {
-    locale: getRegion() == Region.CN ? zhCN : enUS,
-  });
+  return formatDistanceToNow(date, { locale: enUS });
 };
 
 /**

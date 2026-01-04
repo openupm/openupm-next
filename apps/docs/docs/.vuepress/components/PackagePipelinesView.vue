@@ -164,6 +164,3 @@ const releaseEntries = computed(() => {
   invalid-git-tag-col-text: Invalid Git tag (e.g. not semver-compliant or duplicate version)
 </i18n>
 
-<i18n locale="zh-CN" lang="yaml">
-  invalid-git-tag-col-text: 无效的Git标签（非semver或重复的版本）
-</i18n>

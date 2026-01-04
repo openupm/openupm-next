@@ -124,10 +124,3 @@ const dependencyList = computed(() => {
   deps-missing: Please install the missing dependency manually.
 </i18n>
 
-<i18n locale="zh-CN" lang="yaml">
-  name-at-version: 名称{'@'}版本
-  git-deps-nuget: NuGet依赖包可能存在于uplink的UnityNuGet仓库中。
-  git-deps-missing: Git依赖包，请手动安装。
-  git-deps-replaced: Git依赖包可以被替换为一个已在OpenUPM上发布的同名软件包。
-  deps-missing: 缺失的依赖包，请手动安装。
-</i18n>

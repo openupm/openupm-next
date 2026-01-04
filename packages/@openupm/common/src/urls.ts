@@ -1,10 +1,9 @@
 import urlJoin from 'url-join';
-import { PUBLIC_GEN_DIR, Region } from '@openupm/types';
+import { PUBLIC_GEN_DIR } from '@openupm/types';
 
 import {
   getCachedAvatarImageFilename,
   getEnv,
-  getRegion,
   getPackageNamespace,
 } from './utils.js';
 
@@ -13,7 +12,7 @@ import {
  * @returns base domain
  */
 export const getBaseDomain = function (): string {
-  return getRegion() == Region.CN ? 'openupm.cn' : 'openupm.com';
+  return 'openupm.com';
 };
 
 /**
@@ -140,9 +139,7 @@ export const getAzureWebBuildUrl = function (buildId: string): string {
  * @returns media base url
  */
 export const getMediaBaseUrl = function (): string {
-  return getRegion() == Region.CN
-    ? 'https://download.openupm.cn/media/'
-    : 'https://openupm.sfo2.cdn.digitaloceanspaces.com/media/';
+  return 'https://openupm.sfo2.cdn.digitaloceanspaces.com/media/';
 };
 
 /**
@@ -266,14 +263,11 @@ export const isPackageListPath = function (path: string): boolean {
 };
 
 export const getUnityRegistryUrl = function (): string {
-  return getRegion() == Region.CN
-    ? 'https://packages.unity.cn'
-    : 'https://packages.unity.com';
+  return 'https://packages.unity.com';
 };
 
 export const getLocaleDocsPath = function (path: string): string {
-  const regionPath = getRegion() == Region.CN ? '/zh' : '/';
-  return urlJoin(regionPath, path);
+  return urlJoin('/', path);
 };
 
 /**

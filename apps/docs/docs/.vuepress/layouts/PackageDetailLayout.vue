@@ -14,11 +14,11 @@ import PackagePipelinesView from "@/components/PackagePipelinesView.vue";
 import PackageReadmeView from "@/components/PackageReadmeView.vue";
 import PackageRelatedView from "@/components/PackageRelatedView.vue";
 import PackageVersionsView from "@/components/PackageVersionsView.vue";
-import { Region, ReleaseState } from "@openupm/types";
+import { ReleaseState } from "@openupm/types";
 import { usePageFrontmatter } from "@vuepress/client";
 import { useDefaultStore } from "@/store";
 import { AdPlacementData } from "@openupm/types";
-import { getPackageMetadata, getRegion } from "@openupm/common/build/utils.js";
+import { getPackageMetadata } from "@openupm/common/build/utils.js";
 import { DownloadsRange, PackageInfo, PackageMetadataLocal, Packument, PackageRelease, PackageVersionViewEntry } from "@openupm/types";
 import { getMonthlyDownloadsUrl, getPackageInfoUrl, getPackumentUrl, getPackageRelatedPackagesPath, isPackageDetailPath, getPackageAdPlacementUrl } from '@openupm/common/build/urls.js';
 import { fillMissingDates, isPackageExist, timeAgoFormat } from '@/utils';
@@ -57,7 +57,6 @@ const initState = (): State => ({
     releases: [],
     invalidTags: [],
     readmeHtml: null,
-    readmeHtml_zhCN: null,
     scopes: [],
   },
   packument: {
@@ -194,12 +193,7 @@ const pipelinesIcon = computed(() => {
   return "";
 });
 
-const readmeHtml = computed(() => {
-  const html = getRegion() == Region.CN
-    ? state.packageInfo.readmeHtml_zhCN
-    : state.packageInfo.readmeHtml;
-  return html || state.packageInfo.readmeHtml;
-});
+const readmeHtml = computed(() => state.packageInfo.readmeHtml);
 
 const shouldShowMetadataSubpageEntry = computed(() => {
   return mq.lgMinus;
@@ -547,7 +541,3 @@ const buildRouterLinkQuery = function (subPage: string): Record<string, string> 
   repository-is-unavailable-desc: This may be a temporary network issue. However, if the repository is deleted or made private by its author, OpenUPM will no longer track further changes. Any packages already published will not be affected.
 </i18n>
 
-<i18n locale="zh-CN" lang="yaml">
-  repository-is-unavailable-title: OpenUPM目前无法访问该源代码仓库
-  repository-is-unavailable-desc: 这可能是暂时的网络问题。但是，如果仓库被作者删除或设为私有，OpenUPM将不再跟踪其后续更改。已发布的任何软件包都不会受到影响。
-</i18n>

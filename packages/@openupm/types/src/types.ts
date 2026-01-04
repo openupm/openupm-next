@@ -19,10 +19,6 @@ export interface PackageMetadataLocalBase {
   gitTagPrefix?: string;
   gitTagIgnore?: string;
   minVersion?: string;
-  // Locale CN fields
-  displayName_zhCN?: string;
-  description_zhCN?: string;
-  readme_zhCN?: string;
   // Misc
   excludedFromList?: boolean;
 }
@@ -96,7 +92,6 @@ export interface PackageInfo {
   invalidTags: string[];
   releases: PackageRelease[];
   readmeHtml: string | null;
-  readmeHtml_zhCN: string | null;
   scopes: string[];
 }
 

@@ -4,8 +4,6 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import highlightjs from "highlight.js";
 
-import { getRegion } from '@openupm/common/build/utils.js';
-import { Region } from '@openupm/types';
 import { getNodeJsUrl, getOpenupmCliRepoUrl } from '@openupm/common/build/urls.js';
 
 const { t } = useI18n();
@@ -15,7 +13,6 @@ const props = defineProps({
 });
 
 const bashScript = computed(() => {
-  const cli = getRegion() == Region.CN ? "openupm-cn" : "openupm";
   return `# ${capitalize(t("install-openupm-cli"))}
 npm install -g openupm-cli
 
@@ -23,7 +20,7 @@ npm install -g openupm-cli
 cd YOUR_UNITY_PROJECT_DIR
 
 # ${capitalize(t("install-package"))}: ${props.name}
-${cli} add ${props.name}`;
+openupm add ${props.name}`;
 });
 
 const highlighted = computed(() => {
@@ -71,12 +68,4 @@ const openupmCliRepoLink = computed(() => ({
   go-to-unity-project: go to your Unity project directory
   install-package: Install package
   nodejs-link-text: Node.js v16 or above
-</i18n>
-
-<i18n locale="zh-CN" lang="yaml">
-  install-via-command-line-interface: 安装方式：命令行工具
-  install-openupm-cli: 安装 openupm-cli
-  go-to-unity-project: 进入Unity工程目录
-  install-package: 安装软件包
-  nodejs-link-text: Node.js v16 或以上版本
 </i18n>

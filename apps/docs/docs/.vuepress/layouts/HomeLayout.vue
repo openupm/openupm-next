@@ -7,7 +7,7 @@ import { computed } from 'vue';
 import ParentLayout from "@/layouts/WideLayout.vue";
 import { useDefaultStore } from '@/store';
 import { usePageFrontmatter } from '@vuepress/client';
-import { OpenUPMGitHubRepoUrl, getLocaleDocsPath } from '@openupm/common/build/urls.js';
+import { OpenUPMGitHubRepoUrl } from '@openupm/common/build/urls.js';
 
 const store = useDefaultStore();
 const frontmatter = usePageFrontmatter();
@@ -15,7 +15,7 @@ const { t } = useI18n();
 
 const guideLink = computed(() => {
   return {
-    link: getLocaleDocsPath("/docs/"),
+    link: "/docs/",
     text: capitalize(t("guide")),
   };
 });
@@ -191,8 +191,4 @@ const features = computed(() => {
 
 <i18n locale="en-US" lang="yaml">
   guide: Guide
-</i18n>
-
-<i18n locale="zh-CN" lang="yaml">
-  guide: 使用指南
 </i18n>

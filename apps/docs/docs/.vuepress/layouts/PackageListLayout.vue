@@ -536,12 +536,3 @@ no-search-results: No search results for "{ searchTerm }".
 no-search-results-for-topic: No search results for "{ searchTerm }" in this topic.
 </i18n>
 
-<i18n locale="zh-CN" lang="yaml">
-add-package: 添加新软件包
-results: 结果
-sort-by: 排序
-keywords: 关键词
-no-data-available: 此主题下没有可用的包。
-no-search-results: 没有与 "{ searchTerm }" 相关的搜索结果。
-no-search-results-for-topic: 此主题下没有与 "{ searchTerm }" 相关的搜索结果。
-</i18n>

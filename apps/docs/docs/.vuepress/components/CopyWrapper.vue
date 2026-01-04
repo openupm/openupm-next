@@ -94,6 +94,3 @@ const copyIt = (): void => {
   copied-tooltip: Copied to pasteboard
 </i18n>
 
-<i18n locale="zh-CN" lang="yaml">
-  copied-tooltip: 已复制到剪贴板
-</i18n>

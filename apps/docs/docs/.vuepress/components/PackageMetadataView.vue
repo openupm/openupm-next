@@ -391,7 +391,3 @@ const editLink = computed(() => {
   edit-metadata: Edit package metadata
 </i18n>
 
-<i18n locale="zh-CN" lang="yaml">
-  report-malware-or-abuse: 举报恶意软件或滥用
-  edit-metadata: 编辑软件包元数据
-</i18n>

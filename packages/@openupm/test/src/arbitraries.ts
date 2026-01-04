@@ -112,8 +112,5 @@ export const packageMetadataLocalBaseArb = fc.record<PackageMetadataLocalBase>({
   gitTagPrefix: fc.oneof(fc.constant(undefined), fc.string()),
   gitTagIgnore: fc.oneof(fc.constant(undefined), fc.string()),
   minVersion: fc.oneof(fc.constant(undefined), semanticVersion),
-  displayName_zhCN: fc.oneof(fc.constant(undefined), fc.string()),
-  description_zhCN: fc.oneof(fc.constant(undefined), fc.string()),
-  readme_zhCN: fc.oneof(fc.constant(undefined), fc.string()),
   excludedFromList: fc.oneof(fc.constant(undefined), fc.boolean()),
 });

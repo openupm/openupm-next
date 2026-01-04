@@ -50,7 +50,7 @@ export async function fetchLinkmakerEmbed(id: string): Promise<string> {
       const resp = await fetch(fullUrl, {
         headers: {
           accept: '*/*',
-          'accept-language': 'en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7',
+          'accept-language': 'en-US,en;q=0.9',
           'sec-ch-ua':
             '"Not A(Brand";v="99", "Google Chrome";v="121", "Chromium";v="121"',
           'sec-ch-ua-mobile': '?0',

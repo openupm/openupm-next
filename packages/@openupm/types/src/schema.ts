@@ -17,8 +17,5 @@ export const PackageMetadataLocalBaseSchema = z.object({
   gitTagPrefix: z.string().optional(),
   gitTagIgnore: z.string().optional(),
   minVersion: z.string().optional(),
-  displayName_zhCN: z.string().optional(),
-  description_zhCN: z.string().optional(),
-  readme_zhCN: z.string().optional(),
   excludedFromList: z.boolean().optional(),
 });
