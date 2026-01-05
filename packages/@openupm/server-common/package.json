@@ -31,7 +31,7 @@
     "build:release": "tsc -p tsconfig.release.json",
     "postbuild": "chmod +x build/jobs/*CLI.js",
     "lint": "eslint . --ext .ts --ext .mts",
-    "test": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --coverage",
+    "test": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest -i --coverage",
     "prettier": "prettier --config .prettierrc --write .",
     "test:watch": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --watch"
   },
