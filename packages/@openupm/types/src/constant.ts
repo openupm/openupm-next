@@ -57,6 +57,8 @@ export enum ReleaseErrorCode {
   ConnectionTimeout = 900,
   // Connection timeout
   HeapOutOfMemroy = 901,
+  // Repository exceeded its Git LFS budget
+  LfsBudgetExceeded = 902,
 }
 
 // A list of error codes that should be retried.
