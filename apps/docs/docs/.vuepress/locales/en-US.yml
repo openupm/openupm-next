@@ -99,6 +99,7 @@ release-reason-private: the package is explicitly private
 release-reason-remote-branch-not-found: error remote branch name
 release-reason-remote-repository-unavailable: remote repository unavailable
 release-reason-remote-submodule-unavailable: remote submodule repository unavailable
+release-reason-submodule-fetching-error: submodule commit cannot be fetched
 release-reason-service-unavailable: server unavailable
 release-reason-unauthorized: server unauthorized
 release-reason-version-conflict: the version already exists (check package.json version)
