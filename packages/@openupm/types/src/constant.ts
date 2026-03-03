@@ -59,6 +59,8 @@ export enum ReleaseErrorCode {
   HeapOutOfMemroy = 901,
   // Repository exceeded its Git LFS budget
   LfsBudgetExceeded = 902,
+  // Git LFS object is missing from the remote server
+  LfsObjectNotFound = 903,
 }
 
 // A list of error codes that should be retried.
