@@ -55,6 +55,8 @@ export enum ReleaseErrorCode {
   RemoteSubmoduleUnavailable = 808,
   // Submodule fetch failed
   SubmoduleFetchingError = 809,
+  // npm publish lifecycle hook failed
+  NpmHookError = 810,
   // Connection timeout
   ConnectionTimeout = 900,
   // Connection timeout

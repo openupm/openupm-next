@@ -91,6 +91,7 @@ release-reason-invalid-version: invalid version
 release-reason-lfs-budget-exceeded: the repository exceeded its Git LFS budget
 release-reason-lfs-object-not-found: the requested Git LFS object does not exist on the server
 release-reason-none: unknown error
+release-reason-npm-hook-error: npm publish lifecycle hook failed
 release-reason-package-json-parsing-error: invalid format of package.json
 release-reason-package-name-invalid: the package name includes unsupported {'@'} character
 release-reason-package-name-not-match: the name of package.json isn't matched
