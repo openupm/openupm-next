@@ -24,6 +24,6 @@
     "@openupm/types": "*"
   },
   "volta": {
-    "node": "18.18.2"
+    "node": "22.19.0"
   }
 }

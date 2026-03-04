@@ -147,6 +147,10 @@ const config: any = mergeWith(
       "@theme/Navbar.vue": path.resolve(__dirname, "components/Navbar.vue"),
       // https://github.com/intlify/vue-i18n-next/issues/789
       "vue-i18n": "vue-i18n/dist/vue-i18n.esm-browser.prod.js",
+      "@intlify/shared": path.resolve(
+        __dirname,
+        "../../../../node_modules/vue-i18n/node_modules/@intlify/shared/dist/shared.mjs",
+      ),
     },
     markdown: {
       code: {
@@ -167,6 +171,21 @@ const config: any = mergeWith(
                 ? `${process.env.VITE_OPENUPM_API_SERVER_URL}`
                 : undefined,
           },
+        },
+        resolve: {
+          alias: [
+            {
+              find: /^date-fns\/locale$/,
+              replacement: "date-fns/locale/index.js",
+            },
+            {
+              find: /^@intlify\/shared$/,
+              replacement: path.resolve(
+                __dirname,
+                "../../../../node_modules/vue-i18n/node_modules/@intlify/shared/dist/shared.mjs",
+              ),
+            },
+          ],
         },
         css: {
           preprocessorOptions: {
