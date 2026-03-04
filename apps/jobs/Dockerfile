@@ -1,5 +1,5 @@
 ######## Base ########
-FROM node:18-alpine AS base
+FROM node:22-alpine AS base
 
 ######## Builder ########
 FROM base AS builder
@@ -11,7 +11,7 @@ RUN apk add --no-cache libc6-compat
 # Set working directory
 WORKDIR /app
 # Install turbo
-RUN npm install -g turbo@1.13.4 rimraf
+RUN npm install -g turbo@2.8.13 rimraf
 # Copy the project
 COPY . .
 # Clean and prune
