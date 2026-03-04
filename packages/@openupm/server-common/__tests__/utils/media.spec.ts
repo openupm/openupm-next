@@ -1,18 +1,17 @@
-import { jest } from '@jest/globals';
+import { vi } from 'vitest';
 
-const hgetallMock = jest.fn(async () => ({}));
+const { hgetallMock } = vi.hoisted(() => ({
+  hgetallMock: vi.fn(async () => ({})),
+}));
 
-jest.unstable_mockModule('../../src/redis.js', () => ({
+vi.mock('../../src/redis.js', () => ({
   default: {
-    get client(): { hgetall: typeof hgetallMock } {
-      return {
-        hgetall: hgetallMock,
-      };
+    client: {
+      hgetall: hgetallMock,
     },
   },
 }));
-
-const { getImage } = await import('../../src/utils/media.js');
+import { getImage } from '../../src/utils/media.js';
 
 describe('getImage()', function () {
   it('non-existed url', async function () {

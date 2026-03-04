@@ -1,11 +1,14 @@
-/* eslint-disable jest/no-standalone-expect */
-import { it } from '@fast-check/jest';
+import fc from 'fast-check';
 
 import { reverseDomainName } from '../src/arbitraries.js';
 
 describe('arbitraries', function () {
   // Just a dummy test to make sure the arbitraries can be imported.
-  it.prop([reverseDomainName])('should return contains dot', (name) => {
-    expect(name).toContain('.');
+  it('should return contains dot', () => {
+    fc.assert(
+      fc.property(reverseDomainName, (name) => {
+        expect(name).toContain('.');
+      }),
+    );
   });
 });
