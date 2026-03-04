@@ -25,7 +25,7 @@
     "@fastify/cors": "^8.5.0",
     "@openupm/ads": "*",
     "@openupm/server-common": "*",
-    "config": "^3.3.10",
+    "config": "^4.4.1",
     "dotenv-flow": "^4.0.1",
     "fastify": "^4.25.2",
     "supertest": "^6.3.4",

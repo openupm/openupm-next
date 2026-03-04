@@ -1,5 +1,5 @@
 import path from 'path';
-import config from 'config';
+import configRaw from 'config';
 import fs from 'fs';
 import { promises as afs } from 'fs';
 import yaml from 'js-yaml';
@@ -12,6 +12,9 @@ import {
   GithubUserWithScore,
   TopicBase,
 } from '@openupm/types';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const config = configRaw as any;
 
 /**
  * Get the local data directory.

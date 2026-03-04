@@ -1,5 +1,5 @@
 import sharp from 'sharp';
-import config from 'config';
+import configRaw from 'config';
 
 import { InvalidTag } from '@openupm/types';
 
@@ -7,6 +7,9 @@ import { loadPackageMetadataLocal } from '@openupm/local-data';
 
 import redis from '../redis.js';
 import { getImage } from '../utils/media.js';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const config = configRaw as any;
 
 const REDIS_KEY_ALL_PACKAGES_EXTRA = 'pkgs:extra';
 const REDIS_KEY_PACKAGES_RECENT = 'pkgs:recent';

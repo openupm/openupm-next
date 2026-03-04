@@ -1,4 +1,4 @@
-import config from 'config';
+import configRaw from 'config';
 import fetch, { AbortError } from 'node-fetch';
 import { Logger } from 'ts-log';
 import { pRateLimit } from 'p-ratelimit/build/src/rateLimit.js';
@@ -12,6 +12,9 @@ import {
 import { setAdAssetStore } from '../models/adAssetStore.js';
 import { convertAssetStorePackageToAdAssetStore } from './convert.js';
 import { fetchAssetStoreFinalPrice } from './fetchAssetStoreDiscount.js';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const config = configRaw as any;
 
 export type SearchOrderOption = 'relevance' | 'popularity';
 

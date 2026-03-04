@@ -1,5 +1,8 @@
 import bunyan from 'bunyan';
-import config from 'config';
+import configRaw from 'config';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const config = configRaw as any;
 
 // Create logger for given module
 export function createLogger(name: string): bunyan {

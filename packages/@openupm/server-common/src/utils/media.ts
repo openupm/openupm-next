@@ -5,7 +5,7 @@
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
-import config from 'config';
+import configRaw from 'config';
 import sharp from 'sharp';
 import { isEmpty } from 'lodash-es';
 import { Readable } from 'stream';
@@ -16,6 +16,9 @@ import { getLocalDataDir } from '@openupm/local-data';
 import redis from '../redis.js';
 import { uploadFile } from './s3.js';
 import { createLogger } from '../log.js';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const config = configRaw as any;
 const logger = createLogger('redis');
 
 // Get the media directory.

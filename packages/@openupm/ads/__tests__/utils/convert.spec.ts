@@ -1,10 +1,13 @@
-import config from 'config';
+import configRaw from 'config';
 import {
   convertAdAssetStoreToAdPlacementData,
   convertAssetStorePackageToAdAssetStore,
 } from '../../src/utils/convert.js';
 import { AssetStorePackage } from '../../src/types/assetStore';
 import { AdAssetStore } from '@openupm/types';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const config = configRaw as any;
 
 describe('convertAdAssetStoreToAdPlacementData', function () {
   it('should convert AdAssetStore to AdPlacementData', async function () {

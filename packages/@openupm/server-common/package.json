@@ -30,7 +30,7 @@
     "aws-sdk": "^2.1532.0",
     "bunyan": "^1.8.15",
     "commander": "^11.1.0",
-    "config": "^3.3.10",
+    "config": "^4.4.1",
     "dotenv-flow": "^4.0.1",
     "feed": "^4.2.2",
     "ioredis": "^5.3.2",

@@ -1,10 +1,13 @@
-import config from 'config';
+import configRaw from 'config';
 import { toString } from 'nlcst-to-string';
 import { retext } from 'retext';
 import retextKeywords from 'retext-keywords';
 import retextPos from 'retext-pos';
 
 import { ignoreKeywords } from './ignoreKeywords.js';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const config = configRaw as any;
 
 export type KeywordResult = {
   keywords: string[];

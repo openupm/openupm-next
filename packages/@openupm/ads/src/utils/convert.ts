@@ -1,7 +1,10 @@
-import config from 'config';
+import configRaw from 'config';
 
 import { AdAssetStore, AdPlacementData } from '@openupm/types';
 import { AssetStorePackage } from '../types/assetStore.js';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const config = configRaw as any;
 
 /**
  * Gets the URL for an AdAssetStore.

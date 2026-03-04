@@ -1,7 +1,10 @@
-import config from 'config';
+import configRaw from 'config';
 
 import { createLogger } from '@openupm/server-common/build/log.js';
 import { app } from './apiServer.js';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const config = configRaw as any;
 
 // Logger init
 const logger = createLogger('apiserver');

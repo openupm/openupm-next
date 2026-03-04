@@ -1,6 +1,9 @@
-import config from 'config';
+import configRaw from 'config';
 import { Redis } from 'ioredis';
 import { createLogger } from './log.js';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const config = configRaw as any;
 
 const logger = createLogger('redis');
 

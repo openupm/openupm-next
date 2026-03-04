@@ -1,4 +1,4 @@
-import config from 'config';
+import configRaw from 'config';
 import { Logger } from 'ts-log';
 
 import { loadPackageMetadataLocal } from '@openupm/local-data';
@@ -6,6 +6,9 @@ import { getKeywords } from './keyword.js';
 import { fetchAdAssetStoreListForKeywords } from './fetchAssetStore.js';
 import { collectTextFromPackage } from './collectText.js';
 import { setPackageToAdAssetStoreIds } from '../models/packageToAdAssetStoreIds.js';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const config = configRaw as any;
 
 /**
  * Fetches AdAssetStore id list for a given package name.

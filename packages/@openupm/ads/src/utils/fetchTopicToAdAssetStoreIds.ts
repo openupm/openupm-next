@@ -1,9 +1,12 @@
-import config from 'config';
+import configRaw from 'config';
 import { Logger } from 'ts-log';
 
 import { TopicBase } from '@openupm/types';
 import { fetchAdAssetStoreListForKeywords } from './fetchAssetStore.js';
 import { setTopicToAdAssetStoreIds } from '../models/topicToAdAssetStoreIds.js';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const config = configRaw as any;
 
 /**
  * Fetches AdAssetStore id list for a given topic slug.

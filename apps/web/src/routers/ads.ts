@@ -1,4 +1,4 @@
-import config from 'config';
+import configRaw from 'config';
 import { FastifyInstance, FastifyRequest } from 'fastify';
 
 import { AdPlacementData, AdAssetStore } from '@openupm/types';
@@ -9,6 +9,9 @@ import {
   getTopicToAdAssetStoreIds,
 } from '@openupm/ads/build/models/index.js';
 import { convertAdAssetStoreToAdPlacementData } from '@openupm/ads/build/utils/convert.js';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const config = configRaw as any;
 
 export default function router(server: FastifyInstance): void {
   server.get('/ads/custom', async () => {

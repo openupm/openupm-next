@@ -1,8 +1,11 @@
-import config from 'config';
+import configRaw from 'config';
 import fetch, { AbortError } from 'node-fetch';
 import { pRateLimit } from 'p-ratelimit/build/src/rateLimit.js';
 
 import { runWithTimeoutSignal } from '@openupm/server-common/build/utils/runWithTimeoutSignal.js';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const config = configRaw as any;
 
 const fetchLinkerMakerEmbedRateLimit = pRateLimit(
   config.fetchLinkerMakerEmbedRateLimit,

@@ -1,8 +1,11 @@
 // S3 util.
 
 import fs from 'fs';
-import config from 'config';
+import configRaw from 'config';
 import AWS from 'aws-sdk';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const config = configRaw as any;
 
 /**
  * Get S3 client.

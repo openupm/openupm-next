@@ -1,4 +1,4 @@
-import config from 'config';
+import configRaw from 'config';
 
 import { TOPIC_ALL_SLUG } from '@openupm/types';
 import { loadPackageNames, loadTopics } from '@openupm/local-data';
@@ -6,6 +6,9 @@ import { createLogger } from '@openupm/server-common/build/log.js';
 import { fetchPackageToAdAssetStoreIds } from '../utils/fetchPackageToAdAssetStoreIds.js';
 import { fetchTopicToAdAssetStoreIds } from '../utils/fetchTopicToAdAssetStoreIds.js';
 import { setTopicToAdAssetStoreIds } from '../models/index.js';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const config = configRaw as any;
 
 const logger = createLogger('adAssetStore');
 
