@@ -32,7 +32,7 @@
     "@openupm/types": "*",
     "commander": "^11.1.0",
     "config": "^3.3.10",
-    "dotenv-flow": "^4.0.0",
+    "dotenv-flow": "^4.0.1",
     "nlcst-to-string": "^4.0.0",
     "node-fetch": "^3.3.2",
     "p-ratelimit": "^1.0.1",

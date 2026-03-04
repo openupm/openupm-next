@@ -25,9 +25,9 @@
   "dependencies": {
     "@openupm/ads": "*",
     "@openupm/server-common": "*",
-    "config": "^3.3.9",
+    "config": "^3.3.10",
     "cron": "^3.1.6",
-    "dotenv-flow": "^4.0.0",
+    "dotenv-flow": "^4.0.1",
     "tslib": "~2.6"
   },
   "volta": {
