@@ -4,7 +4,7 @@ const hgetallMock = jest.fn(async () => ({}));
 
 jest.unstable_mockModule('../../src/redis.js', () => ({
   default: {
-    get client() {
+    get client(): { hgetall: typeof hgetallMock } {
       return {
         hgetall: hgetallMock,
       };

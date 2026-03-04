@@ -45,11 +45,11 @@ const hasDiscount = computed(() => {
         </a>
       </div>
       <span class="chip">
-        <i class="fas fa-dollar-sign"></i>{{ priceNumber }}<del class="pl-2" v-if="hasDiscount">{{ originalPriceNumber
+        <i class="fas fa-dollar-sign"></i>{{ priceNumber }}<del v-if="hasDiscount" class="pl-2">{{ originalPriceNumber
         }}</del></span>
       <span v-if="data.ratingAverage && data.ratingCount" class="chip">
-        <i class="fas fa-star" v-for="index in data.ratingAverage" :key="index"></i>
-        <i class="far fa-star" v-for="index in ratingAverageLeft" :key="index"></i>
+        <i v-for="index in data.ratingAverage" :key="index" class="fas fa-star"></i>
+        <i v-for="index in ratingAverageLeft" :key="index" class="far fa-star"></i>
         <span class="pl-1">{{ data.ratingCount }}</span></span>
     </div>
   </div>

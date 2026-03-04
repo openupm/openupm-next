@@ -45,13 +45,21 @@ npm install
 
 ## Development
 
-Build and test:
+Lint, build, and test:
 ```
+# Lint (run this explicitly; build/test no longer run lint for you)
+npm run lint
+
 # Build
 npm run build
 
 # Test
 npm run test
+```
+
+Create a new Node package from the shared template:
+```
+npm run new:node-package -- packages/@openupm/my-package @openupm/my-package
 ```
 
 Run the docs website:

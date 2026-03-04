@@ -58,7 +58,7 @@ export default defineClientConfig({
     router.onError((err) => {
       console.error(err);
       if (/Failed to fetch dynamically imported module/.test(err.message)) {
-        window.location.href = window.location.href;
+        window.location.reload();
       }
     });
   },

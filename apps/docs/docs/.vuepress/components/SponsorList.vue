@@ -39,7 +39,7 @@ const sponsors = computed(() => filteredSponsors.value);
 const randomizedSponsors = ref<Sponsor[]>(filteredSponsors.value);
 const hasHydrated = ref(false);
 
-const shuffleAndStore = (source = filteredSponsors.value) => {
+const shuffleAndStore = (source = filteredSponsors.value): void => {
   randomizedSponsors.value = shuffleArray(source);
 };
 
