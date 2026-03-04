@@ -2,7 +2,14 @@
 
 import fs from 'fs';
 import configRaw from 'config';
-import AWS from 'aws-sdk';
+import {
+  DeleteObjectCommand,
+  DeleteObjectCommandOutput,
+  PutObjectCommandInput,
+  PutObjectCommandOutput,
+  S3Client,
+} from '@aws-sdk/client-s3';
+import { Upload } from '@aws-sdk/lib-storage';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const config = configRaw as any;
@@ -10,10 +17,8 @@ const config = configRaw as any;
 /**
  * Get S3 client.
  */
-export const getS3Client = (): AWS.S3 => {
-  AWS.config.update(config.s3.config);
-  const s3Client = new AWS.S3();
-  return s3Client;
+export const getS3Client = (): S3Client => {
+  return new S3Client(config.s3.config);
 };
 
 /**
@@ -29,28 +34,29 @@ export const uploadFile = function (
   bucket: string,
   localPath: string,
   remotePath: string,
-  acl?: string,
+  acl?: PutObjectCommandInput['ACL'],
   contentType?: string,
-): Promise<object> {
-  const s3 = getS3Client();
+): Promise<PutObjectCommandOutput> {
+  const client = getS3Client();
   const readStream = fs.createReadStream(localPath);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const params: any = {
+  const params: PutObjectCommandInput = {
     Bucket: bucket,
-    Delimiter: '/',
     Key: remotePath,
     Body: readStream,
   };
   if (acl) params.ACL = acl;
   if (contentType) params.ContentType = contentType;
 
-  return new Promise((resolve, reject) => {
-    s3.upload(params, function (err, data) {
-      readStream.destroy();
-      if (err) return reject(err);
-      return resolve(data);
-    });
+  const upload = new Upload({
+    client,
+    params,
   });
+
+  return upload
+    .done()
+    .finally(() => {
+      readStream.destroy();
+    });
 };
 
 /**
@@ -62,17 +68,11 @@ export const uploadFile = function (
 export const removeFile = function (
   bucket: string,
   remotePath: string,
-): Promise<object> {
-  const s3 = getS3Client();
+): Promise<DeleteObjectCommandOutput> {
+  const client = getS3Client();
   const params = {
     Bucket: bucket,
     Key: remotePath,
   };
-
-  return new Promise((resolve, reject) => {
-    s3.deleteObject(params, function (err, data) {
-      if (err) return reject(err);
-      return resolve(data);
-    });
-  });
+  return client.send(new DeleteObjectCommand(params));
 };
