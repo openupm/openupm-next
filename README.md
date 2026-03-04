@@ -1,78 +1,129 @@
 # OpenUPM Next
 
-- [OpenUPM Next](#openupm-next)
-  - [Layout](#layout)
-  - [Install](#install)
-  - [Development](#development)
+Codebase for the OpenUPM website and supporting services.
 
-Codebase for OpenUPM website and services.
+## Monorepo Layout
 
-## Layout
+### Apps
 
-`apps/`
-| Package Name | Description     |
-| ------------ | --------------- |
-| `docs`       | OpenUPM website |
-| `web`        | API web server  |
-| `job`        | cron job server |
+- `apps/docs`: VuePress static site
+- `apps/web`: API web server
+- `apps/jobs`: background jobs and CLI tasks
 
-`packages/` - ecosystem packages
+### Packages
 
-| Package Name              | Description                                                                                                                       |
-| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| `vuepress-plugin-openupm` | Internal VuePress plugin for the OpenUPM website.                                                                                 |
-| `@openupm/types`          | TypeScript type definitions.                                                                                                      |
-| `@openupm/test`           | Test arbitraries for Fast-check.                                                                                                  |
-| `@openupm/common`         | Shared code for Node.js and VuePress.                                                                                             |
-| `@openupm/server-common`  | Shared code for Node.js server.                                                                                                   |
-| `@openupm/local-data`     | Handles [local data](https://github.com/openupm/openupm/tree/master/data) such as package metadata YAML files, topics, backers... |
-| `@openupm/ads`            | ad backend                                                                                                                        |
-| `pkg-template`            | Package template for @openupm/apps                                                                                                |
+- `packages/vuepress-plugin-openupm`: internal VuePress plugin for the docs site
+- `packages/@openupm/types`: shared TypeScript types
+- `packages/@openupm/test`: shared property-test helpers
+- `packages/@openupm/common`: shared code for Node and docs
+- `packages/@openupm/server-common`: shared server-side code
+- `packages/@openupm/local-data`: access to local OpenUPM metadata and repo data
+- `packages/@openupm/ads`: ad backend logic
+- `packages/@openupm/pkg-template`: template used by the package scaffold
 
-## Install
+### Tooling
 
-Install volta to manage node version:
+Shared repo config lives in `tooling/`:
 
-```
+- `tooling/tsconfig`
+- `tooling/eslint`
+- `tooling/jest`
+- `tooling/vitest`
+- `tooling/scripts`
+
+## Requirements
+
+- Volta-managed Node: `22.19.0`
+- npm: `10.9.3`
+
+Install Volta:
+
+```bash
 curl https://get.volta.sh | bash
 ```
 
-Then install dependencies:
+Install dependencies from the repo root:
 
-```
+```bash
 npm install
 ```
 
-## Development
+## Common Commands
 
-Lint, build, and test:
-```
-# Lint (run this explicitly; build/test no longer run lint for you)
+Run these from the repo root unless noted otherwise.
+
+```bash
+# Lint (explicitly)
 npm run lint
 
-# Build
+# Build all workspaces
 npm run build
 
-# Test
-npm run test
+# Run tests across the workspace
+npm test
+
+# Clean generated outputs
+npm run clean
+
+# Force a fresh uncached release build
+npm run build:release -- --force
 ```
 
+## Development Notes
+
+- `npm run lint` is separate on purpose. `build` and `test` do not run lint implicitly.
+- Root `npm test` runs workspace tests through Turbo and builds dependent packages first.
+- The repo uses Vitest for tests.
+- Shared configuration should usually be changed in `tooling/`, not copied into leaf packages.
+
+## Package Scaffolding
+
 Create a new Node package from the shared template:
-```
+
+```bash
 npm run new:node-package -- packages/@openupm/my-package @openupm/my-package
 ```
 
-Run the docs website:
-```
+## Local Services
+
+Run the docs site:
+
+```bash
 cd apps/docs
 npm run docs:dev
 ```
 
-Test the local web API server:
-```
+Run the API server:
+
+```bash
 cd apps/web
 npm run start
+```
 
+Point the docs app at the local API server:
+
+```bash
 cd apps/docs
 VITE_OPENUPM_API_SERVER_URL=http://localhost:3600 npm run docs:dev
 ```
+
+## Local Data
+
+Some packages and builds depend on OpenUPM metadata from the `openupm/openupm` repository.
+
+CI provides this through `OPENUPM_DATA_PATH`. For local runs, set it manually when needed:
+
+```bash
+OPENUPM_DATA_PATH=/abs/path/to/openupm/data npm test
+```
+
+## Docs Build
+
+The quickest full docs SSR smoke test is:
+
+```bash
+cd apps/docs
+npm run docs:build:limit
+```
+
+The docs app includes Node 22 compatibility aliases in `apps/docs/docs/.vuepress/config.ts`. Keep those in place unless the VuePress / Vue I18n dependency stack is upgraded and revalidated.
