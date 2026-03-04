@@ -76,7 +76,7 @@ function mockAssetStorePackage(initials: any): AssetStorePackage {
 }
 
 // Mock linkmaker embed response content.
-function mockLinkmakerEmbedContent(finalPrice: string) {
+function mockLinkmakerEmbedContent(finalPrice: string): string {
   return `originalPrice: { itemId: "...", originalPrice: "...", finalPrice: "${finalPrice}"},`;
 }
 

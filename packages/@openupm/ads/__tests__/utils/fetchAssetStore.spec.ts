@@ -7,7 +7,7 @@ import { AdAssetStore } from '../../../types/build';
 import { mock } from 'ts-mockito';
 
 // Mock linkmaker embed response content.
-function mockLinkmakerEmbedContent(finalPrice: string) {
+function mockLinkmakerEmbedContent(finalPrice: string): string {
   return `originalPrice: { itemId: "...", originalPrice: "...", finalPrice: "${finalPrice}"},`;
 }
 

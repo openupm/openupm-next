@@ -45,8 +45,11 @@ npm install
 
 ## Development
 
-Build and test:
+Lint, build, and test:
 ```
+# Lint (run this explicitly; build/test no longer run lint for you)
+npm run lint
+
 # Build
 npm run build
 

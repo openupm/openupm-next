@@ -35,8 +35,8 @@ const hasDiscount = computed(() => {
     </div>
     <div class="ad-meta">
       <template v-if="data.ratingAverage && data.ratingCount">
-        <i class="fas fa-star" v-for="index in data.ratingAverage" :key="index"></i>
-        <i class="far fa-star" v-for="index in ratingAverageLeft" :key="index"></i>
+        <i v-for="index in data.ratingAverage" :key="index" class="fas fa-star"></i>
+        <i v-for="index in ratingAverageLeft" :key="index" class="far fa-star"></i>
         <span class="pl-1 pr-2">({{ data.ratingCount }})</span>
       </template>
       <span class="ad-price text-bold">{{ data.price }}</span>

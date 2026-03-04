@@ -102,8 +102,15 @@ export const translateFallback = function (
  * @param action The action to log
  * @param params The action parameters
  */
-export const logEvent = function (action: string, params: any): void {
-  (window as any).gtag("event", action, params);
+type GtagWindow = Window & {
+  gtag?: (command: "event", action: string, params: Record<string, unknown>) => void;
+};
+
+export const logEvent = function (
+  action: string,
+  params: Record<string, unknown>,
+): void {
+  (window as GtagWindow).gtag?.("event", action, params);
 };
 
 /**
