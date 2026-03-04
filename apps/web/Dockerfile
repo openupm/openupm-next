@@ -18,6 +18,7 @@ COPY . .
 RUN turbo run clean
 RUN rm -rf out
 RUN turbo prune @openupm/web --docker
+RUN cp -R tooling out/tooling
 
 ######## Installer ########
 FROM base AS installer
@@ -25,17 +26,13 @@ RUN apk update
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-# Add lockfile and package.json's of isolated subworkspace
-COPY .gitignore .gitignore
-COPY --from=builder /app/out/json/ .
-COPY --from=builder /app/out/package-lock.json ./package-lock.json
+# Copy pruned workspace
+COPY --from=builder /app/out/ ./
 
-# First install dependencies (as they change less often)
+# Install dependencies
 RUN npm install
 
 # Build the project and its dependencies
-COPY --from=builder /app/out/full/ .
-COPY turbo.json turbo.json
 RUN npm run build -- --filter=@openupm/web
 
 # Re-install dependencies for the app, so that .bin links work for packages just built
