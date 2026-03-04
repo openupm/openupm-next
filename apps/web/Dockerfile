@@ -3,6 +3,7 @@ FROM node:22-alpine AS base
 
 ######## Builder ########
 FROM base AS builder
+ARG TURBO_VERSION=2.8.13
 
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
 RUN apk update
@@ -11,7 +12,7 @@ RUN apk add --no-cache libc6-compat
 # Set working directory
 WORKDIR /app
 # Install turbo
-RUN npm install -g turbo@2.8.13 rimraf
+RUN npm install -g turbo@${TURBO_VERSION} rimraf
 # Copy the project
 COPY . .
 # Clean and prune
