@@ -26,13 +26,12 @@ RUN apk update
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-# Copy the pruned workspace explicitly. BuildKit was not materializing
-# the broad directory copy reliably in Actions, which left /app/package.json missing.
-COPY --from=builder /app/out/package.json ./package.json
-COPY --from=builder /app/out/package-lock.json ./package-lock.json
-COPY --from=builder /app/out/turbo.json ./turbo.json
-COPY --from=builder /app/out/apps ./apps
-COPY --from=builder /app/out/packages ./packages
+# Copy the pruned install graph and workspace sources from Turbo's Docker layout.
+COPY --from=builder /app/out/json/package.json ./package.json
+COPY --from=builder /app/out/json/package-lock.json ./package-lock.json
+COPY --from=builder /app/out/full/apps ./apps
+COPY --from=builder /app/out/full/packages ./packages
+COPY --from=builder /app/out/full/turbo.json ./turbo.json
 COPY --from=builder /app/out/tooling ./tooling
 
 # Install dependencies
