@@ -15,6 +15,18 @@
     "plugin:jest/recommended",
     "prettier"
   ],
+  "overrides": [
+    {
+      "files": [
+        "**/__tests__/**/*.ts",
+        "**/*.spec.ts",
+        "**/*.test.ts"
+      ],
+      "rules": {
+        "@typescript-eslint/explicit-function-return-type": "off"
+      }
+    }
+  ],
   "rules": {
     "@typescript-eslint/explicit-function-return-type": "warn"
   }
