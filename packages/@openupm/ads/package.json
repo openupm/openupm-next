@@ -17,9 +17,9 @@
     "build:release": "tsc -p tsconfig.json --sourceMap false --removeComments",
     "postbuild": "chmod +x build/jobs/adAssetStoreCLI.js",
     "lint": "eslint . --ext .ts --ext .mts",
-    "test": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest -i",
+    "test": "cross-env NODE_ENV=test vitest run --config vitest.config.js",
     "prettier": "prettier --config .prettierrc --write .",
-    "test:watch": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --watch"
+    "test:watch": "cross-env NODE_ENV=test vitest --config vitest.config.js"
   },
   "bin": {
     "adAssetStore": "build/jobs/adAssetStoreCLI.js"
