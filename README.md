@@ -54,6 +54,11 @@ npm run build
 npm run test
 ```
 
+Create a new Node package from the shared template:
+```
+npm run new:node-package -- packages/@openupm/my-package @openupm/my-package
+```
+
 Run the docs website:
 ```
 cd apps/docs

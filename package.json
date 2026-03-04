@@ -13,6 +13,7 @@
     "docker:run": "turbo run docker:run",
     "docker:push": "turbo run docker:push",
     "lint": "turbo run lint",
+    "new:node-package": "node tooling/scripts/create-node-package.mjs",
     "test": "turbo run test",
     "turbo": "turbo"
   },
