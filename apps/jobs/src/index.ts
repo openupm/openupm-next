@@ -4,6 +4,10 @@ import {
   fetchPackageToAdAssetStoreIdsJob,
   fetchTopicToAdAssetStoreIdsJob,
 } from '@openupm/ads/build/jobs/adAssetStore.js';
+import { aggregatePackageExtraJob } from './jobs/aggregatePackageExtra.js';
+import { fetchBackerDataJob } from './jobs/fetchBackerData.js';
+import { fetchSiteInfoJob } from './jobs/fetchSiteInfo.js';
+import { updateFeedsJob } from './jobs/updateFeeds.js';
 
 const logger = createLogger('@openupm/jobs');
 
@@ -37,6 +41,58 @@ function main(): void {
       console.log('fetchTopicToAdAssetStoreIdsJob is completed.');
     },
     true, // start
+  );
+  // aggregatePackageExtraJob
+  new CronJob(
+    '*/5 * * * *',
+    async () => {
+      logger.info('aggregatePackageExtraJob starts.');
+      await aggregatePackageExtraJob();
+      logger.info('aggregatePackageExtraJob ends.');
+    },
+    () => {
+      console.log('aggregatePackageExtraJob is completed.');
+    },
+    true,
+  );
+  // updateFeedsJob
+  new CronJob(
+    '*/5 * * * *',
+    async () => {
+      logger.info('updateFeedsJob starts.');
+      await updateFeedsJob();
+      logger.info('updateFeedsJob ends.');
+    },
+    () => {
+      console.log('updateFeedsJob is completed.');
+    },
+    true,
+  );
+  // fetchSiteInfoJob
+  new CronJob(
+    '*/5 * * * *',
+    async () => {
+      logger.info('fetchSiteInfoJob starts.');
+      await fetchSiteInfoJob();
+      logger.info('fetchSiteInfoJob ends.');
+    },
+    () => {
+      console.log('fetchSiteInfoJob is completed.');
+    },
+    true,
+  );
+  // fetchBackerDataJob
+  new CronJob(
+    '*/30 * * * *',
+    async () => {
+      logger.info('fetchBackerDataJob starts.');
+      await fetchBackerDataJob(false);
+      logger.info('fetchBackerDataJob ends.');
+    },
+    () => {
+      console.log('fetchBackerDataJob is completed.');
+    },
+    true,
   );
 }
 

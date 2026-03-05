@@ -53,4 +53,14 @@
     interval: 2000, // ms
     rate: 1,
   },
+
+  // PackageExtra
+  packageExtra: {
+    // 1 day
+    image: { width: 600, height: 300, duration: 86400000 },
+    avatar: {
+      small: { size: 48, duration: 86400000 },
+      normal: { size: 128, duration: 86400000 },
+    },
+  },
 }
