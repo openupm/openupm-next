@@ -1,0 +1,10 @@
+{
+  "extends": "../../tooling/tsconfig/node.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "build"
+  },
+  "include": [
+    "src/**/*"
+  ]
+}
