@@ -1,6 +1,0 @@
-{
-  // Mount this file as config/local.json in runtime.
-  github: {
-    tokens: ['ghp_token_1', 'ghp_token_2'],
-  },
-}
