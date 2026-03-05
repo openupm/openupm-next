@@ -6,6 +6,7 @@ import {
 } from '@openupm/ads/build/jobs/adAssetStore.js';
 import { aggregatePackageExtraJob } from './jobs/aggregatePackageExtra.js';
 import { fetchBackerDataJob } from './jobs/fetchBackerData.js';
+import { fetchPackageExtraJob } from './jobs/fetchPackageExtra.js';
 import { fetchSiteInfoJob } from './jobs/fetchSiteInfo.js';
 import { updateFeedsJob } from './jobs/updateFeeds.js';
 
@@ -91,6 +92,19 @@ function main(): void {
     },
     () => {
       console.log('fetchBackerDataJob is completed.');
+    },
+    true,
+  );
+  // fetchPackageExtraJob
+  new CronJob(
+    '1 */2 * * *',
+    async () => {
+      logger.info('fetchPackageExtraJob starts.');
+      await fetchPackageExtraJob(null, { all: true, force: false });
+      logger.info('fetchPackageExtraJob ends.');
+    },
+    () => {
+      console.log('fetchPackageExtraJob is completed.');
     },
     true,
   );
