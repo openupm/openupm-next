@@ -18,7 +18,10 @@
     "lint": "eslint . --ext .ts --ext .mts",
     "test": "cross-env NODE_ENV=test vitest run --config vitest.config.js",
     "prettier": "prettier --config .prettierrc --write .",
-    "test:watch": "cross-env NODE_ENV=test vitest --config vitest.config.js"
+    "test:watch": "cross-env NODE_ENV=test vitest --config vitest.config.js",
+    "docker:build": "sudo docker buildx build -t favoyang/openupm-queue ../.. -f Dockerfile",
+    "docker:run": "sudo docker run -it --rm --network=host favoyang/openupm-queue",
+    "docker:push": "docker push favoyang/openupm-queue:latest"
   },
   "dependencies": {
     "@openupm/local-data": "*",
