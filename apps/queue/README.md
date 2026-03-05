@@ -11,5 +11,10 @@ Queue worker app for build queues.
 
 ## Migration Status
 
-- Queue core and add-build-package-job are migrated to TypeScript.
-- `buildPackage` and `buildRelease` worker internals are intentionally fail-fast placeholders and must be migrated before production use.
+- Queue core, `add-build-package-job`, `buildPackage`, and `buildRelease` are migrated to TypeScript.
+- Build and test entry points are available through package scripts:
+  - `npm run start` for `queue-pkg`
+  - `npm run start:rel` for `queue-rel`
+  - `npm run start:add-build-package-job:all` for periodic package scheduling
+
+See `MIGRATION.md` for PM2-to-Docker command mapping.

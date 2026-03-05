@@ -9,6 +9,7 @@ Codebase for the OpenUPM website and supporting services.
 - `apps/docs`: VuePress static site
 - `apps/web`: API web server
 - `apps/jobs`: background jobs and CLI tasks
+- `apps/queue`: build queue workers (`queue-pkg`, `queue-rel`, `add-build-package-job`)
 
 ### Packages
 

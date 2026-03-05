@@ -7,7 +7,9 @@
   "license": "BSD-3-Clause",
   "main": "build/index.js",
   "scripts": {
-    "start": "node build/index.js",
+    "start": "node build/index.js process pkg",
+    "start:rel": "node build/index.js process rel",
+    "start:add-build-package-job:all": "node build/index.js add-build-package-job --all",
     "start:dev": "nodemon --watch config --watch build --watch ../../packages build/index.js",
     "clean": "rimraf coverage build tmp",
     "build": "tsc -p tsconfig.json",
