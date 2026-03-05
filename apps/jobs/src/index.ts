@@ -8,6 +8,7 @@ import { aggregatePackageExtraJob } from './jobs/aggregatePackageExtra.js';
 import { fetchBackerDataJob } from './jobs/fetchBackerData.js';
 import { fetchPackageExtraJob } from './jobs/fetchPackageExtra.js';
 import { fetchSiteInfoJob } from './jobs/fetchSiteInfo.js';
+import { updateRecentPackagesJob } from './jobs/updateRecentPackages.js';
 import { updateFeedsJob } from './jobs/updateFeeds.js';
 
 const logger = createLogger('@openupm/jobs');
@@ -92,6 +93,19 @@ function main(): void {
     },
     () => {
       console.log('fetchBackerDataJob is completed.');
+    },
+    true,
+  );
+  // updateRecentPackagesJob
+  new CronJob(
+    '*/5 * * * *',
+    async () => {
+      logger.info('updateRecentPackagesJob starts.');
+      await updateRecentPackagesJob();
+      logger.info('updateRecentPackagesJob ends.');
+    },
+    () => {
+      console.log('updateRecentPackagesJob is completed.');
     },
     true,
   );
