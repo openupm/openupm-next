@@ -12,6 +12,12 @@
     db: 0,
   },
 
+  // GitHub.
+  github: {
+    // Round-robin tokens for GitHub API calls.
+    tokens: [],
+  },
+
   // S3.
   s3: {
     config: {

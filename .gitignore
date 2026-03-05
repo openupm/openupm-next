@@ -30,3 +30,9 @@ coverage/
 
 .turbo
 /data
+
+# Runtime-only node-config local overrides (mount as secrets/volumes).
+apps/*/config/local.json
+apps/*/config/local.json5
+apps/*/config/local-*.json
+apps/*/config/local-*.json5

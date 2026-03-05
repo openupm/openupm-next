@@ -1,3 +1,10 @@
-# @openupm/web
+# @openupm/jobs
 
-The Node.js app for OpenUPM API web server.
+The Node.js app for OpenUPM background jobs.
+
+## Auth Config
+
+- Configure tokens via node-config files.
+- Keep defaults as skeletons in `config/default.json5`.
+- Mount runtime secrets as `config/local.json` (gitignored), for example:
+  - `github.tokens`: round-robin token array for GitHub API calls.

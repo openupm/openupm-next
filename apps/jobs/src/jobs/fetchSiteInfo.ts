@@ -1,18 +1,20 @@
 import { createLogger } from '@openupm/server-common/build/log.js';
 import { setStars } from '@openupm/server-common/build/models/siteInfo.js';
+import { withGitHubAuthorizationHeader } from '@openupm/server-common/build/utils/githubToken.js';
+import configRaw from 'config';
 
 const logger = createLogger('@openupm/jobs/fetchSiteInfo');
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const config = configRaw as any;
 
 export async function fetchGitHubStars(repo: string): Promise<number> {
   const url = `https://api.github.com/repos/${repo}`;
   const headers: Record<string, string> = {
     Accept: 'application/vnd.github.v3.json',
   };
-  if (process.env.GITHUB_TOKEN) {
-    headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
-  }
+  const requestHeaders = withGitHubAuthorizationHeader(config, headers, 'jobs');
   const response = await fetch(url, {
-    headers,
+    headers: requestHeaders,
     method: 'GET',
     signal: AbortSignal.timeout(10000),
   });

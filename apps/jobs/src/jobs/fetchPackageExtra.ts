@@ -27,6 +27,7 @@ import {
 } from '@openupm/server-common/build/models/packageExtra.js';
 import { addImage, getImage } from '@openupm/server-common/build/utils/media.js';
 import { createLogger } from '@openupm/server-common/build/log.js';
+import { withGitHubAuthorizationHeader } from '@openupm/server-common/build/utils/githubToken.js';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const config = configRaw as any;
@@ -180,12 +181,14 @@ async function fetchRepoInfo(repo: string, packageName: string): Promise<void> {
     const headers: Record<string, string> = {
       Accept: 'application/vnd.github.v3.json',
     };
-    if (process.env.GITHUB_TOKEN) {
-      headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
-    }
+    const requestHeaders = withGitHubAuthorizationHeader(
+      config,
+      headers,
+      'jobs',
+    );
 
     const resp = await fetch(`https://api.github.com/repos/${repo}`, {
-      headers,
+      headers: requestHeaders,
       method: 'GET',
       signal: AbortSignal.timeout(10000),
     });

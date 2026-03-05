@@ -52,4 +52,27 @@
       interval: 30000,
     },
   },
+
+  // GitHub.
+  github: {
+    // Round-robin tokens for GitHub access.
+    tokens: [],
+  },
+
+  // Azure devops.
+  azureDevops: {
+    endpoint: 'https://dev.azure.com/openupm',
+    token: '',
+    project: 'openupm',
+    definitionId: 1,
+    check: {
+      // The estimated wait time for azure to process a build.
+      duration: 45000,
+      // Repeat check count.
+      retries: 5,
+      // Repeat interval step - [interval, interval * 2, ..., interval * retries].
+      retryIntervalStep: 10000,
+    },
+    buildUrlBase: 'https://dev.azure.com/openupm/43915a16-5763-427d-8190-b9eccec12894/',
+  },
 }

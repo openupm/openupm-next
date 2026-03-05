@@ -21,6 +21,7 @@ import {
   setRepoUnavailable,
 } from '@openupm/server-common/build/models/packageExtra.js';
 import { createLogger } from '@openupm/server-common/build/log.js';
+import { getNextGitHubToken } from '@openupm/server-common/build/utils/githubToken.js';
 
 import { addJob, getQueue } from '../queues/core.js';
 import { gitListRemoteTags, RemoteTag } from '../utils/git.js';
@@ -29,11 +30,38 @@ import { gitListRemoteTags, RemoteTag } from '../utils/git.js';
 const config = configRaw as any;
 const logger = createLogger('@openupm/queue/buildPackage');
 
-function toGitRepoUrl(url: string): string {
-  if (url.startsWith('git@github.com:')) return url;
+function parseGitHubRepo(
+  url: string,
+): { owner: string; repo: string } | null {
+  if (url.startsWith('git@github.com:')) {
+    const path = url.split(':')[1] || '';
+    const [owner, rawRepo] = path.split('/').filter(Boolean);
+    if (!owner || !rawRepo) return null;
+    return { owner, repo: rawRepo.replace(/\.git$/i, '') };
+  }
+  try {
+    const parsed = new URL(url);
+    if (!/github\.com$/i.test(parsed.host)) return null;
+    const [owner, rawRepo] = parsed.pathname.split('/').filter(Boolean);
+    if (!owner || !rawRepo) return null;
+    return { owner, repo: rawRepo.replace(/\.git$/i, '') };
+  } catch {
+    return null;
+  }
+}
+
+export function toGitRepoUrl(url: string, token?: string | null): string {
+  const githubRepo = parseGitHubRepo(url);
+  if (githubRepo) {
+    if (token) {
+      return `https://x-access-token:${encodeURIComponent(token)}@github.com/${githubRepo.owner}/${githubRepo.repo}.git`;
+    }
+    return `git@github.com:${githubRepo.owner}/${githubRepo.repo}.git`;
+  }
+  if (url.startsWith('git@')) return url;
   const parsed = new URL(url);
   const [owner, repo] = parsed.pathname.split('/').filter(Boolean);
-  return `git@${parsed.host}:${owner}/${repo}.git`;
+  return `git@${parsed.host}:${owner}/${repo.replace(/\.git$/i, '')}.git`;
 }
 
 export async function buildPackage(name: string): Promise<void> {
@@ -42,7 +70,8 @@ export async function buildPackage(name: string): Promise<void> {
 
   let remoteTags: RemoteTag[] = [];
   try {
-    remoteTags = await gitListRemoteTags(toGitRepoUrl(pkg.repoUrl));
+    const githubToken = getNextGitHubToken(config, 'queue');
+    remoteTags = await gitListRemoteTags(toGitRepoUrl(pkg.repoUrl, githubToken));
     await setRepoUnavailable(name, false);
   } catch (error) {
     const message = (error as Error).message || '';

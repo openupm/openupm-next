@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import {
   filterRemoteTags,
   getInvalidTags,
+  toGitRepoUrl,
 } from '../../src/workers/buildPackage.js';
 
 describe('buildPackage.filterRemoteTags', () => {
@@ -69,5 +70,17 @@ describe('buildPackage.getInvalidTags', () => {
       gitTagIgnore: '-preview$',
     });
     expect(names).toEqual([{ tag: 'releases/2.0.0.1', commit: '0000002' }]);
+  });
+});
+
+describe('buildPackage.toGitRepoUrl', () => {
+  it('uses tokenized https url for github when token exists', () => {
+    const url = toGitRepoUrl('https://github.com/openupm/openupm.git', 'tok');
+    expect(url).toEqual('https://x-access-token:tok@github.com/openupm/openupm.git');
+  });
+
+  it('uses ssh url for github when token missing', () => {
+    const url = toGitRepoUrl('https://github.com/openupm/openupm');
+    expect(url).toEqual('git@github.com:openupm/openupm.git');
   });
 });

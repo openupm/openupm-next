@@ -18,3 +18,11 @@ Queue worker app for build queues.
   - `npm run start:add-build-package-job:all` for periodic package scheduling
 
 See `MIGRATION.md` for PM2-to-Docker command mapping.
+
+## Auth Config
+
+- Configure tokens via node-config files.
+- Keep defaults as skeletons in `config/default.json5`.
+- Mount runtime secrets as `config/local.json` (gitignored), for example:
+  - `github.tokens`: round-robin token array for GitHub access.
+  - `azureDevops.token`: Azure DevOps PAT.
