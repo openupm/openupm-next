@@ -25,7 +25,7 @@ These move to `apps/jobs` and run by cron inside that service:
 
 - `fetchPackageExtra`
 - `aggregatePackageExtra`
-- `updateRecentPackages` (pending migration)
+- `updateRecentPackages`
 - `fetchSiteInfo`
 - `updateFeeds`
 - `fetchBackerData`
