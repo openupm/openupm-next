@@ -118,11 +118,6 @@ const docSideBar = function (): any {
       children: ["/support/", "/contributors/"],
     },
     {
-      text: "Development Guide",
-      collapsible: true,
-      children: ["/docs/dev/"],
-    },
-    {
       text: "Resources",
       collapsible: true,
       children: [
