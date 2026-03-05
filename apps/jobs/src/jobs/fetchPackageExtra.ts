@@ -181,11 +181,7 @@ async function fetchRepoInfo(repo: string, packageName: string): Promise<void> {
     const headers: Record<string, string> = {
       Accept: 'application/vnd.github.v3.json',
     };
-    const requestHeaders = withGitHubAuthorizationHeader(
-      config,
-      headers,
-      'jobs',
-    );
+    const requestHeaders = withGitHubAuthorizationHeader(config, headers);
 
     const resp = await fetch(`https://api.github.com/repos/${repo}`, {
       headers: requestHeaders,

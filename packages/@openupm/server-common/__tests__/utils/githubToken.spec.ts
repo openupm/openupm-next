@@ -21,24 +21,21 @@ describe('githubToken utils', () => {
 
   it('returns round-robin token per scope', () => {
     const config = { github: { tokens: ['a', 'b'] } };
-    expect(getNextGitHubToken(config, 'jobs')).toBe('a');
-    expect(getNextGitHubToken(config, 'jobs')).toBe('b');
-    expect(getNextGitHubToken(config, 'jobs')).toBe('a');
+    expect(getNextGitHubToken(config)).toBe('a');
+    expect(getNextGitHubToken(config)).toBe('b');
+    expect(getNextGitHubToken(config)).toBe('a');
   });
 
-  it('keeps independent state between scopes', () => {
+  it('uses bounded counter (no unbounded growth)', () => {
     const config = { github: { tokens: ['a', 'b'] } };
-    expect(getNextGitHubToken(config, 'jobs')).toBe('a');
-    expect(getNextGitHubToken(config, 'queue')).toBe('a');
-    expect(getNextGitHubToken(config, 'jobs')).toBe('b');
-    expect(getNextGitHubToken(config, 'queue')).toBe('b');
+    for (let i = 0; i < 1000; i++) getNextGitHubToken(config);
+    expect(getNextGitHubToken(config)).toBe('a');
   });
 
   it('adds authorization header when token exists', () => {
     const headers = withGitHubAuthorizationHeader(
       { github: { tokens: ['tok-a'] } },
       { Accept: 'application/json' },
-      'jobs',
     );
     expect(headers).toEqual({
       Accept: 'application/json',

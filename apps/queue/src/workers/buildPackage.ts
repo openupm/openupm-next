@@ -70,7 +70,7 @@ export async function buildPackage(name: string): Promise<void> {
 
   let remoteTags: RemoteTag[] = [];
   try {
-    const githubToken = getNextGitHubToken(config, 'queue');
+    const githubToken = getNextGitHubToken(config);
     remoteTags = await gitListRemoteTags(toGitRepoUrl(pkg.repoUrl, githubToken));
     await setRepoUnavailable(name, false);
   } catch (error) {

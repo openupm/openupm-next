@@ -12,7 +12,7 @@ export async function fetchGitHubStars(repo: string): Promise<number> {
   const headers: Record<string, string> = {
     Accept: 'application/vnd.github.v3.json',
   };
-  const requestHeaders = withGitHubAuthorizationHeader(config, headers, 'jobs');
+  const requestHeaders = withGitHubAuthorizationHeader(config, headers);
   const response = await fetch(url, {
     headers: requestHeaders,
     method: 'GET',

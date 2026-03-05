@@ -20,23 +20,22 @@ export function getGitHubTokens(config: GenericConfig): string[] {
 
 export function getNextGitHubToken(
   config: GenericConfig,
-  scope = 'default',
 ): string | null {
   const tokens = getGitHubTokens(config);
   if (!tokens.length) return null;
 
+  const scope = 'default';
   const current = roundRobinState[scope] ?? 0;
   const index = current % tokens.length;
-  roundRobinState[scope] = current + 1;
+  roundRobinState[scope] = (current + 1) % tokens.length;
   return tokens[index];
 }
 
 export function withGitHubAuthorizationHeader(
   config: GenericConfig,
   headers: Record<string, string>,
-  scope = 'default',
 ): Record<string, string> {
-  const token = getNextGitHubToken(config, scope);
+  const token = getNextGitHubToken(config);
   if (!token) return headers;
   return { ...headers, Authorization: `Bearer ${token}` };
 }

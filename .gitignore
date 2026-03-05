@@ -36,3 +36,11 @@ apps/*/config/local.json
 apps/*/config/local.json5
 apps/*/config/local-*.json
 apps/*/config/local-*.json5
+packages/*/config/local.json
+packages/*/config/local.json5
+packages/*/config/local-*.json
+packages/*/config/local-*.json5
+packages/@openupm/*/config/local.json
+packages/@openupm/*/config/local.json5
+packages/@openupm/*/config/local-*.json
+packages/@openupm/*/config/local-*.json5
