@@ -18,6 +18,8 @@ const redisManager = {
     if (this._client == null) {
       const redisOptions = {
         ...config.redis,
+        // Keep reconnect delay fixed at 5s for now to avoid reconnect storms.
+        // If we need environment-specific tuning, move this into config later.
         retryStrategy: (): number => {
           return 5000;
         },
