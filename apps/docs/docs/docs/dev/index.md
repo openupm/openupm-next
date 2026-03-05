@@ -46,33 +46,30 @@ OpenUPM watches the package curated list regularly detects new contents and uses
 
 ### Cronjob
 
-OpenUPM uses pm2 cron feature to run cronjobs.
+OpenUPM runs scheduled jobs in the `apps/jobs` service (Docker deploy), using in-process cron schedules.
 
 | Job                     | Description                          | GitHub Reset API | GitHub GraphQL API |
 | ----------------------- | ------------------------------------ | ---------------: | -----------------: |
-| add-build-package-job   | add build-pkg to the job queue.      |                  |                    |
 | fetch-package-extra     | fetch package README, stars, ogimage |                n |                 2n |
 | aggregate-package-extra | aggregate package extra              |                  |                    |
 | update-recent-packages  | update recent updated packages       |                  |                    |
 | fetch-site-info         | fetch repo stars                     |                1 |                    |
 | update-feeds            | update RSS feeds                     |                  |                    |
+| fetch-backer-data       | sync backer information              |                  |                    |
 
 ### Job Queue
 
-OpenUPM uses [Bee-Queue](https://github.com/bee-queue/bee-queue) to manage the job queue.
+OpenUPM runs build queue workers in the `apps/queue` service (Docker deploy), using BullMQ.
 
 | Job                     | Description                                                  | GitHub API |
 | ----------------------- | ------------------------------------------------------------ | ---------: |
+| add-build-package-job   | add build-pkg jobs to the queue                             |          0 |
 | `build-pkg:<pkg>`       | fetch repo info and create build-rel jobs for valid Git tags |          0 |
 | `build-rel:<pkg>:<ver>` | build pkg@version via Azure Pipelines                        |          0 |
 
 ### GitHub Rate Limit
 
-Print the [rate limit](https://docs.github.com/en/free-pro-team@latest/rest/reference/rate-limit) status.
-
-```
-yarn gh:ratelimit
-```
+Check the [GitHub rate limit](https://docs.github.com/en/free-pro-team@latest/rest/reference/rate-limit) in your operational dashboards/logs for jobs and queue services.
 
 ## Website Frontend
 
