@@ -21,7 +21,6 @@ import {
   setRepoUnavailable,
 } from '@openupm/server-common/build/models/packageExtra.js';
 import { createLogger } from '@openupm/server-common/build/log.js';
-import { getNextGitHubToken } from '@openupm/server-common/build/utils/githubToken.js';
 
 import { addJob, getQueue } from '../queues/core.js';
 import { gitListRemoteTags, RemoteTag } from '../utils/git.js';
@@ -50,13 +49,13 @@ function parseGitHubRepo(
   }
 }
 
-export function toGitRepoUrl(url: string, token?: string | null): string {
+export function toGitRepoUrl(url: string): string {
   const githubRepo = parseGitHubRepo(url);
   if (githubRepo) {
-    if (token) {
-      return `https://x-access-token:${encodeURIComponent(token)}@github.com/${githubRepo.owner}/${githubRepo.repo}.git`;
-    }
-    return `git@github.com:${githubRepo.owner}/${githubRepo.repo}.git`;
+    // Intentionally use anonymous HTTPS for public repo tag listing.
+    // If private repos or rate-limit issues become relevant, we can switch to
+    // tokenized HTTPS credential injection via config-driven GitHub tokens.
+    return `https://github.com/${githubRepo.owner}/${githubRepo.repo}.git`;
   }
   if (url.startsWith('git@')) return url;
   const parsed = new URL(url);
@@ -70,8 +69,7 @@ export async function buildPackage(name: string): Promise<void> {
 
   let remoteTags: RemoteTag[] = [];
   try {
-    const githubToken = getNextGitHubToken(config);
-    remoteTags = await gitListRemoteTags(toGitRepoUrl(pkg.repoUrl, githubToken));
+    remoteTags = await gitListRemoteTags(toGitRepoUrl(pkg.repoUrl));
     await setRepoUnavailable(name, false);
   } catch (error) {
     const message = (error as Error).message || '';

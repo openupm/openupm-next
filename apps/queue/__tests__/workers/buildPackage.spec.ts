@@ -74,13 +74,13 @@ describe('buildPackage.getInvalidTags', () => {
 });
 
 describe('buildPackage.toGitRepoUrl', () => {
-  it('uses tokenized https url for github when token exists', () => {
-    const url = toGitRepoUrl('https://github.com/openupm/openupm.git', 'tok');
-    expect(url).toEqual('https://x-access-token:tok@github.com/openupm/openupm.git');
+  it('uses anonymous https url for github', () => {
+    const url = toGitRepoUrl('https://github.com/openupm/openupm.git');
+    expect(url).toEqual('https://github.com/openupm/openupm.git');
   });
 
-  it('uses ssh url for github when token missing', () => {
+  it('uses anonymous https url for github repo path', () => {
     const url = toGitRepoUrl('https://github.com/openupm/openupm');
-    expect(url).toEqual('git@github.com:openupm/openupm.git');
+    expect(url).toEqual('https://github.com/openupm/openupm.git');
   });
 });
