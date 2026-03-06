@@ -39,6 +39,7 @@
     "node-fetch": "^3.3.2",
     "p-ratelimit": "^1.0.1",
     "sharp": "^0.33.1",
+    "ts-log": "^2.2.5",
     "tslib": "~2.6"
   },
   "volta": {
