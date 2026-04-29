@@ -1,4 +1,5 @@
 import { CronJob } from 'cron';
+import configRaw from 'config';
 import { createLogger } from '@openupm/server-common/build/log.js';
 import {
   fetchPackageToAdAssetStoreIdsJob,
@@ -12,115 +13,80 @@ import { updateRecentPackagesJob } from './jobs/updateRecentPackages.js';
 import { updateFeedsJob } from './jobs/updateFeeds.js';
 
 const logger = createLogger('@openupm/jobs');
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const config = configRaw as any;
+
+function isJobEnabled(name: string): boolean {
+  return config.jobs?.[name]?.enabled !== false;
+}
+
+function scheduleJob(
+  name: string,
+  cronTime: string,
+  run: () => Promise<void>,
+): void {
+  if (!isJobEnabled(name)) {
+    logger.info(`${name} is disabled.`);
+    return;
+  }
+  new CronJob(
+    cronTime,
+    async () => {
+      logger.info(`${name} starts.`);
+      await run();
+      logger.info(`${name} ends.`);
+    },
+    () => {
+      console.log(`${name} is completed.`);
+    },
+    true,
+  );
+}
 
 /**
  * Main entry point for the jobs service.
  */
 function main(): void {
   logger.info('Jobs service is running.');
-  // fetchPackageToAdAssetStoreIdsJob
-  new CronJob(
+  scheduleJob(
+    'fetchPackageToAdAssetStoreIdsJob',
     '0 0 * * *',
-    async () => {
-      logger.info('fetchPackageToAdAssetStoreIdsJob starts.');
-      await fetchPackageToAdAssetStoreIdsJob(null, true);
-      logger.info('fetchPackageToAdAssetStoreIdsJob ends.');
-    },
-    () => {
-      console.log('fetchPackageToAdAssetStoreIdsJob is completed.');
-    },
-    true, // start
+    async () => await fetchPackageToAdAssetStoreIdsJob(null, true),
   );
-  // fetchTopicToAdAssetStoreIdsJob
-  new CronJob(
+  scheduleJob(
+    'fetchTopicToAdAssetStoreIdsJob',
     '0 18 * * *',
-    async () => {
-      logger.info('fetchTopicToAdAssetStoreIdsJob starts.');
-      await fetchTopicToAdAssetStoreIdsJob([], true);
-      logger.info('fetchTopicToAdAssetStoreIdsJob ends.');
-    },
-    () => {
-      console.log('fetchTopicToAdAssetStoreIdsJob is completed.');
-    },
-    true, // start
+    async () => await fetchTopicToAdAssetStoreIdsJob([], true),
   );
-  // aggregatePackageExtraJob
-  new CronJob(
+  scheduleJob(
+    'aggregatePackageExtraJob',
     '*/5 * * * *',
-    async () => {
-      logger.info('aggregatePackageExtraJob starts.');
-      await aggregatePackageExtraJob();
-      logger.info('aggregatePackageExtraJob ends.');
-    },
-    () => {
-      console.log('aggregatePackageExtraJob is completed.');
-    },
-    true,
+    async () => await aggregatePackageExtraJob(),
   );
-  // updateFeedsJob
-  new CronJob(
+  scheduleJob(
+    'updateFeedsJob',
     '*/5 * * * *',
-    async () => {
-      logger.info('updateFeedsJob starts.');
-      await updateFeedsJob();
-      logger.info('updateFeedsJob ends.');
-    },
-    () => {
-      console.log('updateFeedsJob is completed.');
-    },
-    true,
+    async () => await updateFeedsJob(),
   );
-  // fetchSiteInfoJob
-  new CronJob(
+  scheduleJob(
+    'fetchSiteInfoJob',
     '*/5 * * * *',
-    async () => {
-      logger.info('fetchSiteInfoJob starts.');
-      await fetchSiteInfoJob();
-      logger.info('fetchSiteInfoJob ends.');
-    },
-    () => {
-      console.log('fetchSiteInfoJob is completed.');
-    },
-    true,
+    async () => await fetchSiteInfoJob(),
   );
-  // fetchBackerDataJob
-  new CronJob(
+  scheduleJob(
+    'fetchBackerDataJob',
     '*/30 * * * *',
-    async () => {
-      logger.info('fetchBackerDataJob starts.');
-      await fetchBackerDataJob(false);
-      logger.info('fetchBackerDataJob ends.');
-    },
-    () => {
-      console.log('fetchBackerDataJob is completed.');
-    },
-    true,
+    async () => await fetchBackerDataJob(false),
   );
-  // updateRecentPackagesJob
-  new CronJob(
+  scheduleJob(
+    'updateRecentPackagesJob',
     '*/5 * * * *',
-    async () => {
-      logger.info('updateRecentPackagesJob starts.');
-      await updateRecentPackagesJob();
-      logger.info('updateRecentPackagesJob ends.');
-    },
-    () => {
-      console.log('updateRecentPackagesJob is completed.');
-    },
-    true,
+    async () => await updateRecentPackagesJob(),
   );
-  // fetchPackageExtraJob
-  new CronJob(
+  scheduleJob(
+    'fetchPackageExtraJob',
     '1 */2 * * *',
-    async () => {
-      logger.info('fetchPackageExtraJob starts.');
-      await fetchPackageExtraJob(null, { all: true, force: false });
-      logger.info('fetchPackageExtraJob ends.');
-    },
-    () => {
-      console.log('fetchPackageExtraJob is completed.');
-    },
-    true,
+    async () => await fetchPackageExtraJob(null, { all: true, force: false }),
   );
 }
 

@@ -69,4 +69,33 @@
       normal: { size: 128, duration: 86400000 },
     },
   },
+
+  // Cron job switches. Keep defaults enabled for production; override in
+  // migration/local config when a job has side effects that are not safe yet.
+  jobs: {
+    fetchPackageToAdAssetStoreIdsJob: {
+      enabled: true,
+    },
+    fetchTopicToAdAssetStoreIdsJob: {
+      enabled: true,
+    },
+    aggregatePackageExtraJob: {
+      enabled: true,
+    },
+    updateFeedsJob: {
+      enabled: true,
+    },
+    fetchSiteInfoJob: {
+      enabled: true,
+    },
+    fetchPackageExtraJob: {
+      enabled: true,
+    },
+    fetchBackerDataJob: {
+      enabled: true,
+    },
+    updateRecentPackagesJob: {
+      enabled: true,
+    },
+  },
 }
