@@ -3,6 +3,11 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 const dispatchMock = vi.fn();
 const getPackageNamesFromArgsMock = vi.fn();
 const addBuildPackageJobsMock = vi.fn();
+const cronJobMock = vi.fn();
+
+vi.mock('cron', () => ({
+  CronJob: cronJobMock,
+}));
 
 vi.mock('../src/queues/process.js', () => ({
   dispatch: dispatchMock,
@@ -53,5 +58,26 @@ describe('main', () => {
     await expect(main()).rejects.toThrow(
       'No package names provided. Use --all or pass names.',
     );
+  });
+
+  it('starts add-build-package-job scheduler', async () => {
+    process.argv = ['node', 'index.js', 'schedule', 'add-build-package-job'];
+
+    const { main } = await import('../src/index.js');
+    await main();
+
+    expect(cronJobMock).toHaveBeenCalledWith(
+      '*/5 * * * *',
+      expect.any(Function),
+      null,
+      true,
+    );
+  });
+
+  it('throws for unknown scheduler job', async () => {
+    process.argv = ['node', 'index.js', 'schedule', 'unknown'];
+
+    const { main } = await import('../src/index.js');
+    await expect(main()).rejects.toThrow('Unknown schedule job: unknown');
   });
 });

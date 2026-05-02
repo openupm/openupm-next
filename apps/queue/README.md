@@ -8,6 +8,7 @@ Queue worker app for build queues.
 - `node build/index.js process rel`
 - `node build/index.js add-build-package-job --all`
 - `node build/index.js add-build-package-job com.example.package`
+- `node build/index.js schedule add-build-package-job`
 
 ## Migration Status
 

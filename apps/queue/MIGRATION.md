@@ -17,6 +17,7 @@ This maps legacy `openupm/pm2-build.yml` entries to new `openupm-next` services.
 - `add-build-package-job`
   - legacy: `app/jobs/addBuildPackageJob.js --all`
   - new: `apps/queue` command `node build/index.js add-build-package-job --all`
+  - new scheduler: `apps/queue` command `node build/index.js schedule add-build-package-job`
   - npm script: `npm run start:add-build-package-job:all` (in `apps/queue`)
 
 ## Non-Build Operational Jobs

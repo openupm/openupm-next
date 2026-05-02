@@ -22,4 +22,17 @@ describe('parseArgs', () => {
       names: ['com.a.b'],
     });
   });
+
+  it('parses schedule command', () => {
+    const parsed = parseArgs([
+      'node',
+      'index.js',
+      'schedule',
+      'add-build-package-job',
+    ]);
+    expect(parsed).toEqual({
+      command: 'schedule',
+      jobName: 'add-build-package-job',
+    });
+  });
 });

@@ -1,3 +1,5 @@
+import { CronJob } from 'cron';
+import configRaw from 'config';
 import { createLogger } from '@openupm/server-common/build/log.js';
 
 import {
@@ -7,10 +9,13 @@ import {
 import { dispatch } from './queues/process.js';
 
 const logger = createLogger('@openupm/queue');
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const config = configRaw as any;
 
 type ParsedArgs =
   | { command: 'process'; queueName: string }
-  | { command: 'add-build-package-job'; all: boolean; names: string[] };
+  | { command: 'add-build-package-job'; all: boolean; names: string[] }
+  | { command: 'schedule'; jobName: string };
 
 function parseArgs(argv: string[]): ParsedArgs {
   const args = argv.slice(2);
@@ -28,15 +33,61 @@ function parseArgs(argv: string[]): ParsedArgs {
     return { command, all, names };
   }
 
+  if (command === 'schedule') {
+    const jobName = args[1];
+    if (!jobName) throw new Error('Usage: schedule <job>');
+    return { command, jobName };
+  }
+
   throw new Error(
-    'Usage: process <queue> | add-build-package-job [--all] [name...]',
+    'Usage: process <queue> | add-build-package-job [--all] [name...] | schedule <job>',
   );
+}
+
+async function runAddBuildPackageJob(): Promise<void> {
+  const packageNames = await getPackageNamesFromArgs({
+    all: true,
+    names: [],
+  });
+  if (packageNames.length === 0) {
+    throw new Error('No package names found for add-build-package-job --all.');
+  }
+  await addBuildPackageJobs(packageNames);
+}
+
+function scheduleAddBuildPackageJob(): void {
+  const jobConfig = config.schedules?.addBuildPackageJob ?? {};
+  if (jobConfig.enabled === false) {
+    logger.info('addBuildPackageJob schedule is disabled.');
+    return;
+  }
+
+  const cronTime = jobConfig.cronTime || '*/5 * * * *';
+  new CronJob(
+    cronTime,
+    async () => {
+      logger.info('addBuildPackageJob schedule starts.');
+      await runAddBuildPackageJob();
+      logger.info('addBuildPackageJob schedule ends.');
+    },
+    null,
+    true,
+  );
+  logger.info({ cronTime }, 'addBuildPackageJob schedule is running.');
 }
 
 async function main(): Promise<void> {
   const parsed = parseArgs(process.argv);
   if (parsed.command === 'process') {
     await dispatch(parsed.queueName);
+    return;
+  }
+
+  if (parsed.command === 'schedule') {
+    if (parsed.jobName !== 'add-build-package-job') {
+      throw new Error(`Unknown schedule job: ${parsed.jobName}`);
+    }
+    scheduleAddBuildPackageJob();
     return;
   }
 
@@ -57,4 +108,4 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   });
 }
 
-export { main, parseArgs };
+export { main, parseArgs, runAddBuildPackageJob, scheduleAddBuildPackageJob };
