@@ -234,6 +234,8 @@ export function getReasonFromBuildLogText(text: string): ReleaseErrorCode {
     )
   )
     return ReleaseErrorCode.SubmoduleFetchingError;
+  else if (/fatal: No url found for submodule path .* in \.gitmodules/.test(text))
+    return ReleaseErrorCode.RemoteSubmoduleUnavailable;
   else if (/fatal: clone of .* into submodule path/.test(text))
     return ReleaseErrorCode.RemoteSubmoduleUnavailable;
 

@@ -54,6 +54,12 @@ npm error command failed
 
     expect(
       getReasonFromBuildLogText(
+        "fatal: No url found for submodule path 'SDKs/nakama-cpp' in .gitmodules",
+      ),
+    ).toEqual(ReleaseErrorCode.RemoteSubmoduleUnavailable);
+
+    expect(
+      getReasonFromBuildLogText(
         'batch response: This repository exceeded its LFS budget.',
       ),
     ).toEqual(ReleaseErrorCode.LfsBudgetExceeded);
