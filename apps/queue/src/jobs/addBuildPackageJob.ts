@@ -7,6 +7,7 @@ import {
 import { createLogger } from '@openupm/server-common/build/log.js';
 
 import { addJob, getQueue } from '../queues/core.js';
+import { createJobId } from '../queues/jobId.js';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const config = configRaw as any;
@@ -22,7 +23,7 @@ export async function addBuildPackageJobs(packageNames: string[]): Promise<void>
       continue;
     }
 
-    const jobId = `${jobConfig.name}:${name}`;
+    const jobId = createJobId(jobConfig.name, name);
     await addJob({
       queue,
       name: jobConfig.name,

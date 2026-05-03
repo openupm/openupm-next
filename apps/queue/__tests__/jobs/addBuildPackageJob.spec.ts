@@ -37,7 +37,7 @@ describe('addBuildPackageJobs', () => {
       expect.objectContaining({
         name: 'build-pkg',
         data: { name: 'com.a.one' },
-        opts: expect.objectContaining({ jobId: 'build-pkg:com.a.one' }),
+        opts: expect.objectContaining({ jobId: 'build-pkg|com.a.one' }),
       }),
     );
   });

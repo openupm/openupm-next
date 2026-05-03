@@ -23,6 +23,7 @@ import {
 import { createLogger } from '@openupm/server-common/build/log.js';
 
 import { addJob, getQueue } from '../queues/core.js';
+import { createJobId } from '../queues/jobId.js';
 import { gitListRemoteTags, RemoteTag } from '../utils/git.js';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -243,7 +244,7 @@ async function addReleaseJobs(releases: ReleaseModel[]): Promise<void> {
       continue;
     }
 
-    const jobId = `${jobConfig.name}:${rel.packageName}:${rel.version}`;
+    const jobId = createJobId(jobConfig.name, rel.packageName, rel.version);
     await addJob({
       queue,
       name: jobConfig.name,
