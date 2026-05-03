@@ -39,6 +39,8 @@ RUN npm install
 FROM base AS runner
 LABEL service="upm-queue"
 
+RUN apk add --no-cache git openssh-client
+
 RUN addgroup --system --gid 1001 runner
 RUN adduser --system --uid 1001 runner
 USER runner
