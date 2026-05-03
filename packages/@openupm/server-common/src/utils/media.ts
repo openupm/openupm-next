@@ -113,7 +113,8 @@ export const addImage = async function (
     fit,
   );
   const tmpFilePath: string = path.join(getMediaDir(), tmpFilename);
-  await _downloadImageUrl(imageUrl, tmpFilePath);
+  const downloaded = await _downloadImageUrl(imageUrl, tmpFilePath);
+  if (!downloaded) return;
 
   try {
     // check the image size
@@ -152,7 +153,7 @@ export const addImage = async function (
     } as MediaStoreEntry);
   } finally {
     // remove the tmp file
-    fs.unlinkSync(tmpFilePath);
+    if (fs.existsSync(tmpFilePath)) fs.unlinkSync(tmpFilePath);
   }
 };
 
@@ -164,7 +165,7 @@ export const addImage = async function (
 const _downloadImageUrl = async function (
   imageUrl: string,
   destPath: string,
-): Promise<void> {
+): Promise<boolean> {
   try {
     const res = await fetch(imageUrl, {
       signal: AbortSignal.timeout(10000),
@@ -174,11 +175,13 @@ const _downloadImageUrl = async function (
         { imageUrl, destPath, status: res.status },
         'image download failed with status {status}',
       );
+      return false;
     } else if (!res.body) {
       logger.warn(
         { imageUrl, destPath },
         'image download failed without response body',
       );
+      return false;
     } else {
       const fileStream = fs.createWriteStream(destPath, { flags: 'wx' });
       await finished(
@@ -186,6 +189,7 @@ const _downloadImageUrl = async function (
         Readable.fromWeb(res.body as ReadableStream<any>).pipe(fileStream),
       );
       console.log(`Image downloaded from ${imageUrl} to ${destPath}`);
+      return true;
     }
   } catch (error) {
     if (error.name === 'AbortError') {
@@ -193,6 +197,7 @@ const _downloadImageUrl = async function (
     } else {
       logger.warn({ imageUrl, destPath, error }, 'image download failed');
     }
+    return false;
   }
 };
 
