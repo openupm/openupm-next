@@ -58,6 +58,7 @@
     addBuildPackageJob: {
       enabled: true,
       cronTime: '*/5 * * * *',
+      healthcheckPingUrl: '',
     },
   },
 

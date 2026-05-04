@@ -4,9 +4,14 @@ const dispatchMock = vi.fn();
 const getPackageNamesFromArgsMock = vi.fn();
 const addBuildPackageJobsMock = vi.fn();
 const cronJobMock = vi.fn();
+const pingHealthcheckMock = vi.fn();
 
 vi.mock('cron', () => ({
   CronJob: cronJobMock,
+}));
+
+vi.mock('@openupm/server-common/build/healthchecks.js', () => ({
+  pingHealthcheck: pingHealthcheckMock,
 }));
 
 vi.mock('../src/queues/process.js', () => ({
@@ -71,6 +76,53 @@ describe('main', () => {
       expect.any(Function),
       null,
       true,
+    );
+  });
+
+  it('pings healthchecks around successful scheduled add-build-package-job runs', async () => {
+    process.argv = ['node', 'index.js', 'schedule', 'add-build-package-job'];
+    getPackageNamesFromArgsMock.mockResolvedValue(['com.a.one']);
+
+    const { main } = await import('../src/index.js');
+    await main();
+    const onTick = cronJobMock.mock.calls[0][1];
+    await onTick();
+
+    expect(pingHealthcheckMock).toHaveBeenNthCalledWith(
+      1,
+      '',
+      'start',
+      expect.anything(),
+    );
+    expect(addBuildPackageJobsMock).toHaveBeenCalledWith(['com.a.one']);
+    expect(pingHealthcheckMock).toHaveBeenNthCalledWith(
+      2,
+      '',
+      'success',
+      expect.anything(),
+    );
+  });
+
+  it('pings healthchecks fail when scheduled add-build-package-job throws', async () => {
+    process.argv = ['node', 'index.js', 'schedule', 'add-build-package-job'];
+    getPackageNamesFromArgsMock.mockRejectedValue(new Error('boom'));
+
+    const { main } = await import('../src/index.js');
+    await main();
+    const onTick = cronJobMock.mock.calls[0][1];
+    await onTick();
+
+    expect(pingHealthcheckMock).toHaveBeenNthCalledWith(
+      1,
+      '',
+      'start',
+      expect.anything(),
+    );
+    expect(pingHealthcheckMock).toHaveBeenNthCalledWith(
+      2,
+      '',
+      'fail',
+      expect.anything(),
     );
   });
 

@@ -1,6 +1,7 @@
 import { CronJob } from 'cron';
 import configRaw from 'config';
 import { createLogger } from '@openupm/server-common/build/log.js';
+import { pingHealthcheck } from '@openupm/server-common/build/healthchecks.js';
 import {
   fetchPackageToAdAssetStoreIdsJob,
   fetchTopicToAdAssetStoreIdsJob,
@@ -20,6 +21,10 @@ function isJobEnabled(name: string): boolean {
   return config.jobs?.[name]?.enabled !== false;
 }
 
+function getHealthcheckPingUrl(name: string): string | undefined {
+  return config.jobs?.[name]?.healthcheckPingUrl;
+}
+
 function scheduleJob(
   name: string,
   cronTime: string,
@@ -32,9 +37,17 @@ function scheduleJob(
   new CronJob(
     cronTime,
     async () => {
+      const healthcheckPingUrl = getHealthcheckPingUrl(name);
       logger.info(`${name} starts.`);
-      await run();
-      logger.info(`${name} ends.`);
+      await pingHealthcheck(healthcheckPingUrl, 'start', logger);
+      try {
+        await run();
+        await pingHealthcheck(healthcheckPingUrl, 'success', logger);
+        logger.info(`${name} ends.`);
+      } catch (err) {
+        await pingHealthcheck(healthcheckPingUrl, 'fail', logger);
+        logger.error({ err }, `${name} failed.`);
+      }
     },
     () => {
       console.log(`${name} is completed.`);

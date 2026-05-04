@@ -1,5 +1,6 @@
 import { CronJob } from 'cron';
 import configRaw from 'config';
+import { pingHealthcheck } from '@openupm/server-common/build/healthchecks.js';
 import { createLogger } from '@openupm/server-common/build/log.js';
 
 import {
@@ -66,9 +67,17 @@ function scheduleAddBuildPackageJob(): void {
   new CronJob(
     cronTime,
     async () => {
+      const healthcheckPingUrl = jobConfig.healthcheckPingUrl;
       logger.info('addBuildPackageJob schedule starts.');
-      await runAddBuildPackageJob();
-      logger.info('addBuildPackageJob schedule ends.');
+      await pingHealthcheck(healthcheckPingUrl, 'start', logger);
+      try {
+        await runAddBuildPackageJob();
+        await pingHealthcheck(healthcheckPingUrl, 'success', logger);
+        logger.info('addBuildPackageJob schedule ends.');
+      } catch (err) {
+        await pingHealthcheck(healthcheckPingUrl, 'fail', logger);
+        logger.error({ err }, 'addBuildPackageJob schedule failed.');
+      }
     },
     null,
     true,

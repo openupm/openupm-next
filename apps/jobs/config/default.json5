@@ -81,21 +81,27 @@
     },
     aggregatePackageExtraJob: {
       enabled: true,
+      healthcheckPingUrl: '',
     },
     updateFeedsJob: {
       enabled: true,
+      healthcheckPingUrl: '',
     },
     fetchSiteInfoJob: {
       enabled: true,
+      healthcheckPingUrl: '',
     },
     fetchPackageExtraJob: {
       enabled: true,
+      healthcheckPingUrl: '',
     },
     fetchBackerDataJob: {
       enabled: true,
+      healthcheckPingUrl: '',
     },
     updateRecentPackagesJob: {
       enabled: true,
+      healthcheckPingUrl: '',
     },
   },
 }
