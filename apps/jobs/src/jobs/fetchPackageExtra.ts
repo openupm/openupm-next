@@ -50,6 +50,10 @@ type PackageMeta = {
   time: Record<string, string>;
 };
 
+type DownloadCountResponse = {
+  downloads?: number | Array<{ downloads?: number }>;
+};
+
 async function fetchJson<T>(url: string): Promise<T> {
   const resp = await fetch(url, {
     headers: { Accept: 'application/json' },
@@ -60,6 +64,15 @@ async function fetchJson<T>(url: string): Promise<T> {
     throw new Error(`request failed ${resp.status} for ${url}`);
   }
   return (await resp.json()) as T;
+}
+
+function normalizeMonthlyDownloads(result: DownloadCountResponse): number {
+  const downloads = result.downloads;
+  if (typeof downloads === 'number') return downloads;
+  if (Array.isArray(downloads)) {
+    return downloads.reduce((sum, entry) => sum + (entry.downloads || 0), 0);
+  }
+  return 0;
 }
 
 async function fetchPackageMeta(packageName: string): Promise<PackageMeta> {
@@ -307,10 +320,10 @@ export async function cacheAvatarImageForGithubUser(
 
 async function fetchPackageInstallCount(packageName: string): Promise<void> {
   try {
-    const result = await fetchJson<{ downloads?: number }>(
+    const result = await fetchJson<DownloadCountResponse>(
       getMonthlyDownloadsUrl(packageName),
     );
-    await setMonthlyDownloads(packageName, result.downloads || 0);
+    await setMonthlyDownloads(packageName, normalizeMonthlyDownloads(result));
   } catch (err) {
     logger.error({ err, pkg: packageName }, 'fetch package install count error');
   }

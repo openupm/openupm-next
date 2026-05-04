@@ -213,7 +213,7 @@ export const getMonthlyDownloadsUrl = function (name: string): string {
   return urlJoin(
     getRegistryBaseUrl(),
     'downloads',
-    'range',
+    'point',
     'last-month',
     name,
   );

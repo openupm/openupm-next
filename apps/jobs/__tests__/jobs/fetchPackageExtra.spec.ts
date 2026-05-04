@@ -95,7 +95,12 @@ describe('fetchPackageExtraJob', () => {
       })
       .mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ downloads: 20 }),
+        json: async () => ({
+          downloads: [
+            { day: '2026-01-01', downloads: 8 },
+            { day: '2026-01-02', downloads: 12 },
+          ],
+        }),
       });
     vi.stubGlobal('fetch', fetchMock as unknown as typeof fetch);
 
@@ -107,6 +112,10 @@ describe('fetchPackageExtraJob', () => {
     expect(setScopesMock).toHaveBeenCalled();
     expect(setStarsMock).toHaveBeenCalledWith('com.test.pkg', 10);
     expect(setMonthlyDownloadsMock).toHaveBeenCalledWith('com.test.pkg', 20);
+    expect(fetchMock).toHaveBeenLastCalledWith(
+      expect.stringContaining('/downloads/point/last-month/com.test.pkg'),
+      expect.any(Object),
+    );
   });
 
   it('cacheAvatarImageForGithubUser should add image when cache unavailable', async () => {
