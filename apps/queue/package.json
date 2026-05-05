@@ -11,6 +11,7 @@
     "start:rel": "node build/index.js process rel",
     "start:add-build-package-job:all": "node build/index.js add-build-package-job --all",
     "start:schedule:add-build-package-job": "node build/index.js schedule add-build-package-job",
+    "queue-cli": "node build/index.js queue-cli",
     "start:dev": "nodemon --watch config --watch build --watch ../../packages build/index.js",
     "clean": "rimraf coverage build tmp",
     "build": "tsc -p tsconfig.json",

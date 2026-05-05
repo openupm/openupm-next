@@ -21,6 +21,13 @@ export function getQueue(name: string): Queue {
   return queues[name];
 }
 
+export async function closeQueues(): Promise<void> {
+  await Promise.all(
+    Object.values(queues).map(async (queue) => await queue.close()),
+  );
+  for (const name of Object.keys(queues)) delete queues[name];
+}
+
 export function getWorker(
   name: string,
   jobHandler: (job: Job) => Promise<void>,

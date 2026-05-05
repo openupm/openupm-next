@@ -35,4 +35,14 @@ describe('parseArgs', () => {
       jobName: 'add-build-package-job',
     });
   });
+
+  it('parses queue-cli command', () => {
+    const parsed = parseArgs(['node', 'index.js', 'queue-cli', 'queue-status']);
+    expect(parsed).toEqual({ command: 'queue-cli' });
+  });
+
+  it('parses help command', () => {
+    const parsed = parseArgs(['node', 'index.js', '--help']);
+    expect(parsed).toEqual({ command: 'help' });
+  });
 });

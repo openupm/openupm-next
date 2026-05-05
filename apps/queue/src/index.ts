@@ -7,6 +7,7 @@ import {
   addBuildPackageJobs,
   getPackageNamesFromArgs,
 } from './jobs/addBuildPackageJob.js';
+import { runQueueCli } from './queueCli.js';
 import { dispatch } from './queues/process.js';
 
 const logger = createLogger('@openupm/queue');
@@ -16,11 +17,45 @@ const config = configRaw as any;
 type ParsedArgs =
   | { command: 'process'; queueName: string }
   | { command: 'add-build-package-job'; all: boolean; names: string[] }
-  | { command: 'schedule'; jobName: string };
+  | { command: 'schedule'; jobName: string }
+  | { command: 'queue-cli' }
+  | { command: 'help' };
+
+function getUsage(): string {
+  return [
+    'OpenUPM queue service command.',
+    '',
+    'Usage:',
+    '  node build/index.js process <queue>',
+    '  node build/index.js add-build-package-job [--all] [package...]',
+    '  node build/index.js schedule add-build-package-job',
+    '  node build/index.js queue-cli <command> [options]',
+    '  node build/index.js --help',
+    '',
+    'Service commands:',
+    '  process <queue>',
+    '    Run a BullMQ worker for a queue. Queue is usually "pkg" or "rel".',
+    '',
+    '  add-build-package-job [--all] [package...]',
+    '    Enqueue package scan jobs. Use --all for all known packages, or pass',
+    '    one or more package names such as com.foo.bar.',
+    '',
+    '  schedule add-build-package-job',
+    '    Run the internal scheduler that periodically enqueues package scan jobs.',
+    '',
+    '  queue-cli <command>',
+    '    Run operator commands for queue/release inspection and repair.',
+    '    Use "node build/index.js queue-cli --help" for details.',
+  ].join('\n');
+}
 
 function parseArgs(argv: string[]): ParsedArgs {
   const args = argv.slice(2);
   const command = args[0];
+
+  if (!command || command === '--help' || command === '-h') {
+    return { command: 'help' };
+  }
 
   if (command === 'process') {
     const queueName = args[1];
@@ -40,8 +75,10 @@ function parseArgs(argv: string[]): ParsedArgs {
     return { command, jobName };
   }
 
+  if (command === 'queue-cli') return { command };
+
   throw new Error(
-    'Usage: process <queue> | add-build-package-job [--all] [name...] | schedule <job>',
+    getUsage(),
   );
 }
 
@@ -87,6 +124,11 @@ function scheduleAddBuildPackageJob(): void {
 
 async function main(): Promise<void> {
   const parsed = parseArgs(process.argv);
+  if (parsed.command === 'help') {
+    console.log(getUsage());
+    return;
+  }
+
   if (parsed.command === 'process') {
     await dispatch(parsed.queueName);
     return;
@@ -97,6 +139,11 @@ async function main(): Promise<void> {
       throw new Error(`Unknown schedule job: ${parsed.jobName}`);
     }
     scheduleAddBuildPackageJob();
+    return;
+  }
+
+  if (parsed.command === 'queue-cli') {
+    await runQueueCli(process.argv);
     return;
   }
 
@@ -117,4 +164,10 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   });
 }
 
-export { main, parseArgs, runAddBuildPackageJob, scheduleAddBuildPackageJob };
+export {
+  main,
+  parseArgs,
+  getUsage,
+  runAddBuildPackageJob,
+  scheduleAddBuildPackageJob,
+};
