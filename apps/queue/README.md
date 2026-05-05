@@ -10,15 +10,16 @@ Queue worker app for build queues.
 - `node build/index.js add-build-package-job com.example.package`
 - `node build/index.js schedule add-build-package-job`
 
-## Migration Status
+## Production Entry Points
 
-- Queue core, `add-build-package-job`, `buildPackage`, and `buildRelease` are migrated to TypeScript.
-- Build and test entry points are available through package scripts:
-  - `npm run start` for `queue-pkg`
-  - `npm run start:rel` for `queue-rel`
-  - `npm run start:add-build-package-job:all` for periodic package scheduling
+- `queue-pkg`: `npm run start`
+- `queue-rel`: `npm run start:rel`
+- `queue-add-build-package-job`: `npm run start:add-build-package-job:all`
 
-See `MIGRATION.md` for PM2-to-Docker command mapping.
+Production Docker Compose wiring and runtime config are managed outside this
+application repository.
+
+See `MIGRATION.md` for the historical PM2-to-Docker command mapping.
 
 ## Auth Config
 

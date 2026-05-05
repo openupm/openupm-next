@@ -71,7 +71,7 @@
   },
 
   // Cron job switches. Keep defaults enabled for production; override in
-  // migration/local config when a job has side effects that are not safe yet.
+  // runtime config for maintenance windows or incident mitigation.
   jobs: {
     fetchPackageToAdAssetStoreIdsJob: {
       enabled: true,

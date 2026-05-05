@@ -82,8 +82,6 @@ export const getImage = async function (
 
 /**
  * Download, process an image and upload to S3.
- * This currently has no in-repo callers and may be retained for an older
- * half-completed migration path, so keep it until that path is clarified.
  * @param {string} imageUrl
  * @param {number} width
  * @param {number} height
