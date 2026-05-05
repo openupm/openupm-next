@@ -6,6 +6,9 @@
   "author": "Favo Yang <favoyang@users.noreply.github.com>",
   "license": "BSD-3-Clause",
   "main": "build/index.js",
+  "bin": {
+    "openupm-validate-data": "build/cli/validate-data.js"
+  },
   "devDependencies": {
     "@openupm/test": "*"
   },
@@ -21,6 +24,7 @@
     "test:watch": "cross-env NODE_ENV=test vitest --config vitest.config.js"
   },
   "dependencies": {
+    "@openupm/common": "*",
     "@openupm/types": "*",
     "dotenv-flow": "^4.0.1",
     "lodash-es": "^4.17.21",
