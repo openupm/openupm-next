@@ -37,6 +37,7 @@ describe('main', () => {
 
   afterEach(() => {
     process.argv = originalArgv;
+    process.exitCode = undefined;
   });
 
   it('dispatches process command', async () => {
@@ -145,6 +146,21 @@ describe('main', () => {
     await main();
 
     expect(runQueueCliMock).toHaveBeenCalledWith(process.argv);
+  });
+
+  it('prints queue-cli errors as human-readable stderr', async () => {
+    const errorSpy = vi
+      .spyOn(console, 'error')
+      .mockImplementation(() => undefined);
+    process.argv = ['node', 'index.js', 'queue-cli', 'cmd-not-exist'];
+    runQueueCliMock.mockRejectedValue(new Error('queue-cli usage text'));
+
+    const { main } = await import('../src/index.js');
+    await main();
+
+    expect(errorSpy).toHaveBeenCalledWith('queue-cli usage text');
+    expect(process.exitCode).toBe(1);
+    errorSpy.mockRestore();
   });
 
   it('prints help without starting services', async () => {

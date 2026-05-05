@@ -77,9 +77,7 @@ function parseArgs(argv: string[]): ParsedArgs {
 
   if (command === 'queue-cli') return { command };
 
-  throw new Error(
-    getUsage(),
-  );
+  throw new Error(getUsage());
 }
 
 async function runAddBuildPackageJob(): Promise<void> {
@@ -143,7 +141,12 @@ async function main(): Promise<void> {
   }
 
   if (parsed.command === 'queue-cli') {
-    await runQueueCli(process.argv);
+    try {
+      await runQueueCli(process.argv);
+    } catch (err) {
+      console.error((err as Error).message);
+      process.exitCode = 1;
+    }
     return;
   }
 

@@ -43,6 +43,15 @@ interface QueueJobSummary {
   failedReason?: string;
 }
 
+interface QueueJobsResult {
+  queue: string;
+  states: string[];
+  total: number;
+  limit: number;
+  returned: number;
+  jobs: QueueJobSummary[];
+}
+
 interface ReleaseSummary {
   packageName: string;
   version: string;
@@ -335,16 +344,19 @@ function writeOutput(value: unknown, output: OutputMode): void {
     return;
   }
 
-  if (Array.isArray(value)) {
-    for (const item of value) console.log(formatValue(item));
-    return;
-  }
-
   console.log(formatValue(value));
 }
 
 function formatValue(value: unknown): string {
   if (typeof value !== 'object' || value === null) return `${value}`;
+
+  if (Array.isArray(value)) return value.map(formatValue).join('\n\n');
+  if (isQueueStatusList(value)) return value.map(formatQueueStatus).join('\n\n');
+  if (isQueueStatus(value)) return formatQueueStatus(value);
+  if (isQueueJobsResult(value)) return formatQueueJobsResult(value);
+  if (isQueueJobSummary(value)) return formatQueueJob(value);
+  if (isReleaseSummary(value)) return formatRelease(value);
+
   return Object.entries(value as Record<string, unknown>)
     .map(([key, item]) => {
       if (key.endsWith('At') || key.endsWith('On') || key === 'timestamp') {
@@ -356,6 +368,120 @@ function formatValue(value: unknown): string {
       return `${key}=${item}`;
     })
     .join(' ');
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function isQueueStatusList(value: unknown): value is Array<Record<string, unknown>> {
+  return Array.isArray(value) && value.every(isQueueStatus);
+}
+
+function isQueueStatus(value: unknown): value is Record<string, unknown> {
+  return isRecord(value) && typeof value.queue === 'string' && isRecord(value.counts);
+}
+
+function isQueueJobsResult(value: unknown): value is QueueJobsResult {
+  return (
+    isRecord(value) &&
+    typeof value.queue === 'string' &&
+    Array.isArray(value.states) &&
+    typeof value.total === 'number' &&
+    typeof value.limit === 'number' &&
+    Array.isArray(value.jobs)
+  );
+}
+
+function isQueueJobSummary(value: unknown): value is QueueJobSummary {
+  return (
+    isRecord(value) &&
+    typeof value.id === 'string' &&
+    typeof value.name === 'string' &&
+    typeof value.state === 'string' &&
+    typeof value.attemptsMade === 'number'
+  );
+}
+
+function isReleaseSummary(value: unknown): value is ReleaseSummary {
+  return (
+    isRecord(value) &&
+    typeof value.packageName === 'string' &&
+    typeof value.version === 'string' &&
+    typeof value.state === 'string' &&
+    typeof value.reason === 'string'
+  );
+}
+
+function formatQueueStatus(value: Record<string, unknown>): string {
+  const counts = value.counts as Record<string, unknown>;
+  const workers = Array.isArray(value.workers) ? value.workers : [];
+  const lines = [
+    `Queue ${value.queue}`,
+    `  counts: ${Object.entries(counts)
+      .map(([key, item]) => `${key}=${item}`)
+      .join(' ')}`,
+    `  workers: ${workers.length}`,
+  ];
+  for (const worker of workers) {
+    if (!isRecord(worker)) continue;
+    lines.push(
+      [
+        `    - name=${worker.name ?? ''}`,
+        `id=${worker.id ?? ''}`,
+        `cmd=${worker.cmd ?? ''}`,
+        `addr=${worker.addr ?? ''}`,
+        `age=${worker.age ?? ''}`,
+        `idle=${worker.idle ?? ''}`,
+      ].join(' '),
+    );
+  }
+  return lines.join('\n');
+}
+
+function formatQueueJobsResult(value: QueueJobsResult): string {
+  const lines = [
+    `Queue ${value.queue}`,
+    `  states: ${value.states.join(', ')}`,
+    `  total: ${value.total}`,
+    `  returned: ${value.returned}`,
+    `  limit: ${value.limit}`,
+  ];
+  if (value.total > value.returned) {
+    lines.push(`  note: use --limit ${value.total} to show all matching jobs`);
+  }
+  if (!value.jobs.length) return lines.join('\n');
+  lines.push('', 'Jobs:');
+  for (const job of value.jobs) lines.push(formatQueueJob(job, '  '));
+  return lines.join('\n');
+}
+
+function formatQueueJob(job: QueueJobSummary, indent = ''): string {
+  const lines = [
+    `${indent}- id: ${job.id}`,
+    `${indent}  name: ${job.name}`,
+    `${indent}  state: ${job.state}`,
+    `${indent}  attempts: ${job.attemptsMade}`,
+    `${indent}  ageMs: ${job.ageMs}`,
+    `${indent}  timestamp: ${formatTimestamp(job.timestamp)}`,
+    `${indent}  data: ${JSON.stringify(job.data)}`,
+  ];
+  if (job.processedOn) lines.push(`${indent}  processedOn: ${formatTimestamp(job.processedOn)}`);
+  if (job.finishedOn) lines.push(`${indent}  finishedOn: ${formatTimestamp(job.finishedOn)}`);
+  if (job.failedReason) lines.push(`${indent}  failedReason: ${job.failedReason}`);
+  return lines.join('\n');
+}
+
+function formatRelease(release: ReleaseSummary): string {
+  return [
+    `${release.packageName}@${release.version}`,
+    `  state: ${release.state} (${release.stateCode})`,
+    `  reason: ${release.reason} (${release.reasonCode})`,
+    `  buildId: ${release.buildId}`,
+    `  tag: ${release.tag}`,
+    `  commit: ${release.commit}`,
+    `  updatedAt: ${formatTimestamp(release.updatedAt)}`,
+  ].join('\n');
 }
 
 function getBuildReleaseJobId(packageName: string, version: string): string {
@@ -393,16 +519,25 @@ async function queueJobs(
   queueName: string,
   states: string[],
   limit: number,
-): Promise<QueueJobSummary[]> {
+): Promise<QueueJobsResult> {
   assertQueue(queueName);
   const queue = getQueue(queueName);
   const jobTypes = (states.length
     ? states
     : ['failed', 'active', 'waiting']) as JobType[];
+  const counts = await queue.getJobCounts(...jobTypes);
   const jobs = await queue.getJobs(jobTypes, 0, limit - 1, false);
-  return await Promise.all(
+  const summaries = await Promise.all(
     jobs.map(async (job) => await summarizeJob(job as Job)),
   );
+  return {
+    queue: queueName,
+    states: jobTypes,
+    total: Object.values(counts).reduce((sum, count) => sum + count, 0),
+    limit,
+    returned: summaries.length,
+    jobs: summaries,
+  };
 }
 
 async function queueRemove(
