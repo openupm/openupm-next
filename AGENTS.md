@@ -23,6 +23,22 @@
 - If you need a clean rebuild, use `npm run build:release -- --force` or `npm test -- --force`.
 - Prefer changing shared config in `tooling/` rather than duplicating per-package config.
 
+## Queue CLI Notes
+
+- `apps/queue` owns the maintained `queue-cli` entry point for BullMQ package
+  and release queue operations. See `apps/queue/README.md` and
+  `node build/index.js queue-cli --help`.
+- Keep `queue-cli --help` and subcommand help self-contained when changing CLI
+  behavior; tests in `apps/queue/__tests__/queueCli*.spec.ts` should cover
+  destructive commands and defaults.
+- `queue-jobs` returns all matching jobs when `--limit` is omitted. Preserve
+  explicit `--limit` for large or scripted inspections.
+- Destructive commands are `remove-job`, `release-remove`, `release-requeue`,
+  and `package-requeue`; validate them with focused tests before deploy.
+- Do not put private production hostnames, paths, or sudo wrapper details in
+  this public application repo. Production invocation belongs in
+  `openupm-devops`.
+
 ## Docs App Notes
 
 - Docs commands run from `apps/docs`.
