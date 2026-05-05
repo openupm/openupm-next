@@ -75,7 +75,7 @@ describe('parseQueueCliArgs', () => {
       command: 'queue-status',
       rest: ['rel'],
       output: 'text',
-      limit: 20,
+      limit: undefined,
     });
   });
 
@@ -102,6 +102,7 @@ describe('parseQueueCliArgs', () => {
     const help = getCommandUsage('queue-jobs');
     expect(help).toContain('queue-cli queue-jobs <queue> [state...]');
     expect(help).toContain('Default: failed active waiting.');
+    expect(help).toContain('Default: all matching jobs.');
     expect(help).toContain('waiting, active, delayed, failed');
   });
 
@@ -145,6 +146,21 @@ describe('parseQueueCliArgs', () => {
       returned: 1,
     });
     expect(result.jobs[0].id).toBe('build-pkg|com.foo.bar');
+  });
+
+  it('queue-jobs returns all matching jobs when limit is omitted', async () => {
+    const { queueJobs } = await import('../src/queueCli.js');
+    getJobCountsMock.mockResolvedValue({ failed: 182 });
+    getJobsMock.mockResolvedValue([]);
+
+    const result = await queueJobs('pkg', ['failed']);
+
+    expect(getJobsMock).toHaveBeenCalledWith(['failed'], 0, 181, false);
+    expect(result).toMatchObject({
+      total: 182,
+      limit: 182,
+      returned: 0,
+    });
   });
 
   it('queue-status text output is formatted for humans', async () => {

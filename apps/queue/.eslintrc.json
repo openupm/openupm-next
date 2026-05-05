@@ -1,0 +1,8 @@
+{
+  "extends": "../../tooling/eslint/node.json",
+  "parserOptions": {
+    "project": "tsconfig.test.json",
+    "sourceType": "module",
+    "ecmaVersion": 2020
+  }
+}

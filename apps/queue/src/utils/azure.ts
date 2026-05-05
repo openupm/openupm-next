@@ -13,6 +13,7 @@ const logger = createLogger('@openupm/queue/azure');
 export const BuildStatus = buildInterfaces.BuildStatus;
 export const BuildResult = buildInterfaces.BuildResult;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function getBuildApi(): Promise<any> {
   const authHandler = azureDevops.getPersonalAccessTokenHandler(
     config.azureDevops.token,
@@ -22,9 +23,11 @@ export async function getBuildApi(): Promise<any> {
 }
 
 export async function queueBuild(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   buildApi: any,
   definitionId: number,
   parameters: object,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any> {
   return await buildApi.queueBuild(
     {
@@ -36,8 +39,10 @@ export async function queueBuild(
 }
 
 export async function waitBuild(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   buildApi: any,
   buildId: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any | null> {
   for (let i = 0; i < config.azureDevops.check.retries; i++) {
     const build = await buildApi.getBuild(config.azureDevops.project, buildId);

@@ -74,11 +74,7 @@ export async function buildPackage(name: string): Promise<void> {
     await setRepoUnavailable(name, false);
   } catch (error) {
     const message = (error as Error).message || '';
-    if (
-      message.includes('Host key verification failed') ||
-      message.includes('ERROR: Repository not found') ||
-      message.includes('fatal: Could not read from remote repository')
-    ) {
+    if (isRepoUnavailableError(message)) {
       await setRepoUnavailable(name, true);
       if (!message.includes('Host key verification failed')) return;
     }
@@ -108,6 +104,15 @@ export async function buildPackage(name: string): Promise<void> {
 
   const releases = await updateReleaseRecords(pkg.name, validTags);
   await addReleaseJobs(releases);
+}
+
+export function isRepoUnavailableError(message: string): boolean {
+  return (
+    message.includes('Host key verification failed') ||
+    message.includes('ERROR: Repository not found') ||
+    message.includes("could not read Username for 'https://github.com'") ||
+    message.includes('fatal: Could not read from remote repository')
+  );
 }
 
 export function filterRemoteTags(params: {

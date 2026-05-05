@@ -90,6 +90,7 @@ async function updateReleaseState(release: ReleaseModel): Promise<boolean> {
 }
 
 async function updateReleaseBuild(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   buildApi: any,
   repoUrl: string,
   release: ReleaseModel,
@@ -110,8 +111,10 @@ async function updateReleaseBuild(
 }
 
 async function waitReleaseBuild(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   buildApi: any,
   release: ReleaseModel,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any | null> {
   logger.debug(
     { rel: `${release.packageName}@${release.version}`, buildId: release.buildId },
@@ -121,6 +124,7 @@ async function waitReleaseBuild(
 }
 
 async function handleReleaseBuild(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   build: any | null,
   release: ReleaseModel,
 ): Promise<void> {

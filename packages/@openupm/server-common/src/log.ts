@@ -6,7 +6,8 @@ const config = configRaw as any;
 
 // Create logger for given module
 export function createLogger(name: string): bunyan {
-  let logLevel: string = config.logLevel || 'info';
+  let logLevel: string =
+    process.env.OPENUPM_LOG_LEVEL || config.logLevel || 'info';
   if (process.env.OPENUPM_DEBUG) {
     logLevel = 'debug';
   }

@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import {
   filterRemoteTags,
   getInvalidTags,
+  isRepoUnavailableError,
   toGitRepoUrl,
 } from '../../src/workers/buildPackage.js';
 
@@ -82,5 +83,15 @@ describe('buildPackage.toGitRepoUrl', () => {
   it('uses anonymous https url for github repo path', () => {
     const url = toGitRepoUrl('https://github.com/openupm/openupm');
     expect(url).toEqual('https://github.com/openupm/openupm.git');
+  });
+});
+
+describe('buildPackage.isRepoUnavailableError', () => {
+  it('recognizes GitHub credential prompt as repo unavailable', () => {
+    expect(
+      isRepoUnavailableError(
+        "fatal: could not read Username for 'https://github.com': No such device or address",
+      ),
+    ).toBe(true);
   });
 });

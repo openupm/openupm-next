@@ -22,7 +22,7 @@ interface QueueCliArgs {
   command: string;
   rest: string[];
   output: OutputMode;
-  limit: number;
+  limit?: number;
 }
 
 interface QueueCliHelpArgs {
@@ -88,7 +88,7 @@ function parseQueueCliArgs(argv: string[]): QueueCliArgs | QueueCliHelpArgs {
 
   const output: OutputMode = args.includes('--json') ? 'json' : 'text';
   const limitIndex = args.indexOf('--limit');
-  let limit = 20;
+  let limit: number | undefined;
   if (limitIndex !== -1) {
     const value = Number(args[limitIndex + 1]);
     if (!Number.isInteger(value) || value < 1) {
@@ -187,7 +187,7 @@ function getCommandUsage(topic: string | undefined): string {
         '             Default: failed active waiting.',
         '',
         'Options:',
-        '  --limit n  Maximum jobs to return. Default: 20.',
+        '  --limit n  Maximum jobs to return. Default: all matching jobs.',
         '  --json     Print JSON output.',
         '',
         'Examples:',
@@ -518,7 +518,7 @@ async function queueStatus(queueName?: string): Promise<unknown[]> {
 async function queueJobs(
   queueName: string,
   states: string[],
-  limit: number,
+  limit?: number,
 ): Promise<QueueJobsResult> {
   assertQueue(queueName);
   const queue = getQueue(queueName);
@@ -526,15 +526,20 @@ async function queueJobs(
     ? states
     : ['failed', 'active', 'waiting']) as JobType[];
   const counts = await queue.getJobCounts(...jobTypes);
-  const jobs = await queue.getJobs(jobTypes, 0, limit - 1, false);
+  const total = Object.values(counts).reduce((sum, count) => sum + count, 0);
+  const effectiveLimit = limit ?? total;
+  const jobs =
+    effectiveLimit === 0
+      ? []
+      : await queue.getJobs(jobTypes, 0, effectiveLimit - 1, false);
   const summaries = await Promise.all(
     jobs.map(async (job) => await summarizeJob(job as Job)),
   );
   return {
     queue: queueName,
     states: jobTypes,
-    total: Object.values(counts).reduce((sum, count) => sum + count, 0),
-    limit,
+    total,
+    limit: effectiveLimit,
     returned: summaries.length,
     jobs: summaries,
   };
@@ -710,7 +715,7 @@ export async function runQueueCli(argv: string[] = process.argv): Promise<void> 
         result = await queueRemove(args.rest[0], args.rest[1]);
         break;
       case 'releases-failed':
-        result = await releasesFailed(args.rest[0], args.limit);
+        result = await releasesFailed(args.rest[0], args.limit ?? 20);
         break;
       case 'release-show':
         requireArgs(args.rest, 2);
