@@ -17,6 +17,10 @@ const logger = createLogger('@openupm/jobs');
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const config = configRaw as any;
 
+function getJobLoggerName(name: string): string {
+  return `@openupm/jobs/${name.replace(/Job$/, '')}`;
+}
+
 function isJobEnabled(name: string): boolean {
   return config.jobs?.[name]?.enabled !== false;
 }
@@ -28,29 +32,37 @@ function getHealthcheckPingUrl(name: string): string | undefined {
 function scheduleJob(
   name: string,
   cronTime: string,
-  run: () => Promise<void>,
+  run: (jobLogger: ReturnType<typeof createLogger>) => Promise<void>,
 ): void {
+  const jobLogger = createLogger(getJobLoggerName(name));
   if (!isJobEnabled(name)) {
-    logger.info(`${name} is disabled.`);
+    jobLogger.info(`${name} is disabled.`);
     return;
   }
   new CronJob(
     cronTime,
     async () => {
+      const startedAt = Date.now();
       const healthcheckPingUrl = getHealthcheckPingUrl(name);
-      logger.info(`${name} starts.`);
-      await pingHealthcheck(healthcheckPingUrl, 'start', logger);
+      jobLogger.info({ jobName: name, cronTime }, 'job begin');
+      await pingHealthcheck(healthcheckPingUrl, 'start', jobLogger);
       try {
-        await run();
-        await pingHealthcheck(healthcheckPingUrl, 'success', logger);
-        logger.info(`${name} ends.`);
+        await run(jobLogger);
+        await pingHealthcheck(healthcheckPingUrl, 'success', jobLogger);
+        jobLogger.info(
+          { jobName: name, cronTime, durationMs: Date.now() - startedAt },
+          'job end',
+        );
       } catch (err) {
-        await pingHealthcheck(healthcheckPingUrl, 'fail', logger);
-        logger.error({ err }, `${name} failed.`);
+        await pingHealthcheck(healthcheckPingUrl, 'fail', jobLogger);
+        jobLogger.error(
+          { err, jobName: name, cronTime, durationMs: Date.now() - startedAt },
+          'job failed',
+        );
       }
     },
     () => {
-      console.log(`${name} is completed.`);
+      jobLogger.info({ jobName: name, cronTime }, 'job completed');
     },
     true,
   );
@@ -64,12 +76,14 @@ function main(): void {
   scheduleJob(
     'fetchPackageToAdAssetStoreIdsJob',
     '0 0 * * *',
-    async () => await fetchPackageToAdAssetStoreIdsJob(null, true),
+    async (jobLogger) =>
+      await fetchPackageToAdAssetStoreIdsJob(null, true, jobLogger),
   );
   scheduleJob(
     'fetchTopicToAdAssetStoreIdsJob',
     '0 18 * * *',
-    async () => await fetchTopicToAdAssetStoreIdsJob([], true),
+    async (jobLogger) =>
+      await fetchTopicToAdAssetStoreIdsJob([], true, jobLogger),
   );
   scheduleJob(
     'aggregatePackageExtraJob',

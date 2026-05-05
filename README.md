@@ -112,11 +112,19 @@ VITE_OPENUPM_API_SERVER_URL=http://localhost:3600 npm run docs:dev
 
 Some packages and builds depend on OpenUPM metadata from the `openupm/openupm` repository.
 
-CI provides this through `OPENUPM_DATA_PATH`. For local runs, set it manually when needed:
+CI provides this through `OPENUPM_DATA_PATH`. For local runs, copy the local env
+template and set your machine-specific data path:
 
 ```bash
-OPENUPM_DATA_PATH=/abs/path/to/openupm/data npm test
+cp .env.local.example .env.local
+# edit .env.local:
+# OPENUPM_DATA_PATH=/abs/path/to/openupm/data
+npm test
 ```
+
+Do not commit `.env.local`. The shared Vitest setup loads the repo-root local
+env file; for commands that do not load dotenv, prefix the command with
+`OPENUPM_DATA_PATH=/abs/path/to/openupm/data`.
 
 ## Docs Build
 

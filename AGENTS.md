@@ -36,8 +36,14 @@
 
 - Some packages read OpenUPM metadata from a local `data/` directory.
 - In CI this is provided through `OPENUPM_DATA_PATH`.
-- Local runs may need:
+- For local runs, prefer an untracked repo-root `.env.local` copied from
+  `.env.local.example`:
   - `OPENUPM_DATA_PATH=/abs/path/to/openupm/data`
+- Never commit `.env.local` or machine-specific local data paths.
+- Shared Vitest setup loads repo-root dotenv files, so `npm test` and package
+  Vitest runs can see this local override. For non-test shell commands, prefix
+  the command with `OPENUPM_DATA_PATH=/abs/path/to/openupm/data` if the command
+  does not load dotenv itself.
 
 ## Scaffolding
 
