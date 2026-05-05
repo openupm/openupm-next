@@ -45,6 +45,17 @@
   the command with `OPENUPM_DATA_PATH=/abs/path/to/openupm/data` if the command
   does not load dotenv itself.
 
+## Full Test Prerequisites
+
+- Full `npm test` includes Redis-backed packages such as `@openupm/ads`,
+  `@openupm/server-common`, and `apps/web`; Redis must be reachable on the
+  configured test Redis host, usually `127.0.0.1:6379`.
+- If local Redis is not already running, use the same Redis Stack image version
+  defined for live deployment in `openupm-devops`:
+  `docker run -d --name openupm-next-test-redis -p 6379:6379 redis/redis-stack-server:7.2.0-v10`.
+  Remove it after testing with
+  `docker rm -f openupm-next-test-redis`.
+
 ## Scaffolding
 
 - Create a new Node package with:
