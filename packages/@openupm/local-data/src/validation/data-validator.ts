@@ -49,6 +49,16 @@ function isNonEmptyString(value: unknown): value is string {
   return typeof value === 'string' && value.trim().length > 0;
 }
 
+function isGitHubRepoUrl(value: string): boolean {
+  if (value.startsWith('git@github.com:')) return true;
+  try {
+    const parsed = new URL(value);
+    return /github\.com$/i.test(parsed.host);
+  } catch {
+    return false;
+  }
+}
+
 function messageFromError(error: unknown): string {
   if (error instanceof Error) return error.message;
   return String(error);
@@ -238,6 +248,36 @@ export async function validateDataDirectory(
         addIssue(issues, {
           code: 'package-image-url-invalid',
           message: 'image field should be a valid URL',
+          path: relPath,
+          packageName,
+        });
+      }
+      if (
+        pkg.githubReleaseAssetName !== undefined &&
+        !isNonEmptyString(pkg.githubReleaseAssetName)
+      ) {
+        addIssue(issues, {
+          code: 'package-github-release-asset-name-empty',
+          message: 'githubReleaseAssetName must not be empty when set',
+          path: relPath,
+          packageName,
+        });
+      }
+      if (
+        isNonEmptyString(pkg.githubReleaseAssetName) &&
+        /[\\/]/.test(pkg.githubReleaseAssetName)
+      ) {
+        addIssue(issues, {
+          code: 'package-github-release-asset-name-path-invalid',
+          message: 'GitHub Release asset names are filenames only; githubReleaseAssetName must not include a directory path',
+          path: relPath,
+          packageName,
+        });
+      }
+      if (pkg.trackingMode === 'githubRelease' && !isGitHubRepoUrl(pkg.repoUrl)) {
+        addIssue(issues, {
+          code: 'package-github-release-repo-url-invalid',
+          message: 'trackingMode githubRelease requires a GitHub repoUrl',
           path: relPath,
           packageName,
         });

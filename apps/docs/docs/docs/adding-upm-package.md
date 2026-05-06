@@ -84,6 +84,10 @@ gitTagPrefix: ''
 gitTagIgnore: '-master$'
 # The minimal version to build. Leave it blank to build all versions.
 minVersion: '1.0.5'
+# Package source mode: git (default) or githubRelease.
+trackingMode: git
+# Optional exact GitHub Release asset filename or stable filename prefix when trackingMode is githubRelease.
+githubReleaseAssetName: 'com.example.package-'
 # The featured image URL. It should point to a valid image URL instead of a web page that presents the image.
 # Leave it blank to use the generated default image.
 image: 'https://github.com/author/reponame/raw/master/path-of-img.png'
@@ -118,6 +122,23 @@ The repository you submitted must have at least one versioned Git tag to trigger
 ### Handling Prefixed Git Tags
 
 Some repositories use different content for different tags, for example, `1.0.0` for the main branch and `upm/1.0.0` for the UPM branch. In such cases, you need to specify the `gitTagPrefix` field in the package YAML file. For instance, set `gitTagPrefix: "upm/"` to prevent confusion in the build pipelines due to duplicated version tags. Without specifying a prefix, the build pipelines will treat `1.0.0` and `upm/1.0.0` as the same version tag and only build one of them. By default, a tag name with the prefix `upm/` takes higher priority. For example, `1.0.0` and `upm/1.1.0` will result in building only `upm/1.1.0`.
+
+### Publishing from a GitHub Release Asset
+
+By default, OpenUPM clones the repository at each discovered Git tag and runs
+`npm pack`. If your package needs to publish a tarball that you build yourself,
+set `trackingMode: githubRelease`. OpenUPM will still discover versions from
+Git tags, then find the GitHub Release whose tag name exactly matches the
+discovered Git tag and publish the attached `.tgz` or `.tar.gz` asset unchanged.
+
+Set `githubReleaseAssetName` when the release has multiple assets or when you
+want to require a specific filename pattern. OpenUPM first looks for an exact
+asset filename match, then falls back to the only publishable asset whose name
+starts with that value. Use a stable prefix such as `com.example.package-`
+instead of a versioned filename so the package metadata does not need to change
+for every release. GitHub Release asset names are filenames only, so do not
+include a directory path such as `dist/`. If it is omitted, the release must
+contain exactly one publishable `.tgz` or `.tar.gz` asset.
 
 ### Handling Monorepo
 
