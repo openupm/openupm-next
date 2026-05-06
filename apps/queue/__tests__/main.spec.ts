@@ -6,6 +6,7 @@ const addBuildPackageJobsMock = vi.fn();
 const cronJobMock = vi.fn();
 const pingHealthcheckMock = vi.fn();
 const runQueueCliMock = vi.fn();
+const runQueueHealthcheckMock = vi.fn();
 
 vi.mock('cron', () => ({
   CronJob: cronJobMock,
@@ -26,6 +27,10 @@ vi.mock('../src/jobs/addBuildPackageJob.js', () => ({
 
 vi.mock('../src/queueCli.js', () => ({
   runQueueCli: runQueueCliMock,
+}));
+
+vi.mock('../src/queues/health.js', () => ({
+  runQueueHealthcheck: runQueueHealthcheckMock,
 }));
 
 describe('main', () => {
@@ -163,6 +168,15 @@ describe('main', () => {
     errorSpy.mockRestore();
   });
 
+  it('runs queue healthcheck command', async () => {
+    process.argv = ['node', 'index.js', 'health', 'pkg'];
+
+    const { main } = await import('../src/index.js');
+    await main();
+
+    expect(runQueueHealthcheckMock).toHaveBeenCalledWith(['pkg']);
+  });
+
   it('prints help without starting services', async () => {
     const logSpy = vi.spyOn(console, 'log').mockImplementation(() => undefined);
     process.argv = ['node', 'index.js', '--help'];
@@ -173,6 +187,7 @@ describe('main', () => {
     expect(logSpy.mock.calls[0][0]).toContain('OpenUPM queue service command.');
     expect(dispatchMock).not.toHaveBeenCalled();
     expect(runQueueCliMock).not.toHaveBeenCalled();
+    expect(runQueueHealthcheckMock).not.toHaveBeenCalled();
     logSpy.mockRestore();
   });
 });

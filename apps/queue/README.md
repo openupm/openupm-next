@@ -9,6 +9,7 @@ Queue worker app for build queues.
 - `node build/index.js add-build-package-job --all`
 - `node build/index.js add-build-package-job com.example.package`
 - `node build/index.js schedule add-build-package-job`
+- `node build/index.js health [queue...]`
 - `node build/index.js queue-cli --help`
 
 ## Queue Operator CLI
@@ -53,10 +54,14 @@ Common commands:
 - `queue-pkg`: `npm run start`
 - `queue-rel`: `npm run start:rel`
 - `queue-add-build-package-job`: `npm run start:add-build-package-job:all`
+- `health`: `node build/index.js health [queue...]`
 - `queue-cli`: `node build/index.js queue-cli`
 
 Production Docker Compose wiring and runtime config are managed outside this
 application repository.
+
+The `health` command performs read-only BullMQ/Redis checks for one or more
+queues. If no queue is provided, it checks both `pkg` and `rel`.
 
 See `MIGRATION.md` for the historical PM2-to-Docker command mapping.
 

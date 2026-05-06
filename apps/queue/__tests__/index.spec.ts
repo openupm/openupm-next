@@ -41,6 +41,11 @@ describe('parseArgs', () => {
     expect(parsed).toEqual({ command: 'queue-cli' });
   });
 
+  it('parses health command', () => {
+    const parsed = parseArgs(['node', 'index.js', 'health', 'pkg']);
+    expect(parsed).toEqual({ command: 'health', queueNames: ['pkg'] });
+  });
+
   it('parses help command', () => {
     const parsed = parseArgs(['node', 'index.js', '--help']);
     expect(parsed).toEqual({ command: 'help' });

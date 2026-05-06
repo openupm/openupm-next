@@ -8,6 +8,7 @@ import {
   getPackageNamesFromArgs,
 } from './jobs/addBuildPackageJob.js';
 import { runQueueCli } from './queueCli.js';
+import { runQueueHealthcheck } from './queues/health.js';
 import { dispatch } from './queues/process.js';
 
 const logger = createLogger('@openupm/queue');
@@ -19,6 +20,7 @@ type ParsedArgs =
   | { command: 'add-build-package-job'; all: boolean; names: string[] }
   | { command: 'schedule'; jobName: string }
   | { command: 'queue-cli' }
+  | { command: 'health'; queueNames: string[] }
   | { command: 'help' };
 
 function getUsage(): string {
@@ -30,6 +32,7 @@ function getUsage(): string {
     '  node build/index.js add-build-package-job [--all] [package...]',
     '  node build/index.js schedule add-build-package-job',
     '  node build/index.js queue-cli <command> [options]',
+    '  node build/index.js health [queue...]',
     '  node build/index.js --help',
     '',
     'Service commands:',
@@ -46,6 +49,9 @@ function getUsage(): string {
     '  queue-cli <command>',
     '    Run operator commands for queue/release inspection and repair.',
     '    Use "node build/index.js queue-cli --help" for details.',
+    '',
+    '  health [queue...]',
+    '    Verify BullMQ/Redis access for one or more queues without mutating jobs.',
   ].join('\n');
 }
 
@@ -76,6 +82,8 @@ function parseArgs(argv: string[]): ParsedArgs {
   }
 
   if (command === 'queue-cli') return { command };
+
+  if (command === 'health') return { command, queueNames: args.slice(1) };
 
   throw new Error(getUsage());
 }
@@ -147,6 +155,11 @@ async function main(): Promise<void> {
       console.error((err as Error).message);
       process.exitCode = 1;
     }
+    return;
+  }
+
+  if (parsed.command === 'health') {
+    await runQueueHealthcheck(parsed.queueNames);
     return;
   }
 
