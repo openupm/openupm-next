@@ -78,4 +78,49 @@ npm error command failed
       ReleaseErrorCode.InvalidVersion,
     );
   });
+
+  it('GitHub Release asset download errors are retryable', () => {
+    expect(
+      getReasonFromBuildLogText('GITHUB_RELEASE_ASSET_DOWNLOAD_NOT_FOUND'),
+    ).toEqual(ReleaseErrorCode.GitHubReleaseAssetNotFound);
+    expect(
+      getReasonFromBuildLogText('GITHUB_RELEASE_ASSET_DOWNLOAD_FAILED'),
+    ).toEqual(ReleaseErrorCode.GitHubReleaseAssetDownloadFailed);
+    expect(
+      RetryableReleaseErrorCodes.includes(
+        ReleaseErrorCode.GitHubReleaseAssetNotFound,
+      ),
+    ).toBe(true);
+    expect(
+      RetryableReleaseErrorCodes.includes(
+        ReleaseErrorCode.GitHubReleaseAssetDownloadFailed,
+      ),
+    ).toBe(true);
+  });
+
+  it('GitHub Release asset validation errors are non-retryable', () => {
+    expect(
+      getReasonFromBuildLogText('Unsupported package asset extension'),
+    ).toEqual(ReleaseErrorCode.PackageJsonParsingError);
+    expect(
+      getReasonFromBuildLogText(
+        'Downloaded package asset has no package/package.json',
+      ),
+    ).toEqual(ReleaseErrorCode.PackageNotFound);
+    expect(
+      getReasonFromBuildLogText(
+        'Downloaded package asset name mismatch: actual=package-a, expected=package-b',
+      ),
+    ).toEqual(ReleaseErrorCode.PackageNameInvalid);
+    expect(
+      getReasonFromBuildLogText(
+        'Downloaded package asset version mismatch: actual=1.0.0, expected=2.0.0',
+      ),
+    ).toEqual(ReleaseErrorCode.InvalidVersion);
+    expect(
+      RetryableReleaseErrorCodes.includes(
+        ReleaseErrorCode.PackageJsonParsingError,
+      ),
+    ).toBe(false);
+  });
 });
