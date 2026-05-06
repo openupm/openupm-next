@@ -22,6 +22,9 @@
 - Root `npm test` runs `turbo run test`, and Turbo runs each package `build` before `test`.
 - If you need a clean rebuild, use `npm run build:release -- --force` or `npm test -- --force`.
 - Prefer changing shared config in `tooling/` rather than duplicating per-package config.
+- When working from a plan, after finishing any item, always state the next
+  concrete step. Continue doing this until the plan is genuinely complete so
+  the user does not need to ask "what's next?".
 
 ## Queue CLI Notes
 
