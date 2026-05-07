@@ -252,6 +252,7 @@ describe('fetchPackageExtraJob', () => {
     packageMetadataLocalExistsMock.mockReturnValue(true);
     loadPackageMetadataLocalMock.mockResolvedValue({
       repo: 'openupm/openupm',
+      repoUrl: 'https://github.com/openupm/openupm',
       owner: 'openupm',
       parentOwner: null,
       hunter: 'openupm',
@@ -326,7 +327,7 @@ describe('fetchPackageExtraJob', () => {
       name: 'com.test.pkg',
       displayName: 'Test Package',
       description: 'Description',
-      repo: 'openupm/missing-package',
+      repo: 'missing-package',
       repoUrl: 'https://github.com/openupm/missing-package',
       readme: 'main:README.md',
       owner: null,
@@ -372,6 +373,10 @@ describe('fetchPackageExtraJob', () => {
     const { fetchPackageExtraJob } = await import('../../src/jobs/fetchPackageExtra.js');
     await fetchPackageExtraJob(['com.test.pkg'], { force: false });
 
+    expect(fetchMock).toHaveBeenCalledWith(
+      'https://api.github.com/repos/openupm/missing-package',
+      expect.objectContaining({ method: 'GET' }),
+    );
     expect(setRepoUnavailableMock).toHaveBeenCalledWith('com.test.pkg', true);
     expect(setReadmeMock).toHaveBeenCalledWith('com.test.pkg', '');
     expect(setReadmeHtmlMock).toHaveBeenCalledWith(

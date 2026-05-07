@@ -120,7 +120,7 @@ export async function fetchExtraData(
 
     await fetchPackageInfo(packageName);
     await fetchPackageScopes(packageName);
-    const repoPushedTime = await fetchRepoInfo(pkg.repo, packageName);
+    const repoPushedTime = await fetchRepoInfo(pkg, packageName);
     await fetchPackageReadme(pkg, packageName, repoPushedTime);
     await cacheImage(packageName, force);
     await cacheAvatarImage(pkg.owner || undefined, pkg.parentOwner || undefined, pkg.hunter || undefined, force);
@@ -209,8 +209,17 @@ async function fetchPackageScopes(packageName: string): Promise<void> {
   }
 }
 
+function getGitHubRepoFullName(pkg: Pick<PackageReadmeContext, 'repo' | 'repoUrl'>): string {
+  const repoPath = new URL(pkg.repoUrl).pathname
+    .split('/')
+    .filter(Boolean)
+    .slice(0, 2)
+    .join('/');
+  return repoPath || pkg.repo;
+}
+
 async function fetchRepoInfo(
-  repo: string,
+  pkg: PackageReadmeContext,
   packageName: string,
 ): Promise<number | null> {
   try {
@@ -219,6 +228,7 @@ async function fetchRepoInfo(
     };
     const requestHeaders = withGitHubAuthorizationHeader(config, headers);
 
+    const repo = getGitHubRepoFullName(pkg);
     const resp = await fetch(`https://api.github.com/repos/${repo}`, {
       headers: requestHeaders,
       method: 'GET',
@@ -290,9 +300,10 @@ export async function fetchPackageReadme(
       Accept: 'application/vnd.github.v3.json',
     };
     const requestHeaders = withGitHubAuthorizationHeader(config, headers);
+    const repo = getGitHubRepoFullName(pkg);
     const readmePath = encodeGitHubContentPath(readmeInfo.readmePath);
     const resp = await fetch(
-      `https://api.github.com/repos/${pkg.repo}/contents/${readmePath}?ref=${encodeURIComponent(readmeInfo.readmeBranch)}`,
+      `https://api.github.com/repos/${repo}/contents/${readmePath}?ref=${encodeURIComponent(readmeInfo.readmeBranch)}`,
       {
         headers: requestHeaders,
         method: 'GET',
