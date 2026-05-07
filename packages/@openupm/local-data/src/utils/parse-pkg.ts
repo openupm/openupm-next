@@ -1,6 +1,5 @@
 // Utilities for handling package metadata.
 import { ZodError } from 'zod';
-import path from 'node:path';
 import spdx from 'spdx-license-list';
 import {
   PackageMetadataLocal,
@@ -78,10 +77,7 @@ export const parsePackageMetadata = function (raw: any): PackageMetadataLocal {
   else if (readme.indexOf(':') == -1) readme = 'main:' + readme;
   base.readme = readme;
   // Set readmeBranch
-  const [readmeBranch, readmePath] = readme.split(':');
-  const readmeDirname = path.posix.dirname(readmePath);
-  const readmeBase =
-    readmeDirname === '.' ? readmeBranch : `${readmeBranch}/${readmeDirname}`;
+  const readmeBranch = readme.split(':')[0];
   // Set image
   if (base.image === undefined) base.image = null;
   // Set imageFit
@@ -95,7 +91,6 @@ export const parsePackageMetadata = function (raw: any): PackageMetadataLocal {
     parentOwner,
     parentOwnerUrl,
     readmeBranch,
-    readmeBase,
     hunterUrl,
   };
 };

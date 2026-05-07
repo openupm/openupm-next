@@ -15,7 +15,6 @@ export interface PackageMetadataLocalBase {
   imageFit?: string;
   parentRepoUrl?: string | null;
   readme?: string;
-  readme_zhCN?: string;
   // Pipeline fields
   gitTagPrefix?: string;
   gitTagIgnore?: string;
@@ -42,8 +41,6 @@ export interface PackageMetadataLocal extends PackageMetadataLocalBase {
   parentOwnerUrl: string | null;
   // Readme branch name, e.g. "master" or "main"
   readmeBranch: string;
-  // README base path, e.g. "main" or "main/docs"
-  readmeBase: string;
   // Github hunter URL
   hunterUrl: string | null;
 }

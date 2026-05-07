@@ -8,14 +8,9 @@ const setUnityVersionMock = vi.fn();
 const setUpdatedTimeMock = vi.fn();
 const setVersionMock = vi.fn();
 const setScopesMock = vi.fn();
-const setReadmeMock = vi.fn();
-const setReadmeHtmlMock = vi.fn();
-const setReadmeCacheKeyMock = vi.fn();
-const getReadmeCacheKeyMock = vi.fn();
 const setStarsMock = vi.fn();
 const setParentStarsMock = vi.fn();
 const setRepoPushedTimeMock = vi.fn();
-const getRepoPushedTimeMock = vi.fn();
 const setRepoUpdatedTimeMock = vi.fn();
 const setRepoUnavailableMock = vi.fn();
 const setMonthlyDownloadsMock = vi.fn();
@@ -36,14 +31,9 @@ vi.mock('@openupm/server-common/build/models/packageExtra.js', () => ({
   setUpdatedTime: setUpdatedTimeMock,
   setVersion: setVersionMock,
   setScopes: setScopesMock,
-  setReadme: setReadmeMock,
-  setReadmeHtml: setReadmeHtmlMock,
-  setReadmeCacheKey: setReadmeCacheKeyMock,
-  getReadmeCacheKey: getReadmeCacheKeyMock,
   setStars: setStarsMock,
   setParentStars: setParentStarsMock,
   setRepoPushedTime: setRepoPushedTimeMock,
-  getRepoPushedTime: getRepoPushedTimeMock,
   setRepoUpdatedTime: setRepoUpdatedTimeMock,
   setRepoUnavailable: setRepoUnavailableMock,
   setMonthlyDownloads: setMonthlyDownloadsMock,
@@ -70,16 +60,7 @@ describe('fetchPackageExtraJob', () => {
       owner: 'openupm',
       parentOwner: null,
       hunter: 'openupm',
-      repoUrl: 'https://github.com/openupm/openupm',
-      name: 'com.test.pkg',
-      displayName: 'Test Package',
-      description: 'Test package description',
-      readme: 'main:README.md',
-      readmeBranch: 'main',
-      readmeBase: 'main',
     });
-    getRepoPushedTimeMock.mockResolvedValue(1770000000000);
-    getReadmeCacheKeyMock.mockResolvedValue(null);
 
     getImageQueryForPackageMock.mockResolvedValue(null);
     getImageQueryForGithubUserMock.mockResolvedValue({
@@ -110,17 +91,7 @@ describe('fetchPackageExtraJob', () => {
       })
       .mockResolvedValueOnce({
         ok: true,
-        json: async () => ({
-          stargazers_count: 10,
-          pushed_at: '2026-01-02T00:00:00.000Z',
-        }),
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
-          encoding: 'base64',
-          content: Buffer.from('# Existing README').toString('base64'),
-        }),
+        json: async () => ({ stargazers_count: 10 }),
       })
       .mockResolvedValueOnce({
         ok: true,
@@ -140,16 +111,6 @@ describe('fetchPackageExtraJob', () => {
     expect(setVersionMock).toHaveBeenCalledWith('com.test.pkg', '1.0.0');
     expect(setScopesMock).toHaveBeenCalled();
     expect(setStarsMock).toHaveBeenCalledWith('com.test.pkg', 10);
-    expect(setReadmeMock).toHaveBeenCalledWith('com.test.pkg', '# Existing README');
-    expect(setReadmeHtmlMock).toHaveBeenCalledWith(
-      'com.test.pkg',
-      expect.stringContaining('Existing README'),
-    );
-    expect(setReadmeCacheKeyMock).toHaveBeenCalledWith(
-      'com.test.pkg',
-      'en-US',
-      'v0:main:README.md:1770000000000',
-    );
     expect(setMonthlyDownloadsMock).toHaveBeenCalledWith('com.test.pkg', 20);
     expect(fetchMock).toHaveBeenLastCalledWith(
       expect.stringContaining('/downloads/point/last-month/com.test.pkg'),
