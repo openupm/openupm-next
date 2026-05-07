@@ -286,7 +286,14 @@ describe('fetchPackageExtraJob', () => {
       })
       .mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ stargazers_count: 10 }),
+        json: async () => ({
+          stargazers_count: 10,
+          pushed_at: '2026-01-01T00:00:00.000Z',
+        }),
+      })
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 404,
       })
       .mockResolvedValueOnce({
         ok: true,
@@ -310,6 +317,71 @@ describe('fetchPackageExtraJob', () => {
     expect(fetchMock).toHaveBeenLastCalledWith(
       expect.stringContaining('/downloads/point/last-month/com.test.pkg'),
       expect.any(Object),
+    );
+  });
+
+  it('stores README fallback when repo metadata is unavailable', async () => {
+    packageMetadataLocalExistsMock.mockReturnValue(true);
+    loadPackageMetadataLocalMock.mockResolvedValue({
+      name: 'com.test.pkg',
+      displayName: 'Test Package',
+      description: 'Description',
+      repo: 'openupm/missing-package',
+      repoUrl: 'https://github.com/openupm/missing-package',
+      readme: 'main:README.md',
+      owner: null,
+      parentOwner: null,
+      hunter: null,
+    });
+    getReadmeCacheKeyMock.mockResolvedValue(null);
+    getImageQueryForPackageMock.mockResolvedValue(null);
+    getImageQueryForGithubUserMock.mockResolvedValue(null);
+
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          'dist-tags': { latest: '1.0.0' },
+          versions: { '1.0.0': { dependencies: {} } },
+          time: { '1.0.0': '2026-01-01T00:00:00.000Z' },
+        }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          'dist-tags': { latest: '1.0.0' },
+          versions: { '1.0.0': { dependencies: {} } },
+          time: { '1.0.0': '2026-01-01T00:00:00.000Z' },
+        }),
+      })
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 404,
+      })
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 404,
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ downloads: 0 }),
+      });
+    vi.stubGlobal('fetch', fetchMock as unknown as typeof fetch);
+
+    const { fetchPackageExtraJob } = await import('../../src/jobs/fetchPackageExtra.js');
+    await fetchPackageExtraJob(['com.test.pkg'], { force: false });
+
+    expect(setRepoUnavailableMock).toHaveBeenCalledWith('com.test.pkg', true);
+    expect(setReadmeMock).toHaveBeenCalledWith('com.test.pkg', '');
+    expect(setReadmeHtmlMock).toHaveBeenCalledWith(
+      'com.test.pkg',
+      expect.stringContaining('See more in the'),
+    );
+    expect(setReadmeCacheKeyMock).toHaveBeenCalledWith(
+      'com.test.pkg',
+      'en-US',
+      'v0:main:README.md:unavailable',
     );
   });
 
