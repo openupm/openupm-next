@@ -12,8 +12,13 @@ import {
 } from '@openupm/local-data';
 import {
   getCachedImageFilename,
+  getReadmeCacheKey,
+  getRepoPushedTime,
   getImageQueryForGithubUser,
   getImageQueryForPackage,
+  setReadme,
+  setReadmeCacheKey,
+  setReadmeHtml,
   setMonthlyDownloads,
   setParentStars,
   setRepoPushedTime,
@@ -28,6 +33,8 @@ import {
 import { addImage, getImage } from '@openupm/server-common/build/utils/media.js';
 import { createLogger } from '@openupm/server-common/build/log.js';
 import { withGitHubAuthorizationHeader } from '@openupm/server-common/build/utils/githubToken.js';
+import { renderMarkdownToHtml } from '@openupm/server-common/build/utils/markdown.js';
+import { PackageMetadataLocal } from '@openupm/types';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const config = configRaw as any;
@@ -52,6 +59,11 @@ type PackageMeta = {
 
 type DownloadCountResponse = {
   downloads?: number | Array<{ downloads?: number }>;
+};
+
+type GitHubContentResponse = {
+  content?: string;
+  encoding?: string;
 };
 
 async function fetchJson<T>(url: string): Promise<T> {
@@ -99,13 +111,21 @@ export async function fetchExtraData(
     const pkg = await loadPackageMetadataLocal(packageName);
     if (!pkg) continue;
 
+    const repoFullName = getRepoFullName(pkg);
+
     await fetchPackageInfo(packageName);
     await fetchPackageScopes(packageName);
-    await fetchRepoInfo(pkg.repo, packageName);
+    await fetchRepoInfo(repoFullName, packageName);
+    await fetchReadme(pkg, packageName, repoFullName);
     await cacheImage(packageName, force);
     await cacheAvatarImage(pkg.owner || undefined, pkg.parentOwner || undefined, pkg.hunter || undefined, force);
     await fetchPackageInstallCount(packageName);
   }
+}
+
+function getRepoFullName(pkg: PackageMetadataLocal): string {
+  if (pkg.repo.includes('/')) return pkg.repo;
+  return `${pkg.owner}/${pkg.repo}`;
 }
 
 export async function fetchPackageExtraJob(
@@ -230,6 +250,72 @@ async function fetchRepoInfo(repo: string, packageName: string): Promise<void> {
   } catch (err) {
     logger.error({ err, pkg: packageName }, 'fetch stars error');
   }
+}
+
+async function fetchReadme(
+  pkg: PackageMetadataLocal,
+  packageName: string,
+  repoFullName: string,
+): Promise<void> {
+  const readmePath = pkg.readme;
+  if (!readmePath) return;
+
+  try {
+    const pushedTime = await getRepoPushedTime(packageName);
+    const readmeCacheKey = `v0:${readmePath}:${pushedTime || 0}`;
+    const prevReadmeCacheKey = await getReadmeCacheKey(packageName);
+    if (readmeCacheKey === prevReadmeCacheKey) {
+      logger.info({ pkg: packageName, readmePath }, 'fetchReadme cache is available');
+      return;
+    }
+
+    const markdown = await fetchReadmeMarkdown(repoFullName, readmePath);
+    await setReadme(packageName, markdown);
+    const html = await renderMarkdownToHtml({ pkg, markdown });
+    await setReadmeHtml(packageName, html);
+    await setReadmeCacheKey(packageName, 'en-US', readmeCacheKey);
+  } catch (err) {
+    logger.error({ err, pkg: packageName, readmePath }, 'fetch readme error');
+  }
+}
+
+async function fetchReadmeMarkdown(
+  repoFullName: string,
+  readmePath: string,
+): Promise<string> {
+  const separatorIndex = readmePath.indexOf(':');
+  const ref = separatorIndex === -1
+    ? 'main'
+    : readmePath.slice(0, separatorIndex);
+  const path = separatorIndex === -1
+    ? readmePath
+    : readmePath.slice(separatorIndex + 1);
+  const encodedPath = path
+    .split('/')
+    .map((part) => encodeURIComponent(part))
+    .join('/');
+  const url = new URL(
+    `https://api.github.com/repos/${repoFullName}/contents/${encodedPath}`,
+  );
+  url.searchParams.set('ref', ref);
+
+  const headers: Record<string, string> = {
+    Accept: 'application/vnd.github.v3+json',
+  };
+  const requestHeaders = withGitHubAuthorizationHeader(config, headers);
+  const resp = await fetch(url, {
+    headers: requestHeaders,
+    method: 'GET',
+    signal: AbortSignal.timeout(10000),
+  });
+
+  if (!resp.ok) {
+    throw new Error(`GitHub contents API failed ${resp.status}`);
+  }
+
+  const data = (await resp.json()) as GitHubContentResponse;
+  if (data.encoding !== 'base64' || !data.content) return '';
+  return Buffer.from(data.content, 'base64').toString('utf8');
 }
 
 async function cacheImage(packageName: string, force: boolean): Promise<void> {
