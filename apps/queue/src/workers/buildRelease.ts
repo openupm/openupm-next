@@ -7,6 +7,7 @@ import {
   ReleaseModel,
   ReleaseState,
   RetryableReleaseErrorCodes,
+  type PackageMetadataLocal,
 } from '@openupm/types';
 import { loadPackageMetadataLocal } from '@openupm/local-data';
 import {
@@ -24,6 +25,10 @@ import {
   queueBuild,
   waitBuild,
 } from '../utils/azure.js';
+import {
+  GitHubReleaseAssetError,
+  resolveGitHubReleaseAsset,
+} from '../utils/githubReleaseAsset.js';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const config = configRaw as any;
@@ -43,13 +48,18 @@ export async function buildRelease(
 
   try {
     const buildApi = await getBuildApi();
-    release = await updateReleaseBuild(buildApi, pkg.repoUrl, release);
+    release = await updateReleaseBuild(buildApi, pkg, release);
     const build = await waitReleaseBuild(buildApi, release);
     await handleReleaseBuild(build, release);
   } catch (err) {
     if ((err as NodeJS.ErrnoException).code === 'ETIMEDOUT') {
       release.state = ReleaseState.Failed;
       release.reason = ReleaseErrorCode.ConnectionTimeout;
+      await save(release);
+      logReleaseError(release);
+    } else if (err instanceof GitHubReleaseAssetError) {
+      release.state = ReleaseState.Failed;
+      release.reason = err.reason;
       await save(release);
       logReleaseError(release);
     }
@@ -92,22 +102,54 @@ async function updateReleaseState(release: ReleaseModel): Promise<boolean> {
 async function updateReleaseBuild(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   buildApi: any,
-  repoUrl: string,
+  pkg: PackageMetadataLocal,
   release: ReleaseModel,
 ): Promise<ReleaseModel> {
   if (!release.buildId) {
     logger.info({ rel: `${release.packageName}@${release.version}` }, 'queue build');
+    if (!pkg) throw new Error(`package not found: ${release.packageName}`);
+    const parameters = await getQueueBuildParameters(pkg, release);
     const build = await queueBuild(buildApi, config.azureDevops.definitionId, {
-      repoUrl,
-      repoBranch: release.tag,
-      packageName: release.packageName,
-      packageVersion: release.version,
+      ...parameters,
     });
     release.buildId = `${build.id}`;
     release = await save(release);
     await sleep(config.azureDevops.check.duration);
   }
   return release;
+}
+
+export async function getQueueBuildParameters(
+  pkg: PackageMetadataLocal,
+  release: ReleaseModel,
+): Promise<Record<string, string>> {
+  const baseParameters = {
+    repoUrl: pkg.repoUrl,
+    repoBranch: release.tag,
+    packageName: release.packageName,
+    packageVersion: release.version,
+  };
+
+  if ((pkg.trackingMode || 'git') === 'git') {
+    return {
+      ...baseParameters,
+      packageSource: 'git',
+    };
+  }
+
+  const resolvedAsset = await resolveGitHubReleaseAsset({
+    config,
+    repoUrl: pkg.repoUrl,
+    releaseTag: release.tag,
+    githubReleaseAssetName: pkg.githubReleaseAssetName,
+  });
+
+  return {
+    ...baseParameters,
+    packageSource: 'githubRelease',
+    packageAssetUrl: resolvedAsset.packageAssetUrl,
+    packageAssetName: resolvedAsset.packageAssetName,
+  };
 }
 
 async function waitReleaseBuild(
@@ -201,7 +243,10 @@ export function getReasonFromBuildLogText(text: string): ReleaseErrorCode {
   if (/fatal: Remote branch .* not found/.test(text))
     return ReleaseErrorCode.RemoteBranchNotFound;
   else if (text.includes('code E409')) return ReleaseErrorCode.VersionConflict;
-  else if (text.includes('ENOENT') && text.includes('error path package.json'))
+  else if (
+    (text.includes('ENOENT') && text.includes('error path package.json')) ||
+    text.includes('Downloaded package asset has no package/package.json')
+  )
     return ReleaseErrorCode.PackageNotFound;
   else if (text.includes('code E400')) {
     if (/400 Bad Request - PUT https:\/\/.*\.com\/@/.test(text)) {
@@ -217,7 +262,12 @@ export function getReasonFromBuildLogText(text: string): ReleaseErrorCode {
     return ReleaseErrorCode.ServiceUnavailable;
   else if (text.includes('code E504')) return ReleaseErrorCode.GatewayTimeout;
   else if (text.includes('code EPRIVATE')) return ReleaseErrorCode.Private;
-  else if (text.includes('code EJSONPARSE'))
+  else if (
+    text.includes('code EJSONPARSE') ||
+    text.includes('Unsupported package asset extension') ||
+    text.includes('Downloaded package asset is not a valid tar archive') ||
+    text.includes('Downloaded package asset package.json is not valid JSON')
+  )
     return ReleaseErrorCode.PackageJsonParsingError;
   else if (
     text.includes('code ERR_STRING_TOO_LONG') ||
@@ -228,6 +278,14 @@ export function getReasonFromBuildLogText(text: string): ReleaseErrorCode {
     return ReleaseErrorCode.LfsBudgetExceeded;
   else if (text.includes('Object does not exist on the server'))
     return ReleaseErrorCode.LfsObjectNotFound;
+  else if (text.includes('GITHUB_RELEASE_ASSET_DOWNLOAD_NOT_FOUND'))
+    return ReleaseErrorCode.GitHubReleaseAssetNotFound;
+  else if (text.includes('GITHUB_RELEASE_ASSET_DOWNLOAD_FAILED'))
+    return ReleaseErrorCode.GitHubReleaseAssetDownloadFailed;
+  else if (text.includes('Downloaded package asset name mismatch'))
+    return ReleaseErrorCode.PackageNameInvalid;
+  else if (text.includes('Downloaded package asset version mismatch'))
+    return ReleaseErrorCode.InvalidVersion;
   else if (text.includes('Invalid version') || text.includes('code EBADSEMVER'))
     return ReleaseErrorCode.InvalidVersion;
   else if (text.includes('Could not read from remote repository'))

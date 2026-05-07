@@ -17,6 +17,8 @@ type PackageFixture = {
   hunter: string;
   createdAt: number;
   image?: string | null;
+  trackingMode?: 'git' | 'githubRelease';
+  githubReleaseAssetName?: string;
 };
 
 const topLevelFiles = [
@@ -95,8 +97,59 @@ describe('validateDataDirectory', () => {
     }
   });
 
+  it('accepts GitHub Release tracking metadata with optional asset name', async () => {
+    const dataDir = await createDataDir();
+    try {
+      await writePackage(dataDir, validPackage.name, {
+        ...validPackage,
+        trackingMode: 'githubRelease',
+        githubReleaseAssetName: 'com.example.package-1.0.0.tgz',
+      });
+      const result = await validateDataDirectory(dataDir);
+      expect(result).toEqual({ valid: true, issues: [] });
+    } finally {
+      await afs.rm(dataDir, { recursive: true, force: true });
+    }
+  });
+
+  it('accepts GitHub Release tracking metadata without asset name', async () => {
+    const dataDir = await createDataDir();
+    try {
+      await writePackage(dataDir, validPackage.name, {
+        ...validPackage,
+        trackingMode: 'githubRelease',
+      });
+      const result = await validateDataDirectory(dataDir);
+      expect(result).toEqual({ valid: true, issues: [] });
+    } finally {
+      await afs.rm(dataDir, { recursive: true, force: true });
+    }
+  });
+
+  it('rejects malformed GitHub Release repo URLs', async () => {
+    expect.assertions(2);
+    await expectIssue(
+      (dataDir) =>
+        writePackage(dataDir, validPackage.name, {
+          ...validPackage,
+          trackingMode: 'githubRelease',
+          repoUrl: 'https://notgithub.com/example/package',
+        }),
+      'package-github-release-repo-url-invalid',
+    );
+    await expectIssue(
+      (dataDir) =>
+        writePackage(dataDir, validPackage.name, {
+          ...validPackage,
+          trackingMode: 'githubRelease',
+          repoUrl: 'https://github.com/',
+        }),
+      'package-github-release-repo-url-invalid',
+    );
+  });
+
   it('covers required package field checks from openupm data tests', async () => {
-    expect.assertions(6);
+    expect.assertions(7);
     await expectIssue(
       (dataDir) =>
         writePackage(dataDir, validPackage.name, {
@@ -134,6 +187,14 @@ describe('validateDataDirectory', () => {
       (dataDir) =>
         writePackage(dataDir, validPackage.name, {
           ...validPackage,
+          trackingMode: 'release',
+        }),
+      'package-metadata-invalid',
+    );
+    await expectIssue(
+      (dataDir) =>
+        writePackage(dataDir, validPackage.name, {
+          ...validPackage,
           hunter: ' ',
         }),
       'package-hunter-empty',
@@ -149,7 +210,7 @@ describe('validateDataDirectory', () => {
   });
 
   it('covers package semantic checks from openupm data tests', async () => {
-    expect.assertions(6);
+    expect.assertions(9);
     await expectIssue(
       (dataDir) =>
         writePackage(dataDir, validPackage.name, {
@@ -194,6 +255,33 @@ describe('validateDataDirectory', () => {
           image: 'not-a-url',
         }),
       'package-image-url-invalid',
+    );
+    await expectIssue(
+      (dataDir) =>
+        writePackage(dataDir, validPackage.name, {
+          ...validPackage,
+          trackingMode: 'githubRelease',
+          githubReleaseAssetName: ' ',
+        }),
+      'package-github-release-asset-name-empty',
+    );
+    await expectIssue(
+      (dataDir) =>
+        writePackage(dataDir, validPackage.name, {
+          ...validPackage,
+          trackingMode: 'githubRelease',
+          repoUrl: 'https://example.com/example/package',
+        }),
+      'package-github-release-repo-url-invalid',
+    );
+    await expectIssue(
+      (dataDir) =>
+        writePackage(dataDir, validPackage.name, {
+          ...validPackage,
+          trackingMode: 'githubRelease',
+          githubReleaseAssetName: 'dist/package.tgz',
+        }),
+      'package-github-release-asset-name-path-invalid',
     );
   });
 

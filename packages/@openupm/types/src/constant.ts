@@ -65,6 +65,16 @@ export enum ReleaseErrorCode {
   LfsBudgetExceeded = 902,
   // Git LFS object is missing from the remote server
   LfsObjectNotFound = 903,
+  // GitHub Release was not found for the discovered tag
+  GitHubReleaseNotFound = 904,
+  // GitHub Release had no matching publishable asset
+  GitHubReleaseAssetNotFound = 905,
+  // GitHub Release asset selection was ambiguous
+  GitHubReleaseAssetAmbiguous = 906,
+  // GitHub Release API failed transiently
+  GitHubReleaseApiError = 907,
+  // GitHub Release asset download failed in Azure
+  GitHubReleaseAssetDownloadFailed = 908,
 }
 
 // A list of error codes that should be retried.
@@ -82,6 +92,11 @@ export const RetryableReleaseErrorCodes = [
   ReleaseErrorCode.BuildTimeout,
   ReleaseErrorCode.BuildCancellation,
   ReleaseErrorCode.ConnectionTimeout,
+  ReleaseErrorCode.GitHubReleaseNotFound,
+  ReleaseErrorCode.GitHubReleaseAssetNotFound,
+  ReleaseErrorCode.GitHubReleaseAssetAmbiguous,
+  ReleaseErrorCode.GitHubReleaseApiError,
+  ReleaseErrorCode.GitHubReleaseAssetDownloadFailed,
 ];
 
 // TODO: move to @openupm/local-data package
