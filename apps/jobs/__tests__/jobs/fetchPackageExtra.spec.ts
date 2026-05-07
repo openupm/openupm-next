@@ -14,6 +14,10 @@ const setRepoPushedTimeMock = vi.fn();
 const setRepoUpdatedTimeMock = vi.fn();
 const setRepoUnavailableMock = vi.fn();
 const setMonthlyDownloadsMock = vi.fn();
+const getReadmeCacheKeyMock = vi.fn();
+const setReadmeMock = vi.fn();
+const setReadmeHtmlMock = vi.fn();
+const setReadmeCacheKeyMock = vi.fn();
 const getImageQueryForPackageMock = vi.fn();
 const getImageQueryForGithubUserMock = vi.fn();
 
@@ -37,6 +41,10 @@ vi.mock('@openupm/server-common/build/models/packageExtra.js', () => ({
   setRepoUpdatedTime: setRepoUpdatedTimeMock,
   setRepoUnavailable: setRepoUnavailableMock,
   setMonthlyDownloads: setMonthlyDownloadsMock,
+  getReadmeCacheKey: getReadmeCacheKeyMock,
+  setReadme: setReadmeMock,
+  setReadmeHtml: setReadmeHtmlMock,
+  setReadmeCacheKey: setReadmeCacheKeyMock,
   getImageQueryForPackage: getImageQueryForPackageMock,
   getImageQueryForGithubUser: getImageQueryForGithubUserMock,
   getCachedImageFilename: vi.fn().mockResolvedValue(null),
@@ -50,6 +58,120 @@ vi.mock('@openupm/server-common/build/utils/media.js', () => ({
 describe('fetchPackageExtraJob', () => {
   beforeEach(() => {
     vi.resetAllMocks();
+  });
+
+  it('fetches README source content and renders it locally', async () => {
+    getReadmeCacheKeyMock.mockResolvedValue('v0:main:README.md:old');
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          content: Buffer.from('README without title').toString('base64'),
+          encoding: 'base64',
+        }),
+      });
+    vi.stubGlobal('fetch', fetchMock as unknown as typeof fetch);
+
+    const { fetchPackageReadme } = await import('../../src/jobs/fetchPackageExtra.js');
+    await fetchPackageReadme(
+      {
+        name: 'com.test.pkg',
+        displayName: 'Test Package',
+        description: 'Description',
+        repo: 'openupm/test-package',
+        repoUrl: 'https://github.com/openupm/test-package',
+        readme: 'main:README.md',
+        readmeBranch: 'main',
+      },
+      'com.test.pkg',
+      1767225600000,
+    );
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      'https://api.github.com/repos/openupm/test-package/contents/README.md?ref=main',
+      expect.objectContaining({ method: 'GET' }),
+    );
+    expect(
+      fetchMock.mock.calls.some(([url]) => String(url).includes('/markdown')),
+    ).toBe(false);
+    expect(setReadmeMock).toHaveBeenCalledWith(
+      'com.test.pkg',
+      'README without title',
+    );
+    expect(setReadmeHtmlMock).toHaveBeenCalledWith(
+      'com.test.pkg',
+      expect.stringContaining('<h1>Test Package</h1>'),
+    );
+    expect(setReadmeCacheKeyMock).toHaveBeenCalledWith(
+      'com.test.pkg',
+      'en-US',
+      'v0:main:README.md:1767225600000',
+    );
+  });
+
+  it('skips README content fetch on cache hit', async () => {
+    getReadmeCacheKeyMock.mockResolvedValue('v0:main:README.md:1767225600000');
+    const fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock as unknown as typeof fetch);
+
+    const { fetchPackageReadme } = await import('../../src/jobs/fetchPackageExtra.js');
+    await fetchPackageReadme(
+      {
+        name: 'com.test.pkg',
+        repo: 'openupm/test-package',
+        repoUrl: 'https://github.com/openupm/test-package',
+        readme: 'main:README.md',
+        readmeBranch: 'main',
+      },
+      'com.test.pkg',
+      1767225600000,
+    );
+
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(setReadmeMock).not.toHaveBeenCalled();
+    expect(setReadmeHtmlMock).not.toHaveBeenCalled();
+  });
+
+  it('fetches custom README branch and path metadata', async () => {
+    getReadmeCacheKeyMock.mockResolvedValue(null);
+    const fetchMock = vi.fn().mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        content: Buffer.from('[link](relative)').toString('base64'),
+        encoding: 'base64',
+      }),
+    });
+    vi.stubGlobal('fetch', fetchMock as unknown as typeof fetch);
+
+    const { fetchPackageReadme } = await import('../../src/jobs/fetchPackageExtra.js');
+    await fetchPackageReadme(
+      {
+        name: 'com.test.pkg',
+        repo: 'openupm/test-package',
+        repoUrl: 'https://github.com/openupm/test-package',
+        readme: 'upm:.github/README.md',
+        readmeBranch: 'upm',
+      },
+      'com.test.pkg',
+      1767225600000,
+    );
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      'https://api.github.com/repos/openupm/test-package/contents/.github/README.md?ref=upm',
+      expect.objectContaining({ method: 'GET' }),
+    );
+    expect(setReadmeHtmlMock).toHaveBeenCalledWith(
+      'com.test.pkg',
+      expect.stringContaining(
+        'href="https://github.com/openupm/test-package/blob/upm/.github/relative"',
+      ),
+    );
+    expect(setReadmeCacheKeyMock).toHaveBeenCalledWith(
+      'com.test.pkg',
+      'en-US',
+      'v0:upm:.github/README.md:1767225600000',
+    );
   });
 
   it('loads all package names when all=true', async () => {

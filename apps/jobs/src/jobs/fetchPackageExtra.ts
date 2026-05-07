@@ -11,6 +11,7 @@ import {
   packageMetadataLocalExists,
 } from '@openupm/local-data';
 import {
+  getReadmeCacheKey,
   getCachedImageFilename,
   getImageQueryForGithubUser,
   getImageQueryForPackage,
@@ -19,6 +20,9 @@ import {
   setRepoPushedTime,
   setRepoUnavailable,
   setRepoUpdatedTime,
+  setReadme,
+  setReadmeCacheKey,
+  setReadmeHtml,
   setScopes,
   setStars,
   setUnityVersion,
@@ -28,6 +32,11 @@ import {
 import { addImage, getImage } from '@openupm/server-common/build/utils/media.js';
 import { createLogger } from '@openupm/server-common/build/log.js';
 import { withGitHubAuthorizationHeader } from '@openupm/server-common/build/utils/githubToken.js';
+
+import {
+  getReadmePathInfo,
+  renderMarkdownToHtml,
+} from '../utils/readmeMarkdown.js';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const config = configRaw as any;
@@ -52,6 +61,16 @@ type PackageMeta = {
 
 type DownloadCountResponse = {
   downloads?: number | Array<{ downloads?: number }>;
+};
+
+type PackageReadmeContext = {
+  name: string;
+  displayName?: string;
+  description?: string;
+  readme?: string;
+  readmeBranch: string;
+  repo: string;
+  repoUrl: string;
 };
 
 async function fetchJson<T>(url: string): Promise<T> {
@@ -101,7 +120,10 @@ export async function fetchExtraData(
 
     await fetchPackageInfo(packageName);
     await fetchPackageScopes(packageName);
-    await fetchRepoInfo(pkg.repo, packageName);
+    const repoPushedTime = await fetchRepoInfo(pkg.repo, packageName);
+    if (repoPushedTime !== null) {
+      await fetchPackageReadme(pkg, packageName, repoPushedTime);
+    }
     await cacheImage(packageName, force);
     await cacheAvatarImage(pkg.owner || undefined, pkg.parentOwner || undefined, pkg.hunter || undefined, force);
     await fetchPackageInstallCount(packageName);
@@ -189,7 +211,10 @@ async function fetchPackageScopes(packageName: string): Promise<void> {
   }
 }
 
-async function fetchRepoInfo(repo: string, packageName: string): Promise<void> {
+async function fetchRepoInfo(
+  repo: string,
+  packageName: string,
+): Promise<number | null> {
   try {
     const headers: Record<string, string> = {
       Accept: 'application/vnd.github.v3.json',
@@ -221,14 +246,80 @@ async function fetchRepoInfo(repo: string, packageName: string): Promise<void> {
     if (repoInfo.parent) {
       await setParentStars(packageName, repoInfo.parent.stargazers_count || 0);
     }
+    let pushedTime: number | null = null;
     if (repoInfo.pushed_at) {
-      await setRepoPushedTime(packageName, new Date(repoInfo.pushed_at).getTime());
+      pushedTime = new Date(repoInfo.pushed_at).getTime();
+      await setRepoPushedTime(packageName, pushedTime);
     }
     if (repoInfo.updated_at) {
       await setRepoUpdatedTime(packageName, new Date(repoInfo.updated_at).getTime());
     }
+    return pushedTime;
   } catch (err) {
     logger.error({ err, pkg: packageName }, 'fetch stars error');
+  }
+  return null;
+}
+
+function encodeGitHubContentPath(path: string): string {
+  return path
+    .split('/')
+    .filter(Boolean)
+    .map(segment => encodeURIComponent(segment))
+    .join('/');
+}
+
+function decodeBase64Content(content: string): string {
+  return Buffer.from(content.replace(/\s/g, ''), 'base64').toString('utf8');
+}
+
+export async function fetchPackageReadme(
+  pkg: PackageReadmeContext,
+  packageName: string,
+  repoPushedTime: number,
+): Promise<void> {
+  try {
+    const readmeInfo = getReadmePathInfo(pkg.readme);
+    const cacheKey = `v0:${readmeInfo.readme}:${repoPushedTime}`;
+    const existingCacheKey = await getReadmeCacheKey(packageName);
+    if (existingCacheKey === cacheKey) {
+      logger.info({ pkg: packageName }, 'fetchPackageReadme cache is available');
+      return;
+    }
+
+    const headers: Record<string, string> = {
+      Accept: 'application/vnd.github.v3.json',
+    };
+    const requestHeaders = withGitHubAuthorizationHeader(config, headers);
+    const readmePath = encodeGitHubContentPath(readmeInfo.readmePath);
+    const resp = await fetch(
+      `https://api.github.com/repos/${pkg.repo}/contents/${readmePath}?ref=${encodeURIComponent(readmeInfo.readmeBranch)}`,
+      {
+        headers: requestHeaders,
+        method: 'GET',
+        signal: AbortSignal.timeout(10000),
+      },
+    );
+
+    if (!resp.ok) {
+      throw new Error(`GitHub README content API failed ${resp.status}`);
+    }
+
+    const readmeContent = (await resp.json()) as {
+      content?: string;
+      encoding?: string;
+    };
+    if (readmeContent.encoding !== 'base64' || !readmeContent.content) {
+      throw new Error('GitHub README content API returned unsupported content');
+    }
+
+    const readme = decodeBase64Content(readmeContent.content);
+    const readmeHtml = renderMarkdownToHtml({ pkg, markdown: readme });
+    await setReadme(packageName, readme);
+    await setReadmeHtml(packageName, readmeHtml);
+    await setReadmeCacheKey(packageName, 'en-US', cacheKey);
+  } catch (err) {
+    logger.error({ err, pkg: packageName }, 'fetch package readme error');
   }
 }
 
