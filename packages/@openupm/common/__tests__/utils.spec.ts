@@ -6,8 +6,10 @@ import {
   parsePackageMetadataRemote,
   filterMetadatabyTopicSlug,
   getPackageNamespace,
+  getLocalePackageDisplayName,
   isPackageRequiresManualVerification,
 } from '../src/utils.js';
+import { PackageMetadataLocal } from '@openupm/types';
 
 describe('isValidPackageName()', function () {
   it('should fail with com.company.UPPERCASE', async function () {
@@ -234,6 +236,26 @@ describe('getPackageNamespace()', function () {
       'com.littlebigfun.addressable-importer.sub',
     );
     expect(namespace).toEqual('com.littlebigfun');
+  });
+});
+
+describe('getLocalePackageDisplayName()', () => {
+  it('should return displayName when defined', () => {
+    const metadata = {
+      name: 'com.example.package',
+      displayName: 'Example Package',
+    } as PackageMetadataLocal;
+    expect(getLocalePackageDisplayName(metadata)).toEqual('Example Package');
+  });
+
+  it('should return package name when displayName is empty', () => {
+    const metadata = {
+      name: 'com.example.package',
+      displayName: '',
+    } as PackageMetadataLocal;
+    expect(getLocalePackageDisplayName(metadata)).toEqual(
+      'com.example.package',
+    );
   });
 });
 

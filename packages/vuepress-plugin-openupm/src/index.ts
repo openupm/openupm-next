@@ -133,7 +133,7 @@ const createDetailPages = async function (app: App): Promise<Page[]> {
   const { metadataLocalList, topicsWithAll } = PLUGIN_DATA;
   for (const metadataLocal of metadataLocalList) {
     const displayName = getLocalePackageDisplayName(metadataLocal);
-    const title = displayName
+    const title = metadataLocal.displayName
       ? `${displayName} | ${metadataLocal.name} | Unity Package Manager (UPM)`
       : `${metadataLocal.name} | Unity Package Manager (UPM)`;
     const description = getLocalePackageDescription(metadataLocal);

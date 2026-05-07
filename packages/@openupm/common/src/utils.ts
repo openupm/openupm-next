@@ -151,7 +151,7 @@ export const getPackageMetadata = function (
 export const getLocalePackageDisplayName = function (
   metadata: PackageMetadataLocal,
 ): string {
-  return metadata.displayName || '';
+  return metadata.displayName || metadata.name;
 };
 
 /**
