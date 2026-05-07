@@ -82,7 +82,6 @@ export const parsePackageMetadata = function (raw: any): PackageMetadataLocal {
   if (base.image === undefined) base.image = null;
   // Set imageFit
   if (base.imageFit === undefined) base.imageFit = 'cover';
-  if (base.trackingMode === undefined) base.trackingMode = 'git';
   return {
     ...base,
     repo,
