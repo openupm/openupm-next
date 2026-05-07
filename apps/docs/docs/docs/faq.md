@@ -32,6 +32,14 @@ The OpenUPM website and openupm-cli use specific scopes like `com.foo.bar` when 
 
 OpenUPM displays the README file from your GitHub repository as your package's front page. The path of the README file is specified in the `readme` field of the package metadata YAML file, for example, `readme: 'main:README.md'`. The sync process is triggered every few hours.
 
+**Q: How do I code sign my package for Unity 6.3?**
+
+Unity 6.3 introduced package signature verification, and unsigned packages may show a warning in the Unity Editor Package Manager UI. OpenUPM supports signed packages through GitHub Release asset tracking, where you sign the UPM tarball in your own CI workflow and OpenUPM publishes that release asset unchanged. See [Signing UPM Packages](./signing-upm-packages.md).
+
+**Q: Can I publish a custom build output, such as generated files or DLLs?**
+
+Yes. Use GitHub Release asset tracking when OpenUPM should publish a tarball produced by your own build workflow instead of packing directly from the tagged Git checkout. This is also the recommended path for signed packages. See [Signing UPM Packages](./signing-upm-packages.md).
+
 **Q: Can I add a commercial option for my open-source packages?**
 
 It depends. In the [Unity Package Guiding Principles & Guidelines](https://unity.com/legal/terms-of-service/software/package-guidelines), it states that:

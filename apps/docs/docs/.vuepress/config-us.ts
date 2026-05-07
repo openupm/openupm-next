@@ -94,6 +94,7 @@ const docSideBar = function (): any {
       collapsible: true,
       children: [
         "/docs/adding-upm-package",
+        "/docs/signing-upm-packages",
         "/docs/adding-badge",
         "/docs/troubleshooting-build-errors",
         "/docs/modifying-upm-package",
