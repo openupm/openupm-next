@@ -63,6 +63,12 @@ See more in the [openupm/test-package](https://github.com/openupm/test-package) 
       );
     });
 
+    it('adds placeholder src for self-closing images without src', () => {
+      expect(postProcessHtml('<img />', { imageBaseRelativeUrl: '/' })).toBe(
+        `<div><img src="${TRANSPARENT_PIXEL_SRC}"></div>`,
+      );
+    });
+
     it('rewrites relative image src attributes', () => {
       expect(
         postProcessHtml("<img src='/img/test.png'>", {

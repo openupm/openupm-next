@@ -197,7 +197,7 @@ export function postProcessHtml(
 }
 
 function insertImageSrc(tag: string, src: string): string {
-  return tag.replace(/>$/, ` src="${src}">`);
+  return tag.replace(/\s*\/?>$/, ` src="${src}">`);
 }
 
 function replaceImageSrc(tag: string, srcAttribute: string, src: string): string {

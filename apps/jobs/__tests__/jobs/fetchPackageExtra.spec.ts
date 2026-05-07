@@ -133,6 +133,79 @@ describe('fetchPackageExtraJob', () => {
     expect(setReadmeHtmlMock).not.toHaveBeenCalled();
   });
 
+  it('stores fallback README content on GitHub content 404', async () => {
+    getReadmeCacheKeyMock.mockResolvedValue('v0:main:README.md:old');
+    const fetchMock = vi.fn().mockResolvedValueOnce({
+      ok: false,
+      status: 404,
+    });
+    vi.stubGlobal('fetch', fetchMock as unknown as typeof fetch);
+
+    const { fetchPackageReadme } = await import('../../src/jobs/fetchPackageExtra.js');
+    await fetchPackageReadme(
+      {
+        name: 'com.test.pkg',
+        displayName: 'Test Package',
+        description: 'Description',
+        repo: 'openupm/test-package',
+        repoUrl: 'https://github.com/openupm/test-package',
+        readme: 'main:README.md',
+        readmeBranch: 'main',
+      },
+      'com.test.pkg',
+      1767225600000,
+    );
+
+    expect(setReadmeMock).toHaveBeenCalledWith('com.test.pkg', '');
+    expect(setReadmeHtmlMock).toHaveBeenCalledWith(
+      'com.test.pkg',
+      expect.stringContaining('See more in the'),
+    );
+    expect(setReadmeCacheKeyMock).toHaveBeenCalledWith(
+      'com.test.pkg',
+      'en-US',
+      'v0:main:README.md:1767225600000',
+    );
+  });
+
+  it('stores fallback README content for empty GitHub content', async () => {
+    getReadmeCacheKeyMock.mockResolvedValue('v0:main:README.md:old');
+    const fetchMock = vi.fn().mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        content: '',
+        encoding: 'base64',
+      }),
+    });
+    vi.stubGlobal('fetch', fetchMock as unknown as typeof fetch);
+
+    const { fetchPackageReadme } = await import('../../src/jobs/fetchPackageExtra.js');
+    await fetchPackageReadme(
+      {
+        name: 'com.test.pkg',
+        displayName: 'Test Package',
+        description: 'Description',
+        repo: 'openupm/test-package',
+        repoUrl: 'https://github.com/openupm/test-package',
+        readme: 'main:README.md',
+        readmeBranch: 'main',
+      },
+      'com.test.pkg',
+      1767225600000,
+    );
+
+    expect(setReadmeMock).toHaveBeenCalledWith('com.test.pkg', '');
+    expect(setReadmeHtmlMock).toHaveBeenCalledWith(
+      'com.test.pkg',
+      expect.stringContaining('<h1>Test Package</h1>'),
+    );
+    expect(setReadmeCacheKeyMock).toHaveBeenCalledWith(
+      'com.test.pkg',
+      'en-US',
+      'v0:main:README.md:1767225600000',
+    );
+  });
+
   it('fetches custom README branch and path metadata', async () => {
     getReadmeCacheKeyMock.mockResolvedValue(null);
     const fetchMock = vi.fn().mockResolvedValueOnce({

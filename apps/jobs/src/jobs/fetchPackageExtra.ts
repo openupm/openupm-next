@@ -301,6 +301,16 @@ export async function fetchPackageReadme(
       },
     );
 
+    if (resp.status === 404) {
+      await storePackageReadme({
+        pkg,
+        packageName,
+        readme: '',
+        cacheKey,
+      });
+      return;
+    }
+
     if (!resp.ok) {
       throw new Error(`GitHub README content API failed ${resp.status}`);
     }
@@ -309,18 +319,37 @@ export async function fetchPackageReadme(
       content?: string;
       encoding?: string;
     };
-    if (readmeContent.encoding !== 'base64' || !readmeContent.content) {
+    if (readmeContent.encoding !== 'base64' || readmeContent.content === undefined) {
       throw new Error('GitHub README content API returned unsupported content');
     }
 
     const readme = decodeBase64Content(readmeContent.content);
-    const readmeHtml = renderMarkdownToHtml({ pkg, markdown: readme });
-    await setReadme(packageName, readme);
-    await setReadmeHtml(packageName, readmeHtml);
-    await setReadmeCacheKey(packageName, 'en-US', cacheKey);
+    await storePackageReadme({
+      pkg,
+      packageName,
+      readme,
+      cacheKey,
+    });
   } catch (err) {
     logger.error({ err, pkg: packageName }, 'fetch package readme error');
   }
+}
+
+async function storePackageReadme({
+  pkg,
+  packageName,
+  readme,
+  cacheKey,
+}: {
+  pkg: PackageReadmeContext;
+  packageName: string;
+  readme: string;
+  cacheKey: string;
+}): Promise<void> {
+  const readmeHtml = renderMarkdownToHtml({ pkg, markdown: readme });
+  await setReadme(packageName, readme);
+  await setReadmeHtml(packageName, readmeHtml);
+  await setReadmeCacheKey(packageName, 'en-US', cacheKey);
 }
 
 async function cacheImage(packageName: string, force: boolean): Promise<void> {
