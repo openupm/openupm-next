@@ -33,7 +33,6 @@ import {
 import { addImage, getImage } from '@openupm/server-common/build/utils/media.js';
 import { createLogger } from '@openupm/server-common/build/log.js';
 import { withGitHubAuthorizationHeader } from '@openupm/server-common/build/utils/githubToken.js';
-import { renderMarkdownToHtml } from '@openupm/server-common/build/utils/markdown.js';
 import { PackageMetadataLocal } from '@openupm/types';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -64,6 +63,12 @@ type DownloadCountResponse = {
 type GitHubContentResponse = {
   content?: string;
   encoding?: string;
+};
+
+type ReadmeRef = {
+  ref: string;
+  path: string;
+  base: string;
 };
 
 async function fetchJson<T>(url: string): Promise<T> {
@@ -269,9 +274,10 @@ async function fetchReadme(
       return;
     }
 
-    const markdown = await fetchReadmeMarkdown(repoFullName, readmePath);
+    const readmeRef = parseReadmeRef(readmePath);
+    const markdown = await fetchReadmeMarkdown(repoFullName, readmeRef);
     await setReadme(packageName, markdown);
-    const html = await renderMarkdownToHtml({ pkg, markdown });
+    const html = await renderReadmeMarkdown(repoFullName, readmeRef, pkg, markdown);
     await setReadmeHtml(packageName, html);
     await setReadmeCacheKey(packageName, 'en-US', readmeCacheKey);
   } catch (err) {
@@ -281,23 +287,16 @@ async function fetchReadme(
 
 async function fetchReadmeMarkdown(
   repoFullName: string,
-  readmePath: string,
+  readmeRef: ReadmeRef,
 ): Promise<string> {
-  const separatorIndex = readmePath.indexOf(':');
-  const ref = separatorIndex === -1
-    ? 'main'
-    : readmePath.slice(0, separatorIndex);
-  const path = separatorIndex === -1
-    ? readmePath
-    : readmePath.slice(separatorIndex + 1);
-  const encodedPath = path
+  const encodedPath = readmeRef.path
     .split('/')
     .map((part) => encodeURIComponent(part))
     .join('/');
   const url = new URL(
     `https://api.github.com/repos/${repoFullName}/contents/${encodedPath}`,
   );
-  url.searchParams.set('ref', ref);
+  url.searchParams.set('ref', readmeRef.ref);
 
   const headers: Record<string, string> = {
     Accept: 'application/vnd.github.v3+json',
@@ -316,6 +315,98 @@ async function fetchReadmeMarkdown(
   const data = (await resp.json()) as GitHubContentResponse;
   if (data.encoding !== 'base64' || !data.content) return '';
   return Buffer.from(data.content, 'base64').toString('utf8');
+}
+
+function parseReadmeRef(readmePath: string): ReadmeRef {
+  const separatorIndex = readmePath.indexOf(':');
+  const ref = separatorIndex === -1
+    ? 'main'
+    : readmePath.slice(0, separatorIndex);
+  const path = separatorIndex === -1
+    ? readmePath
+    : readmePath.slice(separatorIndex + 1);
+  const dirname = path.split('/').slice(0, -1).join('/');
+  return {
+    ref,
+    path,
+    base: dirname ? `${ref}/${dirname}` : ref,
+  };
+}
+
+async function renderReadmeMarkdown(
+  repoFullName: string,
+  readmeRef: ReadmeRef,
+  pkg: PackageMetadataLocal,
+  markdown: string,
+): Promise<string> {
+  const text = parseReadmeTitle(pkg, markdown);
+  const headers: Record<string, string> = {
+    Accept: 'application/vnd.github.v3+json',
+    'Content-Type': 'application/json',
+  };
+  const requestHeaders = withGitHubAuthorizationHeader(config, headers);
+  const resp = await fetch('https://api.github.com/markdown', {
+    headers: requestHeaders,
+    method: 'POST',
+    body: JSON.stringify({
+      text,
+      mode: 'gfm',
+      context: repoFullName,
+    }),
+    signal: AbortSignal.timeout(10000),
+  });
+
+  if (!resp.ok) {
+    throw new Error(`GitHub markdown API failed ${resp.status}`);
+  }
+
+  const html = await resp.text();
+  return fixReadmeRelativeUrls(html, pkg.repoUrl, readmeRef);
+}
+
+function parseReadmeTitle(
+  pkg: PackageMetadataLocal,
+  markdown: string,
+): string {
+  const pkgName = pkg.displayName || pkg.name;
+  const titleLine = `# ${pkgName}\n`;
+  if (markdown) {
+    if (
+      !/^# /m.test(markdown) &&
+      !/^===/m.test(markdown) &&
+      !/^<h1/m.test(markdown)
+    ) {
+      return titleLine + markdown;
+    }
+    return markdown;
+  }
+
+  return `${titleLine}
+${pkg.description}
+
+See more in the [${pkg.owner}/${pkg.repo}](${pkg.repoUrl}) repository.
+`;
+}
+
+function fixReadmeRelativeUrls(
+  html: string,
+  repoUrl: string,
+  readmeRef: ReadmeRef,
+): string {
+  return html
+    .replace(/<a\b[^>]*\shref=(['"])(?![a-z][a-z0-9+.-]*:|#)([^'"]+)\1[^>]*>/gi, (tag, quote, href) => {
+      const replacement = href.startsWith('/')
+        ? `${repoUrl}/blob/${readmeRef.ref}${href}`
+        : `${repoUrl}/blob/${readmeRef.base}/${href}`;
+      return tag.replace(`href=${quote}${href}${quote}`, `href=${quote}${replacement}${quote}`);
+    })
+    .replace(/<img(?![^>]*\ssrc=)([^>]*)>/gi, '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkqAcAAIUAgUW0RjgAAAAASUVORK5CYII="$1>')
+    .replace(/<img\b[^>]*\ssrc=(['"])(?![a-z][a-z0-9+.-]*:)([^'"]+)\1[^>]*>/gi, (tag, quote, src) => {
+      const replacement = src.startsWith('/')
+        ? `${repoUrl}/raw/${readmeRef.ref}${src}`
+        : `${repoUrl}/raw/${readmeRef.base}/${src}`;
+      return tag.replace(`src=${quote}${src}${quote}`, `src=${quote}${replacement}${quote}`);
+    });
 }
 
 async function cacheImage(packageName: string, force: boolean): Promise<void> {

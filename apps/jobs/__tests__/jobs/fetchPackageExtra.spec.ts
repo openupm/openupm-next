@@ -124,6 +124,10 @@ describe('fetchPackageExtraJob', () => {
       })
       .mockResolvedValueOnce({
         ok: true,
+        text: async () => '<h1>Existing README</h1>',
+      })
+      .mockResolvedValueOnce({
+        ok: true,
         json: async () => ({
           downloads: [
             { day: '2026-01-01', downloads: 8 },

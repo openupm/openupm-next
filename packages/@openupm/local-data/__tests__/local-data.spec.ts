@@ -40,7 +40,6 @@ describe('loadPackage()', function () {
     expect(metadataLocal.name).toEqual('com.littlebigfun.addressable-importer');
     expect(metadataLocal.readme).toEqual('master:README.md');
     expect(metadataLocal.readmeBranch).toEqual('master');
-    expect(metadataLocal.readmeBase).toEqual('master');
   });
 });
 

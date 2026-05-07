@@ -14,7 +14,6 @@ export const PackageMetadataLocalBaseSchema = z.object({
   imageFit: z.string().optional(),
   parentRepoUrl: z.string().nullable().optional(),
   readme: z.string().optional(),
-  readme_zhCN: z.string().optional(),
   gitTagPrefix: z.string().optional(),
   gitTagIgnore: z.string().optional(),
   minVersion: z.string().optional(),
