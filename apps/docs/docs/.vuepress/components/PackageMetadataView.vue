@@ -248,11 +248,11 @@ const trackingModeTitle = computed(() => {
         <div class="metadata-title">{{ $capitalize($t("last-publish")) }}</div>
         <span>{{ publishedAt || "-" }}</span>
       </section>
-      <section class="col-12">
+      <section class="col-6">
         <div class="metadata-title">{{ $capitalize($t("license")) }}</div>
         <span>{{ metadata.licenseSpdxId || metadata.licenseName || "-" }}</span>
       </section>
-      <section class="col-12">
+      <section class="col-6">
         <div class="metadata-title">{{ $capitalize($t("tracking-mode")) }}</div>
         <span :title="trackingModeTitle">{{ trackingModeText }}</span>
       </section>

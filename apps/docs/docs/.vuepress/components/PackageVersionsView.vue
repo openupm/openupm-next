@@ -36,14 +36,14 @@ const props = defineProps({
           <td>
             {{ entry.version }}
             <span v-if="entry.source === 'githubRelease'" class="release-badge" :title="$t('github-release-asset-package')">
-              <i class="fas fa-box-open" aria-hidden="true"></i>
+              <i class="fas fa-paperclip" :title="$t('github-release-asset-package')" aria-hidden="true"></i>
               <span class="sr-only">{{ $t("github-release-asset-package") }}</span>
             </span>
             <span v-if="entry.signed" class="release-badge" :title="$t('signed-package')">
-              <i class="fas fa-file-signature" aria-hidden="true"></i>
+              <i class="fas fa-file-signature" :title="$t('signed-package')" aria-hidden="true"></i>
               <span class="sr-only">{{ $t("signed-package") }}</span>
             </span>
-            <sup v-if="entry.latest">latest</sup>
+            <span v-if="entry.latest" class="ml-1">latest</span>
           </td>
           <td>{{ entry.unity }}+</td>
           <td>{{ entry.timeSince }}</td>

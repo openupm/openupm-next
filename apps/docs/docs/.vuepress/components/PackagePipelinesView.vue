@@ -119,11 +119,11 @@ const releaseEntries = computed(() => {
           <td>
             {{ entry.version }}
             <span v-if="entry.source === 'githubRelease'" class="release-badge" :title="$t('github-release-asset-package')">
-              <i class="fas fa-box-open" aria-hidden="true"></i>
+              <i class="fas fa-paperclip" :title="$t('github-release-asset-package')" aria-hidden="true"></i>
               <span class="sr-only">{{ $t("github-release-asset-package") }}</span>
             </span>
             <span v-if="entry.signed" class="release-badge" :title="$t('signed-package')">
-              <i class="fas fa-file-signature" aria-hidden="true"></i>
+              <i class="fas fa-file-signature" :title="$t('signed-package')" aria-hidden="true"></i>
               <span class="sr-only">{{ $t("signed-package") }}</span>
             </span>
           </td>
