@@ -34,6 +34,7 @@ import {
 const config = configRaw as any;
 const sleep = util.promisify(setTimeout);
 const logger = createLogger('@openupm/queue/buildRelease');
+const packageResultMarker = 'OPENUPM_PACKAGE_RESULT';
 
 export async function buildRelease(
   packageName: string,
@@ -108,6 +109,9 @@ async function updateReleaseBuild(
   if (!release.buildId) {
     logger.info({ rel: `${release.packageName}@${release.version}` }, 'queue build');
     if (!pkg) throw new Error(`package not found: ${release.packageName}`);
+    release.source = getReleaseSource(pkg, release);
+    release.signed = false;
+    release = await save(release);
     const parameters = await getQueueBuildParameters(pkg, release);
     const build = await queueBuild(buildApi, config.azureDevops.definitionId, {
       ...parameters,
@@ -130,7 +134,7 @@ export async function getQueueBuildParameters(
     packageVersion: release.version,
   };
 
-  if ((pkg.trackingMode || 'git') === 'git') {
+  if (getReleaseSource(pkg, release) === 'git') {
     return {
       ...baseParameters,
       packageSource: 'git',
@@ -182,6 +186,16 @@ async function handleReleaseBuild(
   ) {
     release.state = ReleaseState.Succeeded;
     release.reason = ReleaseErrorCode.None;
+    const packageResult = getPackageResultFromBuildLogText(fullLogText);
+    if (!packageResult) {
+      release.signed = false;
+      logger.warn(
+        { rel: `${release.packageName}@${release.version}`, build: release.buildId },
+        'package result marker missing from successful build log',
+      );
+    } else {
+      release.signed = packageResult.signed;
+    }
     await save(release);
     logger.info(
       { rel: `${release.packageName}@${release.version}`, build: release.buildId },
@@ -198,6 +212,7 @@ async function handleReleaseBuild(
 
   release.state = ReleaseState.Failed;
   release.reason = reason;
+  release.signed = false;
   await save(release);
   logReleaseError(release);
 
@@ -206,6 +221,31 @@ async function handleReleaseBuild(
       `build ${release.packageName}@${release.version} failed with retryable reason: ${reason}`,
     );
   }
+}
+
+export function getReleaseSource(
+  pkg: Pick<PackageMetadataLocal, 'trackingMode'>,
+  release: Pick<ReleaseModel, 'source'>,
+): 'git' | 'githubRelease' {
+  return release.source || pkg.trackingMode || 'git';
+}
+
+export function getPackageResultFromBuildLogText(
+  text: string,
+): { signed: boolean } | null {
+  let result: { signed: boolean } | null = null;
+  for (const line of text.split(/\r?\n/)) {
+    const markerIndex = line.indexOf(packageResultMarker);
+    if (markerIndex < 0) continue;
+    const jsonText = line.slice(markerIndex + packageResultMarker.length).trim();
+    try {
+      const parsed = JSON.parse(jsonText) as { signed?: unknown };
+      result = { signed: parsed.signed === true };
+    } catch {
+      logger.warn({ line }, 'failed to parse package result marker');
+    }
+  }
+  return result;
 }
 
 function logReleaseError(release: ReleaseModel): void {

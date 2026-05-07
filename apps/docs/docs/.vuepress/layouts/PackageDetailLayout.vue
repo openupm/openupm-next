@@ -167,12 +167,16 @@ const packageVersions = computed(() => {
   const versions = state.packument.versions || {};
   const times = state.packument.time;
   const versionKeys = Object.keys(versions).reverse();
+  const releaseMap = new Map(packageReleases.value.map(x => [x.version, x]));
   return versionKeys.map(x => {
+    const release = releaseMap.get(x);
     return {
       latest: x == packageVersion.value,
       timeSince: timeAgoFormat(times[x]),
       unity: versions[x].unity,
-      version: x
+      version: x,
+      source: release?.source,
+      signed: release?.signed,
     } as PackageVersionViewEntry;
   });
 });
@@ -540,4 +544,3 @@ const buildRouterLinkQuery = function (subPage: string): Record<string, string> 
   repository-is-unavailable-title: The source code repository is currently inaccessible to OpenUPM
   repository-is-unavailable-desc: This may be a temporary network issue. However, if the repository is deleted or made private by its author, OpenUPM will no longer track further changes. Any packages already published will not be affected.
 </i18n>
-

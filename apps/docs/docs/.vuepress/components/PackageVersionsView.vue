@@ -35,6 +35,14 @@ const props = defineProps({
         <tr v-for="entry in versions" :key="entry.version">
           <td>
             {{ entry.version }}
+            <span v-if="entry.source === 'githubRelease'" class="release-badge" :title="$t('github-release-asset-package')">
+              <i class="fas fa-box-open" aria-hidden="true"></i>
+              <span class="sr-only">{{ $t("github-release-asset-package") }}</span>
+            </span>
+            <span v-if="entry.signed" class="release-badge" :title="$t('signed-package')">
+              <i class="fas fa-file-signature" aria-hidden="true"></i>
+              <span class="sr-only">{{ $t("signed-package") }}</span>
+            </span>
             <sup v-if="entry.latest">latest</sup>
           </td>
           <td>{{ entry.unity }}+</td>
@@ -47,4 +55,26 @@ const props = defineProps({
 
 <style lang="scss" scoped>
 // @use '@/styles/palette' as *;
+.release-badge {
+  display: inline-block;
+  margin-left: 0.25rem;
+  color: var(--c-text-lightest);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
 </style>
+
+<i18n locale="en-US" lang="yaml">
+  github-release-asset-package: GitHub Release asset package
+  signed-package: Signed package
+</i18n>

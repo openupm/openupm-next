@@ -102,7 +102,11 @@ export async function buildPackage(name: string): Promise<void> {
     return;
   }
 
-  const releases = await updateReleaseRecords(pkg.name, validTags);
+  const releases = await updateReleaseRecords(
+    pkg.name,
+    validTags,
+    pkg.trackingMode || 'git',
+  );
   await addReleaseJobs(releases);
 }
 
@@ -195,6 +199,7 @@ export function getInvalidTags(params: {
 async function updateReleaseRecords(
   packageName: string,
   remoteTags: RemoteTag[],
+  source: ReleaseModel['source'],
 ): Promise<ReleaseModel[]> {
   const existing = await fetchAll(packageName);
   for (const rel of existing) {
@@ -228,6 +233,7 @@ async function updateReleaseRecords(
         version,
         commit: remoteTag.commit,
         tag: remoteTag.tag,
+        source,
       });
     }
     releases.push(release);

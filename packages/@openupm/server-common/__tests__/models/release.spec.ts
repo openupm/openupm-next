@@ -56,6 +56,8 @@ describeWithRedis('save', function () {
     expect(obj.state).toEqual(0);
     expect(obj.reason).toEqual(0);
     expect(obj.buildId).toEqual('');
+    expect(obj.source).toEqual('git');
+    expect(obj.signed).toEqual(false);
   });
 
   it('save and remove', async () => {
@@ -67,6 +69,8 @@ describeWithRedis('save', function () {
       state: 1,
       reason: 800,
       buildId: '123',
+      source: 'githubRelease',
+      signed: true,
       createdAt: 0,
       updatedAt: 0,
     });
@@ -77,6 +81,8 @@ describeWithRedis('save', function () {
     expect(obj2!.commit).toEqual(obj.commit);
     expect(obj2!.state).toEqual(obj.state);
     expect(obj2!.reason).toEqual(obj.reason);
+    expect(obj2!.source).toEqual('githubRelease');
+    expect(obj2!.signed).toEqual(true);
     await remove(obj2!.packageName, obj2!.version);
     const obj3 = await fetchOne(obj.packageName, obj.version);
     expect(obj3).toBeNull();

@@ -41,10 +41,8 @@ export async function save(
       `Can not create or update release with packageName=${obj.packageName} version=${obj.version}`,
     );
   const now = new Date().getTime();
-  const record: ReleaseModel = (await fetchOne(
-    obj.packageName,
-    obj.version,
-  )) || {
+  const existing = await fetchOne(obj.packageName, obj.version);
+  const record: ReleaseModel = existing || {
     packageName: obj.packageName,
     version: '',
     commit: '',
@@ -54,6 +52,8 @@ export async function save(
     reason: 0,
     createdAt: now,
     updatedAt: now,
+    source: 'git',
+    signed: false,
   };
   Object.assign(record, pick(obj, releaseModelFields));
   record.updatedAt = now;
@@ -62,6 +62,14 @@ export async function save(
   await redis.client!.hset(key, record.version, jsonText);
   Object.assign(obj, record);
   return obj as ReleaseModel;
+}
+
+function normalizeReleaseModel(obj: ReleaseModel): ReleaseModel {
+  return {
+    source: 'git',
+    signed: false,
+    ...obj,
+  };
 }
 
 /**
@@ -97,7 +105,7 @@ export async function fetchOne(
   const key = getRedisKeyForRelease(packageName);
   const obj = await redis.client!.hget(key, version);
   if (obj === null) return null;
-  return JSON.parse(obj) as ReleaseModel;
+  return normalizeReleaseModel(JSON.parse(obj) as ReleaseModel);
 }
 
 /**
@@ -130,5 +138,7 @@ export async function fetchOneOrThrow(
 export async function fetchAll(packageName: string): Promise<ReleaseModel[]> {
   const key = getRedisKeyForRelease(packageName);
   const objs = await redis.client!.hgetall(key);
-  return Object.values(objs).map((x) => JSON.parse(x) as ReleaseModel);
+  return Object.values(objs).map((x) =>
+    normalizeReleaseModel(JSON.parse(x) as ReleaseModel),
+  );
 }

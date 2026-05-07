@@ -118,6 +118,14 @@ const releaseEntries = computed(() => {
           <td>{{ entry.tag }}</td>
           <td>
             {{ entry.version }}
+            <span v-if="entry.source === 'githubRelease'" class="release-badge" :title="$t('github-release-asset-package')">
+              <i class="fas fa-box-open" aria-hidden="true"></i>
+              <span class="sr-only">{{ $t("github-release-asset-package") }}</span>
+            </span>
+            <span v-if="entry.signed" class="release-badge" :title="$t('signed-package')">
+              <i class="fas fa-file-signature" aria-hidden="true"></i>
+              <span class="sr-only">{{ $t("signed-package") }}</span>
+            </span>
           </td>
           <td>
             <AutoLink :item="entry.commitLink" />
@@ -157,10 +165,29 @@ const releaseEntries = computed(() => {
       width: 1rem;
     }
   }
+
+  .release-badge {
+    display: inline-block;
+    margin-left: 0.25rem;
+    color: var(--c-text-lightest);
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
 }
 </style>
 
 <i18n locale="en-US" lang="yaml">
   invalid-git-tag-col-text: Invalid Git tag (e.g. not semver-compliant or duplicate version)
+  github-release-asset-package: GitHub Release asset package
+  signed-package: Signed package
 </i18n>
-

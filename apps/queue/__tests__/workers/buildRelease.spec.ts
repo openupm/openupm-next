@@ -1,7 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
 import { ReleaseErrorCode, RetryableReleaseErrorCodes } from '@openupm/types';
-import { getReasonFromBuildLogText } from '../../src/workers/buildRelease.js';
+import {
+  getPackageResultFromBuildLogText,
+  getQueueBuildParameters,
+  getReasonFromBuildLogText,
+  getReleaseSource,
+} from '../../src/workers/buildRelease.js';
 
 describe('buildRelease.getReasonFromBuildLogText', () => {
   it('None', () => {
@@ -122,5 +127,74 @@ npm error command failed
         ReleaseErrorCode.PackageJsonParsingError,
       ),
     ).toBe(false);
+  });
+});
+
+describe('buildRelease.getReleaseSource', () => {
+  it('defaults to git', () => {
+    expect(
+      getReleaseSource(
+        { trackingMode: 'git' },
+        {},
+      ),
+    ).toEqual('git');
+  });
+
+  it('uses package tracking mode when release source is missing', () => {
+    expect(
+      getReleaseSource(
+        { trackingMode: 'githubRelease' },
+        {},
+      ),
+    ).toEqual('githubRelease');
+  });
+
+  it('preserves saved source on retry', () => {
+    expect(
+      getReleaseSource(
+        { trackingMode: 'git' },
+        { source: 'githubRelease' },
+      ),
+    ).toEqual('githubRelease');
+  });
+});
+
+describe('buildRelease.getQueueBuildParameters', () => {
+  it('queues git releases with source mode', async () => {
+    await expect(
+      getQueueBuildParameters(
+        {
+          name: 'com.example.pkg',
+          repoUrl: 'https://github.com/example/pkg',
+          trackingMode: 'git',
+        } as never,
+        {
+          packageName: 'com.example.pkg',
+          version: '1.0.0',
+          tag: 'v1.0.0',
+          source: 'git',
+        } as never,
+      ),
+    ).resolves.toMatchObject({
+      repoUrl: 'https://github.com/example/pkg',
+      repoBranch: 'v1.0.0',
+      packageName: 'com.example.pkg',
+      packageVersion: '1.0.0',
+      packageSource: 'git',
+    });
+  });
+});
+
+describe('buildRelease.getPackageResultFromBuildLogText', () => {
+  it('parses the final signed package result marker', () => {
+    expect(
+      getPackageResultFromBuildLogText(
+        'setup\nOPENUPM_PACKAGE_RESULT {"signed":false}\nOPENUPM_PACKAGE_RESULT {"signed":true}',
+      ),
+    ).toEqual({ signed: true });
+  });
+
+  it('returns null for missing markers', () => {
+    expect(getPackageResultFromBuildLogText('')).toBeNull();
   });
 });

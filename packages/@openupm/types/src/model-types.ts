@@ -8,6 +8,8 @@ export interface ReleaseModel {
   reason: number;
   createdAt: number;
   updatedAt: number;
+  source?: 'git' | 'githubRelease';
+  signed?: boolean;
 }
 
 export const releaseModelFields: (keyof ReleaseModel)[] = [
@@ -20,6 +22,8 @@ export const releaseModelFields: (keyof ReleaseModel)[] = [
   'reason',
   'createdAt',
   'updatedAt',
+  'source',
+  'signed',
 ];
 
 export interface InvalidTag {

@@ -23,6 +23,8 @@ const releases: ReleaseModel[] = [
     reason: 0,
     createdAt: 0,
     updatedAt: 0,
+    source: 'git',
+    signed: false,
   },
   {
     packageName: SAMPLE_PACKAGE_NAME,
@@ -34,6 +36,8 @@ const releases: ReleaseModel[] = [
     reason: 0,
     createdAt: 0,
     updatedAt: 0,
+    source: 'githubRelease',
+    signed: true,
   },
 ];
 
@@ -68,6 +72,16 @@ describe('packages', () => {
         .reverse()
         .map((x) => x.tag),
     );
+    expect(response.body.releases[0]).toMatchObject({
+      tag: 'v0.2.0',
+      source: 'githubRelease',
+      signed: true,
+    });
+    expect(response.body.releases[1]).toMatchObject({
+      tag: 'v0.1.0',
+      source: 'git',
+      signed: false,
+    });
   });
 
   it('/packages/:name should return 200 for package-not-exist', async () => {

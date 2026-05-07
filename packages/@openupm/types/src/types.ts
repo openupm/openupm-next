@@ -78,6 +78,8 @@ export interface PackageRelease {
   tag: string;
   updatedAt: number;
   version: string;
+  source?: 'git' | 'githubRelease';
+  signed?: boolean;
 }
 
 export const releaseFields: (keyof PackageRelease)[] = [
@@ -88,6 +90,8 @@ export const releaseFields: (keyof PackageRelease)[] = [
   'tag',
   'updatedAt',
   'version',
+  'source',
+  'signed',
 ];
 
 export interface PackageInfo {
@@ -120,6 +124,8 @@ export interface PackageVersionViewEntry {
   unity: string;
   latest: boolean;
   timeSince: string;
+  source?: 'git' | 'githubRelease';
+  signed?: boolean;
 }
 
 export interface PackageDependency {
