@@ -63,6 +63,8 @@ interface ReleaseSummary {
   tag: string;
   commit: string;
   updatedAt: number;
+  source?: 'git' | 'githubRelease';
+  signed?: boolean;
 }
 
 const knownJobTypes: JobType[] = [
@@ -323,6 +325,8 @@ function summarizeRelease(rel: {
   tag: string;
   commit: string;
   updatedAt: number;
+  source?: 'git' | 'githubRelease';
+  signed?: boolean;
 }): ReleaseSummary {
   return {
     packageName: rel.packageName,
@@ -335,6 +339,8 @@ function summarizeRelease(rel: {
     tag: rel.tag,
     commit: rel.commit,
     updatedAt: rel.updatedAt,
+    source: rel.source,
+    signed: rel.signed,
   };
 }
 
@@ -480,6 +486,8 @@ function formatRelease(release: ReleaseSummary): string {
     `  buildId: ${release.buildId}`,
     `  tag: ${release.tag}`,
     `  commit: ${release.commit}`,
+    `  source: ${release.source || 'git'}`,
+    `  signed: ${release.signed === true ? 'true' : 'false'}`,
     `  updatedAt: ${formatTimestamp(release.updatedAt)}`,
   ].join('\n');
 }

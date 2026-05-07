@@ -148,4 +148,39 @@ describe('queue-cli destructive actions', () => {
     });
     expect(removeReleaseRecordMock).not.toHaveBeenCalled();
   });
+
+  it('release-show includes release metadata fields in json output', async () => {
+    fetchOneMock.mockResolvedValue({
+      packageName: 'com.foo.bar',
+      version: '1.2.3',
+      state: ReleaseState.Succeeded,
+      reason: ReleaseErrorCode.None,
+      buildId: '12345',
+      tag: '1.2.3',
+      commit: 'abc123',
+      createdAt: 100,
+      updatedAt: 200,
+      source: 'githubRelease',
+      signed: true,
+    });
+
+    const { runQueueCli } = await import('../src/queueCli.js');
+
+    await runQueueCli([
+      'node',
+      'index.js',
+      'queue-cli',
+      'release-show',
+      'com.foo.bar',
+      '1.2.3',
+      '--json',
+    ]);
+
+    expect(console.log).toHaveBeenCalledWith(
+      expect.stringContaining('"source": "githubRelease"'),
+    );
+    expect(console.log).toHaveBeenCalledWith(
+      expect.stringContaining('"signed": true'),
+    );
+  });
 });
