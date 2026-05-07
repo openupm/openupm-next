@@ -33,6 +33,8 @@ const PackageFormSchema = Joi.object({
   gitTagPrefix: Joi.string().allow("").default(""),
   gitTagIgnore: Joi.string().allow("").default(""),
   minVersion: Joi.string().allow("").default(""),
+  trackingMode: Joi.string().valid("git", "githubRelease").required().default("git"),
+  githubReleaseAssetName: Joi.string().allow("").default(""),
   topics: Joi.array().min(1).required().default([]),
   image: Joi.string().allow("").default(""),
 });
@@ -47,6 +49,7 @@ interface PackageAddFormState {
     branch: FormFieldOption[];
     packageJson: FormFieldOption[];
     readme: FormFieldOption[];
+    trackingMode: FormFieldOption[];
   };
 }
 
@@ -77,6 +80,10 @@ const initState = function (): PackageAddState {
         branch: [],
         packageJson: [],
         readme: [],
+        trackingMode: [
+          { key: "git", text: "build from Git tag checkout" },
+          { key: "githubRelease", text: "publish GitHub Release asset" },
+        ],
       },
     },
     isSubmitting: false,
@@ -515,11 +522,12 @@ const genYaml = (): string => {
   const form = state.form;
   const repoInfo = state.repoInfo;
   const packageJsonObj = state.packageJsonObj;
-  const content = {
+  const content: Record<string, unknown> = {
     name: packageJsonObj.name,
     displayName: packageJsonObj.displayName,
     description: packageJsonObj.description || repoInfo.description || "",
     repoUrl: repoInfo.html_url,
+    trackingMode: form.values.trackingMode,
     parentRepoUrl: repoInfo.parent ? repoInfo.parent.html_url : null,
     licenseSpdxId: form.values.licenseId,
     licenseName: form.values.licenseName,
@@ -534,6 +542,12 @@ const genYaml = (): string => {
       : "main:README.md",
     createdAt: new Date().getTime(),
   };
+  if (
+    form.values.trackingMode === "githubRelease" &&
+    form.values.githubReleaseAssetName.trim()
+  ) {
+    content["githubReleaseAssetName"] = form.values.githubReleaseAssetName.trim();
+  }
   return yaml.dump(content);
 };
 
@@ -634,6 +648,11 @@ onMounted(() => {
               </FormField>
               <FormField :form="state.form" field="minVersion" :label='t("min-version")' type="text"
                 :hint="t('min-version-desc')" :placeholder="$t('min-version-placeholder')" />
+              <FormField :form="state.form" field="trackingMode" :label='t("tracking-mode")' type="select"
+                :hint="t('tracking-mode-desc')" />
+              <FormField v-if="state.form.values.trackingMode === 'githubRelease'" :form="state.form"
+                field="githubReleaseAssetName" :label='t("github-release-asset-name")' type="text"
+                :hint="t('github-release-asset-name-desc')" :placeholder="$t('github-release-asset-name-placeholder')" />
             </div>
           </div>
           <div class="column col-6 col-sm-12" :class="{ hide: state.hideMetaFields }">
@@ -755,6 +774,9 @@ onMounted(() => {
   git-tag-prefix: Git tag prefix
   git-tag-prefix-desc: "Filter Git tags for monorepo by using a prefix that separates the semver with a slash, hyphen, or underscore. Example: 'com.example.pkg/'."
   git-tag-prefix-placeholder: leave empty to include all tags
+  github-release-asset-name: GitHub Release asset name
+  github-release-asset-name-desc: Leave empty when each release provides one clearly named publishable .tgz or .tar.gz asset. If a release has multiple publishable assets, use an exact filename or stable prefix. OpenUPM tries exact match first, then one publishable asset starting with the value. Do not include paths.
+  github-release-asset-name-placeholder: ""
   license-name-desc: Only open source licenses are permitted.
   min-version: Minimal version to build
   min-version-desc: "The minimum version to build from. For example: '1.0.2'"
@@ -770,4 +792,6 @@ onMounted(() => {
   private-repository-error: "Refuse to publish a private repository (\"private\": true in the package.json)."
   repository-placeholder: owner/project-name
   submit-metadata: submit metadata
+  tracking-mode: Tracking mode
+  tracking-mode-desc: Choose whether OpenUPM builds from Git tags or publishes a GitHub Release asset.
 </i18n>

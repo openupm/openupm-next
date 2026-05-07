@@ -19,7 +19,7 @@ export interface PackageMetadataLocalBase {
   gitTagPrefix?: string;
   gitTagIgnore?: string;
   minVersion?: string;
-  trackingMode?: 'git' | 'githubRelease';
+  trackingMode: 'git' | 'githubRelease';
   githubReleaseAssetName?: string;
   // Misc
   excludedFromList?: boolean;

@@ -17,7 +17,7 @@ type PackageFixture = {
   hunter: string;
   createdAt: number;
   image?: string | null;
-  trackingMode?: 'git' | 'githubRelease';
+  trackingMode: 'git' | 'githubRelease';
   githubReleaseAssetName?: string;
 };
 
@@ -40,6 +40,7 @@ const validPackage: PackageFixture = {
   hunter: 'hunter',
   createdAt: 1_700_000_000_000,
   image: 'https://example.com/image.png',
+  trackingMode: 'git',
 };
 
 async function createDataDir(): Promise<string> {
@@ -149,7 +150,7 @@ describe('validateDataDirectory', () => {
   });
 
   it('covers required package field checks from openupm data tests', async () => {
-    expect.assertions(7);
+    expect.assertions(8);
     await expectIssue(
       (dataDir) =>
         writePackage(dataDir, validPackage.name, {
@@ -180,6 +181,14 @@ describe('validateDataDirectory', () => {
         writePackage(dataDir, validPackage.name, {
           ...validPackage,
           topics: 'utilities',
+        }),
+      'package-metadata-invalid',
+    );
+    await expectIssue(
+      (dataDir) =>
+        writePackage(dataDir, validPackage.name, {
+          ...validPackage,
+          trackingMode: undefined,
         }),
       'package-metadata-invalid',
     );
