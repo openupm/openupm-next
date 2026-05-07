@@ -50,10 +50,13 @@ function isNonEmptyString(value: unknown): value is string {
 }
 
 function isGitHubRepoUrl(value: string): boolean {
-  if (value.startsWith('git@github.com:')) return true;
+  if (value.startsWith('git@github.com:')) {
+    return /^git@github\.com:[^/]+\/[^/]+?(?:\.git)?$/i.test(value);
+  }
   try {
     const parsed = new URL(value);
-    return /github\.com$/i.test(parsed.host);
+    if (parsed.host.toLowerCase() !== 'github.com') return false;
+    return parsed.pathname.split('/').filter(Boolean).length === 2;
   } catch {
     return false;
   }

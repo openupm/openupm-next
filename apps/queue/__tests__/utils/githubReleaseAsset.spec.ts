@@ -23,6 +23,10 @@ describe('githubReleaseAsset utils', () => {
       repo: 'openupm',
     });
     expect(parseGitHubRepoUrl('https://example.com/openupm/openupm')).toBeNull();
+    expect(parseGitHubRepoUrl('https://notgithub.com/openupm/openupm')).toBeNull();
+    expect(parseGitHubRepoUrl('https://github.com/')).toBeNull();
+    expect(parseGitHubRepoUrl('git@github.com:')).toBeNull();
+    expect(parseGitHubRepoUrl('git@github.com:openupm/openupm/path')).toBeNull();
   });
 
   it('selects configured publishable asset by exact name', () => {

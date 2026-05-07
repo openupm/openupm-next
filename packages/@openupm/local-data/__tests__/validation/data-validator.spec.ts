@@ -126,6 +126,28 @@ describe('validateDataDirectory', () => {
     }
   });
 
+  it('rejects malformed GitHub Release repo URLs', async () => {
+    expect.assertions(2);
+    await expectIssue(
+      (dataDir) =>
+        writePackage(dataDir, validPackage.name, {
+          ...validPackage,
+          trackingMode: 'githubRelease',
+          repoUrl: 'https://notgithub.com/example/package',
+        }),
+      'package-github-release-repo-url-invalid',
+    );
+    await expectIssue(
+      (dataDir) =>
+        writePackage(dataDir, validPackage.name, {
+          ...validPackage,
+          trackingMode: 'githubRelease',
+          repoUrl: 'https://github.com/',
+        }),
+      'package-github-release-repo-url-invalid',
+    );
+  });
+
   it('covers required package field checks from openupm data tests', async () => {
     expect.assertions(7);
     await expectIssue(

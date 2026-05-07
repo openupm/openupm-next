@@ -30,7 +30,9 @@ export function parseGitHubRepoUrl(
   repoUrl: string,
 ): { owner: string; repo: string } | null {
   if (repoUrl.startsWith('git@github.com:')) {
-    const match = /^git@github\.com:([^/]+)\/(.+?)(?:\.git)?$/i.exec(repoUrl);
+    const match = /^git@github\.com:([^/]+)\/([^/]+?)(?:\.git)?$/i.exec(
+      repoUrl,
+    );
     if (!match) return null;
     return { owner: match[1], repo: match[2] };
   }
@@ -41,8 +43,10 @@ export function parseGitHubRepoUrl(
   } catch {
     return null;
   }
-  if (!/github\.com$/i.test(parsed.host)) return null;
-  const [owner, repoWithSuffix] = parsed.pathname.split('/').filter(Boolean);
+  if (parsed.host.toLowerCase() !== 'github.com') return null;
+  const pathParts = parsed.pathname.split('/').filter(Boolean);
+  if (pathParts.length !== 2) return null;
+  const [owner, repoWithSuffix] = pathParts;
   if (!owner || !repoWithSuffix) return null;
   return { owner, repo: repoWithSuffix.replace(/\.git$/i, '') };
 }
