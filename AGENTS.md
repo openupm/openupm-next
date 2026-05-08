@@ -69,6 +69,9 @@
 - Full `npm test` includes Redis-backed packages such as `@openupm/ads`,
   `@openupm/server-common`, and `apps/web`; Redis must be reachable on the
   configured test Redis host, usually `127.0.0.1:6379`.
+- Focused Vitest targets can still need Redis. If a Redis-backed focused test
+  times out or hangs while Redis is not running, start the same temporary Redis
+  container before retrying the test.
 - If local Redis is not already running, use the same Redis Stack image version
   defined for live deployment in `openupm-devops`:
   `docker run -d --name openupm-next-test-redis -p 6379:6379 redis/redis-stack-server:7.2.0-v10`.

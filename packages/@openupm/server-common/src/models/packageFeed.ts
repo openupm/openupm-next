@@ -1,10 +1,12 @@
 import { orderBy } from 'lodash-es';
 import { Feed } from 'feed';
+import configRaw from 'config';
 
 import redis from '../redis.js';
 
 const feedRecentUpdateKey = 'feed:update:';
-const recentUpdateCount = 50;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const config = configRaw as any;
 
 interface Author {
   name: string;
@@ -48,6 +50,7 @@ const setFeedRecentUpdate = async (objs: FeedObject[]): Promise<void> => {
     },
   });
 
+  const recentUpdateCount = config.feeds?.recentUpdateCount || 50;
   const limit = Math.min(objs.length, recentUpdateCount);
   for (let i = 0; i < limit; i++) {
     const obj = objs[i];

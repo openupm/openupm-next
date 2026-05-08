@@ -4,6 +4,10 @@
     db: 1,
   },
 
+  feeds: {
+    recentUpdateCount: 2,
+  },
+
   // Unity Affiliate
   unityAffiliateId: '0000000',
 }
