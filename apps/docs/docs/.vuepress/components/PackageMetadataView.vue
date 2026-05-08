@@ -200,9 +200,21 @@ const trackingModeText = computed(() => {
   return t("tracking-mode-git");
 });
 
-const trackingModeTitle = computed(() => {
-  if (trackingMode.value === "githubRelease") return t("tracking-mode-github-release-assets-desc");
-  return t("tracking-mode-git-desc");
+const trackingModeTooltip = computed(() => {
+  if (trackingMode.value === "githubRelease") {
+    return [
+      trackingModeText.value,
+      "The author builds the package",
+      "and provides a prebuilt package",
+      "tarball through GitHub Release",
+      "assets."
+    ].join("\n");
+  }
+  return [
+    trackingModeText.value,
+    "OpenUPM tracks Git tag releases",
+    "and builds the package from source."
+  ].join("\n");
 });
 </script>
 
@@ -254,7 +266,10 @@ const trackingModeTitle = computed(() => {
       </section>
       <section class="col-6">
         <div class="metadata-title">{{ $capitalize($t("tracking-mode")) }}</div>
-        <span :title="trackingModeTitle">{{ trackingModeText }}</span>
+        <span class="tracking-mode tooltip tooltip-left" :data-tooltip="trackingModeTooltip">
+          {{ trackingModeText }}
+          <i class="fas fa-info-circle" aria-hidden="true"></i>
+        </span>
       </section>
       <section class="col-6">
         <div class="metadata-title">{{ $capitalize($t("authors")) }}</div>
@@ -383,6 +398,17 @@ const trackingModeTitle = computed(() => {
 
   .col-badge {
     margin-bottom: 0.2rem;
+  }
+
+  .tracking-mode {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+
+    i {
+      color: var(--c-text-lightest);
+      font-size: 0.75rem;
+    }
   }
 
   ul.section-list {
