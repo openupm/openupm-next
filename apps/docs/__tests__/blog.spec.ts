@@ -1,7 +1,3 @@
-import { readFileSync } from "node:fs";
-import { dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
-
 import chai from "chai";
 import { describe, it } from "vitest";
 
@@ -14,8 +10,6 @@ import {
 } from "@/blog";
 
 chai.should();
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
 
 describe("blog metadata", () => {
   it("preserves Medium URL path segments as OpenUPM blog slugs", () => {
@@ -60,21 +54,5 @@ describe("blog metadata", () => {
     rss.should.contain("<title>OpenUPM Blog</title>");
     rss.should.contain(getAbsoluteBlogPostUrl("openupm-2025-recap-6283fcd0217e"));
     rss.should.not.contain("medium.com/openupm/openupm-2025-recap-6283fcd0217e");
-  });
-
-  it("keeps the temporary import report in sync with imported posts", () => {
-    const reportPath = resolve(
-      __dirname,
-      "../../../../medium-blog-import-report.tmp.md",
-    );
-    const report = readFileSync(reportPath, "utf8");
-
-    for (const post of BLOG_POSTS) {
-      if (post.originalUrl) {
-        report.should.contain(post.originalUrl);
-      }
-
-      report.should.contain(getAbsoluteBlogPostUrl(post.slug));
-    }
   });
 });
