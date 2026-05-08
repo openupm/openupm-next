@@ -28,12 +28,12 @@ jobs:
         run: mv tmp-openupm/data data && rm -rf tmp-openupm
       - name: install volta
         uses: volta-cli/action@v4
-      - name: npm install
+      - name: npm ci
         uses: nick-fields/retry@v2
         with:
           timeout_minutes: 3
           max_attempts: 3
-          command: npm install
+          command: npm ci
       - name: npm run test
         run: OPENUPM_DATA_PATH="${{ github.workspace }}/data" npm run test
 
@@ -54,12 +54,12 @@ jobs:
         run: mv tmp-openupm/data data && rm -rf tmp-openupm
       - name: install volta
         uses: volta-cli/action@v4
-      - name: npm install
+      - name: npm ci
         uses: nick-fields/retry@v2
         with:
           timeout_minutes: 3
           max_attempts: 3
-          command: npm install
+          command: npm ci
       - name: npm run build:release
         run: npm run build:release
       - name: npm run docs:build
