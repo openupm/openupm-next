@@ -13,6 +13,7 @@ import { sitemapPlugin } from "@vuepress/plugin-sitemap";
 import { mediumZoomPlugin } from "@vuepress/plugin-medium-zoom";
 
 import OpenupmPlugin from "vuepress-plugin-openupm";
+import { blogRssPlugin } from "./blogRssPlugin";
 
 const __dirname = getDirname(import.meta.url);
 
@@ -139,6 +140,7 @@ const config: any = mergeWith(
         selector:
           ".theme-container:not(.package-list) .theme-default-content :not(a) > img",
       }),
+      blogRssPlugin(),
     ],
     alias: {
       "@": path.resolve(__dirname),

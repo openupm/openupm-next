@@ -12,6 +12,16 @@ export const config: any = {
       {
         rel: "alternate",
         type: "application/rss+xml",
+        title: "OpenUPM Blog",
+        href: `https://openupm.com/blog/rss.xml`,
+      },
+    ],
+    [
+      "link",
+      {
+        rel: "alternate",
+        type: "application/rss+xml",
+        title: "OpenUPM Package Updates",
         href: `https://api.openupm.com/feeds/updates/rss`,
       },
     ],
@@ -135,11 +145,8 @@ export const themeConfig: any = {
   domain: `https://openupm.com`,
   navbar: [
     { text: "Packages", link: "/packages/" },
-    {
-      text: "Discounts & Deals",
-      link: "https://assetstore.unity.com/?on_sale=true&orderBy=1&rows=96&aid=1011lJJH",
-    },
     { text: "Docs", link: "/docs/" },
+    { text: "Blog", link: "/blog/" },
     {
       text: "Support",
       ariaLabel: "Support Menu",
@@ -185,6 +192,13 @@ export const themeConfig: any = {
         {
           link: "https://api.openupm.com/feeds/updates/rss",
           text: "Package Updates",
+          icon: "fa fa-rss-square",
+          raw: true,
+          iconLeft: true,
+        },
+        {
+          link: "https://openupm.com/blog/rss.xml",
+          text: "Blog RSS",
           icon: "fa fa-rss-square",
           raw: true,
           iconLeft: true,

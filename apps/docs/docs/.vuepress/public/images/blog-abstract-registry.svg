@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+  <title id="title">Smooth black pen test line</title>
+  <desc id="desc">A smooth black cursive pen stroke on warm textured paper.</desc>
+  <defs>
+    <filter id="paper" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.72" numOctaves="2" seed="7"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer>
+        <feFuncA type="table" tableValues="0 0.045"/>
+      </feComponentTransfer>
+      <feBlend in="SourceGraphic" mode="multiply"/>
+    </filter>
+  </defs>
+  <rect width="960" height="540" fill="#eee1cc" filter="url(#paper)"/>
+  <path d="M-44 344 C96 248 178 184 258 278 C330 362 276 430 218 402 C154 370 204 240 326 218 C484 190 510 392 404 420 C326 440 344 316 468 276 C618 226 684 334 602 394 C538 440 540 284 704 198 C818 138 934 138 1038 168" fill="none" stroke="#2b241d" stroke-width="24" stroke-linecap="round" stroke-linejoin="round" opacity="0.78"/>
+  <path d="M102 148 C184 196 258 222 348 236" fill="none" stroke="#2b241d" stroke-width="7" stroke-linecap="round" opacity="0.36"/>
+  <path d="M666 470 C728 390 792 334 886 300" fill="none" stroke="#2b241d" stroke-width="10" stroke-linecap="round" opacity="0.36"/>
+  <g opacity="0.18" aria-hidden="true">
+    <!-- dry brush highlight -->
+    <path d="M-34 330 C108 242 190 188 268 274 C336 350 286 416 230 392 C174 366 220 252 334 232 C478 208 500 382 412 406 C350 424 368 326 480 292 C620 250 672 340 608 382 C560 414 564 296 714 218 C820 164 928 164 1028 190" fill="none" stroke="#eee1cc" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>

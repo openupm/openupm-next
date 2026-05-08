@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+  <title id="title">Cropped smooth pen flourish</title>
+  <desc id="desc">A cropped black pen flourish with smooth crossing curves on warm paper.</desc>
+  <defs>
+    <filter id="paper" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="2" seed="31"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer>
+        <feFuncA type="table" tableValues="0 0.042"/>
+      </feComponentTransfer>
+      <feBlend in="SourceGraphic" mode="multiply"/>
+    </filter>
+  </defs>
+  <rect width="960" height="540" fill="#eadac1" filter="url(#paper)"/>
+  <path d="M-64 406 C110 274 224 178 332 246 C440 314 360 470 250 424 C164 388 214 250 346 212 C498 170 652 228 666 334 C682 450 528 458 514 352 C500 248 662 178 842 198 C922 208 990 238 1052 282" fill="none" stroke="#2b241d" stroke-width="22" stroke-linecap="round" stroke-linejoin="round" opacity="0.78"/>
+  <path d="M132 96 C194 160 258 200 344 220" fill="none" stroke="#2b241d" stroke-width="8" stroke-linecap="round" opacity="0.36"/>
+  <path d="M736 82 C686 168 666 232 690 304" fill="none" stroke="#2b241d" stroke-width="9" stroke-linecap="round" opacity="0.36"/>
+  <g opacity="0.18" aria-hidden="true">
+    <!-- dry brush highlight -->
+    <path d="M-34 330 C108 242 190 188 268 274 C336 350 286 416 230 392 C174 366 220 252 334 232 C478 208 500 382 412 406 C350 424 368 326 480 292 C620 250 672 340 608 382 C560 414 564 296 714 218 C820 164 928 164 1028 190" fill="none" stroke="#eee1cc" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+  <title id="title">Thin looping ink line</title>
+  <desc id="desc">A light handwritten black pen loop on beige paper.</desc>
+  <defs>
+    <filter id="paper" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.76" numOctaves="2" seed="19"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer>
+        <feFuncA type="table" tableValues="0 0.04"/>
+      </feComponentTransfer>
+      <feBlend in="SourceGraphic" mode="multiply"/>
+    </filter>
+  </defs>
+  <rect width="960" height="540" fill="#efe0c6" filter="url(#paper)"/>
+  <path d="M-76 214 C48 172 174 174 244 250 C320 332 260 422 192 386 C116 346 176 206 312 178 C468 146 568 230 552 324 C538 410 414 424 404 344 C392 242 538 182 684 214 C802 240 896 314 1038 292" fill="none" stroke="#2b241d" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" opacity="0.78"/>
+  <path d="M392 90 C468 140 544 164 642 164" fill="none" stroke="#2b241d" stroke-width="8" stroke-linecap="round" opacity="0.36"/>
+  <path d="M572 476 C656 394 744 354 854 352" fill="none" stroke="#2b241d" stroke-width="9" stroke-linecap="round" opacity="0.36"/>
+  <g opacity="0.18" aria-hidden="true">
+    <!-- dry brush highlight -->
+    <path d="M-34 330 C108 242 190 188 268 274 C336 350 286 416 230 392 C174 366 220 252 334 232 C478 208 500 382 412 406 C350 424 368 326 480 292 C620 250 672 340 608 382 C560 414 564 296 714 218 C820 164 928 164 1028 190" fill="none" stroke="#eee1cc" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>
