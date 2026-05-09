@@ -166,12 +166,6 @@ export const themeConfig: any = {
           iconLeft: true,
         },
         {
-          text: "Medium",
-          link: "https://medium.com/openupm",
-          icon: "fab fa-medium",
-          iconLeft: true,
-        },
-        {
           text: "Twitter",
           link: "https://twitter.com/openupmupdate",
           icon: "fab fa-twitter",

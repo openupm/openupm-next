@@ -16,7 +16,7 @@ OpenUPM requires packages to meet the following criteria:
 
 4. **Functionality and Usefulness:** The package should be functional and useful. Test packages are not accepted due to limited resources. It's advised to import your package via Git URL and test it before submission.
 
-5. **Semantic Versioning:** The package should use [semantic versioning (semver)](https://semver.org/). For example, `1.1.0`, `1.1.1-preview`, `v1.1.2`. You can create Git tags using the [GitHub release](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository#creating-a-release) feature or automate the process using [GitHub actions](https://medium.com/openupm/how-to-maintain-upm-package-part-2-f352fbf5f87c).
+5. **Semantic Versioning:** The package should use [semantic versioning (semver)](https://semver.org/). For example, `1.1.0`, `1.1.1-preview`, `v1.1.2`. You can create Git tags using the [GitHub release](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository#creating-a-release) feature or automate the process using [GitHub actions](/blog/how-to-maintain-upm-package-part-2-f352fbf5f87c/).
 
 6. **Package Size:** The package size should be under 512MB due to limited resources. If OpenUPM receives more funding in the future, we may increase this limit.
 
@@ -117,7 +117,7 @@ After a brief pause, during which the build pipelines complete their tasks (usua
 
 ### Handling a Repository without Git Tag
 
-The repository you submitted must have at least one versioned Git tag to trigger the build pipelines. Therefore, submissions without a Git tag for an extended period will be removed from the OpenUPM list. If you wish to add such a repository, please create an issue on the author's repository to request the addition of a Git tag. For guidance on automating the release process with GitHub actions, you can refer to [this tutorial](https://medium.com/openupm/how-to-maintain-upm-package-part-2-f352fbf5f87c).
+The repository you submitted must have at least one versioned Git tag to trigger the build pipelines. Therefore, submissions without a Git tag for an extended period will be removed from the OpenUPM list. If you wish to add such a repository, please create an issue on the author's repository to request the addition of a Git tag. For guidance on automating the release process with GitHub actions, you can refer to [this tutorial](/blog/how-to-maintain-upm-package-part-2-f352fbf5f87c/).
 
 ### Handling Prefixed Git Tags
 

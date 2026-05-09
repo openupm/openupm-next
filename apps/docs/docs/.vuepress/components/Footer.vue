@@ -32,12 +32,6 @@ const connectLinks = computed(() => {
       iconLeft: true
     },
     {
-      link: "https://medium.com/openupm",
-      text: t("medium"),
-      icon: "fab fa-medium",
-      iconLeft: true
-    },
-    {
       link: "https://twitter.com/openupmupdate",
       text: t("twitter"),
       icon: "fab fa-twitter",
