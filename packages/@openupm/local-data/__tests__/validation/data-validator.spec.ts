@@ -219,7 +219,7 @@ describe('validateDataDirectory', () => {
   });
 
   it('covers package semantic checks from openupm data tests', async () => {
-    expect.assertions(9);
+    expect.assertions(10);
     await expectIssue(
       (dataDir) =>
         writePackage(dataDir, validPackage.name, {
@@ -261,6 +261,15 @@ describe('validateDataDirectory', () => {
       (dataDir) =>
         writePackage(dataDir, validPackage.name, {
           ...validPackage,
+          licenseSpdxId: 'MIT',
+          licenseName: 'MIT',
+        }),
+      'package-license-name-spdx-mismatch',
+    );
+    await expectIssue(
+      (dataDir) =>
+        writePackage(dataDir, validPackage.name, {
+          ...validPackage,
           image: 'not-a-url',
         }),
       'package-image-url-invalid',
@@ -292,6 +301,21 @@ describe('validateDataDirectory', () => {
         }),
       'package-github-release-asset-name-path-invalid',
     );
+  });
+
+  it('allows custom license names when licenseSpdxId is null', async () => {
+    const dataDir = await createDataDir();
+    try {
+      await writePackage(dataDir, validPackage.name, {
+        ...validPackage,
+        licenseSpdxId: null,
+        licenseName: 'Custom License',
+      });
+      const result = await validateDataDirectory(dataDir);
+      expect(result).toEqual({ valid: true, issues: [] });
+    } finally {
+      await afs.rm(dataDir, { recursive: true, force: true });
+    }
   });
 
   it('covers package extension and top-level YAML checks from openupm data tests', async () => {

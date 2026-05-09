@@ -75,6 +75,13 @@ function normalizePackageForLegacyData(raw: unknown): unknown {
   return raw;
 }
 
+function asRecord(value: unknown): Record<string, unknown> {
+  if (value && typeof value === 'object' && !Array.isArray(value)) {
+    return value as Record<string, unknown>;
+  }
+  return {};
+}
+
 /**
  * Validate an OpenUPM data directory.
  *
@@ -158,7 +165,9 @@ export async function validateDataDirectory(
     }
 
     try {
-      const pkg = parsePackageMetadata(normalizePackageForLegacyData(raw));
+      const normalizedRaw = normalizePackageForLegacyData(raw);
+      const rawPackage = asRecord(normalizedRaw);
+      const pkg = parsePackageMetadata(normalizedRaw);
       if (!isNonEmptyString(pkg.repoUrl)) {
         addIssue(issues, {
           code: 'package-repo-url-empty',
@@ -239,13 +248,23 @@ export async function validateDataDirectory(
           });
         }
       }
-      if (pkg.licenseSpdxId && !spdx[pkg.licenseSpdxId]) {
-        addIssue(issues, {
-          code: 'package-license-spdx-id-invalid',
-          message: `licenseSpdxId ${pkg.licenseSpdxId} should be valid`,
-          path: relPath,
-          packageName,
-        });
+      if (pkg.licenseSpdxId) {
+        const spdxLicense = spdx[pkg.licenseSpdxId];
+        if (!spdxLicense) {
+          addIssue(issues, {
+            code: 'package-license-spdx-id-invalid',
+            message: `licenseSpdxId ${pkg.licenseSpdxId} should be valid`,
+            path: relPath,
+            packageName,
+          });
+        } else if (rawPackage.licenseName !== spdxLicense.name) {
+          addIssue(issues, {
+            code: 'package-license-name-spdx-mismatch',
+            message: `licenseName should be ${spdxLicense.name} for licenseSpdxId ${pkg.licenseSpdxId}`,
+            path: relPath,
+            packageName,
+          });
+        }
       }
       if (pkg.image && !/https?:\/\//i.test(pkg.image)) {
         addIssue(issues, {
