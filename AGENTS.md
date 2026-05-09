@@ -15,12 +15,19 @@
 - Package manager is `npm@10.9.3`
 - Task runner is Turbo (`npm run lint`, `npm run build`, `npm test`)
 - Tests use Vitest across the workspace
+- If Volta is not active in the current shell, run npm through the pinned
+  version, for example `npx npm@10.9.3 install`, so `package-lock.json` is not
+  rewritten by a newer global npm.
 
 ## Working Rules
 
 - Run `npm run lint` explicitly. `build` and `test` do not run lint for you.
 - Root `npm test` runs `turbo run test`, and Turbo runs each package `build` before `test`.
 - If you need a clean rebuild, use `npm run build:release -- --force` or `npm test -- --force`.
+- Focused workspace package tests may require built internal dependencies. For
+  `@openupm/local-data`, build `@openupm/types`, `@openupm/test`, and
+  `@openupm/common` before running the package test directly in a fresh
+  worktree.
 - Prefer changing shared config in `tooling/` rather than duplicating per-package config.
 - When working from a plan, after finishing any item, always state the next
   concrete step. Continue doing this until the plan is genuinely complete so
