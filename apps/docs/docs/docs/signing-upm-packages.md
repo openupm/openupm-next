@@ -129,6 +129,20 @@ Signed release tarballs are often built from a package folder and may contain
 only the package payload plus the signing attestation. The README does not have
 to be inside the tarball for the package itself to be signed and published.
 
+## Migrating Existing Packages
+
+Because Unity introduced package signing in Unity 6.3, existing OpenUPM packages
+are not expected to have signed historical versions. A good migration path is to
+add signing for the next package version you release, then keep future releases
+signed from that point onward.
+
+For an existing OpenUPM package, submit and merge the package metadata change
+that switches `trackingMode` from `git` to `githubRelease` before you publish a
+new signed version tag. Wait until that pull request is merged, then bump the
+package version and push the tag. This avoids a race where the current Git
+tracker detects the new version first and publishes a package packed from the
+Git checkout instead of the signed GitHub Release asset.
+
 ## Limitations
 
 Package signing improves package provenance, but it is not a malware scanner and

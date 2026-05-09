@@ -77,6 +77,18 @@ The prefix should not include a version number, otherwise the metadata would
 need to change for every release. The asset name is a filename only, not a path
 inside the repository or CI workspace.
 
+## Migrating Existing Packages
+
+Since Unity introduced package signature verification in Unity 6.3, existing
+packages are not expected to have signed historical versions. The practical path
+is to start signing the next version you release.
+
+For packages that are already listed on OpenUPM, change the metadata to
+`trackingMode: githubRelease` first and wait until that pull request is merged.
+Only then bump the package version and push the new tag. This avoids a race
+where the existing Git tracker sees the new version first and publishes a
+tarball packed from the Git checkout instead of the signed GitHub Release asset.
+
 ## Example Repository
 
 OpenUPM provides a minimal signed package example at:
