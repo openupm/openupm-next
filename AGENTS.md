@@ -24,6 +24,9 @@
 - Run `npm run lint` explicitly. `build` and `test` do not run lint for you.
 - Root `npm test` runs `turbo run test`, and Turbo runs each package `build` before `test`.
 - If you need a clean rebuild, use `npm run build:release -- --force` or `npm test -- --force`.
+- When documenting validation in PRs or issues, do not include machine-local
+  absolute paths. Replace local worktree paths with placeholders such as
+  `<openupm-next-worktree>` or use repo-relative paths.
 - Focused workspace package tests may require built internal dependencies. For
   `@openupm/local-data`, build `@openupm/types`, `@openupm/test`, and
   `@openupm/common` before running the package test directly in a fresh
