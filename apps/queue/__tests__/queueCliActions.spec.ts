@@ -10,10 +10,16 @@ const getQueueMock = vi.fn(() => ({
 const hasQueueMock = vi.fn((name: string) => name === 'pkg' || name === 'rel');
 const addJobMock = vi.fn();
 const closeQueuesMock = vi.fn();
+const fetchAllMock = vi.fn();
 const fetchOneMock = vi.fn();
 const removeReleaseRecordMock = vi.fn();
 const saveReleaseMock = vi.fn();
 const redisCloseMock = vi.fn();
+const packageMetadataLocalExistsMock = vi.fn();
+
+vi.mock('@openupm/local-data', () => ({
+  packageMetadataLocalExists: packageMetadataLocalExistsMock,
+}));
 
 vi.mock('../src/queues/core.js', () => ({
   addJob: addJobMock,
@@ -23,7 +29,7 @@ vi.mock('../src/queues/core.js', () => ({
 }));
 
 vi.mock('@openupm/server-common/build/models/release.js', () => ({
-  fetchAll: vi.fn(),
+  fetchAll: fetchAllMock,
   fetchOne: fetchOneMock,
   remove: removeReleaseRecordMock,
   save: saveReleaseMock,
@@ -45,9 +51,12 @@ describe('queue-cli destructive actions', () => {
     getQueueMock.mockReturnValue({
       remove: queueRemoveMock,
       add: queueAddMock,
+      getJobCounts: vi.fn().mockResolvedValue({ failed: 0 }),
+      getJobs: vi.fn().mockResolvedValue([]),
     });
     hasQueueMock.mockImplementation((name: string) => name === 'pkg' || name === 'rel');
     queueRemoveMock.mockResolvedValue(1);
+    packageMetadataLocalExistsMock.mockReturnValue(true);
   });
 
   afterEach(() => {
@@ -181,6 +190,93 @@ describe('queue-cli destructive actions', () => {
     );
     expect(console.log).toHaveBeenCalledWith(
       expect.stringContaining('"signed": true'),
+    );
+  });
+
+  it('cleanup-missing-packages removes failed state for missing packages only', async () => {
+    const getJobCountsMock = vi.fn().mockResolvedValue({ failed: 2 });
+    const getJobsMock = vi.fn().mockResolvedValue([
+      {
+        id: 'build-pkg|com.removed.package',
+        data: { name: 'com.removed.package' },
+      },
+      {
+        id: 'build-pkg|com.kept.package',
+        data: { name: 'com.kept.package' },
+      },
+    ]);
+    getQueueMock.mockImplementation((name: string) => {
+      if (name === 'pkg') {
+        return {
+          remove: queueRemoveMock,
+          add: queueAddMock,
+          getJobCounts: getJobCountsMock,
+          getJobs: getJobsMock,
+        };
+      }
+      return {
+        remove: queueRemoveMock,
+        add: queueAddMock,
+      };
+    });
+    packageMetadataLocalExistsMock.mockImplementation(
+      (name: string) => name === 'com.kept.package',
+    );
+    fetchAllMock.mockResolvedValue([
+      {
+        packageName: 'com.removed.package',
+        version: '1.0.0',
+        state: ReleaseState.Failed,
+        reason: ReleaseErrorCode.BuildTimeout,
+        buildId: '',
+        tag: '1.0.0',
+        commit: 'abc',
+        updatedAt: 100,
+      },
+      {
+        packageName: 'com.removed.package',
+        version: '2.0.0',
+        state: ReleaseState.Succeeded,
+        reason: ReleaseErrorCode.None,
+        buildId: '123',
+        tag: '2.0.0',
+        commit: 'def',
+        updatedAt: 200,
+      },
+    ]);
+
+    const { runQueueCli } = await import('../src/queueCli.js');
+
+    await runQueueCli([
+      'node',
+      'index.js',
+      'queue-cli',
+      'cleanup-missing-packages',
+      '--json',
+    ]);
+
+    expect(queueRemoveMock).toHaveBeenCalledWith(
+      'build-pkg|com.removed.package',
+      {
+        removeChildren: true,
+      },
+    );
+    expect(queueRemoveMock).toHaveBeenCalledWith(
+      'build-rel|com.removed.package|1.0.0',
+      {
+        removeChildren: true,
+      },
+    );
+    expect(removeReleaseRecordMock).toHaveBeenCalledWith(
+      'com.removed.package',
+      '1.0.0',
+    );
+    expect(removeReleaseRecordMock).not.toHaveBeenCalledWith(
+      'com.removed.package',
+      '2.0.0',
+    );
+    expect(console.log).toHaveBeenCalledWith(
+      expect.stringContaining('"packageName": "com.removed.package"'),
     );
   });
 });

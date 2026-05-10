@@ -48,6 +48,9 @@ Common commands:
   a fresh release build job.
 - `package-requeue <package> [--json]`: remove the deterministic package queue
   job and enqueue a fresh package scan.
+- `cleanup-missing-packages [--json]`: clean failed package jobs for packages
+  removed from local data, deleting failed release records and related release
+  jobs while preserving successful releases.
 
 ## Production Entry Points
 
