@@ -120,6 +120,14 @@ describe('parseQueueCliArgs', () => {
     expect(help).toContain('remove-job <queue> <jobId>');
     expect(help).toContain('This is destructive');
     expect(help).toContain('release-remove <package> <version>');
+    expect(help).toContain('cleanup-missing-packages');
+  });
+
+  it('documents cleanup-missing-packages behavior', async () => {
+    const { getCommandUsage } = await import('../src/queueCli.js');
+    const help = getCommandUsage('cleanup-missing-packages');
+    expect(help).toContain('queue-cli cleanup-missing-packages');
+    expect(help).toContain('Successful and non-failed release records are preserved.');
   });
 
   it('queue-jobs includes total and limit metadata', async () => {

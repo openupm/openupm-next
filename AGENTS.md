@@ -47,7 +47,8 @@
 - `queue-jobs` returns all matching jobs when `--limit` is omitted. Preserve
   explicit `--limit` for large or scripted inspections.
 - Destructive commands are `remove-job`, `release-remove`, `release-requeue`,
-  and `package-requeue`; validate them with focused tests before deploy.
+  `package-requeue`, and `cleanup-missing-packages`; validate them with focused
+  tests before deploy.
 - Do not put private production hostnames, paths, or sudo wrapper details in
   this public application repo. Production invocation belongs in
   `openupm-devops`.

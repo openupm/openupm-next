@@ -9,7 +9,10 @@ import {
   RetryableReleaseErrorCodes,
 } from '@openupm/types';
 import { getVersionFromTag } from '@openupm/common/build/semver.js';
-import { loadPackageMetadataLocal } from '@openupm/local-data';
+import {
+  loadPackageMetadataLocal,
+  packageMetadataLocalExists,
+} from '@openupm/local-data';
 import {
   fetchAll,
   fetchOne,
@@ -24,6 +27,7 @@ import { createLogger } from '@openupm/server-common/build/log.js';
 
 import { addJob, getQueue } from '../queues/core.js';
 import { createJobId } from '../queues/jobId.js';
+import { cleanupMissingPackage } from '../jobs/cleanupMissingPackage.js';
 import { gitListRemoteTags, RemoteTag } from '../utils/git.js';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -66,7 +70,13 @@ export function toGitRepoUrl(url: string): string {
 
 export async function buildPackage(name: string): Promise<void> {
   const pkg = await loadPackageMetadataLocal(name);
-  if (!pkg) throw new Error(`package not found: ${name}`);
+  if (!pkg) {
+    if (!packageMetadataLocalExists(name)) {
+      await cleanupMissingPackage(name);
+      return;
+    }
+    throw new Error(`package not found: ${name}`);
+  }
 
   let remoteTags: RemoteTag[] = [];
   try {

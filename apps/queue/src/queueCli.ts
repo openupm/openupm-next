@@ -12,6 +12,7 @@ import {
 
 import { addJob, closeQueues, getQueue, hasQueue } from './queues/core.js';
 import { createJobId } from './queues/jobId.js';
+import { cleanupMissingPackageJobs } from './jobs/cleanupMissingPackage.js';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const config = configRaw as any;
@@ -154,6 +155,10 @@ function getUsage(): string {
     '',
     '  package-requeue <package> [--json]',
     '    Remove the deterministic pkg queue job and enqueue a fresh package scan.',
+    '',
+    '  cleanup-missing-packages [--json]',
+    '    Clean failed pkg jobs for packages removed from local data, plus failed',
+    '    release records and deterministic rel jobs. Successful releases stay.',
   ].join('\n');
 }
 
@@ -282,6 +287,19 @@ function getCommandUsage(topic: string | undefined): string {
         '',
         'Examples:',
         '  queue-cli package-requeue com.foo.bar --json',
+      ].join('\n');
+    case 'cleanup-missing-packages':
+      return [
+        'Usage: queue-cli cleanup-missing-packages [--json]',
+        '',
+        'Scan failed pkg queue jobs and clean jobs for packages missing from local',
+        'data. This removes the deterministic pkg job, failed release Redis',
+        'records, and deterministic rel jobs for failed releases only.',
+        '',
+        'Successful and non-failed release records are preserved.',
+        '',
+        'Examples:',
+        '  queue-cli cleanup-missing-packages --json',
       ].join('\n');
     default:
       return getUsage();
@@ -741,6 +759,9 @@ export async function runQueueCli(argv: string[] = process.argv): Promise<void> 
         requireArgs(args.rest, 1);
         result = await packageRequeue(args.rest[0]);
         break;
+      case 'cleanup-missing-packages':
+        result = await cleanupMissingPackageJobs();
+        break;
       default:
         throw new Error(getUsage());
     }
@@ -763,4 +784,5 @@ export {
   releaseRemove,
   releaseRequeue,
   packageRequeue,
+  cleanupMissingPackageJobs,
 };
