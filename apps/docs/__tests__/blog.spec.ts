@@ -28,12 +28,13 @@ describe("blog metadata", () => {
   });
 
   it("orders posts newest first", () => {
-    getBlogPostsNewestFirst()[0].slug.should.equal(
-      "signing-upm-packages-with-openupm",
-    );
-    getBlogPostsNewestFirst().at(-1)?.slug.should.equal(
-      "openupm-beta-is-now-available-a6665ff60c71",
-    );
+    const posts = getBlogPostsNewestFirst();
+
+    for (let i = 1; i < posts.length; i += 1) {
+      new Date(posts[i - 1].date).getTime().should.be.gte(
+        new Date(posts[i].date).getTime(),
+      );
+    }
   });
 
   it("returns previous and next posts in chronological order", () => {
