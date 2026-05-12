@@ -14,6 +14,15 @@ export const BLOG_RSS_PATH = "/blog/rss.xml";
 
 export const BLOG_POSTS: BlogPost[] = [
   {
+    title: "UnityNuGet Packages Are Now Code Signed",
+    slug: "unitynuget-packages-are-now-code-signed",
+    author: "Favo Yang",
+    date: "2026-05-13",
+    readingTime: "1 min read",
+    excerpt:
+      "UnityNuGet packages served through OpenUPM are now code signed, with daily cache verification to keep mirrored package versions current.",
+  },
+  {
     title: "Signing UPM Packages with OpenUPM",
     slug: "signing-upm-packages-with-openupm",
     featuredImage: "/images/blog-signing-upm-packages-code-sign.png",

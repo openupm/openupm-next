@@ -57,6 +57,22 @@
 
 - Docs commands run from `apps/docs`.
 - `npm run docs:build:limit` is the fastest full SSR build smoke test for the docs app.
+- New blog posts live at `apps/docs/docs/blog/<slug>/index.md`.
+- Add each new blog post to `BLOG_POSTS` in
+  `apps/docs/docs/.vuepress/blog.ts`; this drives the blog index, adjacent
+  post navigation, and RSS metadata.
+- Keep blog frontmatter aligned with the `BlogPost` metadata entry: `title`,
+  `author`, `date`, `readingTime`, and `description`/`excerpt` should describe
+  the same post.
+- Blog ordering tests should verify general ordering behavior, such as dates
+  sorted newest first, rather than hard-coding the current first or last post
+  unless the test is intentionally covering a specific legacy post.
+- For blog-only changes, run `npm run test -- blog.spec.ts` and
+  `npm run lint` from `apps/docs`, then run `npm run docs:build:limit`.
+- If `docs:build:limit` fails because
+  `node_modules/vuepress-plugin-openupm/build/index.js` is missing, first build
+  the local plugin dependency from the repo root with
+  `npm run build -- --filter=vuepress-plugin-openupm`.
 - The docs VuePress config contains Node 22 compatibility aliases for:
   - `date-fns/locale`
   - `@intlify/shared`
