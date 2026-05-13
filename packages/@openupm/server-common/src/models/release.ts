@@ -18,6 +18,13 @@ const REDIS_KEY_RECENT_FAILED_RELEASES = 'rel:index:failed';
 
 type ReleaseHistoryState = 'succeeded' | 'failed';
 
+interface ReleaseHistoryBackfillResult {
+  scannedPackages: number;
+  scannedReleases: number;
+  succeeded: number;
+  failed: number;
+}
+
 /**
  * Get the redis key for a release hashset.
  * @param {string} packageName - The name of the package.
@@ -84,6 +91,15 @@ async function updateRecentReleaseIndexes(record: ReleaseModel): Promise<void> {
     .zrem(succeededKey, member)
     .zrem(failedKey, member)
     .exec();
+}
+
+function isReleaseHashKey(key: string): boolean {
+  return (
+    key.startsWith(REDIS_KEY_RELEASE_PREFIX) &&
+    key !== REDIS_KEY_RECENT_SUCCEEDED_RELEASES &&
+    key !== REDIS_KEY_RECENT_FAILED_RELEASES &&
+    !key.startsWith(`${REDIS_KEY_RELEASE_PREFIX}index:`)
+  );
 }
 
 /**
@@ -234,4 +250,63 @@ export async function fetchRecentReleases(
 
   releases.sort((a, b) => b.updatedAt - a.updatedAt);
   return releases.slice(0, limit);
+}
+
+export async function backfillRecentReleaseIndexes(): Promise<ReleaseHistoryBackfillResult> {
+  const client = redis.client!;
+  let cursor = '0';
+  const releaseKeys: string[] = [];
+
+  do {
+    const [nextCursor, keys] = await client.scan(
+      cursor,
+      'MATCH',
+      `${REDIS_KEY_RELEASE_PREFIX}*`,
+      'COUNT',
+      200,
+    );
+    cursor = nextCursor;
+    for (const key of keys) {
+      if (isReleaseHashKey(key)) releaseKeys.push(key);
+    }
+  } while (cursor !== '0');
+
+  releaseKeys.sort();
+
+  const succeeded: Array<[number, string]> = [];
+  const failed: Array<[number, string]> = [];
+  let scannedReleases = 0;
+
+  for (const key of releaseKeys) {
+    const objs = await client.hgetall(key);
+    for (const value of Object.values(objs)) {
+      const release = normalizeReleaseModel(JSON.parse(value) as ReleaseModel);
+      scannedReleases += 1;
+      const member = getReleaseIndexMember(
+        release.packageName,
+        release.version,
+      );
+      const score = release.updatedAt || release.createdAt || 0;
+      if (release.state === ReleaseState.Succeeded) {
+        succeeded.push([score, member]);
+      } else if (release.state === ReleaseState.Failed) {
+        failed.push([score, member]);
+      }
+    }
+  }
+
+  const succeededKey = getRedisKeyForRecentReleases('succeeded');
+  const failedKey = getRedisKeyForRecentReleases('failed');
+  const pipeline = client.multi().del(succeededKey, failedKey);
+  for (const [score, member] of succeeded)
+    pipeline.zadd(succeededKey, score, member);
+  for (const [score, member] of failed) pipeline.zadd(failedKey, score, member);
+  await pipeline.exec();
+
+  return {
+    scannedPackages: releaseKeys.length,
+    scannedReleases,
+    succeeded: succeeded.length,
+    failed: failed.length,
+  };
 }

@@ -11,6 +11,7 @@ const hasQueueMock = vi.fn((name: string) => name === 'pkg' || name === 'rel');
 const addJobMock = vi.fn();
 const closeQueuesMock = vi.fn();
 const fetchAllMock = vi.fn();
+const backfillRecentReleaseIndexesMock = vi.fn();
 const fetchOneMock = vi.fn();
 const removeReleaseRecordMock = vi.fn();
 const saveReleaseMock = vi.fn();
@@ -29,6 +30,7 @@ vi.mock('../src/queues/core.js', () => ({
 }));
 
 vi.mock('@openupm/server-common/build/models/release.js', () => ({
+  backfillRecentReleaseIndexes: backfillRecentReleaseIndexesMock,
   fetchAll: fetchAllMock,
   fetchOne: fetchOneMock,
   remove: removeReleaseRecordMock,

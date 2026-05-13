@@ -5,11 +5,17 @@ const {
   getJobsMock,
   getWorkersMock,
   hasQueueMock,
+  fetchAllMock,
+  backfillRecentReleaseIndexesMock,
+  redisScanMock,
 } = vi.hoisted(() => ({
   getJobCountsMock: vi.fn(),
   getJobsMock: vi.fn(),
   getWorkersMock: vi.fn(),
   hasQueueMock: vi.fn((name: string) => name === 'pkg' || name === 'rel'),
+  fetchAllMock: vi.fn(),
+  backfillRecentReleaseIndexesMock: vi.fn(),
+  redisScanMock: vi.fn(),
 }));
 
 vi.mock('../src/queues/core.js', () => ({
@@ -27,9 +33,17 @@ vi.mock('@openupm/server-common/build/redis.js', () => ({
   default: {
     close: vi.fn(),
     client: {
-      scan: vi.fn(),
+      scan: redisScanMock,
     },
   },
+}));
+
+vi.mock('@openupm/server-common/build/models/release.js', () => ({
+  backfillRecentReleaseIndexes: backfillRecentReleaseIndexesMock,
+  fetchAll: fetchAllMock,
+  fetchOne: vi.fn(),
+  remove: vi.fn(),
+  save: vi.fn(),
 }));
 
 describe('parseQueueCliArgs', () => {
@@ -38,6 +52,9 @@ describe('parseQueueCliArgs', () => {
     hasQueueMock.mockImplementation(
       (name: string) => name === 'pkg' || name === 'rel',
     );
+    fetchAllMock.mockReset();
+    backfillRecentReleaseIndexesMock.mockReset();
+    redisScanMock.mockReset();
   });
 
   it('parses json and limit flags', async () => {
@@ -112,6 +129,14 @@ describe('parseQueueCliArgs', () => {
     expect(help).toContain('queue-cli releases-failed [reason|unknown|timeout]');
     expect(help).toContain('BuildTimeout/ConnectionTimeout/GatewayTimeout');
     expect(help).toContain('VersionConflict');
+  });
+
+  it('documents the release index backfill command', async () => {
+    const { getCommandUsage, getUsage } = await import('../src/queueCli.js');
+    expect(getUsage()).toContain('release-index-backfill');
+    const help = getCommandUsage('release-index-backfill');
+    expect(help).toContain('queue-cli release-index-backfill');
+    expect(help).toContain('Rebuild the bounded recent succeeded/failed');
   });
 
   it('documents destructive commands in top-level help', async () => {
@@ -203,5 +228,57 @@ describe('parseQueueCliArgs', () => {
         ],
       },
     ]);
+  });
+
+  it('releases-failed skips derived release index keys while scanning', async () => {
+    const { releasesFailed } = await import('../src/queueCli.js');
+    redisScanMock.mockResolvedValueOnce([
+      '0',
+      ['rel:com.failed.package', 'rel:index:succeeded', 'rel:index:failed'],
+    ]);
+    fetchAllMock.mockResolvedValueOnce([
+      {
+        packageName: 'com.failed.package',
+        version: '1.0.0',
+        state: 3,
+        reason: 700,
+        buildId: '',
+        tag: '',
+        commit: '',
+        updatedAt: 100,
+      },
+    ]);
+
+    const result = await releasesFailed(undefined, 20);
+
+    expect(fetchAllMock).toHaveBeenCalledTimes(1);
+    expect(fetchAllMock).toHaveBeenCalledWith('com.failed.package');
+    expect(result).toMatchObject([
+      { packageName: 'com.failed.package', version: '1.0.0' },
+    ]);
+  });
+
+  it('runs release-index-backfill and prints JSON output', async () => {
+    backfillRecentReleaseIndexesMock.mockResolvedValue({
+      scannedPackages: 10,
+      scannedReleases: 40,
+      succeeded: 30,
+      failed: 2,
+    });
+    vi.spyOn(console, 'log').mockImplementation(() => undefined);
+
+    const { runQueueCli } = await import('../src/queueCli.js');
+    await runQueueCli([
+      'node',
+      'index.js',
+      'queue-cli',
+      'release-index-backfill',
+      '--json',
+    ]);
+
+    expect(backfillRecentReleaseIndexesMock).toHaveBeenCalled();
+    expect(console.log).toHaveBeenCalledWith(
+      expect.stringContaining('"scannedReleases": 40'),
+    );
   });
 });
