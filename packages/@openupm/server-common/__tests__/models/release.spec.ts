@@ -1,12 +1,15 @@
 import redis from '../../src/redis.js';
 import {
   fetchAll,
+  fetchRecentReleases,
   fetchOne,
   fetchOneOrThrow,
+  getRedisKeyForRecentReleases,
   getRedisKeyForRelease,
   remove,
   save,
 } from '../../src/models/release.js';
+import { ReleaseState } from '@openupm/types';
 
 const SAMPLE_PACKAGE_NAME = 'sample-package';
 
@@ -14,7 +17,12 @@ function describeWithRedis(name: string, fn: () => void): void {
   // eslint-disable-next-line jest/valid-title
   describe(name, function () {
     afterEach(async () => {
-      await redis.client!.del(getRedisKeyForRelease(SAMPLE_PACKAGE_NAME));
+      await redis.client!.del(
+        getRedisKeyForRelease(SAMPLE_PACKAGE_NAME),
+        getRedisKeyForRelease('sample-package-two'),
+        getRedisKeyForRecentReleases('succeeded'),
+        getRedisKeyForRecentReleases('failed'),
+      );
     });
 
     afterAll(async () => {
@@ -86,6 +94,84 @@ describeWithRedis('save', function () {
     await remove(obj2!.packageName, obj2!.version);
     const obj3 = await fetchOne(obj.packageName, obj.version);
     expect(obj3).toBeNull();
+  });
+});
+
+describeWithRedis('fetchRecentReleases', function () {
+  it('indexes succeeded releases and removes them from the failed index', async () => {
+    await save({
+      packageName: SAMPLE_PACKAGE_NAME,
+      version: '1.0.0',
+      state: ReleaseState.Failed,
+    });
+    const saved = await save({
+      packageName: SAMPLE_PACKAGE_NAME,
+      version: '1.0.0',
+      state: ReleaseState.Succeeded,
+      source: 'githubRelease',
+      signed: true,
+    });
+
+    expect(await fetchRecentReleases('failed', 20)).toEqual([]);
+    expect(await fetchRecentReleases('succeeded', 20)).toMatchObject([
+      {
+        packageName: SAMPLE_PACKAGE_NAME,
+        version: saved.version,
+        state: ReleaseState.Succeeded,
+        source: 'githubRelease',
+        signed: true,
+      },
+    ]);
+  });
+
+  it('indexes failed releases and removes them from the succeeded index', async () => {
+    await save({
+      packageName: SAMPLE_PACKAGE_NAME,
+      version: '1.0.0',
+      state: ReleaseState.Succeeded,
+    });
+    await save({
+      packageName: SAMPLE_PACKAGE_NAME,
+      version: '1.0.0',
+      state: ReleaseState.Failed,
+    });
+
+    expect(await fetchRecentReleases('succeeded', 20)).toEqual([]);
+    expect(await fetchRecentReleases('failed', 20)).toMatchObject([
+      {
+        packageName: SAMPLE_PACKAGE_NAME,
+        version: '1.0.0',
+        state: ReleaseState.Failed,
+      },
+    ]);
+  });
+
+  it('sorts by newest update time and respects the limit', async () => {
+    await save({
+      packageName: SAMPLE_PACKAGE_NAME,
+      version: '1.0.0',
+      state: ReleaseState.Succeeded,
+    });
+    await save({
+      packageName: 'sample-package-two',
+      version: '2.0.0',
+      state: ReleaseState.Succeeded,
+    });
+
+    const releases = await fetchRecentReleases('succeeded', 1);
+    expect(releases).toHaveLength(1);
+    expect(releases[0].packageName).toEqual('sample-package-two');
+  });
+
+  it('skips stale indexed release keys', async () => {
+    const member = JSON.stringify(['sample-package-two', '2.0.0']);
+    await redis.client!.zadd(
+      getRedisKeyForRecentReleases('failed'),
+      Date.now(),
+      member,
+    );
+
+    expect(await fetchRecentReleases('failed', 20)).toEqual([]);
   });
 });
 
