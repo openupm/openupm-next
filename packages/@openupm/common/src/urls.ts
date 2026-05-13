@@ -220,6 +220,20 @@ export const getMonthlyDownloadsUrl = function (name: string): string {
 };
 
 /**
+ * Get monthly downloads range url for package name.
+ * @param name package name
+ */
+export const getMonthlyDownloadsRangeUrl = function (name: string): string {
+  return urlJoin(
+    getRegistryBaseUrl(),
+    'downloads',
+    'range',
+    'last-month',
+    name,
+  );
+};
+
+/**
  * Get openupm-cli repo url.
  * @returns openupm-cli repo url
  */

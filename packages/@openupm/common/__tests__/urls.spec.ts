@@ -1,4 +1,6 @@
 import {
+  getMonthlyDownloadsRangeUrl,
+  getMonthlyDownloadsUrl,
   isPackageDetailPath,
   isPackageListPath,
   parsePackageNameFromPackageDetailPath,
@@ -87,5 +89,23 @@ describe('parsePackageNameFromPackageDetailPath', () => {
     const path = '/packages/';
     const packageName = parsePackageNameFromPackageDetailPath(path);
     expect(packageName).toBeNull();
+  });
+});
+
+describe('download count urls', () => {
+  it('should build the monthly downloads point url', () => {
+    const result = getMonthlyDownloadsUrl('com.example.package');
+
+    expect(result).toEqual(
+      'https://package.openupm.com/downloads/point/last-month/com.example.package',
+    );
+  });
+
+  it('should build the monthly downloads range url', () => {
+    const result = getMonthlyDownloadsRangeUrl('com.example.package');
+
+    expect(result).toEqual(
+      'https://package.openupm.com/downloads/range/last-month/com.example.package',
+    );
   });
 });
