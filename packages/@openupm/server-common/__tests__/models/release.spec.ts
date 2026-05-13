@@ -1,5 +1,6 @@
 import redis from '../../src/redis.js';
 import {
+  backfillRecentReleaseIndexes,
   fetchAll,
   fetchRecentReleases,
   fetchOne,
@@ -172,6 +173,74 @@ describeWithRedis('fetchRecentReleases', function () {
     );
 
     expect(await fetchRecentReleases('failed', 20)).toEqual([]);
+  });
+
+  it('backfills recent release indexes from existing release hashes', async () => {
+    await redis.client!.hset(
+      getRedisKeyForRelease(SAMPLE_PACKAGE_NAME),
+      '1.0.0',
+      JSON.stringify({
+        packageName: SAMPLE_PACKAGE_NAME,
+        version: '1.0.0',
+        commit: '',
+        tag: '',
+        state: ReleaseState.Succeeded,
+        buildId: '',
+        reason: 0,
+        createdAt: 100,
+        updatedAt: 200,
+        source: 'git',
+        signed: false,
+      }),
+      '1.0.1',
+      JSON.stringify({
+        packageName: SAMPLE_PACKAGE_NAME,
+        version: '1.0.1',
+        commit: '',
+        tag: '',
+        state: ReleaseState.Failed,
+        buildId: '',
+        reason: 700,
+        createdAt: 100,
+        updatedAt: 300,
+        source: 'git',
+        signed: false,
+      }),
+      '1.0.2',
+      JSON.stringify({
+        packageName: SAMPLE_PACKAGE_NAME,
+        version: '1.0.2',
+        commit: '',
+        tag: '',
+        state: ReleaseState.Pending,
+        buildId: '',
+        reason: 0,
+        createdAt: 100,
+        updatedAt: 400,
+        source: 'git',
+        signed: false,
+      }),
+    );
+    await redis.client!.zadd(
+      getRedisKeyForRecentReleases('succeeded'),
+      1,
+      JSON.stringify(['stale-package', '0.0.1']),
+    );
+
+    const result = await backfillRecentReleaseIndexes();
+
+    expect(result).toEqual({
+      scannedPackages: 1,
+      scannedReleases: 3,
+      succeeded: 1,
+      failed: 1,
+    });
+    expect(await fetchRecentReleases('succeeded', 20)).toMatchObject([
+      { packageName: SAMPLE_PACKAGE_NAME, version: '1.0.0' },
+    ]);
+    expect(await fetchRecentReleases('failed', 20)).toMatchObject([
+      { packageName: SAMPLE_PACKAGE_NAME, version: '1.0.1' },
+    ]);
   });
 });
 

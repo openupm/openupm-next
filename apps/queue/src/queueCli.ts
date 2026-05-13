@@ -4,6 +4,7 @@ import type { JobType } from 'bullmq';
 import { ReleaseErrorCode, ReleaseState } from '@openupm/types';
 import redis from '@openupm/server-common/build/redis.js';
 import {
+  backfillRecentReleaseIndexes,
   fetchAll,
   fetchOne,
   remove as removeReleaseRecord,
@@ -142,6 +143,9 @@ function getUsage(): string {
     '    and GatewayTimeout. Exact reason names such as VersionConflict are also',
     '    accepted.',
     '',
+    '  release-index-backfill [--json]',
+    '    Rebuild public recent release indexes from existing release records.',
+    '',
     '  release-show <package> <version> [--json]',
     '    Show one release Redis record.',
     '',
@@ -254,6 +258,17 @@ function getCommandUsage(topic: string | undefined): string {
         '',
         'Examples:',
         '  queue-cli release-show com.foo.bar 1.2.3 --json',
+      ].join('\n');
+    case 'release-index-backfill':
+      return [
+        'Usage: queue-cli release-index-backfill [--json]',
+        '',
+        'Rebuild the bounded recent succeeded/failed release indexes from',
+        'existing release Redis records. This scans release hashes once and',
+        'replaces only the derived public status indexes.',
+        '',
+        'Examples:',
+        '  queue-cli release-index-backfill --json',
       ].join('\n');
     case 'release-remove':
       return [
@@ -595,7 +610,9 @@ async function scanReleasePackageNames(): Promise<string[]> {
       200,
     );
     cursor = nextCursor;
-    for (const key of keys) names.push(key.slice('rel:'.length));
+    for (const key of keys) {
+      if (!key.startsWith('rel:index:')) names.push(key.slice('rel:'.length));
+    }
   } while (cursor !== '0');
   names.sort();
   return names;
@@ -747,6 +764,9 @@ export async function runQueueCli(argv: string[] = process.argv): Promise<void> 
         requireArgs(args.rest, 2);
         result = await releaseShow(args.rest[0], args.rest[1]);
         break;
+      case 'release-index-backfill':
+        result = await backfillRecentReleaseIndexes();
+        break;
       case 'release-remove':
         requireArgs(args.rest, 2);
         result = await releaseRemove(args.rest[0], args.rest[1]);
@@ -781,6 +801,7 @@ export {
   queueRemove,
   releasesFailed,
   releaseShow,
+  backfillRecentReleaseIndexes,
   releaseRemove,
   releaseRequeue,
   packageRequeue,
