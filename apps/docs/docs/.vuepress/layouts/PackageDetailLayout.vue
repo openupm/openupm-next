@@ -20,7 +20,7 @@ import { useDefaultStore } from "@/store";
 import { AdPlacementData } from "@openupm/types";
 import { getPackageMetadata } from "@openupm/common/build/utils.js";
 import { DownloadsRange, PackageInfo, PackageMetadataLocal, Packument, PackageRelease, PackageVersionViewEntry } from "@openupm/types";
-import { getMonthlyDownloadsUrl, getPackageInfoUrl, getPackumentUrl, getPackageRelatedPackagesPath, isPackageDetailPath, getPackageAdPlacementUrl } from '@openupm/common/build/urls.js';
+import { getMonthlyDownloadsRangeUrl, getPackageInfoUrl, getPackumentUrl, getPackageRelatedPackagesPath, isPackageDetailPath, getPackageAdPlacementUrl } from '@openupm/common/build/urls.js';
 import { fillMissingDates, isPackageExist, timeAgoFormat } from '@/utils';
 import UnityAssetAdPlacement from '@/components/UnityAssetAdPlacement.vue';
 import DonationSidebarAd from '@/components/DonationSidebarAd.vue';
@@ -346,7 +346,7 @@ const fetchAllData = async (): Promise<void> => {
 const fetchMonthlyDownloads = async (): Promise<void> => {
   try {
     const resp = await axios.get(
-      getMonthlyDownloadsUrl(packageMetadata.value.name),
+      getMonthlyDownloadsRangeUrl(packageMetadata.value.name),
       { headers: { Accept: "application/json" } }
     );
     const startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
