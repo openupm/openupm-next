@@ -6,6 +6,7 @@ import adsRouter from './routers/ads.js';
 import feedsRouter from './routers/feeds.js';
 import siteInfoRouter from './routers/siteInfo.js';
 import packagesRouter from './routers/packages.js';
+import queueStatusRouter from './routers/queueStatus.js';
 
 // Touch the redis.client property to prepare the connection as soon as possible
 redis.client;
@@ -36,3 +37,4 @@ adsRouter(app);
 feedsRouter(app);
 siteInfoRouter(app);
 packagesRouter(app);
+queueStatusRouter(app);

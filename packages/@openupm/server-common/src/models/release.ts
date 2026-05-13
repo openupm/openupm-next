@@ -8,11 +8,15 @@
  */
 
 import { pick } from 'lodash-es';
-import { ReleaseModel, releaseModelFields } from '@openupm/types';
+import { ReleaseModel, releaseModelFields, ReleaseState } from '@openupm/types';
 
 import redis from '../redis.js';
 
 const REDIS_KEY_RELEASE_PREFIX = 'rel:';
+const REDIS_KEY_RECENT_SUCCEEDED_RELEASES = 'rel:index:succeeded';
+const REDIS_KEY_RECENT_FAILED_RELEASES = 'rel:index:failed';
+
+type ReleaseHistoryState = 'succeeded' | 'failed';
 
 /**
  * Get the redis key for a release hashset.
@@ -22,6 +26,65 @@ const REDIS_KEY_RELEASE_PREFIX = 'rel:';
 export const getRedisKeyForRelease = function (packageName: string): string {
   return REDIS_KEY_RELEASE_PREFIX + packageName;
 };
+
+export function getRedisKeyForRecentReleases(
+  state: ReleaseHistoryState,
+): string {
+  return state === 'succeeded'
+    ? REDIS_KEY_RECENT_SUCCEEDED_RELEASES
+    : REDIS_KEY_RECENT_FAILED_RELEASES;
+}
+
+function getReleaseIndexMember(packageName: string, version: string): string {
+  return JSON.stringify([packageName, version]);
+}
+
+function parseReleaseIndexMember(
+  value: string,
+): { packageName: string; version: string } | null {
+  try {
+    const parsed = JSON.parse(value) as unknown;
+    if (!Array.isArray(parsed) || parsed.length !== 2) return null;
+    const [packageName, version] = parsed;
+    if (typeof packageName !== 'string' || typeof version !== 'string') {
+      return null;
+    }
+    return { packageName, version };
+  } catch {
+    return null;
+  }
+}
+
+async function updateRecentReleaseIndexes(record: ReleaseModel): Promise<void> {
+  const member = getReleaseIndexMember(record.packageName, record.version);
+  const succeededKey = getRedisKeyForRecentReleases('succeeded');
+  const failedKey = getRedisKeyForRecentReleases('failed');
+  const score = record.updatedAt || Date.now();
+
+  if (record.state === ReleaseState.Succeeded) {
+    await redis
+      .client!.multi()
+      .zadd(succeededKey, score, member)
+      .zrem(failedKey, member)
+      .exec();
+    return;
+  }
+
+  if (record.state === ReleaseState.Failed) {
+    await redis
+      .client!.multi()
+      .zadd(failedKey, score, member)
+      .zrem(succeededKey, member)
+      .exec();
+    return;
+  }
+
+  await redis
+    .client!.multi()
+    .zrem(succeededKey, member)
+    .zrem(failedKey, member)
+    .exec();
+}
 
 /**
  * Saves a release object to Redis.
@@ -60,6 +123,7 @@ export async function save(
   const jsonText = JSON.stringify(record, null, 0);
   const key = getRedisKeyForRelease(record.packageName);
   await redis.client!.hset(key, record.version, jsonText);
+  await updateRecentReleaseIndexes(record);
   Object.assign(obj, record);
   return obj as ReleaseModel;
 }
@@ -88,7 +152,13 @@ export async function remove(
       `Can not remove release with packageName=${packageName} version=${version}`,
     );
   const key = getRedisKeyForRelease(packageName);
-  await redis.client!.hdel(key, version);
+  const member = getReleaseIndexMember(packageName, version);
+  await redis
+    .client!.multi()
+    .hdel(key, version)
+    .zrem(getRedisKeyForRecentReleases('succeeded'), member)
+    .zrem(getRedisKeyForRecentReleases('failed'), member)
+    .exec();
 }
 
 /**
@@ -141,4 +211,27 @@ export async function fetchAll(packageName: string): Promise<ReleaseModel[]> {
   return Object.values(objs).map((x) =>
     normalizeReleaseModel(JSON.parse(x) as ReleaseModel),
   );
+}
+
+export async function fetchRecentReleases(
+  state: ReleaseHistoryState,
+  limit: number,
+): Promise<ReleaseModel[]> {
+  if (!Number.isInteger(limit) || limit < 1) return [];
+  const key = getRedisKeyForRecentReleases(state);
+  const members = await redis.client!.zrevrange(key, 0, limit - 1);
+  const releases: ReleaseModel[] = [];
+  const expectedState =
+    state === 'succeeded' ? ReleaseState.Succeeded : ReleaseState.Failed;
+
+  for (const member of members) {
+    const parsed = parseReleaseIndexMember(member);
+    if (!parsed) continue;
+    const release = await fetchOne(parsed.packageName, parsed.version);
+    if (!release || release.state !== expectedState) continue;
+    releases.push(release);
+  }
+
+  releases.sort((a, b) => b.updatedAt - a.updatedAt);
+  return releases.slice(0, limit);
 }
