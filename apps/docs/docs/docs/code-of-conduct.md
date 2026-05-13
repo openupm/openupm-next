@@ -34,9 +34,17 @@ Project maintainers have the right and responsibility to remove, edit, or reject
 
 This Code of Conduct applies both within project spaces and in public spaces when an individual is representing the project or its community. Examples of representing a project or community include using an official project e-mail address, posting via an official social media account, or acting as an appointed representative at an online or offline event. Representation of a project may be further defined and clarified by project maintainers.
 
+## Issues and Pull Requests
+
+Bug reports and feature requests are welcome. If you encounter a bug, please open an issue with clear reproduction steps, expected behavior, and relevant environment details. If you would like to propose a new feature or a change in behavior, please open an issue describing the proposal or support an existing request.
+
+We do not accept unsolicited pull requests that fix bugs or implement feature requests. The most useful way to help is to share reproduction details, analysis, root-cause hypotheses, or a high-level outline of a possible fix in the issue thread. Maintainers may invite a pull request when the problem is well understood and the proposed approach aligns with the project direction.
+
+Pull requests that have not been explicitly invited by a maintainer may be closed without review.
+
 ## Enforcement
 
-Instances of abusive, harassing, or otherwise unacceptable behavior may be reported by contacting the project team at community@vuejs.org. All complaints will be reviewed and investigated and will result in a response that is deemed necessary and appropriate to the circumstances. The project team is obligated to maintain confidentiality with regard to the reporter of an incident. Further details of specific enforcement policies may be posted separately.
+Instances of abusive, harassing, or otherwise unacceptable behavior may be reported by contacting the project team at [hello@openupm.com](mailto:hello@openupm.com). All complaints will be reviewed and investigated and will result in a response that is deemed necessary and appropriate to the circumstances. The project team is obligated to maintain confidentiality with regard to the reporter of an incident. Further details of specific enforcement policies may be posted separately.
 
 Project maintainers who do not follow or enforce the Code of Conduct in good faith may face temporary or permanent repercussions as determined by other members of the project's leadership.
 
