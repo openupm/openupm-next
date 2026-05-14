@@ -121,16 +121,11 @@ export function formatCountdown(value: string | null, nowMs = Date.now()): strin
   const second = 1000;
   const minute = 60 * second;
   const hour = 60 * minute;
-  const totalSeconds = Math.ceil(remaining / second);
-  if (totalSeconds < 60) {
-    return `Next scan in ${totalSeconds}s`;
+  if (remaining < minute) {
+    return `Next scan in ${Math.ceil(remaining / second)}s`;
   }
   if (remaining < hour) {
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-    return seconds > 0
-      ? `Next scan in ${minutes}m ${seconds}s`
-      : `Next scan in ${minutes}m`;
+    return `Next scan in ${Math.floor(remaining / minute)}m`;
   }
   return `Next scan in ${formatDuration(remaining)}`;
 }
