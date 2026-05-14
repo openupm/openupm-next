@@ -12,9 +12,7 @@ editLink: false
 
 OpenUPM now has a public queue status page:
 
-```text
-https://openupm.com/queue/
-```
+[https://openupm.com/queue/](https://openupm.com/queue/)
 
 The page shows package scan activity, release build queue health, recent
 successful releases, and recent failed releases. It is meant to answer a simple
