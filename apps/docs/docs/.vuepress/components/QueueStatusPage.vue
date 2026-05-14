@@ -1,20 +1,22 @@
 <template>
   <main class="queue-status">
     <header class="queue-status__header">
-      <div>
-        <h1>Queue Status</h1>
+      <div class="queue-status__intro">
+        <div class="queue-status__title-row">
+          <h1>Queue Status</h1>
+          <span
+            v-if="status"
+            :class="['queue-status__state', `is-${status.summary.state}`]"
+          >
+            {{ status.summary.state }}
+          </span>
+          <span v-if="status" class="queue-status__updated">
+            Updated {{ formatRelativeTime(status.generatedAt, nowMs) }}
+          </span>
+        </div>
         <p v-if="status">{{ status.summary.message }}</p>
         <p v-else-if="loading">Loading public queue status...</p>
         <p v-else-if="error">{{ error }}</p>
-      </div>
-      <div v-if="status" class="queue-status__meta">
-        <span :class="['queue-status__state', `is-${status.summary.state}`]">
-          {{ status.summary.state }}
-        </span>
-        <span>Updated {{ formatRelativeTime(status.generatedAt, nowMs) }}</span>
-        <span
-          >Cache {{ status.cache.state }}, {{ status.cache.ttlSeconds }}s</span
-        >
       </div>
     </header>
 
@@ -51,6 +53,7 @@
       </section>
 
       <QueueStatusTable
+        v-if="status.packageQueue.failedJobs.length > 0"
         title="Failed Package Scan Jobs"
         :columns="['Package', 'Failed', 'Attempts', 'Last Error']"
         :empty="status.packageQueue.failedJobs.length === 0"
@@ -104,6 +107,7 @@
       </section>
 
       <QueueStatusTable
+        v-if="status.releaseQueue.activeJobs.length > 0"
         title="Active Release Builds"
         :columns="['Package', 'Version', 'Age', 'Attempts']"
         :empty="status.releaseQueue.activeJobs.length === 0"
@@ -124,6 +128,7 @@
       </QueueStatusTable>
 
       <QueueStatusTable
+        v-if="status.releaseQueue.waitingJobs.length > 0"
         title="Waiting Release Builds"
         :columns="['Package', 'Version', 'Queued']"
         :empty="status.releaseQueue.waitingJobs.length === 0"
@@ -173,12 +178,18 @@
             <a :href="packageUrl(release.package)">{{ release.package }}</a>
           </td>
           <td>{{ release.version }}</td>
-          <td>{{ release.reason }}</td>
+          <td>
+            <a v-if="release.buildId" :href="releaseBuildUrl(release)">
+              {{ releaseReasonText(release) }}
+            </a>
+            <span v-else>{{ releaseReasonText(release) }}</span>
+          </td>
           <td>{{ release.retryable ? "yes" : "no" }}</td>
         </tr>
       </QueueStatusTable>
 
       <QueueStatusTable
+        v-if="status.retainedFailedReleaseJobs.length > 0"
         title="Retained Failed Release Queue Jobs"
         :columns="['Package', 'Version', 'Failed', 'Attempts', 'Last Error']"
         :empty="status.retainedFailedReleaseJobs.length === 0"
@@ -205,10 +216,16 @@
 <script setup lang="ts">
 import axios from "axios";
 import urlJoin from "url-join";
+import { paramCase } from "change-case";
 import { onMounted, ref } from "vue";
-import { getAPIBaseUrl } from "@openupm/common/build/urls.js";
+import { useI18n } from "vue-i18n";
+import {
+  getAPIBaseUrl,
+  getAzureWebBuildUrl,
+} from "@openupm/common/build/urls.js";
 import {
   PublicQueueStatus,
+  PublicReleaseSummary,
   formatDuration,
   formatRelativeTime,
   isQueueStatusEmpty,
@@ -216,10 +233,21 @@ import {
 } from "../queueStatusView";
 import QueueStatusTable from "./QueueStatusTable.vue";
 
+const { t } = useI18n();
 const loading = ref(true);
 const error = ref("");
 const status = ref<PublicQueueStatus | null>(null);
 const nowMs = ref(Date.now());
+
+function releaseReasonText(release: PublicReleaseSummary): string {
+  const key = `release-reason-${paramCase(release.reason)}`;
+  const value = t(key);
+  return value === key ? release.reason : value;
+}
+
+function releaseBuildUrl(release: PublicReleaseSummary): string {
+  return release.buildId ? getAzureWebBuildUrl(release.buildId) : "";
+}
 
 async function fetchQueueStatus(): Promise<void> {
   loading.value = true;
@@ -246,39 +274,41 @@ onMounted(fetchQueueStatus);
 
 <style lang="scss">
 .queue-status {
-  max-width: 1180px;
+  max-width: none;
   margin: 0 auto;
-  padding: 2rem 1rem 4rem;
+  padding: 1rem 0.75rem 2rem;
   color: #1f2933;
+  font-size: 0.75rem;
 }
 
 .queue-status__header {
-  display: flex;
-  gap: 1rem;
-  align-items: flex-start;
-  justify-content: space-between;
-  border-bottom: 1px solid #d9e2ec;
-  padding-bottom: 1rem;
+  display: grid;
+  gap: 0.25rem;
+  padding-bottom: 0.2rem;
 
   h1 {
-    margin: 0 0 0.35rem;
-    font-size: 2rem;
-    line-height: 1.15;
+    margin: 0;
+    font-size: 0.8rem;
+    line-height: 1.2;
   }
 
   p {
     margin: 0;
     color: #52606d;
+    font-size: 0.7rem;
   }
 }
 
-.queue-status__meta {
+.queue-status__intro {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.queue-status__title-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  justify-content: flex-end;
-  color: #52606d;
-  font-size: 0.9rem;
+  gap: 0.45rem;
+  align-items: baseline;
 }
 
 .queue-status__state {
@@ -299,10 +329,15 @@ onMounted(fetchQueueStatus);
   }
 }
 
+.queue-status__updated {
+  color: #627d98;
+  font-size: 0.65rem;
+}
+
 .queue-status__notice {
-  margin: 1rem 0;
+  margin: 0.75rem 0;
   border: 1px solid #bcccdc;
-  padding: 0.75rem 1rem;
+  padding: 0.5rem 0.65rem;
   background: #f8fafc;
   color: #334e68;
 
@@ -314,9 +349,7 @@ onMounted(fetchQueueStatus);
 }
 
 .queue-status__section {
-  margin-top: 1.5rem;
-  border-top: 1px solid #d9e2ec;
-  padding-top: 1rem;
+  margin-top: 0.9rem;
 }
 
 .queue-status__section-title {
@@ -325,22 +358,22 @@ onMounted(fetchQueueStatus);
   justify-content: space-between;
 
   h2 {
-    margin: 0 0 0.75rem;
-    font-size: 1.1rem;
+    margin: 0 0 0.4rem;
+    font-size: 0.8rem;
     line-height: 1.2;
   }
 }
 
 .queue-status__metrics {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
   border: 1px solid #d9e2ec;
 
   div {
     display: grid;
-    gap: 0.2rem;
+    gap: 0.1rem;
     border-right: 1px solid #d9e2ec;
-    padding: 0.75rem;
+    padding: 0.45rem 0.55rem;
 
     &:last-child {
       border-right: 0;
@@ -349,14 +382,18 @@ onMounted(fetchQueueStatus);
 
   span {
     color: #627d98;
-    font-size: 0.78rem;
+    font-size: 0.68rem;
     text-transform: uppercase;
   }
 
   strong {
-    font-size: 1.35rem;
+    font-size: 0.7rem;
     line-height: 1.1;
   }
+}
+
+.queue-status h2 {
+  border-bottom-width: 0;
 }
 
 .queue-status__error {
@@ -365,15 +402,6 @@ onMounted(fetchQueueStatus);
 }
 
 @media (max-width: 720px) {
-  .queue-status__header {
-    display: block;
-  }
-
-  .queue-status__meta {
-    justify-content: flex-start;
-    margin-top: 0.75rem;
-  }
-
   .queue-status__metrics {
     grid-template-columns: repeat(2, minmax(0, 1fr));
 

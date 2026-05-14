@@ -159,7 +159,7 @@ describe('buildPublicQueueStatus', () => {
             reason: ReleaseErrorCode.BuildTimeout,
             commit: '',
             tag: '',
-            buildId: '',
+            buildId: '12345',
             createdAt: now,
             updatedAt: now - 1,
             source: 'git',
@@ -181,7 +181,7 @@ describe('buildPublicQueueStatus', () => {
         ],
         now: () => now,
       },
-      { jobLimit: 20, releaseLimit: 20, ttlSeconds: 10 },
+      { jobLimit: 20, releaseLimit: 20, ttlSeconds: 15 },
     );
 
     expect(status.generatedAt).toEqual(new Date(now).toISOString());
@@ -210,6 +210,10 @@ describe('buildPublicQueueStatus', () => {
     expect(
       status.recentFailedReleases.map((release) => release.retryable),
     ).toEqual([true, false]);
+    expect(status.recentFailedReleases[0]).toMatchObject({
+      reason: 'BuildTimeout',
+      buildId: '12345',
+    });
     expect(JSON.stringify(status)).not.toContain('/srv/private/path');
   });
 
@@ -256,7 +260,7 @@ describe('buildPublicQueueStatus', () => {
 });
 
 describe('createQueueStatusCache', () => {
-  it('single-flights the first refresh and returns stale data while refreshing', async () => {
+  it('single-flights refreshes and waits for expired cache refreshes', async () => {
     let now = 0;
     let resolveRefresh: (value: unknown) => void = () => undefined;
     const refresh = vi.fn(async () => {
@@ -265,7 +269,7 @@ describe('createQueueStatusCache', () => {
       });
       return {
         generatedAt: new Date(now).toISOString(),
-        cache: { state: 'fresh' as const, ttlSeconds: 10 },
+        cache: { state: 'fresh' as const, ttlSeconds: 15 },
         summary: { state: 'healthy' as const, message: 'ok' },
         packageQueue: { active: 0, failed: 0, workers: 0, failedJobs: [] },
         releaseQueue: {
@@ -283,7 +287,7 @@ describe('createQueueStatusCache', () => {
         retainedFailedReleaseJobs: [],
       };
     });
-    const cache = createQueueStatusCache(refresh, 10, () => now);
+    const cache = createQueueStatusCache(refresh, 15, () => now);
 
     const first = cache.get();
     const second = cache.get();
@@ -292,20 +296,23 @@ describe('createQueueStatusCache', () => {
     await expect(first).resolves.toMatchObject({ cache: { state: 'fresh' } });
     await expect(second).resolves.toMatchObject({ cache: { state: 'fresh' } });
 
-    now = 11_000;
-    const stale = await cache.get();
-    expect(stale.cache.state).toEqual('stale');
+    now = 16_000;
+    const refreshed = cache.get();
     expect(refresh).toHaveBeenCalledTimes(2);
     resolveRefresh(undefined);
+    await expect(refreshed).resolves.toMatchObject({
+      generatedAt: new Date(now).toISOString(),
+      cache: { state: 'fresh', ttlSeconds: 15 },
+    });
   });
 
-  it('serves stale data when a background refresh fails', async () => {
+  it('serves stale data when an expired cache refresh fails', async () => {
     let now = 0;
     const refresh = vi
       .fn()
       .mockResolvedValueOnce({
         generatedAt: new Date(now).toISOString(),
-        cache: { state: 'fresh' as const, ttlSeconds: 10 },
+        cache: { state: 'fresh' as const, ttlSeconds: 15 },
         summary: { state: 'healthy' as const, message: 'ok' },
         packageQueue: { active: 0, failed: 0, workers: 0, failedJobs: [] },
         releaseQueue: {
@@ -323,14 +330,14 @@ describe('createQueueStatusCache', () => {
         retainedFailedReleaseJobs: [],
       })
       .mockRejectedValueOnce(new Error('redis unavailable'));
-    const cache = createQueueStatusCache(refresh, 10, () => now);
+    const cache = createQueueStatusCache(refresh, 15, () => now);
 
     await expect(cache.get()).resolves.toMatchObject({
       cache: { state: 'fresh' },
     });
-    now = 11_000;
+    now = 16_000;
     await expect(cache.get()).resolves.toMatchObject({
-      cache: { state: 'stale' },
+      cache: { state: 'stale', ttlSeconds: 15 },
     });
     expect(refresh).toHaveBeenCalledTimes(2);
   });

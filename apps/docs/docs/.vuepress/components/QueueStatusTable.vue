@@ -33,27 +33,25 @@ defineProps<{
 
 <style lang="scss">
 .queue-status-table {
-  margin-top: 1.5rem;
-  border-top: 1px solid #d9e2ec;
-  padding-top: 1rem;
+  margin-top: 0.9rem;
 
   h2 {
-    margin: 0 0 0.75rem;
-    font-size: 1.1rem;
+    margin: 0 0 0.4rem;
+    font-size: 0.8rem;
     line-height: 1.2;
   }
 }
 
 .queue-status-table__wrap {
   overflow-x: auto;
-  border: 1px solid #d9e2ec;
 }
 
 .queue-status-table table {
   width: 100%;
   min-width: 640px;
+  margin: 0;
   border-collapse: collapse;
-  font-size: 0.92rem;
+  font-size: 0.7rem;
 }
 
 .queue-status-table th,
@@ -67,12 +65,8 @@ defineProps<{
 .queue-status-table th {
   background: #f0f4f8;
   color: #52606d;
-  font-size: 0.78rem;
+  font-size: 0.7rem;
   text-transform: uppercase;
-}
-
-.queue-status-table tr:last-child td {
-  border-bottom: 0;
 }
 
 .queue-status-table a {

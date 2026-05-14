@@ -29,6 +29,7 @@ export interface PublicReleaseSummary {
   state: string;
   reason: string;
   updatedAt: string;
+  buildId?: string;
   source: 'git' | 'githubRelease';
   signed: boolean;
   retryable?: boolean;
@@ -109,7 +110,7 @@ interface CachedStatus {
   value: PublicQueueStatus;
 }
 
-const DEFAULT_TTL_SECONDS = 10;
+const DEFAULT_TTL_SECONDS = 15;
 const DEFAULT_JOB_LIMIT = 20;
 const DEFAULT_RELEASE_LIMIT = 20;
 
@@ -229,6 +230,7 @@ function summarizeRelease(
     state: enumName(ReleaseState, release.state),
     reason: enumName(ReleaseErrorCode, release.reason),
     updatedAt: new Date(release.updatedAt).toISOString(),
+    buildId: release.buildId || undefined,
     source: release.source || 'git',
     signed: release.signed === true,
   };
@@ -414,26 +416,26 @@ export function createQueueStatusCache(
       }
 
       if (!refreshPromise) {
-        const nextRefresh = runRefresh();
-        refreshPromise = (
-          cached ? nextRefresh.catch(() => cached as CachedStatus) : nextRefresh
-        ).finally(() => {
+        refreshPromise = runRefresh().finally(() => {
           refreshPromise = null;
         });
       }
 
-      if (cached) {
+      try {
+        const next = await refreshPromise;
         return {
-          ...cached.value,
-          cache: { ...cached.value.cache, state: 'stale', ttlSeconds },
+          ...next.value,
+          cache: { ...next.value.cache, state: 'fresh', ttlSeconds },
         };
+      } catch (error) {
+        if (cached) {
+          return {
+            ...cached.value,
+            cache: { ...cached.value.cache, state: 'stale', ttlSeconds },
+          };
+        }
+        throw error;
       }
-
-      const next = await refreshPromise;
-      return {
-        ...next.value,
-        cache: { ...next.value.cache, state: 'fresh', ttlSeconds },
-      };
     },
     clear(): void {
       cached = null;

@@ -42,7 +42,7 @@ describe('queue status router', () => {
   it('returns the public queue status shape', async () => {
     mocks.get.mockResolvedValue({
       generatedAt: '2026-05-14T10:42:00.000Z',
-      cache: { state: 'fresh', ttlSeconds: 10 },
+      cache: { state: 'fresh', ttlSeconds: 15 },
       summary: { state: 'healthy', message: 'ok' },
       packageQueue: { active: 0, failed: 0, workers: 0, failedJobs: [] },
       releaseQueue: {
@@ -68,7 +68,7 @@ describe('queue status router', () => {
 
     expect(response.body).toMatchObject({
       generatedAt: '2026-05-14T10:42:00.000Z',
-      cache: { state: 'fresh', ttlSeconds: 10 },
+      cache: { state: 'fresh', ttlSeconds: 15 },
       packageQueue: { failedJobs: [] },
       releaseQueue: { activeJobs: [], waitingJobs: [] },
       recentSuccessfulReleases: [],
