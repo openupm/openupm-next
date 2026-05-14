@@ -14,6 +14,15 @@ export const BLOG_RSS_PATH = "/blog/rss.xml";
 
 export const BLOG_POSTS: BlogPost[] = [
   {
+    title: "OpenUPM Queue Status Page",
+    slug: "openupm-queue-status-page",
+    author: "Favo Yang",
+    date: "2026-05-14",
+    readingTime: "1 min read",
+    excerpt:
+      "OpenUPM now has a public queue status page for package scan and release build activity.",
+  },
+  {
     title: "UnityNuGet Packages Are Now Code Signed",
     slug: "unitynuget-packages-are-now-code-signed",
     author: "Favo Yang",
