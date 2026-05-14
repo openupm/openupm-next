@@ -39,7 +39,15 @@
         </div>
         <div class="queue-status__metrics">
           <div>
+            <span>Waiting</span
+            ><strong>{{ status.packageQueue.waiting }}</strong>
+          </div>
+          <div>
             <span>Active</span><strong>{{ status.packageQueue.active }}</strong>
+          </div>
+          <div>
+            <span>Delayed</span
+            ><strong>{{ status.packageQueue.delayed }}</strong>
           </div>
           <div>
             <span>Failed Jobs</span
@@ -48,6 +56,12 @@
           <div>
             <span>Workers</span
             ><strong>{{ status.packageQueue.workers }}</strong>
+          </div>
+          <div>
+            <span>Oldest Waiting</span>
+            <strong>{{
+              formatDuration(status.packageQueue.oldestWaitingMs) || "-"
+            }}</strong>
           </div>
         </div>
       </section>

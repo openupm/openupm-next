@@ -33,9 +33,12 @@ export interface PublicQueueStatus {
     message: string;
   };
   packageQueue: {
+    waiting: number;
     active: number;
+    delayed: number;
     failed: number;
     workers: number;
+    oldestWaitingMs: number | null;
     failedJobs: PublicQueueJobSummary[];
   };
   releaseQueue: {
@@ -56,6 +59,8 @@ export interface PublicQueueStatus {
 export function isQueueStatusEmpty(status: PublicQueueStatus): boolean {
   return (
     status.packageQueue.active === 0 &&
+    status.packageQueue.waiting === 0 &&
+    status.packageQueue.delayed === 0 &&
     status.packageQueue.failed === 0 &&
     status.releaseQueue.waiting === 0 &&
     status.releaseQueue.active === 0 &&

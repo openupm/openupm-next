@@ -17,7 +17,15 @@ function createStatus(
     generatedAt: "2026-05-14T10:00:00.000Z",
     cache: { state: "fresh", ttlSeconds: 15 },
     summary: { state: "healthy", message: "ok" },
-    packageQueue: { active: 0, failed: 0, workers: 0, failedJobs: [] },
+    packageQueue: {
+      waiting: 0,
+      active: 0,
+      delayed: 0,
+      failed: 0,
+      workers: 0,
+      oldestWaitingMs: null,
+      failedJobs: [],
+    },
     releaseQueue: {
       waiting: 0,
       active: 0,
@@ -40,15 +48,14 @@ describe("@/queueStatusView", () => {
     isQueueStatusEmpty(createStatus()).should.equal(true);
     isQueueStatusEmpty(
       createStatus({
-        releaseQueue: {
+        packageQueue: {
           waiting: 1,
           active: 0,
           delayed: 0,
           failed: 0,
           workers: 0,
           oldestWaitingMs: 60_000,
-          activeJobs: [],
-          waitingJobs: [],
+          failedJobs: [],
         },
       }),
     ).should.equal(false);

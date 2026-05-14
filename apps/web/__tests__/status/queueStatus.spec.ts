@@ -85,6 +85,13 @@ describe('buildPublicQueueStatus', () => {
       counts: { active: 4, failed: 1, waiting: 5000, delayed: 1000 },
       workers: [{ private: 'worker-host' }],
       jobs: {
+        waiting: [
+          createJob({
+            id: 'build-pkg|com.old.waiting',
+            state: 'waiting',
+            timestamp: now - 120_000,
+          }),
+        ],
         failed: [
           createJob({
             id: 'build-pkg|com.bad.repo',
@@ -186,11 +193,13 @@ describe('buildPublicQueueStatus', () => {
 
     expect(status.generatedAt).toEqual(new Date(now).toISOString());
     expect(status.packageQueue).toMatchObject({
+      waiting: 5000,
       active: 4,
+      delayed: 1000,
       failed: 1,
       workers: 1,
+      oldestWaitingMs: 120_000,
     });
-    expect(status.packageQueue).not.toHaveProperty('waiting');
     expect(status.packageQueue.failedJobs[0]).toMatchObject({
       package: 'com.bad.repo',
       attempts: 3,
@@ -221,6 +230,12 @@ describe('buildPublicQueueStatus', () => {
     const packageQueue = createQueue({
       counts: { active: 0, failed: 3 },
       jobs: {
+        waiting: [
+          createJob({
+            id: 'build-pkg|com.old.waiting',
+            timestamp: 1_700_000_000_000,
+          }),
+        ],
         failed: [
           createJob({ id: 'build-pkg|com.one' }),
           createJob({ id: 'build-pkg|com.two' }),
@@ -256,6 +271,7 @@ describe('buildPublicQueueStatus', () => {
     expect(status.packageQueue.failedJobs).toHaveLength(2);
     expect(status.recentSuccessfulReleases).toHaveLength(2);
     expect(packageQueue.getJobs).toHaveBeenCalledWith(['failed'], 0, 1, false);
+    expect(packageQueue.getJobs).toHaveBeenCalledWith(['waiting'], 0, 0, true);
   });
 });
 
@@ -271,7 +287,15 @@ describe('createQueueStatusCache', () => {
         generatedAt: new Date(now).toISOString(),
         cache: { state: 'fresh' as const, ttlSeconds: 15 },
         summary: { state: 'healthy' as const, message: 'ok' },
-        packageQueue: { active: 0, failed: 0, workers: 0, failedJobs: [] },
+        packageQueue: {
+          waiting: 0,
+          active: 0,
+          delayed: 0,
+          failed: 0,
+          workers: 0,
+          oldestWaitingMs: null,
+          failedJobs: [],
+        },
         releaseQueue: {
           waiting: 0,
           active: 0,
@@ -314,7 +338,15 @@ describe('createQueueStatusCache', () => {
         generatedAt: new Date(now).toISOString(),
         cache: { state: 'fresh' as const, ttlSeconds: 15 },
         summary: { state: 'healthy' as const, message: 'ok' },
-        packageQueue: { active: 0, failed: 0, workers: 0, failedJobs: [] },
+        packageQueue: {
+          waiting: 0,
+          active: 0,
+          delayed: 0,
+          failed: 0,
+          workers: 0,
+          oldestWaitingMs: null,
+          failedJobs: [],
+        },
         releaseQueue: {
           waiting: 0,
           active: 0,
