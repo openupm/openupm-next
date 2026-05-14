@@ -56,15 +56,15 @@ defineProps<{
 
 .queue-status-table th,
 .queue-status-table td {
-  border-bottom: 1px solid #e4e7eb;
+  border-bottom: 1px solid var(--c-border);
   padding: 0.55rem 0.65rem;
   text-align: left;
   vertical-align: top;
 }
 
 .queue-status-table th {
-  background: #f0f4f8;
-  color: #52606d;
+  background: var(--c-bg-light);
+  color: var(--c-text-light);
   font-size: 0.7rem;
   text-transform: uppercase;
 }
@@ -75,6 +75,17 @@ defineProps<{
 }
 
 .queue-status-table__empty {
-  color: #627d98;
+  color: var(--c-text-lighter);
+}
+
+.dark {
+  .queue-status-table th {
+    background: var(--c-bg-dark);
+    color: var(--c-text-lighter);
+  }
+
+  .queue-status-table tbody tr:nth-child(even) td {
+    background: rgba(255, 255, 255, 0.02);
+  }
 }
 </style>

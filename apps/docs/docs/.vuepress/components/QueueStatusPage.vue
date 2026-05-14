@@ -320,7 +320,7 @@ onUnmounted(() => {
   max-width: none;
   margin: 0 auto;
   padding: 1rem 0.75rem 2rem;
-  color: #1f2933;
+  color: var(--c-text);
   font-size: 0.75rem;
 }
 
@@ -337,7 +337,7 @@ onUnmounted(() => {
 
   p {
     margin: 0;
-    color: #52606d;
+    color: var(--c-text-light);
     font-size: 0.7rem;
   }
 }
@@ -355,7 +355,7 @@ onUnmounted(() => {
 }
 
 .queue-status__state {
-  color: #102a43;
+  color: var(--c-text);
   font-weight: 700;
   text-transform: uppercase;
 
@@ -373,16 +373,16 @@ onUnmounted(() => {
 }
 
 .queue-status__updated {
-  color: #627d98;
+  color: var(--c-text-lighter);
   font-size: 0.65rem;
 }
 
 .queue-status__notice {
   margin: 0.75rem 0;
-  border: 1px solid #bcccdc;
+  border: 1px solid var(--c-border);
   padding: 0.5rem 0.65rem;
-  background: #f8fafc;
-  color: #334e68;
+  background: var(--c-bg-light);
+  color: var(--c-text);
 
   &.is-error {
     border-color: #f1aeb5;
@@ -409,7 +409,7 @@ onUnmounted(() => {
 
 .queue-status__section-meta {
   margin-left: 0.45rem;
-  color: #627d98;
+  color: var(--c-text-lighter);
   font-size: 0.65rem;
   font-weight: 400;
   white-space: nowrap;
@@ -418,12 +418,12 @@ onUnmounted(() => {
 .queue-status__metrics {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
-  border: 1px solid #d9e2ec;
+  border: 1px solid var(--c-border);
 
   div {
     display: grid;
     gap: 0.1rem;
-    border-right: 1px solid #d9e2ec;
+    border-right: 1px solid var(--c-border);
     padding: 0.45rem 0.55rem;
 
     &:last-child {
@@ -432,7 +432,7 @@ onUnmounted(() => {
   }
 
   span {
-    color: #627d98;
+    color: var(--c-text-lighter);
     font-size: 0.68rem;
     text-transform: uppercase;
   }
@@ -457,7 +457,31 @@ onUnmounted(() => {
     grid-template-columns: repeat(2, minmax(0, 1fr));
 
     div {
-      border-bottom: 1px solid #d9e2ec;
+      border-bottom: 1px solid var(--c-border);
+    }
+  }
+}
+
+.dark {
+  .queue-status__state {
+    &.is-healthy {
+      color: #4dd0e1;
+    }
+
+    &.is-backlog {
+      color: #ffd166;
+    }
+
+    &.is-degraded {
+      color: #ff8a80;
+    }
+  }
+
+  .queue-status__notice {
+    &.is-error {
+      border-color: rgba(255, 138, 128, 0.42);
+      background: rgba(180, 35, 24, 0.14);
+      color: #ff8a80;
     }
   }
 }

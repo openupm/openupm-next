@@ -74,11 +74,19 @@ describe("@/queueStatusView", () => {
     formatCountdown(
       "2026-05-14T10:02:15.000Z",
       now,
-    ).should.equal("Next scan in 2m 15s");
+    ).should.equal("Next scan in 2m");
+    formatCountdown(
+      "2026-05-14T10:00:45.000Z",
+      now,
+    ).should.equal("Next scan in 45s");
+    formatCountdown(
+      "2026-05-14T10:00:59.500Z",
+      now,
+    ).should.equal("Next scan in 60s");
     formatCountdown(
       "2026-05-14T10:02:59.999Z",
       now,
-    ).should.equal("Next scan in 3m");
+    ).should.equal("Next scan in 2m");
     formatCountdown("2026-05-14T09:59:59.000Z", now).should.equal(
       "Next scan soon",
     );
