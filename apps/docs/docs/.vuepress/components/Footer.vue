@@ -20,6 +20,10 @@ const aboutLinks = computed(() => [
   {
     link: "https://openupm.github.io/upptime/",
     text: t("status")
+  },
+  {
+    link: "/queue/",
+    text: t("queue-status")
   }
 ]);
 
