@@ -194,9 +194,3 @@ const releaseEntries = computed(() => {
   }
 }
 </style>
-
-<i18n locale="en-US" lang="yaml">
-  invalid-git-tag-col-text: Invalid Git tag (e.g. not semver-compliant or duplicate version)
-  github-release-asset-package: GitHub Release asset package
-  signed-package: Signed package
-</i18n>

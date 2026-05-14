@@ -429,12 +429,3 @@ const trackingModeTooltip = computed(() => {
   }
 }
 </style>
-
-<i18n locale="en-US" lang="yaml">
-  report-malware-or-abuse: report malware or abuse
-  edit-metadata: Edit package metadata
-  tracking-mode-git: Git
-  tracking-mode-git-desc: OpenUPM tracks Git tag releases and builds the package from source.
-  tracking-mode-github-release-assets: GitHub Release Assets
-  tracking-mode-github-release-assets-desc: The author builds the package and provides a prebuilt package tarball through GitHub Release assets.
-</i18n>

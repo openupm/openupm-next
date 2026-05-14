@@ -188,7 +188,3 @@ const features = computed(() => {
   }
 }
 </style>
-
-<i18n locale="en-US" lang="yaml">
-  guide: Guide
-</i18n>

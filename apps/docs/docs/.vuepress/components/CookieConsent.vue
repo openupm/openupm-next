@@ -38,8 +38,3 @@ onMounted(() => { initCookieConsent(); });
 <template>
   <div class="cookie-consent-init"></div>
 </template>
-
-<i18n locale="en-US" lang="yaml">
-  cookie-consent-dismiss: Got it!
-  cookie-consent-message: We use cookies to optimize your experience on our website and provide relevant content and ads.
-</i18n>

@@ -648,7 +648,7 @@ onMounted(() => {
               </FormField>
               <FormField :form="state.form" field="minVersion" :label='t("min-version")' type="text"
                 :hint="t('min-version-desc')" :placeholder="$t('min-version-placeholder')" />
-              <FormField :form="state.form" field="trackingMode" :label='t("tracking-mode")' type="select"
+              <FormField :form="state.form" field="trackingMode" :label='capitalize(t("tracking-mode"))' type="select"
                 :hint="t('tracking-mode-desc')" />
               <FormField v-if="state.form.values.trackingMode === 'githubRelease'" :form="state.form"
                 field="githubReleaseAssetName" :label='t("github-release-asset-name")' type="text"
@@ -755,43 +755,3 @@ onMounted(() => {
   }
 }
 </style>
-
-<i18n locale="en-US" lang="yaml">
-  can-not-locate-the-path-of-pac: Can not locate the path of package.json in the selected branch
-  cover-image: Cover image URL
-  cover-image-desc: Set cover image on listing page with 2:1 aspect ratio (600x300px) and use raw image URL if hosted on GitHub.
-  cover-image-placeholder: Leave empty to use the default image
-  discovered-by: discovered by
-  error-404: Repository not found
-  error-403: GitHub API rate limit reached. Please wait and try again later. Thank you for your patience. Learn more at https://api.github.com/rate_limit.
-  hunter-desc: Your GitHub username
-  hunter-input-group-text: github.com/
-  hunter-placeholder: hunter
-  git-tag-ignore: Git tag ignore pattern
-  git-tag-ignore-desc: 'The regular expression to exclude Git tags.'
-  git-tag-ignore-placeholder: leave empty to include all tags
-  git-tag-not-found: Cannot find any valid Git tags in the repository. Please ensure that the repository has at least one valid semantic version Git tag.
-  git-tag-prefix: Git tag prefix
-  git-tag-prefix-desc: "Filter Git tags for monorepo by using a prefix that separates the semver with a slash, hyphen, or underscore. Example: 'com.example.pkg/'."
-  git-tag-prefix-placeholder: leave empty to include all tags
-  github-release-asset-name: GitHub Release asset name
-  github-release-asset-name-desc: Leave empty when each release provides one clearly named publishable .tgz or .tar.gz asset. If a release has multiple publishable assets, use an exact filename or stable prefix. OpenUPM tries exact match first, then one publishable asset starting with the value. Do not include paths.
-  github-release-asset-name-placeholder: ""
-  license-name-desc: Only open source licenses are permitted.
-  min-version: Minimal version to build
-  min-version-desc: "The minimum version to build from. For example: '1.0.2'"
-  min-version-placeholder: leave empty to build all versions
-  no-markdown-file-found-fallbacks: No markdown file found, fallbacks to README.md
-  package-already-exists-in-unity-registry: The package already exists in Unity registry
-  package-json-not-found-error: "File not found: package.json."
-  package-name-already-exists-error: The package name already exists in OpenUPM registry.
-  package-name-blocked: The package name is blocked by scope {scope}.
-  package-name-manual-verification: Major tech company package names require manual review during merge.
-  select-package-json: Select package.json
-  select-readme-md: Select README.md
-  private-repository-error: "Refuse to publish a private repository (\"private\": true in the package.json)."
-  repository-placeholder: owner/project-name
-  submit-metadata: submit metadata
-  tracking-mode: Tracking mode
-  tracking-mode-desc: Choose whether OpenUPM builds from Git tags or publishes a GitHub Release asset.
-</i18n>

@@ -115,12 +115,3 @@ const dependencyList = computed(() => {
   }
 }
 </style>
-
-<i18n locale="en-US" lang="yaml">
-  name-at-version: name{'@'}version
-  git-deps-nuget: The package may exist in uplinked UnityNuGet registry.
-  git-deps-missing: Please install the Git dependency manually.
-  git-deps-replaced: The Git dependency can be replaced by a version available on OpenUPM.
-  deps-missing: Please install the missing dependency manually.
-</i18n>
-

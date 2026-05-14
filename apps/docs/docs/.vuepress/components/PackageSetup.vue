@@ -176,13 +176,3 @@ const repoTagsNavLink = computed(() => {
   }
 }
 </style>
-
-<i18n locale="en-US" lang="yaml">
-  install-via-command-line-interface: install via Command-Line Interface
-  install-via-package-manager: install via Package Manager
-  no-valid-tag-title: no valid Git tag
-  no-valid-tag-desc: OpenUPM only tracks Git tags that adhere to the semver convention. If a valid Git tag is not found, the package will not appear on the package listing.
-  no-release-title: no releases published
-  no-release-desc: This typically occurs when a repository is first imported. But if all builds have been processed and failed, the package will not appear on the package listing until a successful first release is built.
-  manual-installation: manual installation
-</i18n>

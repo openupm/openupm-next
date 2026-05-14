@@ -40,8 +40,3 @@ onMounted(() => {
   }
 }
 </style>
-
-<i18n locale="en-US" lang="yaml">
-loading-spin-text: Loading...
-</i18n>
-

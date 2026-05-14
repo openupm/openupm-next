@@ -89,8 +89,3 @@ const copyIt = (): void => {
   }
 }
 </style>
-
-<i18n locale="en-US" lang="yaml">
-  copied-tooltip: Copied to pasteboard
-</i18n>
-

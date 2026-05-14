@@ -61,11 +61,3 @@ const openupmCliRepoLink = computed(() => ({
     </template>
   </Modal>
 </template>
-
-<i18n locale="en-US" lang="yaml">
-  install-openupm-cli: install openupm-cli
-  install-via-command-line-interface: install via Command-Line Interface
-  go-to-unity-project: go to your Unity project directory
-  install-package: Install package
-  nodejs-link-text: Node.js v16 or above
-</i18n>

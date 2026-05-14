@@ -539,8 +539,3 @@ const buildRouterLinkQuery = function (subPage: string): Record<string, string> 
   }
 }
 </style>
-
-<i18n locale="en-US" lang="yaml">
-  repository-is-unavailable-title: The source code repository is currently inaccessible to OpenUPM
-  repository-is-unavailable-desc: This may be a temporary network issue. However, if the repository is deleted or made private by its author, OpenUPM will no longer track further changes. Any packages already published will not be affected.
-</i18n>
