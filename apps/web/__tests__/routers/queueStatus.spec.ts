@@ -51,6 +51,7 @@ describe('queue status router', () => {
         failed: 0,
         workers: 0,
         oldestWaitingMs: null,
+        nextScanAt: null,
         failedJobs: [],
       },
       releaseQueue: {

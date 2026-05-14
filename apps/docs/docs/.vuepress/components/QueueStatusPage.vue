@@ -35,7 +35,12 @@
     <template v-if="status">
       <section class="queue-status__section">
         <div class="queue-status__section-title">
-          <h2>Package Scan Queue</h2>
+          <h2>
+            Package Scan Queue
+            <span v-if="packageNextScanText" class="queue-status__section-meta">
+              {{ packageNextScanText }}
+            </span>
+          </h2>
         </div>
         <div class="queue-status__metrics">
           <div>
@@ -231,7 +236,7 @@
 import axios from "axios";
 import urlJoin from "url-join";
 import { paramCase } from "change-case";
-import { onMounted, ref } from "vue";
+import { computed, onMounted, onUnmounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import {
   getAPIBaseUrl,
@@ -240,6 +245,7 @@ import {
 import {
   PublicQueueStatus,
   PublicReleaseSummary,
+  formatCountdown,
   formatDuration,
   formatRelativeTime,
   isQueueStatusEmpty,
@@ -252,6 +258,14 @@ const loading = ref(true);
 const error = ref("");
 const status = ref<PublicQueueStatus | null>(null);
 const nowMs = ref(Date.now());
+let clockTimer: ReturnType<typeof setInterval> | undefined;
+let refreshTimer: ReturnType<typeof setInterval> | undefined;
+
+const packageNextScanText = computed(() =>
+  status.value
+    ? formatCountdown(status.value.packageQueue.nextScanAt, nowMs.value)
+    : "",
+);
 
 function releaseReasonText(release: PublicReleaseSummary): string {
   const key = `release-reason-${paramCase(release.reason)}`;
@@ -263,8 +277,8 @@ function releaseBuildUrl(release: PublicReleaseSummary): string {
   return release.buildId ? getAzureWebBuildUrl(release.buildId) : "";
 }
 
-async function fetchQueueStatus(): Promise<void> {
-  loading.value = true;
+async function fetchQueueStatus(isInitial = false): Promise<void> {
+  if (isInitial) loading.value = true;
   error.value = "";
   try {
     const response = await axios.get(
@@ -276,14 +290,29 @@ async function fetchQueueStatus(): Promise<void> {
     status.value = response.data as PublicQueueStatus;
     nowMs.value = Date.now();
   } catch {
-    status.value = null;
-    error.value = "Queue status is temporarily unavailable.";
+    if (!status.value) {
+      status.value = null;
+      error.value = "Queue status is temporarily unavailable.";
+    }
   } finally {
-    loading.value = false;
+    if (isInitial) loading.value = false;
   }
 }
 
-onMounted(fetchQueueStatus);
+onMounted(() => {
+  void fetchQueueStatus(true);
+  clockTimer = setInterval(() => {
+    nowMs.value = Date.now();
+  }, 1000);
+  refreshTimer = setInterval(() => {
+    void fetchQueueStatus(false);
+  }, 15_000);
+});
+
+onUnmounted(() => {
+  if (clockTimer) clearInterval(clockTimer);
+  if (refreshTimer) clearInterval(refreshTimer);
+});
 </script>
 
 <style lang="scss">
@@ -376,6 +405,14 @@ onMounted(fetchQueueStatus);
     font-size: 0.8rem;
     line-height: 1.2;
   }
+}
+
+.queue-status__section-meta {
+  margin-left: 0.45rem;
+  color: #627d98;
+  font-size: 0.65rem;
+  font-weight: 400;
+  white-space: nowrap;
 }
 
 .queue-status__metrics {

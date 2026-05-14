@@ -4,6 +4,7 @@ import { ReleaseErrorCode, ReleaseState } from '@openupm/types';
 import {
   buildPublicQueueStatus,
   createQueueStatusCache,
+  getNextPackageScanAt,
   parseReleaseJobIdentity,
 } from '../../src/status/queueStatus.js';
 
@@ -75,6 +76,14 @@ describe('parseReleaseJobIdentity', () => {
       packageName: 'com.example.camera',
       version: '1.0.0-preview+build',
     });
+  });
+});
+
+describe('getNextPackageScanAt', () => {
+  it('returns the next package scan cron timestamp', () => {
+    expect(getNextPackageScanAt(Date.parse('2026-05-14T10:02:45.000Z'))).toBe(
+      '2026-05-14T10:05:00.000Z',
+    );
   });
 });
 
@@ -199,6 +208,7 @@ describe('buildPublicQueueStatus', () => {
       failed: 1,
       workers: 1,
       oldestWaitingMs: 120_000,
+      nextScanAt: '2023-11-14T22:20:00.000Z',
     });
     expect(status.packageQueue.failedJobs[0]).toMatchObject({
       package: 'com.bad.repo',
@@ -294,6 +304,7 @@ describe('createQueueStatusCache', () => {
           failed: 0,
           workers: 0,
           oldestWaitingMs: null,
+          nextScanAt: null,
           failedJobs: [],
         },
         releaseQueue: {
@@ -345,6 +356,7 @@ describe('createQueueStatusCache', () => {
           failed: 0,
           workers: 0,
           oldestWaitingMs: null,
+          nextScanAt: null,
           failedJobs: [],
         },
         releaseQueue: {

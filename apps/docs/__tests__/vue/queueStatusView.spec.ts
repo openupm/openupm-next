@@ -4,6 +4,7 @@ chai.should();
 
 import {
   PublicQueueStatus,
+  formatCountdown,
   formatDuration,
   formatRelativeTime,
   isQueueStatusEmpty,
@@ -24,6 +25,7 @@ function createStatus(
       failed: 0,
       workers: 0,
       oldestWaitingMs: null,
+      nextScanAt: null,
       failedJobs: [],
     },
     releaseQueue: {
@@ -55,6 +57,7 @@ describe("@/queueStatusView", () => {
           failed: 0,
           workers: 0,
           oldestWaitingMs: 60_000,
+          nextScanAt: null,
           failedJobs: [],
         },
       }),
@@ -68,6 +71,13 @@ describe("@/queueStatusView", () => {
       "2h 15m ago",
     );
     formatDuration(2 * 60 * 60 * 1000 + 14 * 60 * 1000).should.equal("2h 14m");
+    formatCountdown(
+      "2026-05-14T10:02:15.000Z",
+      now,
+    ).should.equal("Next scan in 2m 15s");
+    formatCountdown("2026-05-14T09:59:59.000Z", now).should.equal(
+      "Next scan soon",
+    );
   });
 
   it("builds package links with encoded names", () => {

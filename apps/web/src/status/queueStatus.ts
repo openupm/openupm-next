@@ -1,5 +1,6 @@
 import configRaw from 'config';
 import { Job, JobType, Queue } from 'bullmq';
+import { CronTime } from 'cron';
 import {
   ReleaseErrorCode,
   ReleaseModel,
@@ -52,6 +53,7 @@ export interface PublicQueueStatus {
     failed: number;
     workers: number;
     oldestWaitingMs: number | null;
+    nextScanAt: string | null;
     failedJobs: PublicQueueJobSummary[];
   };
   releaseQueue: {
@@ -212,6 +214,25 @@ function countValue(counts: Record<string, number>, key: string): number {
   return Number(counts[key] || 0);
 }
 
+export function getNextPackageScanAt(now: number): string | null {
+  const jobConfig = config.schedules?.addBuildPackageJob ?? {};
+  if (jobConfig.enabled === false) return null;
+
+  try {
+    const cronTime = new CronTime(jobConfig.cronTime || '*/5 * * * *');
+    const next = cronTime.getNextDateFrom(new Date(now));
+    const nextDate = next as unknown as { toMillis?: () => number };
+    const nextMs =
+      typeof nextDate.toMillis === 'function'
+        ? nextDate.toMillis()
+        : new Date(String(next)).getTime();
+    if (!Number.isFinite(nextMs)) return null;
+    return new Date(nextMs).toISOString();
+  } catch {
+    return null;
+  }
+}
+
 async function getLimitedJobs(
   queue: QueueLike,
   types: JobType[],
@@ -358,6 +379,7 @@ export async function buildPublicQueueStatus(
       failed: packageFailed,
       workers: packageWorkers.length,
       oldestWaitingMs: packageOldestWaitingMs,
+      nextScanAt: getNextPackageScanAt(now),
       failedJobs: await Promise.all(
         failedPackageJobs.map(
           async (job) => await summarizeJob(job, 'package'),

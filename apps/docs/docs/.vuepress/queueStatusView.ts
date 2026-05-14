@@ -39,6 +39,7 @@ export interface PublicQueueStatus {
     failed: number;
     workers: number;
     oldestWaitingMs: number | null;
+    nextScanAt: string | null;
     failedJobs: PublicQueueJobSummary[];
   };
   releaseQueue: {
@@ -109,6 +110,28 @@ export function formatDuration(value: number | null): string {
     return minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`;
   }
   return `${Math.floor(value / day)}d`;
+}
+
+export function formatCountdown(value: string | null, nowMs = Date.now()): string {
+  if (!value) return "";
+  const timestamp = new Date(value).getTime();
+  if (!Number.isFinite(timestamp)) return "";
+  const remaining = timestamp - nowMs;
+  if (remaining <= 0) return "Next scan soon";
+  const second = 1000;
+  const minute = 60 * second;
+  const hour = 60 * minute;
+  if (remaining < minute) {
+    return `Next scan in ${Math.ceil(remaining / second)}s`;
+  }
+  if (remaining < hour) {
+    const minutes = Math.floor(remaining / minute);
+    const seconds = Math.ceil((remaining % minute) / second);
+    return seconds > 0
+      ? `Next scan in ${minutes}m ${seconds}s`
+      : `Next scan in ${minutes}m`;
+  }
+  return `Next scan in ${formatDuration(remaining)}`;
 }
 
 export function packageUrl(packageName: string): string {
