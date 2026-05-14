@@ -182,7 +182,3 @@ const description = computed(() => t("site-desc"));
   }
 }
 </style>
-
-<i18n locale="en-US" lang="yaml">
-  site-desc: OpenUPM is a managed UPM registry that provides automatic build services for open-source Unity packages.
-</i18n>

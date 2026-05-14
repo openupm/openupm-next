@@ -1,4 +1,5 @@
 about: About
+add-package: Submit new package
 advanced: Advanced
 all: All
 and: and
@@ -11,6 +12,7 @@ display-name: display name
 branch: branch
 build: Build
 build-pipelines: build pipelines
+can-not-locate-the-path-of-pac: Can not locate the path of package.json in the selected branch
 china-region-desc: Leave empty if you're unfamiliar with Chinese translation.
 china-region-info: China region
 code-of-conduct: Code of Conduct
@@ -18,13 +20,23 @@ commit: Commit
 connect: Connect
 contact-us: Contact Us
 contributors: contributors
+cookie-consent-dismiss: Got it!
+cookie-consent-message: We use cookies to optimize your experience on our website and provide relevant content and ads.
+copied-tooltip: Copied to pasteboard
+cover-image: Cover image URL
+cover-image-desc: Set cover image on listing page with 2:1 aspect ratio (600x300px) and use raw image URL if hosted on GitHub.
+cover-image-placeholder: Leave empty to use the default image
 dependencies: dependencies
+deps-missing: Please install the missing dependency manually.
 description-zhcn: Description (Chinese)
 discord: Discord
 discovered-by: discovered by
 display-name-zhcn: Display name (Chinese)
 donate: donate
+edit-metadata: Edit package metadata
 english-text: "English text:"
+error-403: GitHub API rate limit reached. Please wait and try again later. Thank you for your patience. Learn more at https://api.github.com/rate_limit.
+error-404: Repository not found
 experimental: experimental
 field-none: None
 fill-the-package-form: Fill the package form
@@ -33,11 +45,33 @@ fill-the-package-form-desc: >-
   conform to OpenUPM's package criteria. Learn more at
 footer-copyright: Copyright © 2019-present Favo Yang
 get: Get
+git-deps-missing: Please install the Git dependency manually.
+git-deps-nuget: The package may exist in uplinked UnityNuGet registry.
+git-deps-replaced: The Git dependency can be replaced by a version available on OpenUPM.
 git-tag: Git tag
+git-tag-ignore: Git tag ignore pattern
+git-tag-ignore-desc: 'The regular expression to exclude Git tags.'
+git-tag-ignore-placeholder: leave empty to include all tags
+git-tag-not-found: Cannot find any valid Git tags in the repository. Please ensure that the repository has at least one valid semantic version Git tag.
+git-tag-prefix: Git tag prefix
+git-tag-prefix-desc: "Filter Git tags for monorepo by using a prefix that separates the semver with a slash, hyphen, or underscore. Example: 'com.example.pkg/'."
+git-tag-prefix-placeholder: leave empty to include all tags
 github: GitHub
+github-release-asset-name: GitHub Release asset name
+github-release-asset-name-desc: Leave empty when each release provides one clearly named publishable .tgz or .tar.gz asset. If a release has multiple publishable assets, use an exact filename or stable prefix. OpenUPM tries exact match first, then one publishable asset starting with the value. Do not include paths.
+github-release-asset-name-placeholder: ""
 github-stars: GitHub stars
 go: Go
+go-to-unity-project: go to your Unity project directory
+guide: Guide
 home: Home
+hunter-desc: Your GitHub username
+hunter-input-group-text: github.com/
+hunter-placeholder: hunter
+install-openupm-cli: install openupm-cli
+install-package: Install package
+install-via-command-line-interface: install via Command-Line Interface
+install-via-package-manager: install via Package Manager
 install-via-package-installer: Install via Package Installer
 install-via-package-installer-intro: >-
   creates a traditional .unitypackage helper to install a UPM package into your
@@ -47,19 +81,42 @@ install-via-package-installer-step-2: >-
   editor window.
 install-via-package-installer-step-3: The installer will remove itself after installation.
 installation: installation
+invalid-git-tag-col-text: Invalid Git tag (e.g. not semver-compliant or duplicate version)
+keywords: Keywords
 loading...: loading...
+loading-spin-text: Loading...
 latest: latest
 learn-more: learn more
 license: license
+license-name-desc: Only open source licenses are permitted.
 license-name: license name
 lowest-unity-version: Lowest Unity version
+manual-installation: manual installation
 meta-data: Metadata
+min-version: Minimal version to build
+min-version-desc: "The minimum version to build from. For example: '1.0.2'"
+min-version-placeholder: leave empty to build all versions
 monthly-downloads: monthly downloads
 name: name
+name-at-version: name{'@'}version
 needles-package-installer: Needle's package installer
+nodejs-link-text: Node.js v16 or above
 note: note
 notice: Notice
+no-data-available: No packages available for this topic.
+no-markdown-file-found-fallbacks: No markdown file found, fallbacks to README.md
+no-release-desc: This typically occurs when a repository is first imported. But if all builds have been processed and failed, the package will not appear on the package listing until a successful first release is built.
+no-release-title: no releases published
+no-search-results: No search results for "{ searchTerm }".
+no-search-results-for-topic: No search results for "{ searchTerm }" in this topic.
+no-valid-tag-desc: OpenUPM only tracks Git tags that adhere to the semver convention. If a valid Git tag is not found, the package will not appear on the package listing.
+no-valid-tag-title: no valid Git tag
 package-installer: package installer
+package-already-exists-in-unity-registry: The package already exists in Unity registry
+package-json-not-found-error: "File not found: package.json."
+package-name-already-exists-error: The package name already exists in OpenUPM registry.
+package-name-blocked: The package name is blocked by scope {scope}.
+package-name-manual-verification: Major tech company package names require manual review during merge.
 package-name: Package name
 package-updates: Package Updates
 packages: packages
@@ -67,6 +124,7 @@ pending: Pending
 popularity: Popularity
 powered-by-netlify: This site is powered by Netlify
 prerequisites: Prerequisites
+private-repository-error: "Refuse to publish a private repository (\"private\": true in the package.json)."
 privacy-policy: Privacy Policy
 project: Project
 promote: Promote
@@ -105,8 +163,17 @@ release-reason-unauthorized: server unauthorized
 release-reason-version-conflict: the version already exists (check package.json version)
 relevance: Relevance
 report-abuse: Report
+report-malware-or-abuse: report malware or abuse
 repository: repository
+repository-is-unavailable-desc: This may be a temporary network issue. However, if the repository is deleted or made private by its author, OpenUPM will no longer track further changes. Any packages already published will not be affected.
+repository-is-unavailable-title: The source code repository is currently inaccessible to OpenUPM
+repository-placeholder: owner/project-name
+results: results
+select-package-json: Select package.json
+select-readme-md: Select README.md
 show-more: Show more
+site-desc: OpenUPM is a managed UPM registry that provides automatic build services for open-source Unity packages.
+sort-by: Sort by
 sponsor-bronze: Bronze Sponsors 🥉
 sponsor-diamond: Diamond Sponsors 💎
 sponsor-featured: Featured Sponsors
@@ -120,6 +187,7 @@ state: State
 status: Status
 queue-status: Queue Status
 submit-pr: Submit Pull Request
+submit-metadata: submit metadata
 supported-unity-version: supported unity version
 github-release-asset-package: GitHub Release asset package
 signed-package: Signed package
@@ -131,6 +199,11 @@ topics: Topics
 tweet: Tweet
 twitter: Twitter
 tracking-mode: tracking mode
+tracking-mode-desc: Choose whether OpenUPM builds from Git tags or publishes a GitHub Release asset.
+tracking-mode-git: Git
+tracking-mode-git-desc: OpenUPM tracks Git tag releases and builds the package from source.
+tracking-mode-github-release-assets: GitHub Release Assets
+tracking-mode-github-release-assets-desc: The author builds the package and provides a prebuilt package tarball through GitHub Release assets.
 unity-version: unity version
 upload-to-github-via-pr: Upload to GitHub via pull request (PR)
 upload-to-github-via-pr-desc: The package is verified. A YAML file has been generated to store the metadata.

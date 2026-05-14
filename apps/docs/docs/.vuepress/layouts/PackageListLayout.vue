@@ -525,14 +525,3 @@ watch(() => topicSlug.value, () => {
   max-width: 25rem;
 }
 </style>
-
-<i18n locale="en-US" lang="yaml">
-add-package: Submit new package
-results: results
-sort-by: Sort by
-keywords: Keywords
-no-data-available: No packages available for this topic.
-no-search-results: No search results for "{ searchTerm }".
-no-search-results-for-topic: No search results for "{ searchTerm }" in this topic.
-</i18n>
-

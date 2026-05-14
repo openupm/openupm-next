@@ -74,8 +74,3 @@ const props = defineProps({
   border: 0;
 }
 </style>
-
-<i18n locale="en-US" lang="yaml">
-  github-release-asset-package: GitHub Release asset package
-  signed-package: Signed package
-</i18n>
