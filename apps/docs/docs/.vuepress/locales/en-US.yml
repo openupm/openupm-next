@@ -118,6 +118,7 @@ star: Star
 stars: Stars
 state: State
 status: Status
+queue-status: Queue Status
 submit-pr: Submit Pull Request
 supported-unity-version: supported unity version
 github-release-asset-package: GitHub Release asset package
