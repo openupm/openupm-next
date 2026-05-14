@@ -15,7 +15,7 @@ function createStatus(
 ): PublicQueueStatus {
   return {
     generatedAt: "2026-05-14T10:00:00.000Z",
-    cache: { state: "fresh", ttlSeconds: 10 },
+    cache: { state: "fresh", ttlSeconds: 15 },
     summary: { state: "healthy", message: "ok" },
     packageQueue: { active: 0, failed: 0, workers: 0, failedJobs: [] },
     releaseQueue: {

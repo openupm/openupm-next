@@ -16,6 +16,7 @@ export interface PublicReleaseSummary {
   state: string;
   reason: string;
   updatedAt: string;
+  buildId?: string;
   source: "git" | "githubRelease";
   signed: boolean;
   retryable?: boolean;

@@ -6,7 +6,7 @@ import {
   getQueue,
 } from '../status/queueStatus.js';
 
-const CACHE_TTL_SECONDS = 10;
+const CACHE_TTL_SECONDS = 15;
 
 const queueStatusCache = createQueueStatusCache(async (cacheState) => {
   return await buildPublicQueueStatus(
