@@ -85,6 +85,14 @@
     },
   },
 
+  // Internal schedules. Defaults mirror legacy PM2 cron_restart values.
+  schedules: {
+    addBuildPackageJob: {
+      enabled: true,
+      cronTime: '*/5 * * * *',
+    },
+  },
+
   // GitHub.
   github: {
     graphqlEndpoint: 'https://api.github.com/graphql',

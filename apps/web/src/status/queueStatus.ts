@@ -1,5 +1,6 @@
 import configRaw from 'config';
 import { Job, JobType, Queue } from 'bullmq';
+import { CronTime } from 'cron';
 import {
   ReleaseErrorCode,
   ReleaseModel,
@@ -46,9 +47,13 @@ export interface PublicQueueStatus {
     message: string;
   };
   packageQueue: {
+    waiting: number;
     active: number;
+    delayed: number;
     failed: number;
     workers: number;
+    oldestWaitingMs: number | null;
+    nextScanAt: string | null;
     failedJobs: PublicQueueJobSummary[];
   };
   releaseQueue: {
@@ -209,6 +214,25 @@ function countValue(counts: Record<string, number>, key: string): number {
   return Number(counts[key] || 0);
 }
 
+export function getNextPackageScanAt(now: number): string | null {
+  const jobConfig = config.schedules?.addBuildPackageJob ?? {};
+  if (jobConfig.enabled === false) return null;
+
+  try {
+    const cronTime = new CronTime(jobConfig.cronTime || '*/5 * * * *');
+    const next = cronTime.getNextDateFrom(new Date(now));
+    const nextDate = next as unknown as { toMillis?: () => number };
+    const nextMs =
+      typeof nextDate.toMillis === 'function'
+        ? nextDate.toMillis()
+        : new Date(String(next)).getTime();
+    if (!Number.isFinite(nextMs)) return null;
+    return new Date(nextMs).toISOString();
+  } catch {
+    return null;
+  }
+}
+
 async function getLimitedJobs(
   queue: QueueLike,
   types: JobType[],
@@ -278,7 +302,12 @@ export async function buildPublicQueueStatus(
   const releaseLimit = options.releaseLimit ?? DEFAULT_RELEASE_LIMIT;
   const [packageCounts, packageWorkers, releaseCounts, releaseWorkers] =
     await Promise.all([
-      sources.packageQueue.getJobCounts('active', 'failed'),
+      sources.packageQueue.getJobCounts(
+        'waiting',
+        'active',
+        'delayed',
+        'failed',
+      ),
       sources.packageQueue.getWorkers(),
       sources.releaseQueue.getJobCounts(
         'waiting',
@@ -291,6 +320,7 @@ export async function buildPublicQueueStatus(
 
   const [
     failedPackageJobs,
+    oldestWaitingPackageJobs,
     activeReleaseJobs,
     waitingReleaseJobs,
     failedReleaseJobs,
@@ -298,6 +328,7 @@ export async function buildPublicQueueStatus(
     recentFailedReleases,
   ] = await Promise.all([
     getLimitedJobs(sources.packageQueue, ['failed'], jobLimit),
+    getLimitedJobs(sources.packageQueue, ['waiting'], 1, true),
     getLimitedJobs(sources.releaseQueue, ['active'], jobLimit),
     getLimitedJobs(sources.releaseQueue, ['waiting'], jobLimit, true),
     getLimitedJobs(sources.releaseQueue, ['failed'], jobLimit),
@@ -322,6 +353,9 @@ export async function buildPublicQueueStatus(
         now - Math.min(...waitingReleaseJobs.map((job) => job.timestamp)),
       )
     : null;
+  const packageOldestWaitingMs = oldestWaitingPackageJobs.length
+    ? Math.max(0, now - oldestWaitingPackageJobs[0].timestamp)
+    : null;
   const packageFailed = countValue(packageCounts, 'failed');
   const releaseFailed = countValue(releaseCounts, 'failed');
   const releaseWaiting = countValue(releaseCounts, 'waiting');
@@ -339,9 +373,13 @@ export async function buildPublicQueueStatus(
       oldestWaitingMs,
     }),
     packageQueue: {
+      waiting: countValue(packageCounts, 'waiting'),
       active: countValue(packageCounts, 'active'),
+      delayed: countValue(packageCounts, 'delayed'),
       failed: packageFailed,
       workers: packageWorkers.length,
+      oldestWaitingMs: packageOldestWaitingMs,
+      nextScanAt: getNextPackageScanAt(now),
       failedJobs: await Promise.all(
         failedPackageJobs.map(
           async (job) => await summarizeJob(job, 'package'),

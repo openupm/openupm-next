@@ -33,9 +33,13 @@ export interface PublicQueueStatus {
     message: string;
   };
   packageQueue: {
+    waiting: number;
     active: number;
+    delayed: number;
     failed: number;
     workers: number;
+    oldestWaitingMs: number | null;
+    nextScanAt: string | null;
     failedJobs: PublicQueueJobSummary[];
   };
   releaseQueue: {
@@ -56,6 +60,8 @@ export interface PublicQueueStatus {
 export function isQueueStatusEmpty(status: PublicQueueStatus): boolean {
   return (
     status.packageQueue.active === 0 &&
+    status.packageQueue.waiting === 0 &&
+    status.packageQueue.delayed === 0 &&
     status.packageQueue.failed === 0 &&
     status.releaseQueue.waiting === 0 &&
     status.releaseQueue.active === 0 &&
@@ -104,6 +110,29 @@ export function formatDuration(value: number | null): string {
     return minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`;
   }
   return `${Math.floor(value / day)}d`;
+}
+
+export function formatCountdown(value: string | null, nowMs = Date.now()): string {
+  if (!value) return "";
+  const timestamp = new Date(value).getTime();
+  if (!Number.isFinite(timestamp)) return "";
+  const remaining = timestamp - nowMs;
+  if (remaining <= 0) return "Next scan soon";
+  const second = 1000;
+  const minute = 60 * second;
+  const hour = 60 * minute;
+  const totalSeconds = Math.ceil(remaining / second);
+  if (totalSeconds < 60) {
+    return `Next scan in ${totalSeconds}s`;
+  }
+  if (remaining < hour) {
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return seconds > 0
+      ? `Next scan in ${minutes}m ${seconds}s`
+      : `Next scan in ${minutes}m`;
+  }
+  return `Next scan in ${formatDuration(remaining)}`;
 }
 
 export function packageUrl(packageName: string): string {

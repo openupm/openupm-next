@@ -44,7 +44,16 @@ describe('queue status router', () => {
       generatedAt: '2026-05-14T10:42:00.000Z',
       cache: { state: 'fresh', ttlSeconds: 15 },
       summary: { state: 'healthy', message: 'ok' },
-      packageQueue: { active: 0, failed: 0, workers: 0, failedJobs: [] },
+      packageQueue: {
+        waiting: 0,
+        active: 0,
+        delayed: 0,
+        failed: 0,
+        workers: 0,
+        oldestWaitingMs: null,
+        nextScanAt: null,
+        failedJobs: [],
+      },
       releaseQueue: {
         waiting: 0,
         active: 0,

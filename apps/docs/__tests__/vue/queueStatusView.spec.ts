@@ -4,6 +4,7 @@ chai.should();
 
 import {
   PublicQueueStatus,
+  formatCountdown,
   formatDuration,
   formatRelativeTime,
   isQueueStatusEmpty,
@@ -17,7 +18,16 @@ function createStatus(
     generatedAt: "2026-05-14T10:00:00.000Z",
     cache: { state: "fresh", ttlSeconds: 15 },
     summary: { state: "healthy", message: "ok" },
-    packageQueue: { active: 0, failed: 0, workers: 0, failedJobs: [] },
+    packageQueue: {
+      waiting: 0,
+      active: 0,
+      delayed: 0,
+      failed: 0,
+      workers: 0,
+      oldestWaitingMs: null,
+      nextScanAt: null,
+      failedJobs: [],
+    },
     releaseQueue: {
       waiting: 0,
       active: 0,
@@ -40,15 +50,15 @@ describe("@/queueStatusView", () => {
     isQueueStatusEmpty(createStatus()).should.equal(true);
     isQueueStatusEmpty(
       createStatus({
-        releaseQueue: {
+        packageQueue: {
           waiting: 1,
           active: 0,
           delayed: 0,
           failed: 0,
           workers: 0,
           oldestWaitingMs: 60_000,
-          activeJobs: [],
-          waitingJobs: [],
+          nextScanAt: null,
+          failedJobs: [],
         },
       }),
     ).should.equal(false);
@@ -61,6 +71,17 @@ describe("@/queueStatusView", () => {
       "2h 15m ago",
     );
     formatDuration(2 * 60 * 60 * 1000 + 14 * 60 * 1000).should.equal("2h 14m");
+    formatCountdown(
+      "2026-05-14T10:02:15.000Z",
+      now,
+    ).should.equal("Next scan in 2m 15s");
+    formatCountdown(
+      "2026-05-14T10:02:59.999Z",
+      now,
+    ).should.equal("Next scan in 3m");
+    formatCountdown("2026-05-14T09:59:59.000Z", now).should.equal(
+      "Next scan soon",
+    );
   });
 
   it("builds package links with encoded names", () => {

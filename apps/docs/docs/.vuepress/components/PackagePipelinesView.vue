@@ -156,6 +156,9 @@ const releaseEntries = computed(() => {
         </tr>
       </tbody>
     </table>
+    <p class="queue-status-link">
+      <RouterLink to="/queue/">{{ $t("queue-status-link-text") }}</RouterLink>
+    </p>
   </div>
 </template>
 
@@ -184,11 +187,17 @@ const releaseEntries = computed(() => {
     white-space: nowrap;
     border: 0;
   }
+
+  .queue-status-link {
+    margin: 0.35rem 0 0;
+    font-size: 0.75rem;
+  }
 }
 </style>
 
 <i18n locale="en-US" lang="yaml">
   invalid-git-tag-col-text: Invalid Git tag (e.g. not semver-compliant or duplicate version)
   github-release-asset-package: GitHub Release asset package
+  queue-status-link-text: Queue status
   signed-package: Signed package
 </i18n>
