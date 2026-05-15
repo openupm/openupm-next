@@ -130,6 +130,7 @@ project: Project
 promote: Promote
 published-time: Published time
 readme: readme
+readme-synced-ago: README synced {time} ago
 readme-to-found: Readme is not available, please try again later.
 last-publish: last publish
 region: Region

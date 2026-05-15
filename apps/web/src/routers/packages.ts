@@ -15,6 +15,7 @@ import {
   getRecentPackages,
   getInvalidTags,
   getReadmeHtml,
+  getReadmeUpdatedAt,
   getScopes,
 } from '@openupm/server-common/build/models/packageExtra.js';
 
@@ -63,6 +64,7 @@ export default function router(server: FastifyInstance): void {
       );
       // Get readme
       const readmeHtml = await getReadmeHtml(pkgName);
+      const readmeUpdatedAt = await getReadmeUpdatedAt(pkgName);
       // Get package scopes
       const scopes = await getScopes(pkgName);
       // Return as JSON
@@ -70,6 +72,7 @@ export default function router(server: FastifyInstance): void {
         invalidTags,
         releases,
         readmeHtml,
+        readmeUpdatedAt,
         scopes,
       };
       res.send(data);

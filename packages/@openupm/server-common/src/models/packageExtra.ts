@@ -19,6 +19,7 @@ export const propKeys: { [key: string]: string } = {
   monthlyDownloads: 'monthlyDownloads',
   readme: 'readme',
   readmeHtml: 'readmeHtml',
+  readmeUpdatedAt: 'readmeUpdatedAt',
   parentStars: 'parentStars',
   scopes: 'scopes',
   invalidTags: 'invalidTags',
@@ -225,6 +226,25 @@ export const getReadmeHtml = async function (
   const key = getPropKeyForLang(propKeys.readmeHtml, lang);
   const text = await getValue(packageName, key);
   return text;
+};
+
+export const setReadmeUpdatedAt = async function (
+  packageName: string,
+  updatedAt: number,
+  lang?: string,
+): Promise<void> {
+  const key = getPropKeyForLang(propKeys.readmeUpdatedAt, lang);
+  await setValue(packageName, key, updatedAt.toString());
+};
+
+export const getReadmeUpdatedAt = async function (
+  packageName: string,
+  lang?: string,
+): Promise<number | null> {
+  const key = getPropKeyForLang(propKeys.readmeUpdatedAt, lang);
+  const text = await getValue(packageName, key);
+  if (text === null) return null;
+  return parseInt(text);
 };
 
 export const setImageUrl = async function (

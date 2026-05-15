@@ -2,7 +2,9 @@ import redis from '../../src/redis.js';
 import {
   getRedisKeyForPackageExtra,
   getInvalidTags,
+  getReadmeUpdatedAt,
   setInvalidTags,
+  setReadmeUpdatedAt,
   getPropKeyForLang,
 } from '../../src/models/packageExtra.js';
 
@@ -37,6 +39,19 @@ describeWithRedis('getInvalidTags', () => {
     await setInvalidTags(SAMPLE_PACKAGE_NAME, invalidTags);
     const result = await getInvalidTags(SAMPLE_PACKAGE_NAME);
     expect(result).toEqual(invalidTags);
+  });
+});
+
+describeWithRedis('getReadmeUpdatedAt', () => {
+  it('returns null when package has no README update timestamp', async () => {
+    const val = await getReadmeUpdatedAt('package-not-existed');
+    expect(val).toEqual(null);
+  });
+
+  it('sets and gets README update timestamp', async () => {
+    await setReadmeUpdatedAt(SAMPLE_PACKAGE_NAME, 1767225600000);
+    const result = await getReadmeUpdatedAt(SAMPLE_PACKAGE_NAME);
+    expect(result).toEqual(1767225600000);
   });
 });
 

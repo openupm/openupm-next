@@ -7,7 +7,11 @@ import {
   save,
   getRedisKeyForRelease,
 } from '@openupm/server-common/build/models/release.js';
-import { setAggregatedExtraData } from '@openupm/server-common/build/models/packageExtra.js';
+import {
+  getRedisKeyForPackageExtra,
+  setAggregatedExtraData,
+  setReadmeUpdatedAt,
+} from '@openupm/server-common/build/models/packageExtra.js';
 import { app } from '../../src/apiServer.js';
 
 const SAMPLE_PACKAGE_NAME = 'sample-package';
@@ -47,11 +51,13 @@ describe('packages', () => {
     for (const item of releases) {
       await save(item);
     }
+    await setReadmeUpdatedAt(SAMPLE_PACKAGE_NAME, 1767225600000);
     await setAggregatedExtraData({});
   });
 
   afterEach(async () => {
     await redis.client!.del(getRedisKeyForRelease(SAMPLE_PACKAGE_NAME));
+    await redis.client!.del(getRedisKeyForPackageExtra(SAMPLE_PACKAGE_NAME));
   });
 
   afterAll(async () => {
@@ -82,6 +88,7 @@ describe('packages', () => {
       source: 'git',
       signed: false,
     });
+    expect(response.body.readmeUpdatedAt).toEqual(1767225600000);
   });
 
   it('/packages/:name should return 200 for package-not-exist', async () => {

@@ -18,6 +18,7 @@ const getReadmeCacheKeyMock = vi.fn();
 const setReadmeMock = vi.fn();
 const setReadmeHtmlMock = vi.fn();
 const setReadmeCacheKeyMock = vi.fn();
+const setReadmeUpdatedAtMock = vi.fn();
 const getImageQueryForPackageMock = vi.fn();
 const getImageQueryForGithubUserMock = vi.fn();
 
@@ -45,6 +46,7 @@ vi.mock('@openupm/server-common/build/models/packageExtra.js', () => ({
   setReadme: setReadmeMock,
   setReadmeHtml: setReadmeHtmlMock,
   setReadmeCacheKey: setReadmeCacheKeyMock,
+  setReadmeUpdatedAt: setReadmeUpdatedAtMock,
   getImageQueryForPackage: getImageQueryForPackageMock,
   getImageQueryForGithubUser: getImageQueryForGithubUserMock,
   getCachedImageFilename: vi.fn().mockResolvedValue(null),
@@ -108,6 +110,10 @@ describe('fetchPackageExtraJob', () => {
       'en-US',
       'v0:main:README.md:1767225600000',
     );
+    expect(setReadmeUpdatedAtMock).toHaveBeenCalledWith(
+      'com.test.pkg',
+      expect.any(Number),
+    );
   });
 
   it('skips README content fetch on cache hit', async () => {
@@ -131,6 +137,7 @@ describe('fetchPackageExtraJob', () => {
     expect(fetchMock).not.toHaveBeenCalled();
     expect(setReadmeMock).not.toHaveBeenCalled();
     expect(setReadmeHtmlMock).not.toHaveBeenCalled();
+    expect(setReadmeUpdatedAtMock).not.toHaveBeenCalled();
   });
 
   it('stores fallback README content on GitHub content 404', async () => {
@@ -165,6 +172,10 @@ describe('fetchPackageExtraJob', () => {
       'com.test.pkg',
       'en-US',
       'v0:main:README.md:1767225600000',
+    );
+    expect(setReadmeUpdatedAtMock).toHaveBeenCalledWith(
+      'com.test.pkg',
+      expect.any(Number),
     );
   });
 

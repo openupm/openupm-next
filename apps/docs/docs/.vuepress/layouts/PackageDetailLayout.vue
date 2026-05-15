@@ -57,6 +57,7 @@ const initState = (): State => ({
     releases: [],
     invalidTags: [],
     readmeHtml: null,
+    readmeUpdatedAt: null,
     scopes: [],
   },
   packument: {
@@ -199,6 +200,8 @@ const pipelinesIcon = computed(() => {
 
 const readmeHtml = computed(() => state.packageInfo.readmeHtml);
 
+const readmeUpdatedAt = computed(() => state.packageInfo.readmeUpdatedAt);
+
 const shouldShowMetadataSubpageEntry = computed(() => {
   return mq.lgMinus;
 });
@@ -216,6 +219,7 @@ const subPages = computed(() => {
       component: PackageReadmeView,
       props: {
         readmeHtml: readmeHtml.value,
+        readmeUpdatedAt: readmeUpdatedAt.value,
         isLoading: !state.__packageInfoFetched,
         name: packageMetadata.value.name,
       }
