@@ -20,7 +20,7 @@ export const BLOG_POSTS: BlogPost[] = [
     date: "2026-05-15",
     readingTime: "1 min read",
     excerpt:
-      "OpenUPM's registry upgrade makes org.nuget packages visible through registry search while keeping UnityNuGet package resolution behind the OpenUPM endpoint.",
+      "OpenUPM's registry upgrade experimentally makes org.nuget packages visible through registry search while keeping UnityNuGet package resolution behind the OpenUPM endpoint.",
   },
   {
     title: "OpenUPM Queue Status Page",
