@@ -94,6 +94,7 @@ export const readme = fc.oneof(
 
 export const packageMetadataLocalBaseArb = fc.record<PackageMetadataLocalBase>({
   name: reverseDomainName,
+  aliases: fc.array(reverseDomainName),
   repoUrl: githubRepoUrl,
   parentRepoUrl: fc.oneof(fc.constant(undefined), fc.option(githubRepoUrl)),
   displayName: fc.string(),

@@ -62,6 +62,8 @@ OpenUPM utilizes a YAML file to store package information. Below is an example o
 ```yaml
 # The package name
 name: com.namespace.unitypackageexample
+# Old package names that should redirect to this package page. This does not create registry aliases.
+aliases: []
 # The package display name
 displayName: Unity Package Example
 # The short package description

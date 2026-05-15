@@ -2,6 +2,7 @@
 import { groupBy } from 'lodash-es';
 import { App, createPage } from '@vuepress/core';
 import { Page } from '@vuepress/core';
+import { fs, path } from '@vuepress/utils';
 import spdx from 'spdx-license-list';
 
 import {
@@ -30,6 +31,10 @@ import {
   getPackageListPagePath,
 } from '@openupm/common/build/urls.js';
 
+import {
+  buildPackageAliasRedirects,
+  mergePackageAliasRedirects,
+} from './redirects.js';
 import { writePublicGen } from './utils/write-file.js';
 
 type Contributor = GithubUserWithScore & {
@@ -52,6 +57,7 @@ type VuePressPlugin = {
   onInitialized: (app: App) => Promise<void>;
   extendsPage: (page: Page) => Promise<void>;
   onPrepared: (app: App) => Promise<void>;
+  onGenerated: (app: App) => Promise<void>;
 };
 
 /**
@@ -243,5 +249,18 @@ export default (): VuePressPlugin => ({
         JSON.stringify(PLUGIN_DATA.metadataGroupByNamespace[namespace]),
       );
     }
+  },
+  onGenerated: async (app: App): Promise<void> => {
+    const redirectsPath = path.join(app.dir.dest(), '_redirects');
+    const staticRedirects = (await fs.pathExists(redirectsPath))
+      ? await fs.readFile(redirectsPath, 'utf8')
+      : '';
+    await fs.outputFile(
+      redirectsPath,
+      mergePackageAliasRedirects(
+        staticRedirects,
+        buildPackageAliasRedirects(PLUGIN_DATA.metadataLocalList),
+      ),
+    );
   },
 });
