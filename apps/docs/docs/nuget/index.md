@@ -24,13 +24,12 @@ To improve convenience, the OpenUPM registry [uplinks](https://verdaccio.org/doc
 - The OpenUPM registry synchronizes with the UnityNuGet registry on an hourly basis.
 - Package tarballs are hosted on our CDN server, ensuring fast access.
 - You can view package details via `https://package.openupm.com/org.nuget.some-package` or by using the openupm-cli command `openupm view org.nuget.some-package`.
+- You can search `org.nuget` packages through the OpenUPM registry search endpoint, openupm-cli search, and the Unity Package Manager search interface.
 
 The integration comes with a few limitations:
 
 - NuGet packages are neither searchable nor browsable on the OpenUPM website.
-- Searching for NuGet packages via the OpenUPM registry's search endpoint will return "404 packages not found." This affects both the openupm-cli's search command and the Unity Package Manager's search interface. As a side effect:
-  - NuGet packages will be invisible in the Unity Package Manager's "My Registries" section, although they remain visible in the "In Project" section.
-  - The Unity console will display a warning "Error searching for packages" the first time you open the Package Manager.
+- Search results are served by the registry uplink and may depend on UnityNuGet availability and cache freshness. If UnityNuGet is temporarily unavailable, already cached package metadata and tarballs continue to resolve through OpenUPM, but new uncached search results may be delayed until the uplink recovers.
 
 To demonstrate the uplinks feature, we have created a staging package at [https://github.com/openupm/com.example.nuget-consumer](https://github.com/openupm/com.example.nuget-consumer) which includes:
 
@@ -41,7 +40,7 @@ If you install a package via openupm-cli, the uplink is used by default— all p
 
 ## Using UnityNuGet Directly
 
-In general, we recommend using the uplink feature to take advantage of the CDN and openupm-cli. However, if you wish to bypass the limitations mentioned above, you can use the UnityNuGet registry directly by adding it as a scoped registry in your `manifest.json`:
+In general, we recommend using the uplink feature to take advantage of the CDN and openupm-cli. If you prefer to query UnityNuGet directly, you can add the UnityNuGet registry as a scoped registry in your `manifest.json`:
 
 ```json
 {
