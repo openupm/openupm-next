@@ -524,6 +524,7 @@ const genYaml = (): string => {
   const packageJsonObj = state.packageJsonObj;
   const content: Record<string, unknown> = {
     name: packageJsonObj.name,
+    aliases: [],
     displayName: packageJsonObj.displayName,
     description: packageJsonObj.description || repoInfo.description || "",
     repoUrl: repoInfo.html_url,

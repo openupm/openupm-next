@@ -26,6 +26,13 @@ export type ValidateDataDirectoryOptions = {
   topLevelYamlFiles?: string[];
 };
 
+type AliasValidationEntry = {
+  alias: string;
+  packageName: string;
+  pkgName: string;
+  relPath: string;
+};
+
 const defaultTopLevelYamlFiles = [
   'backers.yml',
   'blocked-scopes.yml',
@@ -137,6 +144,14 @@ export async function validateDataDirectory(
       path: 'packages',
     });
   }
+  const packageFilenames = new Set(
+    packageFiles
+      .filter((file) => file.endsWith('.yml'))
+      .map((file) => file.replace(/\.yml$/, '')),
+  );
+  const currentPackageNames = new Set<string>();
+  const aliasOwners = new Map<string, string>();
+  const aliasEntries: AliasValidationEntry[] = [];
 
   for (const file of packageFiles) {
     const relPath = path.join('packages', file);
@@ -168,6 +183,7 @@ export async function validateDataDirectory(
       const normalizedRaw = normalizePackageForLegacyData(raw);
       const rawPackage = asRecord(normalizedRaw);
       const pkg = parsePackageMetadata(normalizedRaw);
+      currentPackageNames.add(pkg.name);
       if (!isNonEmptyString(pkg.repoUrl)) {
         addIssue(issues, {
           code: 'package-repo-url-empty',
@@ -226,6 +242,50 @@ export async function validateDataDirectory(
           path: relPath,
           packageName,
         });
+      }
+      const aliases = pkg.aliases || [];
+      const localAliases = new Set<string>();
+      for (const alias of aliases) {
+        const [aliasValid, aliasValidError] = isValidPackageName(alias);
+        if (!aliasValid) {
+          addIssue(issues, {
+            code: 'package-alias-invalid',
+            message:
+              aliasValidError?.message ||
+              `alias ${alias} should be valid OpenUPM name`,
+            path: relPath,
+            packageName,
+          });
+        }
+        if (alias === pkg.name) {
+          addIssue(issues, {
+            code: 'package-alias-self',
+            message: `alias ${alias} should not match package name`,
+            path: relPath,
+            packageName,
+          });
+        }
+        if (localAliases.has(alias)) {
+          addIssue(issues, {
+            code: 'package-alias-duplicate',
+            message: `alias ${alias} should not be repeated`,
+            path: relPath,
+            packageName,
+          });
+        }
+        localAliases.add(alias);
+        aliasEntries.push({ alias, packageName, pkgName: pkg.name, relPath });
+        const existingOwner = aliasOwners.get(alias);
+        if (existingOwner && existingOwner !== pkg.name) {
+          addIssue(issues, {
+            code: 'package-alias-global-duplicate',
+            message: `alias ${alias} is already used by ${existingOwner}`,
+            path: relPath,
+            packageName,
+          });
+        } else {
+          aliasOwners.set(alias, pkg.name);
+        }
       }
       for (const scope of blockedScopes) {
         if (isPackageBlockedByScope(pkg.name, scope)) {
@@ -308,6 +368,25 @@ export async function validateDataDirectory(
       addIssue(issues, {
         code: 'package-metadata-invalid',
         message: `${relPath} metadata should be valid: ${messageFromError(error)}`,
+        path: relPath,
+        packageName,
+      });
+    }
+  }
+
+  for (const { alias, packageName, pkgName, relPath } of aliasEntries) {
+    if (alias !== pkgName && currentPackageNames.has(alias)) {
+      addIssue(issues, {
+        code: 'package-alias-current-package-collision',
+        message: `alias ${alias} collides with an existing package name`,
+        path: relPath,
+        packageName,
+      });
+    }
+    if (alias !== packageName && packageFilenames.has(alias)) {
+      addIssue(issues, {
+        code: 'package-alias-filename-collision',
+        message: `alias ${alias} collides with an existing package metadata filename`,
         path: relPath,
         packageName,
       });

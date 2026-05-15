@@ -5,6 +5,7 @@ import { PropType, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { timeAgoFormat } from '@/utils';
+import { getPackageAliasNavLinks } from './package-metadata';
 import { getAvatarImageUrl, getGitHubPackageMetadataUrl, getPackageDetailPageUrl } from '@openupm/common/build/urls.js';
 import { DownloadsRange, PackageInfo, PackageMetadata, Packument } from "@openupm/types";
 
@@ -88,6 +89,10 @@ const hunterNavLink = computed(() => {
     link: props.metadata.hunterUrl,
     text: props.metadata.hunter,
   };
+});
+
+const aliasNavLinks = computed(() => {
+  return getPackageAliasNavLinks(props.metadata);
 });
 
 const isLoadingPackageSetup = computed(() => {
@@ -270,6 +275,14 @@ const trackingModeTooltip = computed(() => {
           {{ trackingModeText }}
           <i class="fas fa-info-circle" aria-hidden="true"></i>
         </span>
+      </section>
+      <section v-if="aliasNavLinks.length" class="col-12">
+        <div class="metadata-title">Aliases</div>
+        <ul class="section-list alias-list">
+          <li v-for="aliasNavLink in aliasNavLinks" :key="aliasNavLink.text">
+            <AutoLink :item="aliasNavLink" />
+          </li>
+        </ul>
       </section>
       <section class="col-6">
         <div class="metadata-title">{{ $capitalize($t("authors")) }}</div>

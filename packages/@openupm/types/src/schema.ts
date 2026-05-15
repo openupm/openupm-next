@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 export const PackageMetadataLocalBaseSchema = z.object({
   name: z.string(),
+  aliases: z.array(z.string()),
   repoUrl: z.string().url(),
   displayName: z.string(),
   description: z.string(),

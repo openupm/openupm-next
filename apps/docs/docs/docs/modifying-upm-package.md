@@ -34,9 +34,15 @@ To rename a published package, please follow these steps:
 
 - In your repository, modify the package name in the `package.json`, bump the version, and create a new Git tag.
 
-- Locate the package metadata YAML file and update the filename and the `name` field to the new name. If the repository name is also changed, update the `repoUrl` field as well.
+- Locate the package metadata YAML file and rename it to match the new package name.
+
+- Update the `name` field to the new package name. If the repository name is also changed, update the `repoUrl` field as well.
+
+- Add the old package name to the `aliases` list. Aliases only redirect old website package pages to the current package page; they do not create registry aliases or make the old package name installable.
 
 - Set the `minVersion` field to the newly created Git tag version so that the build-pipelines will ignore the old versions with the old package name.
+
+- Tell users to update their Unity dependencies from the old package name to the new package name.
 
 - Create a pull request. Your PR will be merged after review.
 

@@ -8,6 +8,7 @@ import { validateDataDirectory } from '../../src/validation/data-validator.js';
 
 type PackageFixture = {
   name: string;
+  aliases: string[];
   repoUrl: string;
   displayName: string;
   description: string;
@@ -31,6 +32,7 @@ const topLevelFiles = [
 
 const validPackage: PackageFixture = {
   name: 'com.example.package',
+  aliases: [],
   repoUrl: 'https://github.com/example/package',
   displayName: 'Example Package',
   description: 'Example package description',
@@ -125,6 +127,34 @@ describe('validateDataDirectory', () => {
     } finally {
       await afs.rm(dataDir, { recursive: true, force: true });
     }
+  });
+
+  it('requires aliases as an array', async () => {
+    expect.assertions(3);
+    await expectIssue(
+      (dataDir) =>
+        writePackage(dataDir, validPackage.name, {
+          ...validPackage,
+          aliases: undefined,
+        }),
+      'package-metadata-invalid',
+    );
+    await expectIssue(
+      (dataDir) =>
+        writePackage(dataDir, validPackage.name, {
+          ...validPackage,
+          aliases: null,
+        }),
+      'package-metadata-invalid',
+    );
+    await expectIssue(
+      (dataDir) =>
+        writePackage(dataDir, validPackage.name, {
+          ...validPackage,
+          aliases: 'com.example.old',
+        }),
+      'package-metadata-invalid',
+    );
   });
 
   it('rejects malformed GitHub Release repo URLs', async () => {
@@ -301,6 +331,111 @@ describe('validateDataDirectory', () => {
         }),
       'package-github-release-asset-name-path-invalid',
     );
+  });
+
+  it('validates package aliases', async () => {
+    expect.assertions(8);
+    await expectIssue(
+      (dataDir) =>
+        writePackage(dataDir, validPackage.name, {
+          ...validPackage,
+          aliases: ['Com.Example.Package'],
+        }),
+      'package-alias-invalid',
+    );
+    await expectIssue(
+      (dataDir) =>
+        writePackage(dataDir, validPackage.name, {
+          ...validPackage,
+          aliases: [validPackage.name],
+        }),
+      'package-alias-self',
+    );
+    await expectIssue(
+      (dataDir) =>
+        writePackage(dataDir, validPackage.name, {
+          ...validPackage,
+          aliases: ['com.example.old', 'com.example.old'],
+        }),
+      'package-alias-duplicate',
+    );
+    await expectIssue(async (dataDir) => {
+      const otherPackage = {
+        ...validPackage,
+        name: 'com.example.other',
+      };
+      await writePackage(dataDir, otherPackage.name, otherPackage);
+      await writePackage(dataDir, validPackage.name, {
+        ...validPackage,
+        aliases: [otherPackage.name],
+      });
+    }, 'package-alias-current-package-collision');
+    await expectIssue(async (dataDir) => {
+      const otherPackage = {
+        ...validPackage,
+        name: 'com.example.other',
+      };
+      await writePackage(dataDir, otherPackage.name, otherPackage);
+      await writePackage(dataDir, validPackage.name, {
+        ...validPackage,
+        aliases: ['com.example.other'],
+      });
+    }, 'package-alias-filename-collision');
+    await expectIssue(async (dataDir) => {
+      await writePackage(dataDir, 'com.example.old', {
+        ...validPackage,
+        name: 'com.example.other',
+      });
+      await writePackage(dataDir, validPackage.name, {
+        ...validPackage,
+        aliases: ['com.example.old'],
+      });
+    }, 'package-alias-filename-collision');
+    await expectIssue(async (dataDir) => {
+      await writePackage(dataDir, validPackage.name, {
+        ...validPackage,
+        aliases: ['com.example.old'],
+      });
+      await writePackage(dataDir, 'com.example.other', {
+        ...validPackage,
+        name: 'com.example.other',
+        aliases: ['com.example.old'],
+      });
+    }, 'package-alias-global-duplicate');
+
+    const dataDir = await createDataDir();
+    try {
+      await writePackage(dataDir, validPackage.name, {
+        ...validPackage,
+        aliases: ['com.example.old'],
+      });
+      const result = await validateDataDirectory(dataDir);
+      expect(result).toEqual({ valid: true, issues: [] });
+    } finally {
+      await afs.rm(dataDir, { recursive: true, force: true });
+    }
+  });
+
+  it('does not treat metadata filenames as current package names for alias collisions', async () => {
+    const dataDir = await createDataDir();
+    try {
+      await writePackage(dataDir, 'com.example.old', {
+        ...validPackage,
+        name: 'com.example.other',
+      });
+      await writePackage(dataDir, validPackage.name, {
+        ...validPackage,
+        aliases: ['com.example.old'],
+      });
+
+      const result = await validateDataDirectory(dataDir);
+      const issueCodes = result.issues.map((x) => x.code);
+
+      expect(issueCodes).toContain('package-alias-filename-collision');
+      expect(issueCodes).not.toContain('package-alias-current-package-collision');
+    } finally {
+      await afs.rm(dataDir, { recursive: true, force: true });
+    }
   });
 
   it('allows custom license names when licenseSpdxId is null', async () => {

@@ -3,6 +3,7 @@ import { ReleaseErrorCode, ReleaseState } from './constant.js';
 // The package metadata YAML file format.
 export interface PackageMetadataLocalBase {
   name: string;
+  aliases: string[];
   repoUrl: string;
   displayName: string;
   description: string;
