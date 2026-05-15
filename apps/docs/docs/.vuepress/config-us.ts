@@ -153,6 +153,8 @@ export const themeConfig: any = {
       children: [
         { text: "Support OpenUPM", link: "/support/" },
         { text: "Contributors", link: "/contributors/" },
+        { text: "Website Status", link: "https://openupm.github.io/upptime/" },
+        { text: "Queue Status", link: "/queue/" },
       ],
     },
     {
