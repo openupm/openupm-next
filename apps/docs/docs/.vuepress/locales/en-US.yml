@@ -185,7 +185,7 @@ star: Star
 stars: Stars
 state: State
 status: Status
-website-status: Website Status
+website-status: Uptime Status
 queue-status: Queue Status
 submit-pr: Submit Pull Request
 submit-metadata: submit metadata
