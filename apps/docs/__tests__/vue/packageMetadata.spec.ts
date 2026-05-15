@@ -13,11 +13,11 @@ describe('package metadata aliases', () => {
       }),
     ).toEqual([
       {
-        link: '/packages/com.example.old/',
+        link: 'https://openupm.com/packages/com.example.old/',
         text: 'com.example.old',
       },
       {
-        link: '/packages/com.example.older/',
+        link: 'https://openupm.com/packages/com.example.older/',
         text: 'com.example.older',
       },
     ]);
