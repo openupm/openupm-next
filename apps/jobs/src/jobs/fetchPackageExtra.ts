@@ -23,6 +23,7 @@ import {
   setReadme,
   setReadmeCacheKey,
   setReadmeHtml,
+  setReadmeUpdatedAt,
   setScopes,
   setStars,
   setUnityVersion,
@@ -360,6 +361,7 @@ async function storePackageReadme({
   await setReadme(packageName, readme);
   await setReadmeHtml(packageName, readmeHtml);
   await setReadmeCacheKey(packageName, 'en-US', cacheKey);
+  await setReadmeUpdatedAt(packageName, Date.now());
 }
 
 async function cacheImage(packageName: string, force: boolean): Promise<void> {

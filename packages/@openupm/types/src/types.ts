@@ -98,6 +98,7 @@ export interface PackageInfo {
   invalidTags: string[];
   releases: PackageRelease[];
   readmeHtml: string | null;
+  readmeUpdatedAt: number | null;
   scopes: string[];
 }
 
