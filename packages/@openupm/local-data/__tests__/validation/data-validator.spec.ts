@@ -416,6 +416,28 @@ describe('validateDataDirectory', () => {
     }
   });
 
+  it('does not treat metadata filenames as current package names for alias collisions', async () => {
+    const dataDir = await createDataDir();
+    try {
+      await writePackage(dataDir, 'com.example.old', {
+        ...validPackage,
+        name: 'com.example.other',
+      });
+      await writePackage(dataDir, validPackage.name, {
+        ...validPackage,
+        aliases: ['com.example.old'],
+      });
+
+      const result = await validateDataDirectory(dataDir);
+      const issueCodes = result.issues.map((x) => x.code);
+
+      expect(issueCodes).toContain('package-alias-filename-collision');
+      expect(issueCodes).not.toContain('package-alias-current-package-collision');
+    } finally {
+      await afs.rm(dataDir, { recursive: true, force: true });
+    }
+  });
+
   it('allows custom license names when licenseSpdxId is null', async () => {
     const dataDir = await createDataDir();
     try {
