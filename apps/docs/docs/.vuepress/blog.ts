@@ -14,6 +14,15 @@ export const BLOG_RSS_PATH = "/blog/rss.xml";
 
 export const BLOG_POSTS: BlogPost[] = [
   {
+    title: "UnityNuGet Search Now Works Through OpenUPM",
+    slug: "unitynuget-search-now-works-through-openupm",
+    author: "Favo Yang",
+    date: "2026-05-15",
+    readingTime: "1 min read",
+    excerpt:
+      "OpenUPM's registry upgrade experimentally makes org.nuget packages visible through registry search while keeping UnityNuGet package resolution behind the OpenUPM endpoint.",
+  },
+  {
     title: "OpenUPM Queue Status Page",
     slug: "openupm-queue-status-page",
     author: "Favo Yang",
