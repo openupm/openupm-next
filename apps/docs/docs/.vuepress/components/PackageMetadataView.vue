@@ -227,7 +227,7 @@ const trackingModeTooltip = computed(() => {
   <div class="meta-section container">
     <div class="columns">
       <PackageSetup :has-not-succeeded-build="hasNotSucceededBuild" :is-loading="isLoadingPackageSetup"
-        :metadata="metadata" :version="version || ''" :scopes="scopes" />
+        :metadata="metadata" :version="version || ''" :packument="packument" :scopes="scopes" />
       <section class="col-12">
         <div class="metadata-title">{{ $capitalize($t("repository")) }}</div>
         <span class="repo-link">
