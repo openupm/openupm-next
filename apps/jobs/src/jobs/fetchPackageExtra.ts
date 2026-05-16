@@ -18,6 +18,7 @@ import {
   setMonthlyDownloads,
   setParentStars,
   setRepoPushedTime,
+  setRepoArchived,
   setRepoUnavailable,
   setRepoUpdatedTime,
   setReadme,
@@ -246,11 +247,13 @@ async function fetchRepoInfo(
     const repoInfo = (await resp.json()) as {
       stargazers_count?: number;
       parent?: { stargazers_count?: number };
+      archived?: boolean;
       pushed_at?: string;
       updated_at?: string;
     };
 
     await setRepoUnavailable(packageName, false);
+    await setRepoArchived(packageName, repoInfo.archived === true);
     await setStars(packageName, repoInfo.stargazers_count || 0);
     if (repoInfo.parent) {
       await setParentStars(packageName, repoInfo.parent.stargazers_count || 0);

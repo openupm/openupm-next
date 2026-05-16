@@ -482,6 +482,10 @@ const buildRouterLinkQuery = function (subPage: string): Record<string, string> 
               <p class="custom-container-title">{{ $t("repository-is-unavailable-title") }}</p>
               <p>{{ $t("repository-is-unavailable-desc") }}</p>
             </div>
+            <div v-if="packageMetadata.repoArchived" class="custom-container warning">
+              <p class="custom-container-title">{{ $t("repository-is-archived-title") }}</p>
+              <p>{{ $t("repository-is-archived-desc") }}</p>
+            </div>
             <div v-if="topics.length" class="topic-list">
               <a v-for="item in topics" :key="item.slug" :href="item.urlPath">
                 <span class="label label-default label-rounded mr-1">{{ item.localeName }}</span>

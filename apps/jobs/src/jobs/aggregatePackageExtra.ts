@@ -4,6 +4,7 @@ import {
   getMonthlyDownloads,
   getParentStars,
   getRepoPushedTime,
+  getRepoArchived,
   getRepoUnavailable,
   getStars,
   getUnityVersion,
@@ -23,6 +24,7 @@ type AggregatedEntry = {
   time?: number;
   ver?: string;
   repoUnavailable?: boolean;
+  repoArchived?: boolean;
   dl30d: number;
 };
 
@@ -45,6 +47,7 @@ export async function aggregatePackageExtraJob(): Promise<void> {
     const pushedTime = await getRepoPushedTime(packageName);
     const version = await getVersion(packageName);
     const repoUnavailable = await getRepoUnavailable(packageName);
+    const repoArchived = await getRepoArchived(packageName);
     const dl30d = await getMonthlyDownloads(packageName);
 
     aggregated[packageName] = {
@@ -55,6 +58,7 @@ export async function aggregatePackageExtraJob(): Promise<void> {
       time: updatedTime || pushedTime || undefined,
       ver: version || undefined,
       repoUnavailable: repoUnavailable || undefined,
+      repoArchived: repoArchived || undefined,
       dl30d,
     };
   }

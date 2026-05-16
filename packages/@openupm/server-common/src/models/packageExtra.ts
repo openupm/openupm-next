@@ -28,6 +28,7 @@ export const propKeys: { [key: string]: string } = {
   imageUrl: 'imageUrl',
   readmeCacheKey: 'readmeCacheKey',
   repoUnavailable: 'repoUnavailable',
+  repoArchived: 'repoArchived',
   repoUpdatedTime: 'repoUpdatedTime',
   repoPushedTime: 'repoPushedTime',
   updatedTime: 'updatedTime',
@@ -378,6 +379,20 @@ export const getRepoUnavailable = async function (
   packageName: string,
 ): Promise<boolean> {
   const text = await getValue(packageName, propKeys.repoUnavailable);
+  return text === '1';
+};
+
+export const setRepoArchived = async function (
+  packageName: string,
+  value: boolean,
+): Promise<void> {
+  await setValue(packageName, propKeys.repoArchived, value ? '1' : '0');
+};
+
+export const getRepoArchived = async function (
+  packageName: string,
+): Promise<boolean> {
+  const text = await getValue(packageName, propKeys.repoArchived);
   return text === '1';
 };
 

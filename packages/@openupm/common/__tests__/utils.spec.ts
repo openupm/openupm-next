@@ -184,6 +184,32 @@ describe('parsePackageMetadataRemote', () => {
     const result = parsePackageMetadataRemote(input);
     expect(result.repoUnavailable).toEqual(expected);
   });
+
+  it('should set repoArchived to false if not defined', () => {
+    const input = {
+      ver: '1.0.0',
+      stars: 10,
+      pstars: 5,
+      imageFilename: 'test.png',
+      dl30d: 100,
+    };
+    const expected = false;
+    const result = parsePackageMetadataRemote(input);
+    expect(result.repoArchived).toEqual(expected);
+  });
+
+  it('should preserve repoArchived when defined', () => {
+    const input = {
+      ver: '1.0.0',
+      stars: 10,
+      pstars: 5,
+      imageFilename: 'test.png',
+      dl30d: 100,
+      repoArchived: true,
+    };
+    const result = parsePackageMetadataRemote(input);
+    expect(result.repoArchived).toEqual(true);
+  });
 });
 
 describe('filterMetadatabyTopicSlug', () => {

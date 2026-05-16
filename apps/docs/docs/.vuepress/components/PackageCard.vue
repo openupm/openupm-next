@@ -105,6 +105,9 @@ const imageErrorMessage = computed(() => {
             <span v-if="metadata.time" class="chip">
               <i class="fas fa-clock"></i>{{ timeAgoText }}
             </span>
+            <span v-if="metadata.repoArchived" class="chip chip-archived">
+              Archived
+            </span>
           </div>
           <div class="row2">
             <span v-if="metadata.stars" class="chip">
