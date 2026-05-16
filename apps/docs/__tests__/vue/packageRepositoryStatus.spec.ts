@@ -21,6 +21,12 @@ describe("package repository status UI", () => {
     expect(source).toContain("Archived");
   });
 
+  it("hides the package card update time when the repository is archived", () => {
+    const source = readFileSync(packageCardPath, "utf8");
+
+    expect(source).toContain('v-if="metadata.time && !metadata.repoArchived"');
+  });
+
   it("renders archived and unavailable repository status conditions independently", () => {
     const source = readFileSync(packageDetailLayoutPath, "utf8");
 
