@@ -84,6 +84,9 @@ npm error command failed
     expect(getReasonFromBuildLogText('error Invalid version: "0.1"')).toEqual(
       ReleaseErrorCode.InvalidVersion,
     );
+    expect(
+      RetryableReleaseErrorCodes.includes(ReleaseErrorCode.InvalidVersion),
+    ).toBe(false);
   });
 
   it("GitHub Release asset download errors are retryable", () => {
@@ -121,13 +124,27 @@ npm error command failed
     ).toEqual(ReleaseErrorCode.PackageNameInvalid);
     expect(
       getReasonFromBuildLogText(
-        "Downloaded package asset version mismatch: actual=1.0.0, expected=2.0.0",
+        "Downloaded package asset version mismatch: package.json.version=1.0.0, expectedReleaseVersion=2.0.0",
       ),
-    ).toEqual(ReleaseErrorCode.InvalidVersion);
+    ).toEqual(ReleaseErrorCode.VersionMismatch);
     expect(
       RetryableReleaseErrorCodes.includes(
         ReleaseErrorCode.PackageJsonParsingError,
       ),
+    ).toBe(false);
+    expect(
+      RetryableReleaseErrorCodes.includes(ReleaseErrorCode.VersionMismatch),
+    ).toBe(false);
+  });
+
+  it("git package manifest version mismatch is non-retryable", () => {
+    expect(
+      getReasonFromBuildLogText(
+        "Package manifest version mismatch: package.json.version=1.0.0, expectedReleaseVersion=2.0.0",
+      ),
+    ).toEqual(ReleaseErrorCode.VersionMismatch);
+    expect(
+      RetryableReleaseErrorCodes.includes(ReleaseErrorCode.VersionMismatch),
     ).toBe(false);
   });
 });

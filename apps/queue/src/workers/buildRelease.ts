@@ -356,8 +356,11 @@ export function getReasonFromBuildLogText(text: string): ReleaseErrorCode {
     return ReleaseErrorCode.GitHubReleaseAssetDownloadFailed;
   else if (text.includes("Downloaded package asset name mismatch"))
     return ReleaseErrorCode.PackageNameInvalid;
-  else if (text.includes("Downloaded package asset version mismatch"))
-    return ReleaseErrorCode.InvalidVersion;
+  else if (
+    text.includes("Downloaded package asset version mismatch") ||
+    text.includes("Package manifest version mismatch")
+  )
+    return ReleaseErrorCode.VersionMismatch;
   else if (text.includes("Invalid version") || text.includes("code EBADSEMVER"))
     return ReleaseErrorCode.InvalidVersion;
   else if (text.includes("Could not read from remote repository"))

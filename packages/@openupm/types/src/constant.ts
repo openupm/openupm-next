@@ -57,6 +57,8 @@ export enum ReleaseErrorCode {
   SubmoduleFetchingError = 809,
   // npm publish lifecycle hook failed
   NpmHookError = 810,
+  // Package manifest version does not match the discovered version
+  VersionMismatch = 811,
   // Connection timeout
   ConnectionTimeout = 900,
   // Connection timeout
