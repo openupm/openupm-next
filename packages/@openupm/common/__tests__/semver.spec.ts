@@ -1,52 +1,33 @@
 import { getVersionFromTag } from '../src/semver.js';
 
 describe('getVersionFromTag()', function () {
-  it('test a.b.c', function () {
-    expect(getVersionFromTag('v1.0.0')).toEqual('1.0.0');
+  it.each([
+    ['1.2.3', '1.2.3'],
+    ['v1.2.3', '1.2.3'],
+    ['V1.2.3', '1.2.3'],
+    ['1.2.3-alpha', '1.2.3-alpha'],
+    ['1.2.3-alpha.1', '1.2.3-alpha.1'],
+    ['1.2.3-beta', '1.2.3-beta'],
+    ['1.2.3-beta.2', '1.2.3-beta.2'],
+    ['1.2.3-rc.1', '1.2.3-rc.1'],
+    ['1.2.3-preview', '1.2.3-preview'],
+    ['1.2.3-preview.1', '1.2.3-preview.1'],
+    ['upm/v1.2.3-beta.2', '1.2.3-beta.2'],
+    ['pkg-1.2.3-rc.1', '1.2.3-rc.1'],
+    ['pkg_1.2.3-preview.1', '1.2.3-preview.1'],
+    ['1.2.3-upm', '1.2.3'],
+    ['v1.2.3_upm', '1.2.3'],
+    ['0.10.7b', '0.10.7-b'],
+    ['1.2.03', '1.2.3'],
+    ['v2.0.2+002', '2.0.2'],
+  ])('parses %s as %s', function (tag, version) {
+    expect(getVersionFromTag(tag)).toEqual(version);
   });
-  it('test va.b.c', function () {
-    expect(getVersionFromTag('v1.0.0')).toEqual('1.0.0');
-  });
-  it('test Va.b.c', function () {
-    expect(getVersionFromTag('V1.0.0')).toEqual('1.0.0');
-  });
-  it('test a.b.c-preview', function () {
-    expect(getVersionFromTag('1.0.0-preview')).toEqual('1.0.0-preview');
-  });
-  it('test va.b.c-preview', function () {
-    expect(getVersionFromTag('v1.0.0-preview')).toEqual('1.0.0-preview');
-  });
-  it('test a.b.c.d', function () {
-    expect(getVersionFromTag('1.0.0.0')).toEqual(null);
-  });
-  it('test va.b.c.d', function () {
-    expect(getVersionFromTag('v1.0.0.0')).toEqual(null);
-  });
-  it('test a.b.c-preview.d', function () {
-    expect(getVersionFromTag('1.0.0-preview.0')).toEqual('1.0.0-preview.0');
-  });
-  it('test va.b.c-preview.d', function () {
-    expect(getVersionFromTag('v1.0.0-preview.0')).toEqual('1.0.0-preview.0');
-  });
-  it('test releases/va.b.c-preview.d', function () {
-    expect(getVersionFromTag('releases/v1.0.0-preview.0')).toEqual(
-      '1.0.0-preview.0',
-    );
-  });
-  it('test releases-va.b.c-preview.d', function () {
-    expect(getVersionFromTag('releases-v1.0.0-preview.0')).toEqual(
-      '1.0.0-preview.0',
-    );
-  });
-  it('test releases_va.b.c-preview.d', function () {
-    expect(getVersionFromTag('releases_v1.0.0-preview.0')).toEqual(
-      '1.0.0-preview.0',
-    );
-  });
-  it('test va.b.c-upm', function () {
-    expect(getVersionFromTag('v1.0.0-upm')).toEqual('1.0.0');
-  });
-  it('test va.b.c_upm', function () {
-    expect(getVersionFromTag('v1.0.0_upm')).toEqual('1.0.0');
-  });
+
+  it.each(['1.0.0.0', 'release', 'package/latest'])(
+    'returns null for %s',
+    function (tag) {
+      expect(getVersionFromTag(tag)).toEqual(null);
+    },
+  );
 });

@@ -16,7 +16,7 @@ OpenUPM requires packages to meet the following criteria:
 
 4. **Functionality and Usefulness:** The package should be functional and useful. Test packages are not accepted due to limited resources. It's advised to import your package via Git URL and test it before submission.
 
-5. **Semantic Versioning:** The package should use [semantic versioning (semver)](https://semver.org/). For example, `1.1.0`, `1.1.1-preview`, `v1.1.2`. You can create Git tags using the [GitHub release](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository#creating-a-release) feature or automate the process using [GitHub actions](/blog/how-to-maintain-upm-package-part-2-f352fbf5f87c/).
+5. **Semantic Versioning:** The package should use [semantic versioning (semver)](https://semver.org/). For example, `1.1.0`, `1.1.1-preview`, `v1.1.2`. You can create Git tags using the [GitHub release](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository#creating-a-release) feature or automate the process using [GitHub actions](/blog/how-to-maintain-upm-package-part-2-f352fbf5f87c/). The version parsed from the Git tag must match the `version` field in the package's `package.json`.
 
 6. **Package Size:** The package size should be under 512MB due to limited resources. If OpenUPM receives more funding in the future, we may increase this limit.
 
@@ -121,9 +121,19 @@ After a brief pause, during which the build pipelines complete their tasks (usua
 
 The repository you submitted must have at least one versioned Git tag to trigger the build pipelines. Therefore, submissions without a Git tag for an extended period will be removed from the OpenUPM list. If you wish to add such a repository, please create an issue on the author's repository to request the addition of a Git tag. For guidance on automating the release process with GitHub actions, you can refer to [this tutorial](/blog/how-to-maintain-upm-package-part-2-f352fbf5f87c/).
 
+### Naming Git Tags
+
+Use clear semver tags that match `package.json.version`. Recommended tag names include `1.2.3`, `v1.2.3`, `1.2.3-preview.1`, `upm/v1.2.3`, and `com.example.package/v1.2.3`.
+
+For prereleases, prefer the identifiers `alpha`, `beta`, `rc`, or Unity-friendly `preview`. Dot-numbered prerelease tags such as `1.2.3-rc.1` or `1.2.3-preview.1` are clearer than unnumbered tags when you expect more than one prerelease.
+
+OpenUPM tolerates some historical tag shapes, including build metadata tags such as `v2.0.2+002`, loose spellings such as `0.10.7b`, and leading-zero versions such as `1.2.03`. These forms are accepted for compatibility with existing packages and may be normalized when OpenUPM parses them, but they are not recommended for new releases.
+
 ### Handling Prefixed Git Tags
 
 Some repositories use different content for different tags, for example, `1.0.0` for the main branch and `upm/1.0.0` for the UPM branch. In such cases, you need to specify the `gitTagPrefix` field in the package YAML file. For instance, set `gitTagPrefix: "upm/"` to prevent confusion in the build pipelines due to duplicated version tags. Without specifying a prefix, the build pipelines will treat `1.0.0` and `upm/1.0.0` as the same version tag and only build one of them. By default, a tag name with the prefix `upm/` takes higher priority. For example, `1.0.0` and `upm/1.1.0` will result in building only `upm/1.1.0`.
+
+For monorepos or repositories with duplicate tag families, set `gitTagPrefix` to the literal prefix that identifies this package's tags, such as `upm/` or `com.example.package/`. This prevents tags for another package or branch family from queueing builds for the wrong package.
 
 ### Publishing from a GitHub Release Asset
 
