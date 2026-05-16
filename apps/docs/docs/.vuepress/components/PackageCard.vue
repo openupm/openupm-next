@@ -36,6 +36,29 @@ const timeAgoText = computed(() => {
   return timeAgoFormat(new Date(props.metadata.time));
 });
 
+const repositoryStatusChip = computed(() => {
+  if (props.metadata.repoUnavailable) {
+    return {
+      className: "chip-unavailable",
+      icon: "fas fa-exclamation-triangle",
+      text: "Unavailable",
+    };
+  }
+  if (props.metadata.repoArchived) {
+    return {
+      className: "chip-archived",
+      text: "Archived",
+    };
+  }
+  if (props.metadata.time) {
+    return {
+      icon: "fas fa-clock",
+      text: timeAgoText.value,
+    };
+  }
+  return null;
+});
+
 const defaultImageInlineStyle = computed(() => {
   return `background: linear-gradient(37deg, ${stopColor1.value}, ${stopColor2.value});`
 });
@@ -102,11 +125,8 @@ const imageErrorMessage = computed(() => {
               <LazyImage :src="ownerAvatarUrl" :alt="metadata.owner" class="avatar avatar-sm" />
               {{ metadata.owner }}
             </span>
-            <span v-if="metadata.time && !metadata.repoArchived" class="chip">
-              <i class="fas fa-clock"></i>{{ timeAgoText }}
-            </span>
-            <span v-if="metadata.repoArchived" class="chip chip-archived">
-              Archived
+            <span v-if="repositoryStatusChip" class="chip" :class="repositoryStatusChip.className">
+              <i v-if="repositoryStatusChip.icon" :class="repositoryStatusChip.icon"></i>{{ repositoryStatusChip.text }}
             </span>
           </div>
           <div class="row2">
@@ -214,6 +234,11 @@ const imageErrorMessage = computed(() => {
           overflow: hidden;
           text-overflow: ellipsis;
           max-width: 16ch;
+        }
+
+        &.chip-unavailable {
+          background-color: var(--c-warning);
+          color: var(--c-warning-text, #746000);
         }
       }
     }
