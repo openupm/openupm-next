@@ -1,5 +1,7 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
+import { computed, onMounted, onUnmounted, ref } from "vue";
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const props = defineProps({
   id: {
@@ -15,10 +17,29 @@ const props = defineProps({
     default: true
   }
 });
+
+const currentHash = ref("");
+
+const syncCurrentHash = (): void => {
+  currentHash.value = typeof window === "undefined" ? "" : window.location.hash;
+};
+
+const isActiveHashTarget = computed(() => {
+  return props.id ? currentHash.value === `#${props.id}` : false;
+});
+
+onMounted(() => {
+  syncCurrentHash();
+  window.addEventListener("hashchange", syncCurrentHash);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("hashchange", syncCurrentHash);
+});
 </script>
 
 <template>
-  <div :id="id" class="modal">
+  <div :id="id" class="modal" :class="{ active: isActiveHashTarget }">
     <a href="#close" class="modal-overlay" aria-label="Close"></a>
     <div class="modal-container">
       <div v-if="showHeader" class="modal-header">

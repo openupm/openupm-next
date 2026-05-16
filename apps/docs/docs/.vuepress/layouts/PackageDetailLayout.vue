@@ -38,6 +38,15 @@ const SubPageSlug = {
   versions: "versions"
 };
 
+const packageSetupModalHashes = new Set([
+  "#modal-commandlinetool",
+  "#modal-manualinstallation",
+]);
+
+const getCurrentHash = (): string => {
+  return route.hash || (typeof window === "undefined" ? "" : window.location.hash);
+};
+
 // State
 interface State {
   packageInfo: PackageInfo,
@@ -98,8 +107,21 @@ const packageMetadata = computed(() => {
   return getPackageMetadata(metadataLocal, metadataRemote);
 });
 
+const shouldShowMetadataSubpageEntry = computed(() => {
+  return mq.lgMinus;
+});
+
+const shouldShowMetadataSection = computed(() => {
+  return !shouldShowMetadataSubpageEntry.value;
+});
+
 // The current sub page slug from the query parameter
 const currentSubPageSlug = computed(() => {
+  if (
+    shouldShowMetadataSubpageEntry.value &&
+    packageSetupModalHashes.has(getCurrentHash())
+  )
+    return SubPageSlug.metadata;
   const subPageSlug = route.query.subPage;
   if (Object.values(SubPageSlug).filter(x => x == subPageSlug).length > 0)
     return subPageSlug as string;
@@ -201,14 +223,6 @@ const pipelinesIcon = computed(() => {
 const readmeHtml = computed(() => state.packageInfo.readmeHtml);
 
 const readmeUpdatedAt = computed(() => state.packageInfo.readmeUpdatedAt);
-
-const shouldShowMetadataSubpageEntry = computed(() => {
-  return mq.lgMinus;
-});
-
-const shouldShowMetadataSection = computed(() => {
-  return !shouldShowMetadataSubpageEntry.value;
-});
 
 const subPages = computed(() => {
   return [
