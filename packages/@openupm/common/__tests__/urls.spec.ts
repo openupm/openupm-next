@@ -1,25 +1,10 @@
 import {
-  getContributorProfilePagePath,
   getMonthlyDownloadsRangeUrl,
   getMonthlyDownloadsUrl,
   isPackageDetailPath,
   isPackageListPath,
   parsePackageNameFromPackageDetailPath,
 } from '../src/urls.js';
-
-describe('getContributorProfilePagePath', () => {
-  it('should build the contributor profile path', () => {
-    const result = getContributorProfilePagePath('GitHubUser');
-
-    expect(result).toEqual('/contributors/githubuser/');
-  });
-
-  it('should encode contributor names and trim surrounding whitespace', () => {
-    const result = getContributorProfilePagePath(' user name ');
-
-    expect(result).toEqual('/contributors/user%20name/');
-  });
-});
 
 describe('isPackageDetailPath', () => {
   it('should return true for path included lowecase letters', () => {
