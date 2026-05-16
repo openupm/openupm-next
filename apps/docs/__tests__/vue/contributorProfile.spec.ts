@@ -143,8 +143,11 @@ describe("contributor profile filtering", () => {
   it("keeps non-GitHub parent owner chips on their original upstream profile URL", () => {
     const metadataViewSource = readFileSync(packageMetadataViewPath, "utf8");
 
+    expect(metadataViewSource).toContain('toLowerCase()');
+    expect(metadataViewSource).toContain('.includes("github")');
+    expect(metadataViewSource).toContain("external: !isGithubParentOwner");
     expect(metadataViewSource).toContain(
-      'parentOwnerUrl.toLowerCase().includes("github")',
+      "parentOwnerNavLink && parentOwnerNavLink.external && parentOwnerNavLink.link",
     );
     expect(metadataViewSource).toContain(": parentOwnerUrl");
   });

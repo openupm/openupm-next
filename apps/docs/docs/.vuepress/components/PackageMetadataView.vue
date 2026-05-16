@@ -130,8 +130,12 @@ const parentOwnerAvatarUrl = computed(() => {
 const parentOwnerNavLink = computed(() => {
   if (props.metadata.parentRepoUrl && props.metadata.parentOwner) {
     const parentOwnerUrl = props.metadata.parentOwnerUrl || "";
+    const isGithubParentOwner = parentOwnerUrl
+      .toLowerCase()
+      .includes("github");
     return {
-      link: parentOwnerUrl.toLowerCase().includes("github")
+      external: !isGithubParentOwner,
+      link: isGithubParentOwner
         ? getContributorProfilePagePath(props.metadata.parentOwner)
         : parentOwnerUrl,
       text: props.metadata.parentOwner,
@@ -290,7 +294,16 @@ const trackingModeTooltip = computed(() => {
       </section>
       <section class="col-6">
         <div class="metadata-title">{{ $capitalize($t("authors")) }}</div>
-        <RouterLink v-if="parentOwnerNavLink && parentOwnerNavLink.link" :to="parentOwnerNavLink.link" class="nav-link">
+        <a v-if="parentOwnerNavLink && parentOwnerNavLink.external && parentOwnerNavLink.link"
+          :href="parentOwnerNavLink.link" class="nav-link external">
+          <span class="chip">
+            <LazyImage v-if="parentOwnerAvatarUrl" :src="parentOwnerAvatarUrl" :alt="metadata.parentOwner"
+              class="avatar avatar-sm" />
+            {{ parentOwnerNavLink.text }}
+          </span>
+        </a>
+        <RouterLink v-else-if="parentOwnerNavLink && parentOwnerNavLink.link" :to="parentOwnerNavLink.link"
+          class="nav-link">
           <span class="chip">
             <LazyImage v-if="parentOwnerAvatarUrl" :src="parentOwnerAvatarUrl" :alt="metadata.parentOwner"
               class="avatar avatar-sm" />
