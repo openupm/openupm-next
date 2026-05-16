@@ -64,6 +64,8 @@ export interface PackageMetadataRemote {
   dl30d: number;
   // Repo unavailable
   repoUnavailable: boolean;
+  // Repo archived
+  repoArchived: boolean;
 }
 
 // PackageMetadata merges PackageMetadataLocal and PackageMetadataRemote.

@@ -10,6 +10,7 @@ const getUpdatedTimeMock = vi.fn();
 const getRepoPushedTimeMock = vi.fn();
 const getVersionMock = vi.fn();
 const getRepoUnavailableMock = vi.fn();
+const getRepoArchivedMock = vi.fn();
 const getMonthlyDownloadsMock = vi.fn();
 const setAggregatedExtraDataMock = vi.fn();
 
@@ -27,6 +28,7 @@ vi.mock('@openupm/server-common/build/models/packageExtra.js', () => ({
   getRepoPushedTime: getRepoPushedTimeMock,
   getVersion: getVersionMock,
   getRepoUnavailable: getRepoUnavailableMock,
+  getRepoArchived: getRepoArchivedMock,
   getMonthlyDownloads: getMonthlyDownloadsMock,
   setAggregatedExtraData: setAggregatedExtraDataMock,
 }));
@@ -47,6 +49,7 @@ describe('aggregatePackageExtraJob', () => {
     getRepoPushedTimeMock.mockResolvedValue(2000);
     getVersionMock.mockResolvedValue('');
     getRepoUnavailableMock.mockResolvedValue(false);
+    getRepoArchivedMock.mockResolvedValue(false);
     getMonthlyDownloadsMock.mockResolvedValue(99);
 
     const { aggregatePackageExtraJob } = await import('../../src/jobs/aggregatePackageExtra.js');
@@ -61,8 +64,34 @@ describe('aggregatePackageExtraJob', () => {
         time: 2000,
         ver: undefined,
         repoUnavailable: undefined,
+        repoArchived: undefined,
         dl30d: 99,
       },
+    });
+  });
+
+  it('emits repoArchived only when true', async () => {
+    loadPackageNamesMock.mockResolvedValue(['pkg.one']);
+    loadPackageMetadataLocalMock.mockResolvedValue({ name: 'pkg.one' });
+    getStarsMock.mockResolvedValue(0);
+    getParentStarsMock.mockResolvedValue(0);
+    getUnityVersionMock.mockResolvedValue('');
+    getCachedImageFilenameMock.mockResolvedValue('');
+    getUpdatedTimeMock.mockResolvedValue(0);
+    getRepoPushedTimeMock.mockResolvedValue(0);
+    getVersionMock.mockResolvedValue('');
+    getRepoUnavailableMock.mockResolvedValue(false);
+    getRepoArchivedMock.mockResolvedValue(true);
+    getMonthlyDownloadsMock.mockResolvedValue(0);
+
+    const { aggregatePackageExtraJob } = await import('../../src/jobs/aggregatePackageExtra.js');
+    await aggregatePackageExtraJob();
+
+    expect(setAggregatedExtraDataMock).toHaveBeenCalledWith({
+      'pkg.one': expect.objectContaining({
+        repoUnavailable: undefined,
+        repoArchived: true,
+      }),
     });
   });
 });

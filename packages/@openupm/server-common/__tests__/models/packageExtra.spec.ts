@@ -3,8 +3,10 @@ import {
   getRedisKeyForPackageExtra,
   getInvalidTags,
   getReadmeUpdatedAt,
+  getRepoArchived,
   setInvalidTags,
   setReadmeUpdatedAt,
+  setRepoArchived,
   getPropKeyForLang,
 } from '../../src/models/packageExtra.js';
 
@@ -52,6 +54,21 @@ describeWithRedis('getReadmeUpdatedAt', () => {
     await setReadmeUpdatedAt(SAMPLE_PACKAGE_NAME, 1767225600000);
     const result = await getReadmeUpdatedAt(SAMPLE_PACKAGE_NAME);
     expect(result).toEqual(1767225600000);
+  });
+});
+
+describeWithRedis('getRepoArchived', () => {
+  it('returns false when package has no archived flag', async () => {
+    const val = await getRepoArchived('package-not-existed');
+    expect(val).toEqual(false);
+  });
+
+  it('sets and gets archived flag', async () => {
+    await setRepoArchived(SAMPLE_PACKAGE_NAME, true);
+    expect(await getRepoArchived(SAMPLE_PACKAGE_NAME)).toEqual(true);
+
+    await setRepoArchived(SAMPLE_PACKAGE_NAME, false);
+    expect(await getRepoArchived(SAMPLE_PACKAGE_NAME)).toEqual(false);
   });
 });
 

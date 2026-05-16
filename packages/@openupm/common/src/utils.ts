@@ -122,6 +122,8 @@ export function parsePackageMetadataRemote(
       obj.repoUnavailable === undefined
         ? false
         : (obj.repoUnavailable as boolean),
+    repoArchived:
+      obj.repoArchived === undefined ? false : (obj.repoArchived as boolean),
   };
   return parsedObj;
 }

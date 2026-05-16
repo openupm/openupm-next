@@ -166,6 +166,8 @@ relevance: Relevance
 report-abuse: Report
 report-malware-or-abuse: report malware or abuse
 repository: repository
+repository-is-archived-desc: The repository is read-only and no longer accepts active development. Evaluate the package maintenance status before adopting it.
+repository-is-archived-title: The source code repository is archived
 repository-is-unavailable-desc: This may be a temporary network issue. However, if the repository is deleted or made private by its author, OpenUPM will no longer track further changes. Any packages already published will not be affected.
 repository-is-unavailable-title: The source code repository is currently inaccessible to OpenUPM
 repository-placeholder: owner/project-name

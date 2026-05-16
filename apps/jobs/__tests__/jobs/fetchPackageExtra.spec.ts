@@ -13,6 +13,7 @@ const setParentStarsMock = vi.fn();
 const setRepoPushedTimeMock = vi.fn();
 const setRepoUpdatedTimeMock = vi.fn();
 const setRepoUnavailableMock = vi.fn();
+const setRepoArchivedMock = vi.fn();
 const setMonthlyDownloadsMock = vi.fn();
 const getReadmeCacheKeyMock = vi.fn();
 const setReadmeMock = vi.fn();
@@ -41,6 +42,7 @@ vi.mock('@openupm/server-common/build/models/packageExtra.js', () => ({
   setRepoPushedTime: setRepoPushedTimeMock,
   setRepoUpdatedTime: setRepoUpdatedTimeMock,
   setRepoUnavailable: setRepoUnavailableMock,
+  setRepoArchived: setRepoArchivedMock,
   setMonthlyDownloads: setMonthlyDownloadsMock,
   getReadmeCacheKey: getReadmeCacheKeyMock,
   setReadme: setReadmeMock,
@@ -300,6 +302,7 @@ describe('fetchPackageExtraJob', () => {
         ok: true,
         json: async () => ({
           stargazers_count: 10,
+          archived: false,
           pushed_at: '2026-01-01T00:00:00.000Z',
         }),
       })
@@ -325,6 +328,7 @@ describe('fetchPackageExtraJob', () => {
     expect(setVersionMock).toHaveBeenCalledWith('com.test.pkg', '1.0.0');
     expect(setScopesMock).toHaveBeenCalled();
     expect(setStarsMock).toHaveBeenCalledWith('com.test.pkg', 10);
+    expect(setRepoArchivedMock).toHaveBeenCalledWith('com.test.pkg', false);
     expect(setMonthlyDownloadsMock).toHaveBeenCalledWith('com.test.pkg', 20);
     expect(fetchMock).toHaveBeenLastCalledWith(
       expect.stringContaining('/downloads/point/last-month/com.test.pkg'),
@@ -399,6 +403,60 @@ describe('fetchPackageExtraJob', () => {
       'en-US',
       'v0:main:README.md:unavailable',
     );
+    expect(setRepoArchivedMock).not.toHaveBeenCalled();
+  });
+
+  it('stores archived repository metadata from successful GitHub repo responses', async () => {
+    packageMetadataLocalExistsMock.mockReturnValue(true);
+    loadPackageMetadataLocalMock.mockResolvedValue({
+      name: 'com.test.pkg',
+      repo: 'openupm/archived-package',
+      repoUrl: 'https://github.com/openupm/archived-package',
+      owner: null,
+      parentOwner: null,
+      hunter: null,
+    });
+    getReadmeCacheKeyMock.mockResolvedValue('v0:main:README.md:1767225600000');
+    getImageQueryForPackageMock.mockResolvedValue(null);
+    getImageQueryForGithubUserMock.mockResolvedValue(null);
+
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          'dist-tags': { latest: '1.0.0' },
+          versions: { '1.0.0': { dependencies: {} } },
+          time: { '1.0.0': '2026-01-01T00:00:00.000Z' },
+        }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          'dist-tags': { latest: '1.0.0' },
+          versions: { '1.0.0': { dependencies: {} } },
+          time: { '1.0.0': '2026-01-01T00:00:00.000Z' },
+        }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          archived: true,
+          stargazers_count: 10,
+          pushed_at: '2026-01-01T00:00:00.000Z',
+        }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ downloads: 0 }),
+      });
+    vi.stubGlobal('fetch', fetchMock as unknown as typeof fetch);
+
+    const { fetchPackageExtraJob } = await import('../../src/jobs/fetchPackageExtra.js');
+    await fetchPackageExtraJob(['com.test.pkg'], { force: false });
+
+    expect(setRepoUnavailableMock).toHaveBeenCalledWith('com.test.pkg', false);
+    expect(setRepoArchivedMock).toHaveBeenCalledWith('com.test.pkg', true);
   });
 
   it('cacheAvatarImageForGithubUser should add image when cache unavailable', async () => {
