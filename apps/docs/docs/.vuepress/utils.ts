@@ -82,6 +82,26 @@ export const generateHueFromStringInRange = function (
 };
 
 /**
+ * Remove a leading UTF-8 byte order mark from decoded text.
+ * @param text decoded text
+ * @returns text without a leading BOM
+ */
+export const stripLeadingBom = function (text: string): string {
+  return text.charCodeAt(0) === 0xfeff ? text.slice(1) : text;
+};
+
+/**
+ * Decode GitHub Contents API base64 payloads as UTF-8 text.
+ * @param content base64-encoded GitHub file content
+ * @returns UTF-8 decoded text without a leading BOM
+ */
+export const decodeGitHubBase64Content = function (content: string): string {
+  const binary = atob(content);
+  const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
+  return stripLeadingBom(new TextDecoder("utf-8").decode(bytes));
+};
+
+/**
  * Translate a string with fallback.
  * @param t translation function
  * @param tkey translation key
