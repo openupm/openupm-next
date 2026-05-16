@@ -195,6 +195,7 @@ submit-metadata: submit metadata
 supported-unity-version: supported unity version
 github-release-asset-package: GitHub Release asset package
 signed-package: Signed package
+stable: stable
 team: Team
 terms-of-use: Terms of Use
 top-package-hunters: Top Package Hunters

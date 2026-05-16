@@ -5,11 +5,13 @@ import { useI18n } from 'vue-i18n';
 import highlightjs from "highlight.js";
 
 import { getNodeJsUrl, getOpenupmCliRepoUrl } from '@openupm/common/build/urls.js';
+import { getInstallCliCommand } from './package-install-targets';
 
 const { t } = useI18n();
 
 const props = defineProps({
-  name: { type: String, default: "" }
+  name: { type: String, default: "" },
+  version: { type: String, default: "" },
 });
 
 const bashScript = computed(() => {
@@ -20,7 +22,7 @@ npm install -g openupm-cli
 cd YOUR_UNITY_PROJECT_DIR
 
 # ${capitalize(t("install-package"))}: ${props.name}
-openupm add ${props.name}`;
+${getInstallCliCommand(props.name, props.version)}`;
 });
 
 const highlighted = computed(() => {

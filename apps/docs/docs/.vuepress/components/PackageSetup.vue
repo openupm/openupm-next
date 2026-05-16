@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { PropType, computed } from 'vue';
+import { PropType, computed, ref, watch } from 'vue';
 import urlJoin from "url-join";
 
-import { PackageMetadata } from "@openupm/types";
+import { PackageMetadata, Packument } from "@openupm/types";
+import { getInstallCliCommand, getInstallTargets, InstallTargetKind } from './package-install-targets';
 
 const props = defineProps({
   isLoading: {
@@ -21,14 +22,44 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  packument: {
+    type: Object as PropType<Partial<Packument>>,
+    default: () => { },
+  },
   scopes: {
     type: Array<string>,
     default: () => [],
   },
 });
 
+const selectedInstallKind = ref<InstallTargetKind | null>(null);
+
+const installTargets = computed(() => {
+  return getInstallTargets(props.packument);
+});
+
+watch(installTargets, (targets) => {
+  selectedInstallKind.value = targets[0]?.kind || null;
+}, { immediate: true });
+
+const selectedInstallTarget = computed(() => {
+  return installTargets.value.find((target) => target.kind === selectedInstallKind.value) || installTargets.value[0] || null;
+});
+
+const hasInstallTargetSelector = computed(() => {
+  return installTargets.value.length > 1;
+});
+
+const selectedPackageManagerVersion = computed(() => {
+  return selectedInstallTarget.value?.version || props.version;
+});
+
+const explicitCliVersion = computed(() => {
+  return hasInstallTargetSelector.value ? selectedPackageManagerVersion.value : "";
+});
+
 const installCli = computed(() => {
-  return `openupm add ${props.metadata.name}`;
+  return getInstallCliCommand(props.metadata.name, explicitCliVersion.value);
 });
 
 const pipelinesLink = computed(() => {
@@ -50,6 +81,13 @@ const repoTagsNavLink = computed(() => {
     </div>
     <div v-else>
       <div v-if="version">
+        <div v-if="hasInstallTargetSelector" class="install-version-selector btn-group btn-group-block">
+          <button v-for="target in installTargets" :key="target.kind" type="button" class="btn btn-sm"
+            :class="{ active: selectedInstallTarget?.kind === target.kind }" @click="selectedInstallKind = target.kind">
+            <span class="install-version-label">{{ $capitalize($t(target.kind)) }}</span>
+            <span class="install-version-number">{{ target.version }}</span>
+          </button>
+        </div>
         <div class="install-option">
           <h3>
             {{ $capitalize($t("install-via-package-manager")) }}
@@ -58,7 +96,7 @@ const repoTagsNavLink = computed(() => {
             </div>
           </h3>
         </div>
-        <PackageSetupViaPackageManager :name="metadata.name" :version="version" :scopes="scopes" />
+        <PackageSetupViaPackageManager :name="metadata.name" :version="selectedPackageManagerVersion" :scopes="scopes" />
         <div class="install-option last">
           <h3>
             <a href="#modal-commandlinetool">
@@ -71,7 +109,7 @@ const repoTagsNavLink = computed(() => {
             </CopyWrapper>
           </div>
         </div>
-        <PackageSetupViaCLI :name="metadata.name" />
+        <PackageSetupViaCLI :name="metadata.name" :version="explicitCliVersion" />
       </div>
     </div>
   </section>
@@ -126,6 +164,34 @@ const repoTagsNavLink = computed(() => {
       font-size: $font-size-md;
     }
 
+  }
+
+  .install-version-selector {
+    margin-bottom: 0.75rem;
+
+    .btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      height: auto;
+      line-height: 1.15;
+      min-height: 2.4rem;
+      padding: 0.25rem 0.3rem;
+      white-space: normal;
+    }
+
+    .install-version-label,
+    .install-version-number {
+      display: block;
+      max-width: 100%;
+      overflow-wrap: anywhere;
+    }
+
+    .install-version-number {
+      font-size: 0.65rem;
+    }
   }
 
   .package-installer-btn-wrap {
