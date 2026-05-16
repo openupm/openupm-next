@@ -16,6 +16,7 @@ import PackageDetailLayout from "@/layouts/PackageDetailLayout.vue";
 import PackageListLayout from "@/layouts/PackageListLayout.vue";
 import PackageAddLayout from "@/layouts/PackageAddLayout.vue";
 import HomeLayout from "@/layouts/HomeLayout.vue";
+import ContributorProfileLayout from "@/layouts/ContributorProfileLayout.vue";
 
 export default defineClientConfig({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -83,5 +84,6 @@ export default defineClientConfig({
     PackageListLayout,
     PackageAddLayout,
     HomeLayout,
+    ContributorProfileLayout,
   },
 });

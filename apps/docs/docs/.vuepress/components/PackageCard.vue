@@ -3,7 +3,7 @@ import { PropType, computed } from "vue";
 
 import { generateHueFromStringInRange, timeAgoFormat } from '@/utils';
 import { PackageMetadata } from '@openupm/types';
-import { getAvatarImageUrl, getGitHubAvatarUrl, getPackageDetailPagePath } from '@openupm/common/build/urls.js';
+import { getAvatarImageUrl, getContributorProfilePagePath, getGitHubAvatarUrl, getPackageDetailPagePath } from '@openupm/common/build/urls.js';
 import { getLocalePackageDescription, getLocalePackageDisplayName } from "@openupm/common/build/utils.js";
 
 const props = defineProps({
@@ -93,6 +93,10 @@ const packageLink = computed(() => {
   };
 });
 
+const ownerProfileLink = computed(() => {
+  return getContributorProfilePagePath(props.metadata.owner);
+});
+
 const imageErrorMessage = computed(() => {
   return `Failed to load image for ${props.metadata.name}: `;
 });
@@ -121,10 +125,10 @@ const imageErrorMessage = computed(() => {
         </div>
         <div class="card-footer">
           <div class="row1">
-            <span v-if="metadata.owner" class="chip chip-avatar">
+            <RouterLink v-if="metadata.owner" :to="ownerProfileLink" class="chip chip-avatar contributor-chip">
               <LazyImage :src="ownerAvatarUrl" :alt="metadata.owner" class="avatar avatar-sm" />
               {{ metadata.owner }}
-            </span>
+            </RouterLink>
             <span v-if="repositoryStatusChip" class="chip" :class="repositoryStatusChip.className">
               <i v-if="repositoryStatusChip.icon" :class="repositoryStatusChip.icon"></i>{{ repositoryStatusChip.text }}
             </span>
@@ -240,6 +244,11 @@ const imageErrorMessage = computed(() => {
           background-color: var(--c-warning);
           color: var(--c-warning-text, #746000);
         }
+      }
+
+      .contributor-chip {
+        color: inherit;
+        text-decoration: none;
       }
     }
   }

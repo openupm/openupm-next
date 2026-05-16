@@ -6,7 +6,7 @@ import { useI18n } from 'vue-i18n';
 
 import { timeAgoFormat } from '@/utils';
 import { getPackageAliasNavLinks } from './package-metadata';
-import { getAvatarImageUrl, getGitHubPackageMetadataUrl, getPackageDetailPageUrl } from '@openupm/common/build/urls.js';
+import { getAvatarImageUrl, getContributorProfilePagePath, getGitHubPackageMetadataUrl, getPackageDetailPageUrl } from '@openupm/common/build/urls.js';
 import { DownloadsRange, PackageInfo, PackageMetadata, Packument } from "@openupm/types";
 
 const { t } = useI18n();
@@ -86,7 +86,7 @@ const hunterAvatarUrl = computed(() => {
 
 const hunterNavLink = computed(() => {
   return {
-    link: props.metadata.hunterUrl,
+    link: getContributorProfilePagePath(props.metadata.hunter),
     text: props.metadata.hunter,
   };
 });
@@ -116,7 +116,7 @@ const ownerAvatarUrl = computed(() => {
 
 const ownerNavLink = computed(() => {
   return {
-    link: props.metadata.ownerUrl,
+    link: getContributorProfilePagePath(props.metadata.owner),
     text: props.metadata.owner,
   };
 });
@@ -128,9 +128,9 @@ const parentOwnerAvatarUrl = computed(() => {
 });
 
 const parentOwnerNavLink = computed(() => {
-  if (props.metadata.parentRepoUrl)
+  if (props.metadata.parentRepoUrl && props.metadata.parentOwner)
     return {
-      link: props.metadata.parentOwnerUrl,
+      link: getContributorProfilePagePath(props.metadata.parentOwner),
       text: props.metadata.parentOwner,
     };
   return null;
@@ -286,28 +286,28 @@ const trackingModeTooltip = computed(() => {
       </section>
       <section class="col-6">
         <div class="metadata-title">{{ $capitalize($t("authors")) }}</div>
-        <a v-if="parentOwnerNavLink && parentOwnerNavLink.link" :href="parentOwnerNavLink.link" class="nav-link external">
+        <RouterLink v-if="parentOwnerNavLink && parentOwnerNavLink.link" :to="parentOwnerNavLink.link" class="nav-link">
           <span class="chip">
             <LazyImage v-if="parentOwnerAvatarUrl" :src="parentOwnerAvatarUrl" :alt="metadata.parentOwner"
               class="avatar avatar-sm" />
             {{ parentOwnerNavLink.text }}
           </span>
-        </a>
-        <a :href="ownerNavLink.link" class="nav-link external">
+        </RouterLink>
+        <RouterLink :to="ownerNavLink.link" class="nav-link">
           <span class="chip">
             <LazyImage :src="ownerAvatarUrl" :alt="metadata.owner" class="avatar avatar-sm" />
             {{ ownerNavLink.text }}
           </span>
-        </a>
+        </RouterLink>
       </section>
       <section class="col-6">
         <div class="metadata-title">{{ $capitalize($t("discovered-by")) }}</div>
-        <a v-if="hunterNavLink.link" :href="hunterNavLink.link" class="nav-link external">
+        <RouterLink v-if="hunterNavLink.link" :to="hunterNavLink.link" class="nav-link">
           <span class="chip">
             <LazyImage :src="hunterAvatarUrl" :alt="hunterNavLink.text" class="avatar avatar-sm" />
             {{ hunterNavLink.text }}
           </span>
-        </a>
+        </RouterLink>
         <span v-else>{{ metadata.hunter }}</span>
       </section>
       <section class="col-12">

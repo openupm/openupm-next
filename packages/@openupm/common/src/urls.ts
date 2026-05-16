@@ -83,6 +83,17 @@ export const getPackageListPagePath = function (topic?: string): string {
   return '/packages/';
 };
 
+/**
+ * Get contributor profile page path for GitHub user.
+ * @param githubUser GitHub username
+ * @returns contributor profile page path
+ */
+export const getContributorProfilePagePath = function (
+  githubUser: string,
+): string {
+  return `/contributors/${encodeURIComponent(githubUser.trim().toLowerCase())}/`;
+};
+
 // OpenUPM GitHub repo url.
 export const OpenUPMGitHubRepoUrl = 'https://github.com/openupm/openupm';
 
