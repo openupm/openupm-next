@@ -14,6 +14,10 @@ const props = defineProps({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     type: Array<any>,
     default: () => []
+  },
+  linkToProfile: {
+    type: Boolean,
+    default: false
   }
 });
 
@@ -31,7 +35,7 @@ const users = computed(() => {
 <template>
   <div class="github-user-container">
     <div v-for="(profile, index) in users" :key="index" class="github-user-item">
-      <GitHubAvatar :profile="profile" />
+      <GitHubAvatar :profile="profile" :link-to-profile="linkToProfile" />
     </div>
   </div>
 </template>

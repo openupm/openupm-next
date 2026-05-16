@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { PropType } from 'vue';
 
-import { getAvatarImageUrl } from "@openupm/common/build/urls.js";
+import { getAvatarImageUrl, getContributorProfilePagePath } from "@openupm/common/build/urls.js";
 
 interface Profile {
   githubUser: string;
@@ -13,11 +13,17 @@ const props = defineProps({
   profile: {
     type: Object as PropType<Profile>,
     required: true
+  },
+  linkToProfile: {
+    type: Boolean,
+    default: false
   }
 });
 
 const { text, abbr, githubUser } = props.profile;
-const url = `https://github.com/${githubUser}`;
+const url = props.linkToProfile
+  ? getContributorProfilePagePath(githubUser)
+  : `https://github.com/${githubUser}`;
 const imageUrl = getAvatarImageUrl(githubUser, 128);
 </script>
 
