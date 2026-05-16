@@ -3,7 +3,12 @@ import chai from "chai";
 chai.should();
 
 import { DailyDownload } from "@openupm/types";
-import { fillMissingDates, generateHueFromStringInRange } from "@/utils";
+import {
+  decodeGitHubBase64Content,
+  fillMissingDates,
+  generateHueFromStringInRange,
+  stripLeadingBom,
+} from "@/utils";
 
 describe("@/utils.ts", function () {
   describe("fillMissingDates", () => {
@@ -83,6 +88,36 @@ describe("@/utils.ts", function () {
       const result = generateHueFromStringInRange(str, rangeMin, rangeMax);
       result.should.be.a("number");
       result.should.be.within(rangeMin, 255);
+    });
+  });
+
+  describe("stripLeadingBom", () => {
+    it("removes a leading UTF-8 BOM", () => {
+      stripLeadingBom('\uFEFF{"name":"package-a"}').should.equal(
+        '{"name":"package-a"}',
+      );
+    });
+
+    it("leaves text without a leading UTF-8 BOM unchanged", () => {
+      stripLeadingBom('{"name":"package-a"}').should.equal(
+        '{"name":"package-a"}',
+      );
+    });
+  });
+
+  describe("decodeGitHubBase64Content", () => {
+    it("decodes UTF-8 GitHub content and strips a leading BOM", () => {
+      const content = Buffer.from(
+        '\uFEFF{"name":"package-a","displayName":"\\u6e2c\\u8a66"}',
+        "utf8",
+      ).toString("base64");
+
+      const decoded = decodeGitHubBase64Content(content);
+
+      JSON.parse(decoded).should.deep.equal({
+        name: "package-a",
+        displayName: "測試",
+      });
     });
   });
 });

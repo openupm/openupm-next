@@ -18,6 +18,7 @@ import { getVersionFromTag } from "@openupm/common/build/semver.js";
 import { isPackageBlockedByScope, isPackageRequiresManualVerification, validPackageName } from "@openupm/common/build/utils.js";
 import { topicsWithAll } from '@temp/topics.js';
 import { BLOCKED_SCOPES_FILENAME, SDPXLIST_FILENAME } from "@openupm/types";
+import { decodeGitHubBase64Content } from "@/utils";
 
 const store = useDefaultStore();
 const { t } = useI18n();
@@ -351,7 +352,7 @@ const fetchPackageJson = async (): Promise<void> => {
       headers: { Accept: "application/vnd.github.v3.json" },
     });
     // Assign data.
-    let content = atob(resp.data.content);
+    let content = decodeGitHubBase64Content(resp.data.content);
     state.packageJsonObj = JSON.parse(content);
     let packageName = state.packageJsonObj.name;
     // Verify private
