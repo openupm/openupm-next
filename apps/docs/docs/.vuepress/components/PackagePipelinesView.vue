@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-import { useI18n } from 'vue-i18n';
+import { computed } from "vue";
+import { useI18n } from "vue-i18n";
 import { paramCase } from "change-case";
 import urlJoin from "url-join";
 
 import { ReleaseState, ReleaseErrorCode } from "@openupm/types";
-import { getAzureWebBuildUrl } from '@openupm/common/build/urls.js';
-import { PackageRelease } from '@openupm/types';
+import { getAzureWebBuildUrl } from "@openupm/common/build/urls.js";
+import { PackageRelease } from "@openupm/types";
 
 const { t } = useI18n();
 
@@ -25,50 +25,55 @@ const releaseReasonLocaleNoteKeyMap = computed(() => {
 const props = defineProps({
   invalidTags: {
     type: Array<string>,
-    default: () => []
+    default: () => [],
   },
   releases: {
     type: Array<PackageRelease>,
-    default: () => []
+    default: () => [],
   },
   repoUrl: {
     type: String,
-    default: ""
+    default: "",
   },
   isLoading: {
     type: Boolean,
-    default: true
-  }
+    default: true,
+  },
 });
 
 const invalidTagEntries = computed(() => {
-  return props.invalidTags.map(x => {
+  return props.invalidTags.map((x) => {
     return {
       tag: x,
       tagLink: {
         link: urlJoin(props.repoUrl, "releases/tag", x),
-        text: x
-      }
+        text: x,
+      },
     };
   });
 });
 
 const releaseEntries = computed(() => {
-  return props.releases.map(x => {
+  return props.releases.map((x) => {
+    const displayVersion = x.publishedVersion || x.version;
+    const hasScheduledVersionMismatch =
+      Boolean(x.publishedVersion) && x.publishedVersion !== x.version;
     const entry = {
       ...x,
+      displayVersion,
+      hasScheduledVersionMismatch,
       buildLink: {
         link: getAzureWebBuildUrl(x.buildId),
-        text: x.buildId
+        text: x.buildId,
       },
       commitLink: {
         link: urlJoin(props.repoUrl, "commit", x.commit),
-        text: x.commit.substring(0, 7)
+        text: x.commit.substring(0, 7),
       },
       icon: "",
       note: "",
       errorCode: "",
-      errorMessage: ""
+      errorMessage: "",
     };
     if (entry.state == ReleaseState.Pending) {
       entry.icon = "far fa-clock";
@@ -117,13 +122,29 @@ const releaseEntries = computed(() => {
           </td>
           <td>{{ entry.tag }}</td>
           <td>
-            {{ entry.version }}
-            <span v-if="entry.source === 'githubRelease'" class="release-badge tooltip"
-              :data-tooltip="$t('github-release-asset-package')">
-              <i class="fas fa-paperclip" aria-hidden="true"></i>
-              <span class="sr-only">{{ $t("github-release-asset-package") }}</span>
+            <span>{{ entry.displayVersion }}</span>
+            <span
+              v-if="entry.hasScheduledVersionMismatch"
+              class="scheduled-version tooltip"
+              :data-tooltip="entry.version"
+            >
+              {{ entry.version }}
             </span>
-            <span v-if="entry.signed" class="release-badge tooltip" :data-tooltip="$t('signed-package')">
+            <span
+              v-if="entry.source === 'githubRelease'"
+              class="release-badge tooltip"
+              :data-tooltip="$t('github-release-asset-package')"
+            >
+              <i class="fas fa-paperclip" aria-hidden="true"></i>
+              <span class="sr-only">{{
+                $t("github-release-asset-package")
+              }}</span>
+            </span>
+            <span
+              v-if="entry.signed"
+              class="release-badge tooltip"
+              :data-tooltip="$t('signed-package')"
+            >
               <i class="fas fa-file-signature" aria-hidden="true"></i>
               <span class="sr-only">{{ $t("signed-package") }}</span>
             </span>
@@ -136,7 +157,9 @@ const releaseEntries = computed(() => {
           </td>
           <td>
             <span>{{ entry.note }}</span>
-            <span v-show="entry.errorCode" class="label label-warning mr-2">{{ entry.errorCode }}</span>
+            <span v-show="entry.errorCode" class="label label-warning mr-2">{{
+              entry.errorCode
+            }}</span>
             <span class="hide-sm">{{ entry.errorMessage }}</span>
           </td>
         </tr>
@@ -173,6 +196,13 @@ const releaseEntries = computed(() => {
   .release-badge {
     display: inline-block;
     margin-left: 0.25rem;
+    color: var(--c-text-lightest);
+  }
+
+  .scheduled-version {
+    display: inline-block;
+    margin-left: 0.35rem;
+    font-size: 0.75rem;
     color: var(--c-text-lightest);
   }
 

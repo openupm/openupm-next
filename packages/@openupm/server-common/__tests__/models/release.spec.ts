@@ -80,6 +80,7 @@ describeWithRedis('save', function () {
       buildId: '123',
       source: 'githubRelease',
       signed: true,
+      publishedVersion: '1.0.1',
       createdAt: 0,
       updatedAt: 0,
     });
@@ -92,6 +93,7 @@ describeWithRedis('save', function () {
     expect(obj2!.reason).toEqual(obj.reason);
     expect(obj2!.source).toEqual('githubRelease');
     expect(obj2!.signed).toEqual(true);
+    expect(obj2!.publishedVersion).toEqual('1.0.1');
     await remove(obj2!.packageName, obj2!.version);
     const obj3 = await fetchOne(obj.packageName, obj.version);
     expect(obj3).toBeNull();
