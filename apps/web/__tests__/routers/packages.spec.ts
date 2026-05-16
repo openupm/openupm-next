@@ -42,6 +42,7 @@ const releases: ReleaseModel[] = [
     updatedAt: 0,
     source: 'githubRelease',
     signed: true,
+    publishedVersion: '0.2.1',
   },
 ];
 
@@ -82,6 +83,7 @@ describe('packages', () => {
       tag: 'v0.2.0',
       source: 'githubRelease',
       signed: true,
+      publishedVersion: '0.2.1',
     });
     expect(response.body.releases[1]).toMatchObject({
       tag: 'v0.1.0',

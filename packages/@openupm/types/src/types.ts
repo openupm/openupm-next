@@ -83,6 +83,7 @@ export interface PackageRelease {
   version: string;
   source?: 'git' | 'githubRelease';
   signed?: boolean;
+  publishedVersion?: string;
 }
 
 export const releaseFields: (keyof PackageRelease)[] = [
@@ -95,6 +96,7 @@ export const releaseFields: (keyof PackageRelease)[] = [
   'version',
   'source',
   'signed',
+  'publishedVersion',
 ];
 
 export interface PackageInfo {

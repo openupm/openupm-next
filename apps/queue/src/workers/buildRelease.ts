@@ -1,6 +1,6 @@
-import configRaw from 'config';
-import superagent from 'superagent';
-import util from 'util';
+import configRaw from "config";
+import superagent from "superagent";
+import util from "util";
 
 import {
   ReleaseErrorCode,
@@ -8,13 +8,13 @@ import {
   ReleaseState,
   RetryableReleaseErrorCodes,
   type PackageMetadataLocal,
-} from '@openupm/types';
-import { loadPackageMetadataLocal } from '@openupm/local-data';
+} from "@openupm/types";
+import { loadPackageMetadataLocal } from "@openupm/local-data";
 import {
   fetchOneOrThrow,
   save,
-} from '@openupm/server-common/build/models/release.js';
-import { createLogger } from '@openupm/server-common/build/log.js';
+} from "@openupm/server-common/build/models/release.js";
+import { createLogger } from "@openupm/server-common/build/log.js";
 
 import {
   BuildResult,
@@ -24,17 +24,17 @@ import {
   getBuildSectionLogUrl,
   queueBuild,
   waitBuild,
-} from '../utils/azure.js';
+} from "../utils/azure.js";
 import {
   GitHubReleaseAssetError,
   resolveGitHubReleaseAsset,
-} from '../utils/githubReleaseAsset.js';
+} from "../utils/githubReleaseAsset.js";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const config = configRaw as any;
 const sleep = util.promisify(setTimeout);
-const logger = createLogger('@openupm/queue/buildRelease');
-const packageResultMarker = 'OPENUPM_PACKAGE_RESULT';
+const logger = createLogger("@openupm/queue/buildRelease");
+const packageResultMarker = "OPENUPM_PACKAGE_RESULT";
 
 export async function buildRelease(
   packageName: string,
@@ -53,14 +53,18 @@ export async function buildRelease(
     const build = await waitReleaseBuild(buildApi, release);
     await handleReleaseBuild(build, release);
   } catch (err) {
-    if ((err as NodeJS.ErrnoException).code === 'ETIMEDOUT') {
+    if ((err as NodeJS.ErrnoException).code === "ETIMEDOUT") {
       release.state = ReleaseState.Failed;
       release.reason = ReleaseErrorCode.ConnectionTimeout;
+      release.signed = false;
+      release.publishedVersion = undefined;
       await save(release);
       logReleaseError(release);
     } else if (err instanceof GitHubReleaseAssetError) {
       release.state = ReleaseState.Failed;
       release.reason = err.reason;
+      release.signed = false;
+      release.publishedVersion = undefined;
       await save(release);
       logReleaseError(release);
     }
@@ -72,7 +76,7 @@ async function updateReleaseState(release: ReleaseModel): Promise<boolean> {
   if (release.state === ReleaseState.Succeeded) {
     logger.debug(
       { rel: `${release.packageName}@${release.version}` },
-      'skip successful release',
+      "skip successful release",
     );
     return false;
   }
@@ -83,6 +87,8 @@ async function updateReleaseState(release: ReleaseModel): Promise<boolean> {
   ) {
     release.state = ReleaseState.Building;
     release.reason = ReleaseErrorCode.None;
+    release.signed = false;
+    release.publishedVersion = undefined;
     await save(release);
     return true;
   }
@@ -92,7 +98,9 @@ async function updateReleaseState(release: ReleaseModel): Promise<boolean> {
     release.state === ReleaseState.Failed
   ) {
     release.state = ReleaseState.Building;
-    release.buildId = '';
+    release.buildId = "";
+    release.signed = false;
+    release.publishedVersion = undefined;
     await save(release);
     return true;
   }
@@ -107,10 +115,14 @@ async function updateReleaseBuild(
   release: ReleaseModel,
 ): Promise<ReleaseModel> {
   if (!release.buildId) {
-    logger.info({ rel: `${release.packageName}@${release.version}` }, 'queue build');
+    logger.info(
+      { rel: `${release.packageName}@${release.version}` },
+      "queue build",
+    );
     if (!pkg) throw new Error(`package not found: ${release.packageName}`);
     release.source = getReleaseSource(pkg, release);
     release.signed = false;
+    release.publishedVersion = undefined;
     release = await save(release);
     const parameters = await getQueueBuildParameters(pkg, release);
     const build = await queueBuild(buildApi, config.azureDevops.definitionId, {
@@ -134,10 +146,10 @@ export async function getQueueBuildParameters(
     packageVersion: release.version,
   };
 
-  if (getReleaseSource(pkg, release) === 'git') {
+  if (getReleaseSource(pkg, release) === "git") {
     return {
       ...baseParameters,
-      packageSource: 'git',
+      packageSource: "git",
     };
   }
 
@@ -150,7 +162,7 @@ export async function getQueueBuildParameters(
 
   return {
     ...baseParameters,
-    packageSource: 'githubRelease',
+    packageSource: "githubRelease",
     packageAssetUrl: resolvedAsset.packageAssetUrl,
     packageAssetName: resolvedAsset.packageAssetName,
   };
@@ -163,8 +175,11 @@ async function waitReleaseBuild(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any | null> {
   logger.debug(
-    { rel: `${release.packageName}@${release.version}`, buildId: release.buildId },
-    'wait build',
+    {
+      rel: `${release.packageName}@${release.version}`,
+      buildId: release.buildId,
+    },
+    "wait build",
   );
   return await waitBuild(buildApi, release.buildId);
 }
@@ -174,7 +189,7 @@ async function handleReleaseBuild(
   build: any | null,
   release: ReleaseModel,
 ): Promise<void> {
-  let fullLogText = '';
+  let fullLogText = "";
   if (release.buildId) {
     fullLogText = await getFullBuildLogText(release.buildId);
   }
@@ -189,17 +204,25 @@ async function handleReleaseBuild(
     const packageResult = getPackageResultFromBuildLogText(fullLogText);
     if (!packageResult) {
       release.signed = false;
+      release.publishedVersion = undefined;
       logger.warn(
-        { rel: `${release.packageName}@${release.version}`, build: release.buildId },
-        'package result marker missing from successful build log',
+        {
+          rel: `${release.packageName}@${release.version}`,
+          build: release.buildId,
+        },
+        "package result marker missing from successful build log",
       );
     } else {
       release.signed = packageResult.signed;
+      release.publishedVersion = packageResult.publishedVersion;
     }
     await save(release);
     logger.info(
-      { rel: `${release.packageName}@${release.version}`, build: release.buildId },
-      'build succeeded',
+      {
+        rel: `${release.packageName}@${release.version}`,
+        build: release.buildId,
+      },
+      "build succeeded",
     );
     return;
   }
@@ -213,6 +236,7 @@ async function handleReleaseBuild(
   release.state = ReleaseState.Failed;
   release.reason = reason;
   release.signed = false;
+  release.publishedVersion = undefined;
   await save(release);
   logReleaseError(release);
 
@@ -224,25 +248,33 @@ async function handleReleaseBuild(
 }
 
 export function getReleaseSource(
-  pkg: Pick<PackageMetadataLocal, 'trackingMode'>,
-  release: Pick<ReleaseModel, 'source'>,
-): 'git' | 'githubRelease' {
-  return release.source || pkg.trackingMode || 'git';
+  pkg: Pick<PackageMetadataLocal, "trackingMode">,
+  release: Pick<ReleaseModel, "source">,
+): "git" | "githubRelease" {
+  return release.source || pkg.trackingMode || "git";
 }
 
 export function getPackageResultFromBuildLogText(
   text: string,
-): { signed: boolean } | null {
-  let result: { signed: boolean } | null = null;
+): { signed: boolean; publishedVersion?: string } | null {
+  let result: { signed: boolean; publishedVersion?: string } | null = null;
   for (const line of text.split(/\r?\n/)) {
     const markerIndex = line.indexOf(packageResultMarker);
     if (markerIndex < 0) continue;
-    const jsonText = line.slice(markerIndex + packageResultMarker.length).trim();
+    const jsonText = line
+      .slice(markerIndex + packageResultMarker.length)
+      .trim();
     try {
-      const parsed = JSON.parse(jsonText) as { signed?: unknown };
+      const parsed = JSON.parse(jsonText) as {
+        signed?: unknown;
+        publishedVersion?: unknown;
+      };
       result = { signed: parsed.signed === true };
+      if (typeof parsed.publishedVersion === "string") {
+        result.publishedVersion = parsed.publishedVersion;
+      }
     } catch {
-      logger.warn({ line }, 'failed to parse package result marker');
+      logger.warn({ line }, "failed to parse package result marker");
     }
   }
   return result;
@@ -255,13 +287,13 @@ function logReleaseError(release: ReleaseModel): void {
       build: release.buildId,
       reason: release.reason,
     },
-    'release failed',
+    "release failed",
   );
 }
 
 async function getFullBuildLogText(buildId: string): Promise<string> {
   const buildLogsUrl = getBuildLogsUrl(buildId);
-  const resp = await superagent.get(buildLogsUrl).type('json');
+  const resp = await superagent.get(buildLogsUrl).type("json");
   const lastStepId = resp.body.value[resp.body.value.length - 1].id;
 
   const buildLogSectionUrl = getBuildSectionLogUrl(buildId, lastStepId);
@@ -271,7 +303,7 @@ async function getFullBuildLogText(buildId: string): Promise<string> {
 
 export function getReasonFromBuildLogText(text: string): ReleaseErrorCode {
   if (
-    text.includes('npm publish') &&
+    text.includes("npm publish") &&
     /(^|\n)(?:\S+\s+)?>\s+.+@\S+\s+(prepublishOnly|prepack|prepare|postpack|publish|postpublish)\s*($|\n)/m.test(
       text,
     ) &&
@@ -282,53 +314,53 @@ export function getReasonFromBuildLogText(text: string): ReleaseErrorCode {
     return ReleaseErrorCode.NpmHookError;
   if (/fatal: Remote branch .* not found/.test(text))
     return ReleaseErrorCode.RemoteBranchNotFound;
-  else if (text.includes('code E409')) return ReleaseErrorCode.VersionConflict;
+  else if (text.includes("code E409")) return ReleaseErrorCode.VersionConflict;
   else if (
-    (text.includes('ENOENT') && text.includes('error path package.json')) ||
-    text.includes('Downloaded package asset has no package/package.json')
+    (text.includes("ENOENT") && text.includes("error path package.json")) ||
+    text.includes("Downloaded package asset has no package/package.json")
   )
     return ReleaseErrorCode.PackageNotFound;
-  else if (text.includes('code E400')) {
+  else if (text.includes("code E400")) {
     if (/400 Bad Request - PUT https:\/\/.*\.com\/@/.test(text)) {
       return ReleaseErrorCode.PackageNameInvalid;
     }
     return ReleaseErrorCode.BadRequest;
-  } else if (text.includes('code E401')) return ReleaseErrorCode.Unauthorized;
-  else if (text.includes('code E403')) return ReleaseErrorCode.Forbidden;
-  else if (text.includes('code E413')) return ReleaseErrorCode.EntityTooLarge;
-  else if (text.includes('code E500')) return ReleaseErrorCode.InternalError;
-  else if (text.includes('code E502')) return ReleaseErrorCode.BadGateway;
-  else if (text.includes('code E503'))
+  } else if (text.includes("code E401")) return ReleaseErrorCode.Unauthorized;
+  else if (text.includes("code E403")) return ReleaseErrorCode.Forbidden;
+  else if (text.includes("code E413")) return ReleaseErrorCode.EntityTooLarge;
+  else if (text.includes("code E500")) return ReleaseErrorCode.InternalError;
+  else if (text.includes("code E502")) return ReleaseErrorCode.BadGateway;
+  else if (text.includes("code E503"))
     return ReleaseErrorCode.ServiceUnavailable;
-  else if (text.includes('code E504')) return ReleaseErrorCode.GatewayTimeout;
-  else if (text.includes('code EPRIVATE')) return ReleaseErrorCode.Private;
+  else if (text.includes("code E504")) return ReleaseErrorCode.GatewayTimeout;
+  else if (text.includes("code EPRIVATE")) return ReleaseErrorCode.Private;
   else if (
-    text.includes('code EJSONPARSE') ||
-    text.includes('Unsupported package asset extension') ||
-    text.includes('Downloaded package asset is not a valid tar archive') ||
-    text.includes('Downloaded package asset package.json is not valid JSON')
+    text.includes("code EJSONPARSE") ||
+    text.includes("Unsupported package asset extension") ||
+    text.includes("Downloaded package asset is not a valid tar archive") ||
+    text.includes("Downloaded package asset package.json is not valid JSON")
   )
     return ReleaseErrorCode.PackageJsonParsingError;
   else if (
-    text.includes('code ERR_STRING_TOO_LONG') ||
-    text.includes('JavaScript heap out of memory')
+    text.includes("code ERR_STRING_TOO_LONG") ||
+    text.includes("JavaScript heap out of memory")
   )
     return ReleaseErrorCode.HeapOutOfMemroy;
-  else if (text.includes('This repository exceeded its LFS budget'))
+  else if (text.includes("This repository exceeded its LFS budget"))
     return ReleaseErrorCode.LfsBudgetExceeded;
-  else if (text.includes('Object does not exist on the server'))
+  else if (text.includes("Object does not exist on the server"))
     return ReleaseErrorCode.LfsObjectNotFound;
-  else if (text.includes('GITHUB_RELEASE_ASSET_DOWNLOAD_NOT_FOUND'))
+  else if (text.includes("GITHUB_RELEASE_ASSET_DOWNLOAD_NOT_FOUND"))
     return ReleaseErrorCode.GitHubReleaseAssetNotFound;
-  else if (text.includes('GITHUB_RELEASE_ASSET_DOWNLOAD_FAILED'))
+  else if (text.includes("GITHUB_RELEASE_ASSET_DOWNLOAD_FAILED"))
     return ReleaseErrorCode.GitHubReleaseAssetDownloadFailed;
-  else if (text.includes('Downloaded package asset name mismatch'))
+  else if (text.includes("Downloaded package asset name mismatch"))
     return ReleaseErrorCode.PackageNameInvalid;
-  else if (text.includes('Downloaded package asset version mismatch'))
+  else if (text.includes("Downloaded package asset version mismatch"))
     return ReleaseErrorCode.InvalidVersion;
-  else if (text.includes('Invalid version') || text.includes('code EBADSEMVER'))
+  else if (text.includes("Invalid version") || text.includes("code EBADSEMVER"))
     return ReleaseErrorCode.InvalidVersion;
-  else if (text.includes('Could not read from remote repository'))
+  else if (text.includes("Could not read from remote repository"))
     return ReleaseErrorCode.RemoteRepositoryUnavailable;
   else if (
     /Fetched in submodule path .*?\s+Direct fetching of that commit failed\./s.test(
@@ -336,7 +368,9 @@ export function getReasonFromBuildLogText(text: string): ReleaseErrorCode {
     )
   )
     return ReleaseErrorCode.SubmoduleFetchingError;
-  else if (/fatal: No url found for submodule path .* in \.gitmodules/.test(text))
+  else if (
+    /fatal: No url found for submodule path .* in \.gitmodules/.test(text)
+  )
     return ReleaseErrorCode.RemoteSubmoduleUnavailable;
   else if (/fatal: clone of .* into submodule path/.test(text))
     return ReleaseErrorCode.RemoteSubmoduleUnavailable;
