@@ -139,4 +139,13 @@ describe("contributor profile filtering", () => {
     expect(metadataViewSource).toContain("getContributorProfilePagePath");
     expect(packageCardSource).toContain("getContributorProfilePagePath");
   });
+
+  it("keeps non-GitHub parent owner chips on their original upstream profile URL", () => {
+    const metadataViewSource = readFileSync(packageMetadataViewPath, "utf8");
+
+    expect(metadataViewSource).toContain(
+      'parentOwnerUrl.toLowerCase().includes("github")',
+    );
+    expect(metadataViewSource).toContain(": parentOwnerUrl");
+  });
 });

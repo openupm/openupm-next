@@ -128,11 +128,15 @@ const parentOwnerAvatarUrl = computed(() => {
 });
 
 const parentOwnerNavLink = computed(() => {
-  if (props.metadata.parentRepoUrl && props.metadata.parentOwner)
+  if (props.metadata.parentRepoUrl && props.metadata.parentOwner) {
+    const parentOwnerUrl = props.metadata.parentOwnerUrl || "";
     return {
-      link: getContributorProfilePagePath(props.metadata.parentOwner),
+      link: parentOwnerUrl.toLowerCase().includes("github")
+        ? getContributorProfilePagePath(props.metadata.parentOwner)
+        : parentOwnerUrl,
       text: props.metadata.parentOwner,
     };
+  }
   return null;
 });
 
