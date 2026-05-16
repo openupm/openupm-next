@@ -102,7 +102,7 @@ const imageErrorMessage = computed(() => {
               <LazyImage :src="ownerAvatarUrl" :alt="metadata.owner" class="avatar avatar-sm" />
               {{ metadata.owner }}
             </span>
-            <span v-if="metadata.time" class="chip">
+            <span v-if="metadata.time && !metadata.repoArchived" class="chip">
               <i class="fas fa-clock"></i>{{ timeAgoText }}
             </span>
             <span v-if="metadata.repoArchived" class="chip chip-archived">
