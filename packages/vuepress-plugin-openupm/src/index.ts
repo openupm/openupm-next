@@ -27,10 +27,15 @@ import {
   getLocalePackageDescription,
 } from '@openupm/common/build/utils.js';
 import {
+  getContributorProfilePagePath,
   getPackageDetailPagePath,
   getPackageListPagePath,
 } from '@openupm/common/build/urls.js';
 
+import {
+  buildContributorProfile,
+  collectContributorProfileGithubUsers,
+} from './contributors.js';
 import {
   buildPackageAliasRedirects,
   mergePackageAliasRedirects,
@@ -44,6 +49,7 @@ type Contributor = GithubUserWithScore & {
 
 type PluginData = {
   blockedScopes: string[];
+  contributorProfileGithubUsers: string[];
   hunters: Contributor[];
   metadataLocalList: PackageMetadataLocal[];
   metadataGroupByNamespace: Record<string, PackageMetadataLocal[]>;
@@ -107,6 +113,10 @@ const PLUGIN_DATA = await (async (): Promise<PluginData> => {
   };
   const hunters = prepareContributors(huntersAndOwners.hunters);
   const owners = prepareContributors(huntersAndOwners.owners);
+  const contributorProfileGithubUsers = collectContributorProfileGithubUsers(
+    huntersAndOwners.hunters,
+    huntersAndOwners.owners,
+  );
   // Blocked scopes
   const blockedScopes = await loadBlockedScopes();
   // Spdx
@@ -121,6 +131,7 @@ const PLUGIN_DATA = await (async (): Promise<PluginData> => {
     });
   return {
     blockedScopes,
+    contributorProfileGithubUsers,
     hunters,
     metadataLocalList,
     metadataGroupByNamespace,
@@ -129,6 +140,36 @@ const PLUGIN_DATA = await (async (): Promise<PluginData> => {
     topicsWithAll,
   };
 })();
+
+/**
+ * Create contributor profile pages
+ * @param app vuepress app
+ */
+const createContributorProfilePages = async function (
+  app: App,
+): Promise<Page[]> {
+  const pages: Page[] = [];
+  const { contributorProfileGithubUsers, metadataLocalList } = PLUGIN_DATA;
+  for (const githubUser of contributorProfileGithubUsers) {
+    const profile = buildContributorProfile(githubUser, metadataLocalList);
+    const frontmatter = {
+      layout: 'ContributorProfileLayout',
+      // Hack: use an empty element to show sidebar
+      sidebar: [{ text: '', children: [] }],
+      title: `${githubUser} | OpenUPM Contributor`,
+      description: `OpenUPM packages owned and discovered by ${githubUser}.`,
+      contributorProfile: profile,
+    };
+    const pageOptions = {
+      path: getContributorProfilePagePath(githubUser),
+      frontmatter,
+      content: '',
+    };
+    const page = await createPage(app, pageOptions);
+    pages.push(page);
+  }
+  return pages;
+};
 
 /**
  * Create package detail pages
@@ -212,6 +253,7 @@ export default (): VuePressPlugin => ({
   async onInitialized(app: App): Promise<void> {
     addPages(app, await createDetailPages(app));
     addPages(app, await createListPages(app));
+    addPages(app, await createContributorProfilePages(app));
   },
   extendsPage: async (page: Page): Promise<void> => {
     if (page.path.endsWith('/contributors/')) {

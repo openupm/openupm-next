@@ -76,8 +76,8 @@ A heartfelt thank you to all our contributors! 🌟 If you'd like to be honored 
 
 ## Top 100 Package Hunters
 
-<GitHubUserList :items="$page.frontmatter.hunters" />
+<GitHubUserList :items="$page.frontmatter.hunters" link-to-profile />
 
 ## Top 100 Package Owners
 
-<GitHubUserList :items="$page.frontmatter.owners" />
+<GitHubUserList :items="$page.frontmatter.owners" link-to-profile />
