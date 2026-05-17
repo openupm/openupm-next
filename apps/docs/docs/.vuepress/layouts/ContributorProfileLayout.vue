@@ -7,18 +7,13 @@ import {
   getContributorDiscoveredPackages,
   getContributorOwnedPackages,
   getContributorProfileStats,
-  toPackageMetadata,
+  toContributorProfilePackageEntry,
 } from "@/components/contributor-profile";
 import { useDefaultStore } from "@/store";
 import {
   getAvatarImageUrl,
-  getContributorProfilePagePath,
 } from "@openupm/common/build/urls.js";
-import {
-  PackageMetadata,
-  PackageMetadataLocal,
-  PackageMetadataRemote,
-} from "@openupm/types";
+import { PackageMetadataLocal } from "@openupm/types";
 
 type ContributorProfileFrontmatter = {
   contributorProfile?: {
@@ -26,6 +21,8 @@ type ContributorProfileFrontmatter = {
     ownedCount: number;
     discoveredCount: number;
     totalSubmittedCount: number;
+    profileUrl?: string;
+    profileHost?: string;
   };
 };
 
@@ -37,11 +34,31 @@ const githubUser = computed(() => {
 });
 
 const githubUrl = computed(() => {
-  return `https://github.com/${githubUser.value}`;
+  return (
+    frontmatter.value.contributorProfile?.profileUrl ||
+    `https://github.com/${githubUser.value}`
+  );
 });
 
-const profilePath = computed(() => {
-  return getContributorProfilePagePath(githubUser.value);
+const contributorsLink = {
+  text: "Contributors",
+  link: "/contributors/",
+};
+
+const isGitHubProfileHost = function (profileHost: string): boolean {
+  const hostname = profileHost.toLowerCase();
+  return hostname === "github.com" || hostname.endsWith(".github.com");
+};
+
+const githubLink = computed(() => {
+  const profileHost = frontmatter.value.contributorProfile?.profileHost || "github.com";
+  const text = isGitHubProfileHost(profileHost)
+    ? "GitHub profile"
+    : `${profileHost} profile`;
+  return {
+    text,
+    link: githubUrl.value,
+  };
 });
 
 const avatarUrl = computed(() => {
@@ -65,25 +82,18 @@ const stats = computed(() => {
   );
 });
 
-const mapMetadata = (metadataLocal: PackageMetadataLocal): PackageMetadata => {
-  const metadataRemote = store.packageMetadataRemoteDict[
-    metadataLocal.name
-  ] as PackageMetadataRemote | undefined;
-  return toPackageMetadata(metadataLocal, metadataRemote);
-};
-
 const ownedPackages = computed(() => {
   return getContributorOwnedPackages(
     metadataLocalList.value,
     githubUser.value,
-  ).map(mapMetadata);
+  ).map(toContributorProfilePackageEntry);
 });
 
 const discoveredPackages = computed(() => {
   return getContributorDiscoveredPackages(
     metadataLocalList.value,
     githubUser.value,
-  ).map(mapMetadata);
+  ).map(toContributorProfilePackageEntry);
 });
 
 const isLoading = computed(() => {
@@ -93,49 +103,29 @@ const isLoading = computed(() => {
 
 <template>
   <ParentLayout class="contributor-profile">
-    <template #sidebar-top>
-      <ClientOnly>
-        <section class="state-section">
-          <ul class="menu">
-            <li class="menu-item">
-              Submitted
-              <div class="menu-badge">
-                <label class="label label-default">{{ stats.totalSubmittedCount }}</label>
-              </div>
-            </li>
-            <li class="menu-item">
-              Owned
-              <div class="menu-badge">
-                <a href="#owned" class="label label-default">{{ stats.ownedCount }}</a>
-              </div>
-            </li>
-            <li class="menu-item">
-              Discovered
-              <div class="menu-badge">
-                <a href="#discovered" class="label label-default">{{ stats.discoveredCount }}</a>
-              </div>
-            </li>
-          </ul>
-        </section>
-      </ClientOnly>
-    </template>
-
     <template #page-content-top>
       <ClientOnly>
         <main class="profile-content">
+          <nav aria-label="Breadcrumb">
+            <ul class="breadcrumb profile-breadcrumb">
+              <li class="breadcrumb-item">
+                <AutoLink :item="contributorsLink" />
+              </li>
+              <li class="breadcrumb-item">
+                <a href="#">{{ githubUser }}</a>
+              </li>
+            </ul>
+          </nav>
           <header class="profile-header">
             <LazyImage :src="avatarUrl" :alt="githubUser" class="avatar avatar-xl" />
             <div class="profile-header-text">
-              <a class="profile-back" href="/contributors/">Contributors</a>
               <h1>{{ githubUser }}</h1>
               <div class="profile-stats">
                 <span>{{ stats.ownedCount }} owned</span>
                 <span>{{ stats.discoveredCount }} discovered</span>
-                <span>{{ stats.totalSubmittedCount }} submitted</span>
               </div>
               <div class="profile-actions">
-                <a class="btn btn-primary" :href="profilePath">OpenUPM profile</a>
-                <a class="btn btn-link nav-link external" :href="githubUrl">GitHub</a>
+                <AutoLink class="nav-link external github-link" :item="githubLink" />
               </div>
             </div>
           </header>
@@ -149,8 +139,28 @@ const isLoading = computed(() => {
               <div v-if="!ownedPackages.length" class="empty-state">
                 No owned packages.
               </div>
-              <div v-else class="package-grid">
-                <PackageCard v-for="metadata in ownedPackages" :key="metadata.name" :metadata="metadata" />
+              <div v-else class="package-table-wrapper">
+                <table class="table package-table">
+                  <thead>
+                    <tr>
+                      <th>Display name</th>
+                      <th class="package-name-column">Package name</th>
+                      <th class="submitted-column">Submitted</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="metadata in ownedPackages" :key="metadata.name">
+                      <td>
+                        <RouterLink :to="metadata.path">{{ metadata.displayName }}</RouterLink>
+                        <code class="mobile-package-name">{{ metadata.name }}</code>
+                      </td>
+                      <td class="package-name-column">
+                        <code>{{ metadata.name }}</code>
+                      </td>
+                      <td class="submitted-column">{{ metadata.createdAtText }}</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </section>
 
@@ -159,8 +169,28 @@ const isLoading = computed(() => {
               <div v-if="!discoveredPackages.length" class="empty-state">
                 No discovered packages.
               </div>
-              <div v-else class="package-grid">
-                <PackageCard v-for="metadata in discoveredPackages" :key="metadata.name" :metadata="metadata" />
+              <div v-else class="package-table-wrapper">
+                <table class="table package-table">
+                  <thead>
+                    <tr>
+                      <th>Display name</th>
+                      <th class="package-name-column">Package name</th>
+                      <th class="submitted-column">Submitted</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="metadata in discoveredPackages" :key="metadata.name">
+                      <td>
+                        <RouterLink :to="metadata.path">{{ metadata.displayName }}</RouterLink>
+                        <code class="mobile-package-name">{{ metadata.name }}</code>
+                      </td>
+                      <td class="package-name-column">
+                        <code>{{ metadata.name }}</code>
+                      </td>
+                      <td class="submitted-column">{{ metadata.createdAtText }}</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </section>
           </template>
@@ -180,40 +210,32 @@ const isLoading = computed(() => {
 
   @media (max-width: $MQMobileNarrow) {
     margin-top: $navbar-height-mobile;
-    padding: 0.75rem 0.5rem;
+    padding: 0;
   }
+}
+
+.profile-breadcrumb {
+  margin-bottom: 0.8rem;
 }
 
 .profile-header {
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 0.6rem 0 1.2rem;
-  border-bottom: 1px solid var(--c-border);
 
   h1 {
     margin: 0;
-    font-size: 2rem;
+    font-size: 0.8rem;
     line-height: 1.1;
   }
 
   @media (max-width: $MQMobileNarrow) {
     align-items: flex-start;
-
-    h1 {
-      font-size: 1.5rem;
-    }
   }
 }
 
 .profile-header-text {
   min-width: 0;
-}
-
-.profile-back {
-  display: inline-block;
-  margin-bottom: 0.2rem;
-  font-size: $font-size-sm;
 }
 
 .profile-stats {
@@ -228,22 +250,55 @@ const isLoading = computed(() => {
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem;
-  margin-top: 0.8rem;
+  margin-top: 0.35rem;
 }
 
 .package-section {
-  margin-top: 1.4rem;
+  margin-top: 1rem;
 
   h2 {
-    margin: 0 0 0.7rem;
+    margin: 0;
     font-size: 1.3rem;
   }
 }
 
-.package-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax($package-grid-column-width, 1fr));
-  gap: $package-grid-column-hgap;
+.package-table-wrapper {
+  overflow-x: auto;
+}
+
+.package-table {
+  width: 100%;
+
+  code {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}
+
+.mobile-package-name {
+  display: none;
+  margin-top: 0.15rem;
+}
+
+.package-name-column {
+  @media (max-width: $MQMobileNarrow) {
+    display: none;
+  }
+}
+
+.submitted-column {
+  width: 7.5rem;
+  white-space: nowrap;
+
+  @media (max-width: $MQMobileNarrow) {
+    width: 6.2rem;
+  }
+}
+
+@media (max-width: $MQMobileNarrow) {
+  .mobile-package-name {
+    display: block;
+  }
 }
 
 .empty-state {

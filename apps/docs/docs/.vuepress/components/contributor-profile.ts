@@ -3,12 +3,24 @@ import {
   PackageMetadataLocal,
   PackageMetadataRemote,
 } from '@openupm/types';
-import { getPackageMetadata } from '@openupm/common/build/utils.js';
+import {
+  getLocalePackageDisplayName,
+  getPackageMetadata,
+} from '@openupm/common/build/utils.js';
+import { getPackageDetailPagePath } from '@openupm/common/build/urls.js';
 
 export type ContributorProfileStats = {
   ownedCount: number;
   discoveredCount: number;
   totalSubmittedCount: number;
+};
+
+export type ContributorProfilePackageEntry = {
+  name: string;
+  displayName: string;
+  createdAt: number;
+  createdAtText: string;
+  path: string;
 };
 
 const emptyMetadataRemote: PackageMetadataRemote = {
@@ -63,12 +75,43 @@ export const toPackageMetadata = function (
   );
 };
 
+export const sortPackagesByLatestSubmitted = function <
+  T extends PackageMetadataLocal,
+>(metadataLocalList: T[]): T[] {
+  return [...metadataLocalList].sort((a, b) => {
+    return (b.createdAt || 0) - (a.createdAt || 0);
+  });
+};
+
+export const formatPackageSubmittedDate = function (
+  createdAt: number | undefined,
+): string {
+  if (!createdAt) return '-';
+  const date = new Date(createdAt);
+  if (Number.isNaN(date.getTime())) return '-';
+  return date.toISOString().slice(0, 10);
+};
+
+export const toContributorProfilePackageEntry = function (
+  metadataLocal: PackageMetadataLocal,
+): ContributorProfilePackageEntry {
+  return {
+    name: metadataLocal.name,
+    displayName: getLocalePackageDisplayName(metadataLocal),
+    createdAt: metadataLocal.createdAt || 0,
+    createdAtText: formatPackageSubmittedDate(metadataLocal.createdAt),
+    path: getPackageDetailPagePath(metadataLocal.name),
+  };
+};
+
 export const getContributorOwnedPackages = function (
   metadataLocalList: PackageMetadataLocal[],
   githubUser: string,
 ): PackageMetadataLocal[] {
-  return metadataLocalList.filter((metadata) =>
-    isOwnedByContributor(metadata, githubUser),
+  return sortPackagesByLatestSubmitted(
+    metadataLocalList.filter((metadata) =>
+      isOwnedByContributor(metadata, githubUser),
+    ),
   );
 };
 
@@ -76,8 +119,10 @@ export const getContributorDiscoveredPackages = function (
   metadataLocalList: PackageMetadataLocal[],
   githubUser: string,
 ): PackageMetadataLocal[] {
-  return metadataLocalList.filter((metadata) =>
-    isDiscoveredByContributor(metadata, githubUser),
+  return sortPackagesByLatestSubmitted(
+    metadataLocalList.filter((metadata) =>
+      isDiscoveredByContributor(metadata, githubUser),
+    ),
   );
 };
 

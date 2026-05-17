@@ -5,6 +5,8 @@ export type ContributorProfile = {
   ownedCount: number;
   discoveredCount: number;
   totalSubmittedCount: number;
+  profileUrl: string;
+  profileHost: string;
 };
 
 const normalizeGithubUser = (githubUser: string): string =>
@@ -27,6 +29,34 @@ const discoveredPackage = (
   metadata: PackageMetadataLocal,
   normalizedGithubUser: string,
 ): boolean => matchesGithubUser(metadata.hunter, normalizedGithubUser);
+
+const getUrlHost = function (url: string | null | undefined): string {
+  if (!url) return 'github.com';
+  try {
+    return new URL(url).hostname || 'github.com';
+  } catch {
+    return 'github.com';
+  }
+};
+
+const getContributorProfileUrl = function (
+  githubUser: string,
+  metadataLocalList: PackageMetadataLocal[],
+): string {
+  const normalizedGithubUser = normalizeGithubUser(githubUser);
+  for (const metadata of metadataLocalList) {
+    if (matchesGithubUser(metadata.owner, normalizedGithubUser)) {
+      return metadata.ownerUrl || `https://github.com/${githubUser}`;
+    }
+    if (matchesGithubUser(metadata.parentOwner, normalizedGithubUser)) {
+      return metadata.parentOwnerUrl || `https://github.com/${githubUser}`;
+    }
+    if (matchesGithubUser(metadata.hunter, normalizedGithubUser)) {
+      return metadata.hunterUrl || `https://github.com/${githubUser}`;
+    }
+  }
+  return `https://github.com/${githubUser}`;
+};
 
 export const collectContributorProfileGithubUsers = function (
   hunters: GithubUserWithScore[],
@@ -55,10 +85,13 @@ export const buildContributorProfile = function (
   const discoveredCount = metadataLocalList.filter((metadata) =>
     discoveredPackage(metadata, normalizedGithubUser),
   ).length;
+  const profileUrl = getContributorProfileUrl(githubUser, metadataLocalList);
   return {
     githubUser,
     ownedCount,
     discoveredCount,
     totalSubmittedCount: ownedCount + discoveredCount,
+    profileUrl,
+    profileHost: getUrlHost(profileUrl),
   };
 };

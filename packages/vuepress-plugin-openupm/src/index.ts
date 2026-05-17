@@ -154,8 +154,7 @@ const createContributorProfilePages = async function (
     const profile = buildContributorProfile(githubUser, metadataLocalList);
     const frontmatter = {
       layout: 'ContributorProfileLayout',
-      // Hack: use an empty element to show sidebar
-      sidebar: [{ text: '', children: [] }],
+      sidebar: false,
       title: `${githubUser} | OpenUPM Contributor`,
       description: `OpenUPM packages owned and discovered by ${githubUser}.`,
       contributorProfile: profile,

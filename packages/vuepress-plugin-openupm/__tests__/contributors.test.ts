@@ -26,20 +26,29 @@ describe('contributor profile generation', () => {
       {
         name: 'com.example.owner',
         owner: 'Alice',
+        ownerUrl: 'https://github.com/Alice',
         parentOwner: null,
+        parentOwnerUrl: null,
         hunter: 'carol',
+        hunterUrl: 'https://github.com/carol',
       },
       {
         name: 'com.example.parent',
         owner: 'fork-owner',
+        ownerUrl: 'https://github.com/fork-owner',
         parentOwner: 'alice',
+        parentOwnerUrl: 'https://github.com/alice',
         hunter: 'dave',
+        hunterUrl: 'https://github.com/dave',
       },
       {
         name: 'com.example.discovered',
         owner: 'bob',
+        ownerUrl: 'https://github.com/bob',
         parentOwner: null,
+        parentOwnerUrl: null,
         hunter: 'ALICE',
+        hunterUrl: 'https://github.com/ALICE',
       },
     ] as PackageMetadataLocal[];
 
@@ -48,6 +57,27 @@ describe('contributor profile generation', () => {
       ownedCount: 2,
       discoveredCount: 1,
       totalSubmittedCount: 3,
+      profileUrl: 'https://github.com/Alice',
+      profileHost: 'github.com',
+    });
+  });
+
+  it('uses the contributor upstream profile URL and host from matching metadata', () => {
+    const metadata = [
+      {
+        name: 'com.example.gitlab',
+        owner: 'Alice',
+        ownerUrl: 'https://gitlab.com/Alice',
+        parentOwner: null,
+        parentOwnerUrl: null,
+        hunter: 'bob',
+        hunterUrl: 'https://github.com/bob',
+      },
+    ] as PackageMetadataLocal[];
+
+    expect(buildContributorProfile('Alice', metadata)).toMatchObject({
+      profileUrl: 'https://gitlab.com/Alice',
+      profileHost: 'gitlab.com',
     });
   });
 });

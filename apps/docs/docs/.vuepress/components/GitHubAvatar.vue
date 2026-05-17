@@ -21,15 +21,17 @@ const props = defineProps({
 });
 
 const { text, abbr, githubUser } = props.profile;
-const url = props.linkToProfile
-  ? getContributorProfilePagePath(githubUser)
-  : `https://github.com/${githubUser}`;
+const profilePath = getContributorProfilePagePath(githubUser);
+const githubUrl = `https://github.com/${githubUser}`;
 const imageUrl = getAvatarImageUrl(githubUser, 128);
 </script>
 
 <template>
   <figure class="avatar avatar-xl tooltip" :data-tooltip="text" :data-initial="abbr">
-    <a :href="url">
+    <RouterLink v-if="linkToProfile" :to="profilePath">
+      <LazyImage v-if="imageUrl" :src="imageUrl" :alt="text" />
+    </RouterLink>
+    <a v-else :href="githubUrl">
       <LazyImage v-if="imageUrl" :src="imageUrl" :alt="text" />
     </a>
   </figure>

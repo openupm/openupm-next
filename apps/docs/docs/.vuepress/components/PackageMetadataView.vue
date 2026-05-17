@@ -84,11 +84,40 @@ const hunterAvatarUrl = computed(() => {
     : null;
 });
 
-const hunterNavLink = computed(() => {
+const isGithubProfileUrl = function (url: string | null | undefined): boolean {
+  if (!url) return false;
+  try {
+    const hostname = new URL(url).hostname.toLowerCase();
+    return hostname === "github.com" || hostname === "www.github.com";
+  } catch {
+    return false;
+  }
+};
+
+const getContributorNavLink = function (
+  githubUser: string | null | undefined,
+  profileUrl: string | null | undefined,
+): {
+  external: boolean;
+  link: string;
+  text: string;
+} | null {
+  if (!githubUser) return null;
+  const isGithubProfile = isGithubProfileUrl(profileUrl);
   return {
-    link: getContributorProfilePagePath(props.metadata.hunter),
-    text: props.metadata.hunter,
+    external: Boolean(profileUrl && !isGithubProfile),
+    link: isGithubProfile || !profileUrl
+      ? getContributorProfilePagePath(githubUser)
+      : profileUrl,
+    text: githubUser,
   };
+};
+
+const hunterNavLink = computed(() => {
+  return getContributorNavLink(
+    props.metadata.hunter,
+    props.metadata.hunterUrl,
+  );
 });
 
 const aliasNavLinks = computed(() => {
@@ -115,10 +144,10 @@ const ownerAvatarUrl = computed(() => {
 });
 
 const ownerNavLink = computed(() => {
-  return {
-    link: getContributorProfilePagePath(props.metadata.owner),
-    text: props.metadata.owner,
-  };
+  return getContributorNavLink(
+    props.metadata.owner,
+    props.metadata.ownerUrl,
+  );
 });
 
 const parentOwnerAvatarUrl = computed(() => {
@@ -129,17 +158,10 @@ const parentOwnerAvatarUrl = computed(() => {
 
 const parentOwnerNavLink = computed(() => {
   if (props.metadata.parentRepoUrl && props.metadata.parentOwner) {
-    const parentOwnerUrl = props.metadata.parentOwnerUrl || "";
-    const isGithubParentOwner = parentOwnerUrl
-      .toLowerCase()
-      .includes("github");
-    return {
-      external: !isGithubParentOwner,
-      link: isGithubParentOwner
-        ? getContributorProfilePagePath(props.metadata.parentOwner)
-        : parentOwnerUrl,
-      text: props.metadata.parentOwner,
-    };
+    return getContributorNavLink(
+      props.metadata.parentOwner,
+      props.metadata.parentOwnerUrl,
+    );
   }
   return null;
 });
@@ -310,7 +332,14 @@ const trackingModeTooltip = computed(() => {
             {{ parentOwnerNavLink.text }}
           </span>
         </RouterLink>
-        <RouterLink :to="ownerNavLink.link" class="nav-link">
+        <a v-if="ownerNavLink && ownerNavLink.external && ownerNavLink.link" :href="ownerNavLink.link"
+          class="nav-link external">
+          <span class="chip">
+            <LazyImage :src="ownerAvatarUrl" :alt="metadata.owner" class="avatar avatar-sm" />
+            {{ ownerNavLink.text }}
+          </span>
+        </a>
+        <RouterLink v-else-if="ownerNavLink && ownerNavLink.link" :to="ownerNavLink.link" class="nav-link">
           <span class="chip">
             <LazyImage :src="ownerAvatarUrl" :alt="metadata.owner" class="avatar avatar-sm" />
             {{ ownerNavLink.text }}
@@ -319,7 +348,14 @@ const trackingModeTooltip = computed(() => {
       </section>
       <section class="col-6">
         <div class="metadata-title">{{ $capitalize($t("discovered-by")) }}</div>
-        <RouterLink v-if="hunterNavLink.link" :to="hunterNavLink.link" class="nav-link">
+        <a v-if="hunterNavLink && hunterNavLink.external && hunterNavLink.link" :href="hunterNavLink.link"
+          class="nav-link external">
+          <span class="chip">
+            <LazyImage :src="hunterAvatarUrl" :alt="hunterNavLink.text" class="avatar avatar-sm" />
+            {{ hunterNavLink.text }}
+          </span>
+        </a>
+        <RouterLink v-else-if="hunterNavLink && hunterNavLink.link" :to="hunterNavLink.link" class="nav-link">
           <span class="chip">
             <LazyImage :src="hunterAvatarUrl" :alt="hunterNavLink.text" class="avatar avatar-sm" />
             {{ hunterNavLink.text }}
