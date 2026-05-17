@@ -126,7 +126,7 @@ const docSideBar = function (): any {
     {
       text: "Support US",
       collapsible: true,
-      children: ["/support/", "/contributors/"],
+      children: ["/support/", "/contributors/", "/docs/contributor-badges/"],
     },
     {
       text: "Resources",

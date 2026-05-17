@@ -36,6 +36,7 @@ import {
   addContributorProfileUrls,
   buildContributorProfile,
   collectContributorProfileGithubUsers,
+  ContributorBacker,
 } from './contributors.js';
 import {
   buildPackageAliasRedirects,
@@ -157,9 +158,26 @@ const createContributorProfilePages = async function (
   app: App,
 ): Promise<Page[]> {
   const pages: Page[] = [];
-  const { contributorProfileGithubUsers, metadataLocalList } = PLUGIN_DATA;
+  const { contributorProfileGithubUsers, hunters, metadataLocalList, owners } =
+    PLUGIN_DATA;
+  const contributorsPage = app.pages.find((page) =>
+    page.path.endsWith('/contributors/'),
+  );
+  const contributorsFrontmatter = contributorsPage?.frontmatter;
+  const rawBackers = contributorsFrontmatter
+    ? contributorsFrontmatter.backers
+    : undefined;
+  const backers = Array.isArray(rawBackers)
+    ? (rawBackers as ContributorBacker[])
+    : [];
+  const buildDate = new Date();
   for (const githubUser of contributorProfileGithubUsers) {
-    const profile = buildContributorProfile(githubUser, metadataLocalList);
+    const profile = buildContributorProfile(githubUser, metadataLocalList, {
+      backers,
+      buildDate,
+      hunters,
+      owners,
+    });
     const frontmatter = {
       layout: 'ContributorProfileLayout',
       sidebar: false,

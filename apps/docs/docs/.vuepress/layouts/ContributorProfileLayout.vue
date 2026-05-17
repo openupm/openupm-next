@@ -9,10 +9,9 @@ import {
   getContributorProfileStats,
   toContributorProfilePackageEntry,
 } from "@/components/contributor-profile";
+import ContributorBadgeWall from "@/components/ContributorBadgeWall.vue";
 import { useDefaultStore } from "@/store";
-import {
-  getAvatarImageUrl,
-} from "@openupm/common/build/urls.js";
+import { getAvatarImageUrl } from "@openupm/common/build/urls.js";
 import { PackageMetadataLocal } from "@openupm/types";
 
 type ContributorProfileFrontmatter = {
@@ -23,7 +22,22 @@ type ContributorProfileFrontmatter = {
     totalSubmittedCount: number;
     profileUrl?: string;
     profileHost?: string;
+    badges?: ContributorBadge[];
   };
+};
+
+type ContributorBadge = {
+  id: string;
+  title: string;
+  description: string;
+  category: "count" | "rank" | "year" | "history" | "support";
+  tier?: number;
+  metric?: number;
+  rank?: number;
+  year?: number;
+  icon: string;
+  tone: "hunter" | "owner" | "history" | "support" | "muted";
+  accent?: string;
 };
 
 const frontmatter = usePageFrontmatter<ContributorProfileFrontmatter>();
@@ -51,7 +65,8 @@ const isGitHubProfileHost = function (profileHost: string): boolean {
 };
 
 const githubLink = computed(() => {
-  const profileHost = frontmatter.value.contributorProfile?.profileHost || "github.com";
+  const profileHost =
+    frontmatter.value.contributorProfile?.profileHost || "github.com";
   const text = isGitHubProfileHost(profileHost)
     ? "GitHub profile"
     : `${profileHost} profile`;
@@ -71,7 +86,10 @@ const metadataLocalList = computed(() => {
 
 const stats = computed(() => {
   if (metadataLocalList.value.length) {
-    return getContributorProfileStats(metadataLocalList.value, githubUser.value);
+    return getContributorProfileStats(
+      metadataLocalList.value,
+      githubUser.value,
+    );
   }
   return (
     frontmatter.value.contributorProfile || {
@@ -80,6 +98,10 @@ const stats = computed(() => {
       totalSubmittedCount: 0,
     }
   );
+});
+
+const badges = computed(() => {
+  return frontmatter.value.contributorProfile?.badges || [];
 });
 
 const ownedPackages = computed(() => {
@@ -117,7 +139,11 @@ const isLoading = computed(() => {
             </ul>
           </nav>
           <header class="profile-header">
-            <LazyImage :src="avatarUrl" :alt="githubUser" class="avatar avatar-xl" />
+            <LazyImage
+              :src="avatarUrl"
+              :alt="githubUser"
+              class="avatar avatar-xl"
+            />
             <div class="profile-header-text">
               <h1>{{ githubUser }}</h1>
               <div class="profile-stats">
@@ -125,10 +151,14 @@ const isLoading = computed(() => {
                 <span>{{ stats.discoveredCount }} discovered</span>
               </div>
               <div class="profile-actions">
-                <AutoLink class="nav-link external github-link" :item="githubLink" />
+                <AutoLink
+                  class="nav-link external github-link"
+                  :item="githubLink"
+                />
               </div>
             </div>
           </header>
+          <ContributorBadgeWall :badges="badges" />
 
           <div v-if="isLoading" class="placeholder-loader-wrapper">
             <PlaceholderLoader />
@@ -151,13 +181,19 @@ const isLoading = computed(() => {
                   <tbody>
                     <tr v-for="metadata in ownedPackages" :key="metadata.name">
                       <td>
-                        <RouterLink :to="metadata.path">{{ metadata.displayName }}</RouterLink>
-                        <code class="mobile-package-name">{{ metadata.name }}</code>
+                        <RouterLink :to="metadata.path">{{
+                          metadata.displayName
+                        }}</RouterLink>
+                        <code class="mobile-package-name">{{
+                          metadata.name
+                        }}</code>
                       </td>
                       <td class="package-name-column">
                         <code>{{ metadata.name }}</code>
                       </td>
-                      <td class="submitted-column">{{ metadata.createdAtText }}</td>
+                      <td class="submitted-column">
+                        {{ metadata.createdAtText }}
+                      </td>
                     </tr>
                   </tbody>
                 </table>
@@ -179,15 +215,24 @@ const isLoading = computed(() => {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="metadata in discoveredPackages" :key="metadata.name">
+                    <tr
+                      v-for="metadata in discoveredPackages"
+                      :key="metadata.name"
+                    >
                       <td>
-                        <RouterLink :to="metadata.path">{{ metadata.displayName }}</RouterLink>
-                        <code class="mobile-package-name">{{ metadata.name }}</code>
+                        <RouterLink :to="metadata.path">{{
+                          metadata.displayName
+                        }}</RouterLink>
+                        <code class="mobile-package-name">{{
+                          metadata.name
+                        }}</code>
                       </td>
                       <td class="package-name-column">
                         <code>{{ metadata.name }}</code>
                       </td>
-                      <td class="submitted-column">{{ metadata.createdAtText }}</td>
+                      <td class="submitted-column">
+                        {{ metadata.createdAtText }}
+                      </td>
                     </tr>
                   </tbody>
                 </table>
