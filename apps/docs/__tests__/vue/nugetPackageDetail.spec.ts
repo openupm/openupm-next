@@ -70,8 +70,11 @@ describe("NuGet package detail UI", () => {
   it("fetches registry packument, package ads, and shows an unavailable state", () => {
     const source = readFileSync(nugetLayoutPath, "utf8");
 
-    expect(source).toContain("getPackumentUrl(packageName.value)");
-    expect(source).toContain("getPackageAdPlacementUrl(packageName.value)");
+    expect(source).toContain("const requestedPackageName = packageName.value");
+    expect(source).toContain("getPackumentUrl(requestedPackageName)");
+    expect(source).toContain("getPackageAdPlacementUrl(requestedPackageName)");
+    expect(source).toContain("isCurrentRequest");
+    expect(source).toContain("requestId === latestRequestId");
     expect(source).toContain("<UnityAssetAdPlacement");
     expect(source).toContain("AdsenseDisplayForPackageDetail");
     expect(source).toContain("state.isUnavailable = true");

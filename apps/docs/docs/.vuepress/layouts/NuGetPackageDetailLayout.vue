@@ -49,6 +49,8 @@ const initState = (): State => ({
 });
 
 const state = reactive(initState());
+let packumentRequestId = 0;
+let adPlacementRequestId = 0;
 
 const packageName = computed(() => frontmatter.value.name);
 const latestVersion = computed(() =>
@@ -79,30 +81,51 @@ const resetState = (): void => {
   Object.assign(state, initState());
 };
 
+const isCurrentRequest = (
+  requestId: number,
+  latestRequestId: number,
+  requestedPackageName: string,
+): boolean =>
+  requestId === latestRequestId && requestedPackageName === packageName.value;
+
 const fetchPackument = async (): Promise<void> => {
+  const requestId = ++packumentRequestId;
+  const requestedPackageName = packageName.value;
   state.isLoading = true;
   state.isUnavailable = false;
   try {
-    const resp = await axios.get(getPackumentUrl(packageName.value), {
+    const resp = await axios.get(getPackumentUrl(requestedPackageName), {
       headers: { Accept: "application/json" },
     });
+    if (!isCurrentRequest(requestId, packumentRequestId, requestedPackageName))
+      return;
     state.packument = resp.data;
   } catch (error) {
+    if (!isCurrentRequest(requestId, packumentRequestId, requestedPackageName))
+      return;
     console.error(error);
     state.isUnavailable = true;
     state.packument = {};
   } finally {
-    state.isLoading = false;
+    if (isCurrentRequest(requestId, packumentRequestId, requestedPackageName)) {
+      state.isLoading = false;
+    }
   }
 };
 
 const fetchAdPlacementData = async (): Promise<void> => {
+  const requestId = ++adPlacementRequestId;
+  const requestedPackageName = packageName.value;
   try {
-    const resp = await axios.get(getPackageAdPlacementUrl(packageName.value), {
+    const resp = await axios.get(getPackageAdPlacementUrl(requestedPackageName), {
       headers: { Accept: "application/json" },
     });
+    if (!isCurrentRequest(requestId, adPlacementRequestId, requestedPackageName))
+      return;
     state.adPlacementDataList = resp.data as AdPlacementData[];
   } catch (error) {
+    if (!isCurrentRequest(requestId, adPlacementRequestId, requestedPackageName))
+      return;
     console.error(error);
     state.adPlacementDataList = [];
   }

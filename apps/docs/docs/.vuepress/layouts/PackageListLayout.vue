@@ -123,6 +123,11 @@ const packagePageSearchSuggestions = computed(() => {
     }));
 });
 
+const resultCount = computed(
+  () =>
+    metadataEntries.value.length + packagePageSearchSuggestions.value.length,
+);
+
 // Store ad placement data for the current topic.
 const adPlacementDataList = reactive([
 ] as AdPlacementData[]);
@@ -315,7 +320,7 @@ watch(() => topicSlug.value, () => {
             <li class="menu-item">
               {{ $capitalize($t("results")) }}
               <div class="menu-badge">
-                <label class="label label-default">{{ metadataEntries.length }}</label>
+                <label class="label label-default">{{ resultCount }}</label>
               </div>
             </li>
             <template v-if="searchTerm">

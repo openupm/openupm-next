@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+
 import { SearchIndex } from "@vuepress/plugin-search";
 import {
   getPackageSearchResultDisplayName,
@@ -8,9 +11,16 @@ import {
   usePackageSearchSuggestions,
 } from "@/search";
 import { getSearchExtraFields } from "@/searchExtraFields";
-import { describe, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import chai from "chai";
 chai.should();
+
+const packageListLayoutPath = fileURLToPath(
+  new URL(
+    "../../docs/.vuepress/layouts/PackageListLayout.vue",
+    import.meta.url,
+  ),
+);
 
 describe("normalizeSearchQuery", () => {
   it("removes leading and trailing punctuation without stripping package separators", () => {
@@ -263,5 +273,17 @@ describe("getSearchExtraFields", () => {
     } as never);
 
     fields.should.deep.equal([]);
+  });
+});
+
+describe("PackageListLayout search result counts", () => {
+  it("counts native package cards and UnityNuGet page results together", () => {
+    const source = readFileSync(packageListLayoutPath, "utf8");
+
+    expect(source).toContain("const resultCount = computed");
+    expect(source).toContain(
+      "metadataEntries.value.length + packagePageSearchSuggestions.value.length",
+    );
+    expect(source).toContain("{{ resultCount }}");
   });
 });
