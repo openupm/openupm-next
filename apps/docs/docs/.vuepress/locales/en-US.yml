@@ -48,6 +48,7 @@ get: Get
 git-deps-missing: Please install the Git dependency manually.
 git-deps-nuget: The package may exist in uplinked UnityNuGet registry.
 git-deps-replaced: The Git dependency can be replaced by a version available on OpenUPM.
+unity-deps-documentation: This dependency is documented by Unity.
 git-tag: Git tag
 git-tag-ignore: Git tag ignore pattern
 git-tag-ignore-desc: 'The regular expression to exclude Git tags.'
