@@ -6,7 +6,7 @@ import { useI18n } from 'vue-i18n';
 
 import { timeAgoFormat } from '@/utils';
 import { getPackageAliasNavLinks } from './package-metadata';
-import { getAvatarImageUrl, getGitHubPackageMetadataUrl, getPackageDetailPageUrl } from '@openupm/common/build/urls.js';
+import { getAvatarImageUrl, getContributorProfilePagePath, getGitHubPackageMetadataUrl, getPackageDetailPageUrl } from '@openupm/common/build/urls.js';
 import { DownloadsRange, PackageInfo, PackageMetadata, Packument } from "@openupm/types";
 
 const { t } = useI18n();
@@ -84,11 +84,40 @@ const hunterAvatarUrl = computed(() => {
     : null;
 });
 
-const hunterNavLink = computed(() => {
+const isGithubProfileUrl = function (url: string | null | undefined): boolean {
+  if (!url) return false;
+  try {
+    const hostname = new URL(url).hostname.toLowerCase();
+    return hostname === "github.com" || hostname === "www.github.com";
+  } catch {
+    return false;
+  }
+};
+
+const getContributorNavLink = function (
+  githubUser: string | null | undefined,
+  profileUrl: string | null | undefined,
+): {
+  external: boolean;
+  link: string;
+  text: string;
+} | null {
+  if (!githubUser) return null;
+  const isGithubProfile = isGithubProfileUrl(profileUrl);
   return {
-    link: props.metadata.hunterUrl,
-    text: props.metadata.hunter,
+    external: Boolean(profileUrl && !isGithubProfile),
+    link: isGithubProfile || !profileUrl
+      ? getContributorProfilePagePath(githubUser)
+      : profileUrl,
+    text: githubUser,
   };
+};
+
+const hunterNavLink = computed(() => {
+  return getContributorNavLink(
+    props.metadata.hunter,
+    props.metadata.hunterUrl,
+  );
 });
 
 const aliasNavLinks = computed(() => {
@@ -115,10 +144,10 @@ const ownerAvatarUrl = computed(() => {
 });
 
 const ownerNavLink = computed(() => {
-  return {
-    link: props.metadata.ownerUrl,
-    text: props.metadata.owner,
-  };
+  return getContributorNavLink(
+    props.metadata.owner,
+    props.metadata.ownerUrl,
+  );
 });
 
 const parentOwnerAvatarUrl = computed(() => {
@@ -128,11 +157,12 @@ const parentOwnerAvatarUrl = computed(() => {
 });
 
 const parentOwnerNavLink = computed(() => {
-  if (props.metadata.parentRepoUrl)
-    return {
-      link: props.metadata.parentOwnerUrl,
-      text: props.metadata.parentOwner,
-    };
+  if (props.metadata.parentRepoUrl && props.metadata.parentOwner) {
+    return getContributorNavLink(
+      props.metadata.parentOwner,
+      props.metadata.parentOwnerUrl,
+    );
+  }
   return null;
 });
 
@@ -286,28 +316,51 @@ const trackingModeTooltip = computed(() => {
       </section>
       <section class="col-6">
         <div class="metadata-title">{{ $capitalize($t("authors")) }}</div>
-        <a v-if="parentOwnerNavLink && parentOwnerNavLink.link" :href="parentOwnerNavLink.link" class="nav-link external">
+        <a v-if="parentOwnerNavLink && parentOwnerNavLink.external && parentOwnerNavLink.link"
+          :href="parentOwnerNavLink.link" class="nav-link external">
           <span class="chip">
             <LazyImage v-if="parentOwnerAvatarUrl" :src="parentOwnerAvatarUrl" :alt="metadata.parentOwner"
               class="avatar avatar-sm" />
             {{ parentOwnerNavLink.text }}
           </span>
         </a>
-        <a :href="ownerNavLink.link" class="nav-link external">
+        <RouterLink v-else-if="parentOwnerNavLink && parentOwnerNavLink.link" :to="parentOwnerNavLink.link"
+          class="nav-link">
+          <span class="chip">
+            <LazyImage v-if="parentOwnerAvatarUrl" :src="parentOwnerAvatarUrl" :alt="metadata.parentOwner"
+              class="avatar avatar-sm" />
+            {{ parentOwnerNavLink.text }}
+          </span>
+        </RouterLink>
+        <a v-if="ownerNavLink && ownerNavLink.external && ownerNavLink.link" :href="ownerNavLink.link"
+          class="nav-link external">
           <span class="chip">
             <LazyImage :src="ownerAvatarUrl" :alt="metadata.owner" class="avatar avatar-sm" />
             {{ ownerNavLink.text }}
           </span>
         </a>
+        <RouterLink v-else-if="ownerNavLink && ownerNavLink.link" :to="ownerNavLink.link" class="nav-link">
+          <span class="chip">
+            <LazyImage :src="ownerAvatarUrl" :alt="metadata.owner" class="avatar avatar-sm" />
+            {{ ownerNavLink.text }}
+          </span>
+        </RouterLink>
       </section>
       <section class="col-6">
         <div class="metadata-title">{{ $capitalize($t("discovered-by")) }}</div>
-        <a v-if="hunterNavLink.link" :href="hunterNavLink.link" class="nav-link external">
+        <a v-if="hunterNavLink && hunterNavLink.external && hunterNavLink.link" :href="hunterNavLink.link"
+          class="nav-link external">
           <span class="chip">
             <LazyImage :src="hunterAvatarUrl" :alt="hunterNavLink.text" class="avatar avatar-sm" />
             {{ hunterNavLink.text }}
           </span>
         </a>
+        <RouterLink v-else-if="hunterNavLink && hunterNavLink.link" :to="hunterNavLink.link" class="nav-link">
+          <span class="chip">
+            <LazyImage :src="hunterAvatarUrl" :alt="hunterNavLink.text" class="avatar avatar-sm" />
+            {{ hunterNavLink.text }}
+          </span>
+        </RouterLink>
         <span v-else>{{ metadata.hunter }}</span>
       </section>
       <section class="col-12">
