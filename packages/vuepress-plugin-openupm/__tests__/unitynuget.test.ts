@@ -1,7 +1,9 @@
 import {
+  fetchUnityNuGetRegistryInventory,
   loadUnityNuGetRegistryInventory,
   nugetIdToOpenUpmPackageName,
   parseUnityNuGetRegistryInventory,
+  UNITYNUGET_REGISTRY_URL,
 } from '../src/unitynuget/registry.js';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -51,6 +53,34 @@ describe('UnityNuGet registry inventory', () => {
       },
     ]);
     expect(warnings[0]).toContain('UnityNuGet live registry unavailable');
+  });
+
+  it('passes an abort signal when fetching the live registry', async () => {
+    const fetchCalls: Array<{ url: string; signal?: AbortSignal }> = [];
+
+    await expect(
+      fetchUnityNuGetRegistryInventory(async (url, init) => {
+        fetchCalls.push({ url, signal: init?.signal });
+        return {
+          ok: true,
+          status: 200,
+          statusText: 'OK',
+          json: async () => ({
+            Akka: { listed: true, version: '1.4.1' },
+          }),
+        };
+      }),
+    ).resolves.toEqual([
+      {
+        nugetId: 'Akka',
+        packageName: 'org.nuget.akka',
+        version: '1.4.1',
+      },
+    ]);
+
+    expect(fetchCalls).toHaveLength(1);
+    expect(fetchCalls[0].url).toBe(UNITYNUGET_REGISTRY_URL);
+    expect(fetchCalls[0].signal).toBeInstanceOf(AbortSignal);
   });
 
   it('fails when live and snapshot inventories are both unavailable', async () => {

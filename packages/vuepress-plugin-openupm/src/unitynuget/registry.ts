@@ -2,6 +2,7 @@ import { UNITYNUGET_REGISTRY_SNAPSHOT } from './registry-snapshot.js';
 
 export const UNITYNUGET_REGISTRY_URL =
   'https://raw.githubusercontent.com/xoofx/UnityNuGet/master/registry.json';
+export const UNITYNUGET_REGISTRY_FETCH_TIMEOUT_MS = 10_000;
 
 export type UnityNuGetRegistryEntry = {
   listed?: boolean;
@@ -17,7 +18,7 @@ export type UnityNuGetInventoryEntry = {
   version: string;
 };
 
-type FetchLike = (url: string) => Promise<{
+type FetchLike = (url: string, init?: { signal?: AbortSignal }) => Promise<{
   ok: boolean;
   status: number;
   statusText: string;
@@ -47,13 +48,24 @@ export const parseUnityNuGetRegistryInventory = (
 export const fetchUnityNuGetRegistryInventory = async (
   fetcher: FetchLike = fetch,
 ): Promise<UnityNuGetInventoryEntry[]> => {
-  const resp = await fetcher(UNITYNUGET_REGISTRY_URL);
-  if (!resp.ok) {
-    throw new Error(
-      `UnityNuGet registry fetch failed with ${resp.status} ${resp.statusText}`,
-    );
+  const abortController = new AbortController();
+  const timeout = setTimeout(
+    () => abortController.abort(),
+    UNITYNUGET_REGISTRY_FETCH_TIMEOUT_MS,
+  );
+  try {
+    const resp = await fetcher(UNITYNUGET_REGISTRY_URL, {
+      signal: abortController.signal,
+    });
+    if (!resp.ok) {
+      throw new Error(
+        `UnityNuGet registry fetch failed with ${resp.status} ${resp.statusText}`,
+      );
+    }
+    return parseUnityNuGetRegistryInventory(await resp.json());
+  } finally {
+    clearTimeout(timeout);
   }
-  return parseUnityNuGetRegistryInventory(await resp.json());
 };
 
 export const loadUnityNuGetRegistryInventory = async ({

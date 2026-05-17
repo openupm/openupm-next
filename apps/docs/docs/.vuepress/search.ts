@@ -48,7 +48,9 @@ export const normalizeSearchQuery = (query: string): string =>
   query
     .trim()
     .split(/\s+/)
-    .map((token) => token.replace(/^[^\w@.-]+|[^\w@.-]+$/g, ""))
+    .map((token) =>
+      token.replace(/^[^\p{L}\p{N}_@.-]+|[^\p{L}\p{N}_@.-]+$/gu, ""),
+    )
     .filter(Boolean)
     .join(" ");
 

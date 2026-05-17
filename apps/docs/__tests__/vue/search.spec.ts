@@ -29,6 +29,10 @@ describe("normalizeSearchQuery", () => {
       "org.nuget.newtonsoft.json",
     );
   });
+
+  it("preserves non-ASCII query tokens", () => {
+    normalizeSearchQuery("（日本語 café）").should.equal("日本語 café");
+  });
 });
 
 describe("isUnityNuGetPackageName", () => {
