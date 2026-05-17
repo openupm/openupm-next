@@ -14,6 +14,15 @@ export const BLOG_RSS_PATH = "/blog/rss.xml";
 
 export const BLOG_POSTS: BlogPost[] = [
   {
+    title: "UnityNuGet Package Pages Now on OpenUPM",
+    slug: "unitynuget-package-pages-now-on-openupm",
+    author: "Favo Yang",
+    date: "2026-05-18",
+    readingTime: "2 min read",
+    excerpt:
+      "OpenUPM now generates website package pages for UnityNuGet packages, making org.nuget packages easier to find, inspect, and install from the web.",
+  },
+  {
     title: "OpenUPM Recent Improvements, May 2026",
     slug: "openupm-recent-improvements-may-2026",
     author: "Favo Yang",

@@ -28,7 +28,7 @@ To improve convenience, the OpenUPM registry [uplinks](https://verdaccio.org/doc
 
 The integration comes with a few limitations:
 
-- NuGet packages have generated website pages based on the UnityNuGet curated package list, but they are not shown in the normal OpenUPM package list.
+- NuGet packages have generated website pages based on the UnityNuGet curated package list. They can appear in website search results as a separate UnityNuGet package group, but they are not included in the normal filterable OpenUPM package list.
 - Package page details and search results are served by the registry uplink and may depend on UnityNuGet availability and cache freshness. If UnityNuGet is temporarily unavailable, already cached package metadata and tarballs continue to resolve through OpenUPM, but new uncached package details and search results may be delayed until the uplink recovers.
 
 To demonstrate the uplinks feature, we have created a staging package at [https://github.com/openupm/com.example.nuget-consumer](https://github.com/openupm/com.example.nuget-consumer) which includes:
