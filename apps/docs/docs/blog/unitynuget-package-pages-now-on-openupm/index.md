@@ -1,7 +1,7 @@
 ---
 title: "UnityNuGet Package Pages Now on OpenUPM"
 author: "Favo Yang"
-date: "2026-05-18"
+date: "2026-05-17"
 readingTime: "2 min read"
 description: "OpenUPM now generates website package pages for UnityNuGet packages, making org.nuget packages easier to find, inspect, and install from the web."
 editLink: false
