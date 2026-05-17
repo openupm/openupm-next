@@ -45,3 +45,24 @@ patterns where the site chrome or documentation flow is involved.
   `--c-text-light` from the VuePress theme so light and dark modes stay aligned.
 - Do not introduce one-off row backgrounds, gradients, or decorative color
   bands without checking dark mode.
+
+## Contributor Badge Icons
+
+- Use `ContributorBadgeIcon` for contributor achievement marks. It is a local
+  70x70 SVG widget, not a Font Awesome icon or remote badge image.
+- Keep badge icons self-descriptive at icon size. Use the established icon
+  vocabulary first: `search`, `box`, `trophy`, `spark`, `coin`,
+  `year-search`, and `year-box`.
+- Drive badge color through `currentColor` and the shared tones used by
+  `ContributorBadgeWall`: hunter, owner, history, support, and muted.
+- Keep related states on the same glyph when the concept is the same. For
+  example, current and former backers both use the coin icon, with former backer
+  rendered in the muted tone.
+- For count tiers, use compact icon labels such as `25+`. For trophy rank
+  badges, put only the number in the icon, such as `10`, and keep the full
+  `Top 10` wording in tooltip or surrounding accessible text.
+- For year badges, make the four-digit year the main visual and keep the role
+  glyph smaller. Use subtly different accent colors per year while preserving
+  the hunter or owner color family.
+- Document new reusable badge glyphs in
+  `apps/docs/docs/docs/dev/style-cheatsheet.md` when adding them.

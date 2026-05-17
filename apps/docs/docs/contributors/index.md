@@ -66,6 +66,8 @@ backers:
 
 A heartfelt thank you to all our contributors! 🌟 If you'd like to be honored on this page and support our mission, please visit [support page](/support/) to discover how you can make a difference. 💖
 
+[Contributor badge reference](/docs/contributor-badges/) shows all profile badge icons and award rules.
+
 ## Sponsors
 
 <SponsorList :items="$page.frontmatter.sponsors" />
