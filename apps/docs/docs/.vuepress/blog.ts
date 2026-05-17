@@ -14,6 +14,16 @@ export const BLOG_RSS_PATH = "/blog/rss.xml";
 
 export const BLOG_POSTS: BlogPost[] = [
   {
+    title: "Contributor Profile Pages Arrive on OpenUPM",
+    slug: "contributor-profile-badges",
+    featuredImage: "/images/blog-covers/contributor-profile-pages-and-badges.png",
+    author: "Favo Yang",
+    date: "2026-05-17",
+    readingTime: "2 min read",
+    excerpt:
+      "OpenUPM now has contributor profile pages that gather package ownership, discovery activity, profile links, and badge walls into one public profile.",
+  },
+  {
     title: "UnityNuGet Package Pages Now on OpenUPM",
     slug: "unitynuget-package-pages-now-on-openupm",
     author: "Favo Yang",
