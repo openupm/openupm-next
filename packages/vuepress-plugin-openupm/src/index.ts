@@ -229,7 +229,7 @@ const createUnityNuGetDetailPages = async function (app: App): Promise<Page[]> {
       layout: 'NuGetPackageDetailLayout',
       // Hack: use an empty element to show sidebar
       sidebar: [{ text: '', children: [] }],
-      title: `${entry.nugetId} | UnityNuGet Package | Unity Package Manager (UPM)`,
+      title: `${entry.nugetId} | ${entry.packageName} | UnityNuGet Package | Unity Package Manager (UPM)`,
       description: `${entry.nugetId} is available as ${entry.packageName} through the OpenUPM registry UnityNuGet uplink.`,
       packageKind: 'unitynuget',
       name: entry.packageName,

@@ -67,6 +67,9 @@ describe('UnityNuGet registry inventory', () => {
     const source = readFileSync(pluginIndexPath, 'utf8');
 
     expect(source).toContain("layout: 'NuGetPackageDetailLayout'");
+    expect(source).toContain(
+      '${entry.nugetId} | ${entry.packageName} | UnityNuGet Package | Unity Package Manager (UPM)',
+    );
     expect(source).toContain("content: ''");
     expect(source).not.toContain('UnityNuGet package.\\n');
   });

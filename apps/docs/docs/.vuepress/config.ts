@@ -14,6 +14,7 @@ import { mediumZoomPlugin } from "@vuepress/plugin-medium-zoom";
 
 import OpenupmPlugin from "vuepress-plugin-openupm";
 import { blogRssPlugin } from "./blogRssPlugin";
+import { getSearchExtraFields } from "./searchExtraFields";
 
 const __dirname = getDirname(import.meta.url);
 
@@ -119,7 +120,9 @@ const config: any = mergeWith(
       registerComponentsPlugin({
         componentsDir: path.resolve(__dirname, "./components"),
       }),
-      searchPlugin({}),
+      searchPlugin({
+        getExtraFields: getSearchExtraFields,
+      }),
       OpenupmPlugin(),
       seoPlugin({
         hostname: themeConfig.domain,

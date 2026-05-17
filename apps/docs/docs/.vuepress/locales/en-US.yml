@@ -119,7 +119,10 @@ package-name-already-exists-error: The package name already exists in OpenUPM re
 package-name-blocked: The package name is blocked by scope {scope}.
 package-name-manual-verification: Major tech company package names require manual review during merge.
 package-name: Package name
+package-page-results: Package page results
 package-updates: Package Updates
+openupm-packages: OpenUPM Packages
+unitynuget-packages: UnityNuGet Packages
 packages: packages
 pending: Pending
 popularity: Popularity
