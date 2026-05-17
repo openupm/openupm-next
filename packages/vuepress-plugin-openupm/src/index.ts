@@ -33,6 +33,7 @@ import {
 } from '@openupm/common/build/urls.js';
 
 import {
+  addContributorProfileUrls,
   buildContributorProfile,
   collectContributorProfileGithubUsers,
 } from './contributors.js';
@@ -256,9 +257,15 @@ export default (): VuePressPlugin => ({
   },
   extendsPage: async (page: Page): Promise<void> => {
     if (page.path.endsWith('/contributors/')) {
-      const { hunters, owners } = PLUGIN_DATA;
+      const { contributorProfileGithubUsers, hunters, owners } = PLUGIN_DATA;
       page.frontmatter.hunters = hunters.slice(0, 100);
       page.frontmatter.owners = owners.slice(0, 100);
+      if (Array.isArray(page.frontmatter.backers)) {
+        page.frontmatter.backers = addContributorProfileUrls(
+          page.frontmatter.backers,
+          contributorProfileGithubUsers,
+        );
+      }
     }
   },
   onPrepared: async (app: App): Promise<void> => {

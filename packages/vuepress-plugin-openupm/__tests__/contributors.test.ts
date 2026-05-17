@@ -1,8 +1,10 @@
 import { PackageMetadataLocal } from '@openupm/types';
 
 import {
+  addContributorProfileUrls,
   buildContributorProfile,
   collectContributorProfileGithubUsers,
+  getContributorPageOrGithubUrl,
 } from '../src/contributors.js';
 
 describe('contributor profile generation', () => {
@@ -79,5 +81,39 @@ describe('contributor profile generation', () => {
       profileUrl: 'https://gitlab.com/Alice',
       profileHost: 'gitlab.com',
     });
+  });
+
+  it('resolves contributor page URLs only when a profile exists', () => {
+    const contributorProfileGithubUsers = ['Alice'];
+
+    expect(
+      getContributorPageOrGithubUrl('alice', contributorProfileGithubUsers),
+    ).toEqual('/contributors/alice/');
+    expect(
+      getContributorPageOrGithubUrl('bob', contributorProfileGithubUsers),
+    ).toEqual('https://github.com/bob');
+  });
+
+  it('adds backer URLs that prefer existing contributor profile pages', () => {
+    expect(
+      addContributorProfileUrls(
+        [
+          { text: 'Alice Backer', githubUser: 'alice' },
+          { text: 'Bob Backer', githubUser: 'bob' },
+        ],
+        ['Alice'],
+      ),
+    ).toEqual([
+      {
+        text: 'Alice Backer',
+        githubUser: 'alice',
+        url: '/contributors/alice/',
+      },
+      {
+        text: 'Bob Backer',
+        githubUser: 'bob',
+        url: 'https://github.com/bob',
+      },
+    ]);
   });
 });

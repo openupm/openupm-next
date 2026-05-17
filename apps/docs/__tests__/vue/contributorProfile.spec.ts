@@ -211,6 +211,17 @@ describe("contributor profile filtering", () => {
     expect(metadataViewSource).toContain("getContributorProfilePagePath");
   });
 
+  it("lets contributor list data override avatar links", () => {
+    const githubAvatarSource = readFileSync(githubAvatarPath, "utf8");
+    const pluginSource = readFileSync(pluginPath, "utf8");
+
+    expect(githubAvatarSource).toContain("url?: string");
+    expect(githubAvatarSource).toContain("props.profile.url ||");
+    expect(githubAvatarSource).toContain('rel="noopener noreferrer"');
+    expect(pluginSource).toContain("addContributorProfileUrls");
+    expect(pluginSource).toContain("page.frontmatter.backers");
+  });
+
   it("keeps non-GitHub parent owner chips on their original upstream profile URL", () => {
     const metadataViewSource = readFileSync(packageMetadataViewPath, "utf8");
 
@@ -240,8 +251,8 @@ describe("contributor profile filtering", () => {
   it("routes contributor avatar profile links through RouterLink", () => {
     const githubAvatarSource = readFileSync(githubAvatarPath, "utf8");
 
-    expect(githubAvatarSource).toContain('<RouterLink v-if="linkToProfile" :to="profilePath">');
-    expect(githubAvatarSource).toContain('<a v-else :href="githubUrl">');
+    expect(githubAvatarSource).toContain('<RouterLink v-if="isInternalLink" :to="linkUrl">');
+    expect(githubAvatarSource).toContain('<a v-else :href="linkUrl" rel="noopener noreferrer">');
   });
 
   it("uses the contributor profile URL and host from generated frontmatter", () => {

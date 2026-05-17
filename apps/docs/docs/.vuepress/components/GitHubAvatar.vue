@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PropType } from 'vue';
+import { computed, PropType } from 'vue';
 
 import { getAvatarImageUrl, getContributorProfilePagePath } from "@openupm/common/build/urls.js";
 
@@ -7,6 +7,7 @@ interface Profile {
   githubUser: string;
   text?: string;
   abbr?: string;
+  url?: string;
 }
 
 const props = defineProps({
@@ -24,14 +25,18 @@ const { text, abbr, githubUser } = props.profile;
 const profilePath = getContributorProfilePagePath(githubUser);
 const githubUrl = `https://github.com/${githubUser}`;
 const imageUrl = getAvatarImageUrl(githubUser, 128);
+const linkUrl = computed(() => {
+  return props.profile.url || (props.linkToProfile ? profilePath : githubUrl);
+});
+const isInternalLink = computed(() => linkUrl.value.startsWith('/'));
 </script>
 
 <template>
   <figure class="avatar avatar-xl tooltip" :data-tooltip="text" :data-initial="abbr">
-    <RouterLink v-if="linkToProfile" :to="profilePath">
+    <RouterLink v-if="isInternalLink" :to="linkUrl">
       <LazyImage v-if="imageUrl" :src="imageUrl" :alt="text" />
     </RouterLink>
-    <a v-else :href="githubUrl">
+    <a v-else :href="linkUrl" rel="noopener noreferrer">
       <LazyImage v-if="imageUrl" :src="imageUrl" :alt="text" />
     </a>
   </figure>
