@@ -57,18 +57,8 @@
 
 - Docs commands run from `apps/docs`.
 - `npm run docs:build:limit` is the fastest full SSR build smoke test for the docs app.
-- New blog posts live at `apps/docs/docs/blog/<slug>/index.md`.
-- Add each new blog post to `BLOG_POSTS` in
-  `apps/docs/docs/.vuepress/blog.ts`; this drives the blog index, adjacent
-  post navigation, and RSS metadata.
-- Keep blog frontmatter aligned with the `BlogPost` metadata entry: `title`,
-  `author`, `date`, `readingTime`, and `description`/`excerpt` should describe
-  the same post.
-- Blog ordering tests should verify general ordering behavior, such as dates
-  sorted newest first, rather than hard-coding the current first or last post
-  unless the test is intentionally covering a specific legacy post.
-- For blog-only changes, run `npm run test -- blog.spec.ts` and
-  `npm run lint` from `apps/docs`, then run `npm run docs:build:limit`.
+- If the shell is not already using the repo-pinned Node/npm versions, run docs
+  commands through Volta, for example `volta run npm run lint`.
 - If `docs:build:limit` fails because
   `node_modules/vuepress-plugin-openupm/build/index.js` is missing, first build
   the local plugin dependency from the repo root with
@@ -77,6 +67,58 @@
   - `date-fns/locale`
   - `@intlify/shared`
 - Do not remove those aliases unless the upstream VuePress / Vue I18n dependency stack is upgraded and revalidated.
+
+## Blog Post Workflow
+
+- New blog posts live at `apps/docs/docs/blog/<slug>/index.md`.
+- Add each new blog post to `BLOG_POSTS` in
+  `apps/docs/docs/.vuepress/blog.ts`; this drives the blog index, adjacent
+  post navigation, and RSS metadata.
+- Keep blog frontmatter aligned with the `BlogPost` metadata entry: `title`,
+  `author`, `date`, `readingTime`, and `description`/`excerpt` should describe
+  the same post.
+- Use the current date for new posts unless the user explicitly asks for a
+  different publish date. Keep dates as `YYYY-MM-DD`.
+- Keep frontmatter concise: `title`, `author`, `date`, `readingTime`,
+  `description`, and usually `editLink: false`.
+- For a new post, start by reading a recent nearby post and `BLOG_POSTS` so the
+  title style, metadata, and closing navigation match the site.
+- Add `<BlogPostMeta />` after the H1 and `<BlogPostNav />` at the end unless
+  there is a strong reason to follow a different legacy post format.
+- Keep posts user-facing. Avoid implementation details such as internal build
+  strategy, cache mechanics, deployment topology, local paths, private hostnames,
+  LAN URLs, or temporary preview URLs unless the user specifically asks for
+  operator notes outside the public repo.
+- Use Markdown links for referenced articles, package pages, docs pages, issues,
+  and examples. Avoid bare URLs in prose, especially URLs copied from local
+  staging or development output.
+- Prefer relative links for OpenUPM site pages, for example
+  `[NuGet Packages](/nuget/)` or
+  `[org.nuget.system](/packages/?q=org.nuget.system)`.
+- When linking package examples, use the package name as link text instead of
+  showing the full URL.
+- Make limitations accurate without overexplaining internals. If a feature is
+  searchable but not part of the normal filterable package list, state both
+  surfaces explicitly.
+- Blog ordering tests should verify general ordering behavior, such as dates
+  sorted newest first, rather than hard-coding the current first or last post
+  unless the test is intentionally covering a specific legacy post.
+- For blog-only changes, run `npm run test -- blog.spec.ts` and
+  `npm run lint` from `apps/docs`, then run `npm run docs:build:limit`. Use
+  `volta run` for those commands when needed.
+- If a VuePress dev server is already running, stop it before
+  `docs:build:limit`; the build cleans `.vuepress/.temp` and can conflict with
+  a live dev server.
+- When the user wants to review the post locally, start the dev server from
+  `apps/docs` with:
+  `VITE_OPENUPM_API_SERVER_URL=https://api.openupm.com npm run docs:dev -- --host 0.0.0.0 --port 8080`.
+- Before starting the review server, check whether the port is already in use.
+  If it is, either stop the stale server or choose another port and report that
+  port.
+- For LAN review, bind to `0.0.0.0`, determine the active LAN address from the
+  machine, and give the user a concrete `http://<lan-ip>:<port>/...` URL for
+  the page they should review. Do not commit that LAN URL to the repo or include
+  it in public PR text.
 
 ## Local Data
 
