@@ -41,6 +41,10 @@ import {
   buildPackageAliasRedirects,
   mergePackageAliasRedirects,
 } from './redirects.js';
+import {
+  loadUnityNuGetRegistryInventory,
+  UnityNuGetInventoryEntry,
+} from './unitynuget/registry.js';
 import { writePublicGen } from './utils/write-file.js';
 
 type Contributor = GithubUserWithScore & {
@@ -57,6 +61,7 @@ type PluginData = {
   owners: Contributor[];
   sdpxList: License[];
   topicsWithAll: Topic[];
+  unityNuGetInventory: UnityNuGetInventoryEntry[];
 };
 
 type VuePressPlugin = {
@@ -130,6 +135,7 @@ const PLUGIN_DATA = await (async (): Promise<PluginData> => {
     .map(function (key) {
       return { id: key, name: spdx[key].name } as License;
     });
+  const unityNuGetInventory = await loadUnityNuGetRegistryInventory();
   return {
     blockedScopes,
     contributorProfileGithubUsers,
@@ -139,6 +145,7 @@ const PLUGIN_DATA = await (async (): Promise<PluginData> => {
     owners,
     sdpxList,
     topicsWithAll,
+    unityNuGetInventory,
   };
 })();
 
@@ -213,6 +220,34 @@ const createDetailPages = async function (app: App): Promise<Page[]> {
 };
 
 /**
+ * Create UnityNuGet package detail pages.
+ * @param app vuepress app
+ */
+const createUnityNuGetDetailPages = async function (app: App): Promise<Page[]> {
+  const pages: Page[] = [];
+  for (const entry of PLUGIN_DATA.unityNuGetInventory) {
+    const frontmatter = {
+      layout: 'NuGetPackageDetailLayout',
+      // Hack: use an empty element to show sidebar
+      sidebar: [{ text: '', children: [] }],
+      title: `${entry.nugetId} | ${entry.packageName} | UnityNuGet Package | Unity Package Manager (UPM)`,
+      description: `${entry.nugetId} is available as ${entry.packageName} through the OpenUPM registry UnityNuGet uplink.`,
+      packageKind: 'unitynuget',
+      name: entry.packageName,
+      nugetId: entry.nugetId,
+      unityNuGetVersion: entry.version,
+    };
+    const page = await createPage(app, {
+      path: getPackageDetailPagePath(entry.packageName),
+      frontmatter,
+      content: '',
+    });
+    pages.push(page);
+  }
+  return pages;
+};
+
+/**
  * Create package list pages
  * @param app vuepress app
  */
@@ -252,6 +287,7 @@ export default (): VuePressPlugin => ({
   name: 'vuepress-plugin-openupm',
   async onInitialized(app: App): Promise<void> {
     addPages(app, await createDetailPages(app));
+    addPages(app, await createUnityNuGetDetailPages(app));
     addPages(app, await createListPages(app));
     addPages(app, await createContributorProfilePages(app));
   },

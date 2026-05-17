@@ -48,6 +48,7 @@ get: Get
 git-deps-missing: Please install the Git dependency manually.
 git-deps-nuget: The package may exist in uplinked UnityNuGet registry.
 git-deps-replaced: The Git dependency can be replaced by a version available on OpenUPM.
+unity-deps-documentation: This dependency is documented by Unity.
 git-tag: Git tag
 git-tag-ignore: Git tag ignore pattern
 git-tag-ignore-desc: 'The regular expression to exclude Git tags.'
@@ -118,7 +119,10 @@ package-name-already-exists-error: The package name already exists in OpenUPM re
 package-name-blocked: The package name is blocked by scope {scope}.
 package-name-manual-verification: Major tech company package names require manual review during merge.
 package-name: Package name
+package-page-results: Package page results
 package-updates: Package Updates
+openupm-packages: OpenUPM Packages
+unitynuget-packages: UnityNuGet Packages
 packages: packages
 pending: Pending
 popularity: Popularity

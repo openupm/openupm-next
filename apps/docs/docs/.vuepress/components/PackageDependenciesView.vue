@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n';
 
 import { getPackageDetailPagePath } from "@openupm/common/build/urls.js";
 import { PackageDependency } from '@openupm/types';
+import { isPackageExist } from '@/utils';
 
 const { t } = useI18n();
 
@@ -18,42 +19,78 @@ const props = defineProps({
   }
 });
 
+const getUnityPackageDocumentationVersion = (version: string): string => {
+  const match = /^(\d+\.\d+)(?:\.|$)/.exec(version);
+  return match ? match[1] : version;
+};
+
+const getUnityPackageDocumentationUrl = (name: string, version: string): string => {
+  if (name.startsWith("com.unity.modules.")) {
+    return `https://docs.unity3d.com/Manual/${name}.html`;
+  }
+  const documentationVersion = getUnityPackageDocumentationVersion(version);
+  return `https://docs.unity3d.com/Packages/${name}@${encodeURIComponent(documentationVersion)}/`;
+};
+
 const dependencyList = computed(() => {
   if (!props.dependencies) return [];
   else
     return props.dependencies.map(({ name, version }: PackageDependency) => {
       const nameWithVersion = `${name}@${version}`;
       const isNuGet = name.startsWith("org.nuget.");
+      const isUnityPackage = name.startsWith("com.unity.");
       const isGit = version.startsWith("git");
-      const path = getPackageDetailPagePath(name);
+      const openUpmPackageExists = isPackageExist(name);
+      const openUpmPath = isNuGet || openUpmPackageExists
+        ? getPackageDetailPagePath(name)
+        : null;
+      const unityDocumentationUrl = !openUpmPath && isUnityPackage
+        ? getUnityPackageDocumentationUrl(name, version)
+        : null;
       let helpText = null;
       let icon = null;
+      let iconTooltip = null;
       // TODO: verify org.nuget.* packages
       if (isNuGet) {
         helpText = t('git-deps-nuget');
         icon = "fa fa-arrow-up";
+        iconTooltip = "UnityNuGet uplink dependency";
       } else if (isGit) {
-        if (path) {
+        if (openUpmPath) {
           helpText = t("git-deps-replaced");
           icon = "fab fa-git text-warning";
+          iconTooltip = "Git dependency with package page";
         } else {
           helpText = t("git-deps-missing");
           icon = "fab fa-git text-error";
+          iconTooltip = "Git dependency without package page";
         }
-      } else if (path) {
+      } else if (openUpmPath) {
         icon = "fa fa-box-open";
+        iconTooltip = "OpenUPM package dependency";
+      } else if (unityDocumentationUrl) {
+        icon = "fab fa-unity";
+        iconTooltip = "Unity package documentation";
+        helpText = t("unity-deps-documentation");
       } else {
         helpText = t("deps-missing");
         icon = "fas fa-exclamation-triangle text-error";
+        iconTooltip = "Missing package dependency";
       }
       return {
         icon,
+        iconTooltip,
         name,
         nameWithVersion,
         helpText,
-        link: path
+        link: openUpmPath
           ? {
-            link: path,
+            link: openUpmPath,
+            text: nameWithVersion
+          }
+          : unityDocumentationUrl
+            ? {
+            link: unityDocumentationUrl,
             text: nameWithVersion
           }
           : null,
@@ -82,7 +119,9 @@ const dependencyList = computed(() => {
       </thead>
       <tbody>
         <tr v-for="entry in dependencyList" :key="entry.name">
-          <td class="td-icon"><i :class="entry.icon"></i></td>
+          <td class="td-icon">
+            <i :class="[entry.icon, 'tooltip', 'tooltip-up']" :data-tooltip="entry.iconTooltip"></i>
+          </td>
           <td class="td-name">
             <AutoLink v-if="entry.link" :item="entry.link" class="dep-text" />
             <span v-else>{{ entry.nameWithVersion }}</span>

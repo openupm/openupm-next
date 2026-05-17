@@ -7,8 +7,52 @@ import {
 import { SearchIndex, SearchIndexItem } from "@vuepress/plugin-search";
 
 export interface PackageSearchSuggestion {
+  displayName: string;
   name: string;
+  title: string;
 }
+
+export const isUnityNuGetPackageName = (packageName: string): boolean =>
+  packageName.startsWith("org.nuget.");
+
+export const getPackageSearchResultDisplayName = (
+  pageTitle: string,
+  packageName: string,
+): string => {
+  const titleParts = pageTitle.split(" | ");
+  return titleParts[0]?.trim() || packageName;
+};
+
+export const getPackageSearchResultTitle = (
+  pageTitle: string,
+  packageName: string,
+): string => {
+  const displayName = getPackageSearchResultDisplayName(
+    pageTitle,
+    packageName,
+  );
+
+  if (!displayName) return packageName;
+  if (displayName === packageName) return packageName;
+  return `${displayName} | ${packageName}`;
+};
+
+export const getPackageNameFromSearchSuggestionLink = (
+  link: string,
+): string | null => {
+  const path = link.split(/[?#]/, 1)[0];
+  return parsePackageNameFromPackageDetailPath(path);
+};
+
+export const normalizeSearchQuery = (query: string): string =>
+  query
+    .trim()
+    .split(/\s+/)
+    .map((token) =>
+      token.replace(/^[^\p{L}\p{N}_@.-]+|[^\p{L}\p{N}_@.-]+$/gu, ""),
+    )
+    .filter(Boolean)
+    .join(" ");
 
 export const usePackageSearchSuggestions = (
   searchIndex: SearchIndex,
@@ -22,7 +66,7 @@ export const usePackageSearchSuggestions = (
     ),
   );
   // if query is empty, return empty suggestions
-  const searchStr = cleanToken(query.trim().toLowerCase());
+  const searchStr = cleanToken(normalizeSearchQuery(query).toLowerCase());
   if (!searchStr) return [];
   // search tokens
   const suggestions: PackageSearchSuggestion[] = [];
@@ -41,7 +85,12 @@ export const usePackageSearchSuggestions = (
       );
       if (packageName)
         suggestions.push({
-          name: parsePackageNameFromPackageDetailPath(searchIndexItem.path)!,
+          displayName: getPackageSearchResultDisplayName(
+            searchIndexItem.title,
+            packageName,
+          ),
+          name: packageName,
+          title: getPackageSearchResultTitle(searchIndexItem.title, packageName),
         });
       else
         console.warn(

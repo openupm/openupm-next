@@ -15,9 +15,9 @@ import { SortType } from "@/constant";
 import { useDefaultStore } from '@/store';
 import { AdPlacementData, PackageMetadata, TOPIC_ALL_SLUG, Topic } from "@openupm/types";
 import { getPackageMetadata } from "@openupm/common/build/utils.js";
-import { getPackageListPagePath, isPackageListPath, getTopicAdPlacementUrl } from "@openupm/common/build/urls.js";
+import { getPackageDetailPagePath, getPackageListPagePath, isPackageListPath, getTopicAdPlacementUrl } from "@openupm/common/build/urls.js";
 import { topicsWithAll } from '@temp/topics.js';
-import { usePackageSearchSuggestions } from "@/search";
+import { isUnityNuGetPackageName, usePackageSearchSuggestions } from "@/search";
 import UnityAssetAdPlacement from '@/components/UnityAssetAdPlacementForPackageList.vue';
 import DonationSidebarAd from '@/components/DonationSidebarAd.vue';
 import UnityAssetStoreSale from '@/components/UnityAssetStoreSale.vue';
@@ -106,6 +106,27 @@ const metadataEntries = computed(() => {
     items = orderBy(items, ["dl30d"], ["desc"]);
   return items;
 });
+
+const packagePageSearchSuggestions = computed(() => {
+  if (!searchTerm.value) return [];
+
+  const nativePackageNames = new Set(
+    store.packageMetadataLocalList.map((metadata) => metadata.name),
+  );
+  return usePackageSearchSuggestions(searchIndex.value, searchTerm.value)
+    .filter((suggestion) => isUnityNuGetPackageName(suggestion.name))
+    .filter((suggestion) => !nativePackageNames.has(suggestion.name))
+    .slice(0, 20)
+    .map((suggestion) => ({
+      ...suggestion,
+      link: getPackageDetailPagePath(suggestion.name),
+    }));
+});
+
+const resultCount = computed(
+  () =>
+    metadataEntries.value.length + packagePageSearchSuggestions.value.length,
+);
 
 // Store ad placement data for the current topic.
 const adPlacementDataList = reactive([
@@ -299,7 +320,7 @@ watch(() => topicSlug.value, () => {
             <li class="menu-item">
               {{ $capitalize($t("results")) }}
               <div class="menu-badge">
-                <label class="label label-default">{{ metadataEntries.length }}</label>
+                <label class="label label-default">{{ resultCount }}</label>
               </div>
             </li>
             <template v-if="searchTerm">
@@ -350,10 +371,30 @@ watch(() => topicSlug.value, () => {
               </div>
               <div v-else>
                 <client-only>
-                  <div v-if="!metadataEntries.length" class="no-data">
+                  <section
+                    v-if="packagePageSearchSuggestions.length"
+                    class="package-page-results"
+                  >
+                    <h2>{{ $t("unitynuget-packages") }}</h2>
+                    <ul>
+                      <li
+                        v-for="suggestion in packagePageSearchSuggestions"
+                        :key="suggestion.name"
+                      >
+                        <RouterLink :to="suggestion.link">
+                          <strong>{{ suggestion.displayName }}</strong>
+                          <small>{{ suggestion.name }}</small>
+                        </RouterLink>
+                      </li>
+                    </ul>
+                  </section>
+                  <div v-if="!metadataEntries.length && !packagePageSearchSuggestions.length" class="no-data">
                     {{ noDataAvailableText }}
                   </div>
-                  <div v-else ref="gridWrapperElement" class="grid-wrapper">
+                  <div v-if="metadataEntries.length" ref="gridWrapperElement" class="grid-wrapper">
+                    <h2 v-if="searchTerm" class="package-results-heading">
+                      {{ $t("openupm-packages") }}
+                    </h2>
                     <Grid class="grid" :length="listItems.length" :page-size="gridPageSize"
                       :page-provider="gridPageProvider" :get-key="getGridKey">
                       <template #probe>
@@ -442,6 +483,60 @@ watch(() => topicSlug.value, () => {
 @use '@/styles/palette' as *;
 
 .package-section {
+  .package-results-heading,
+  .package-page-results h2 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem;
+  }
+
+  .package-results-heading {
+    margin: 0.85rem 0.4rem 0;
+  }
+
+  .package-page-results {
+    margin: 1rem 0.4rem;
+    max-width: 54rem;
+
+    ul {
+      display: grid;
+      gap: 0.5rem;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      list-style: none;
+      margin: 0;
+      padding: 0;
+
+      @media (max-width: $MQMobile) {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    a {
+      border: 1px solid $border-color;
+      border-radius: 0.25rem;
+      display: grid;
+      gap: 0.15rem;
+      min-width: 0;
+      padding: 0.45rem 0.6rem;
+    }
+
+    strong {
+      color: var(--c-text);
+      font-weight: 600;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    small {
+      color: $gray-color;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
 
   .grid-wrapper {
     height: calc(100vh - $navbar-height);

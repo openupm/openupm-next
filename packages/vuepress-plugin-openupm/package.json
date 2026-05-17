@@ -17,7 +17,8 @@
     "lint": "eslint . --ext .ts --ext .mts",
     "test": "cross-env NODE_ENV=test vitest run --config vitest.config.js",
     "prettier": "prettier --config .prettierrc --write .",
-    "test:watch": "cross-env NODE_ENV=test vitest --config vitest.config.js"
+    "test:watch": "cross-env NODE_ENV=test vitest --config vitest.config.js",
+    "unitynuget:snapshot": "node scripts/refresh-unitynuget-snapshot.mjs"
   },
   "dependencies": {
     "vue": "^3.4.19",

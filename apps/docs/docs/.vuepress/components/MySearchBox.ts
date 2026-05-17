@@ -16,6 +16,11 @@ import {
   useSuggestionsFocus,
   SearchSuggestion,
 } from "@node_modules/@vuepress/plugin-search/lib/client/composables";
+import {
+  getPackageNameFromSearchSuggestionLink,
+  getPackageSearchResultTitle,
+  normalizeSearchQuery,
+} from "@/search";
 
 export default defineComponent({
   name: "MySearchBox",
@@ -36,16 +41,28 @@ export default defineComponent({
     const input = ref<HTMLInputElement | null>(null);
     const isActive = ref(false);
     const query = ref("");
+    const normalizedQuery = computed(() => normalizeSearchQuery(query.value));
     const locale = computed(() => locales.value[routeLocale.value] ?? {});
 
     const originalSuggestions = useSearchSuggestions({
       searchIndex,
       routeLocale,
-      query,
+      query: normalizedQuery,
       maxSuggestions,
     });
 
     const suggestions = computed(() => {
+      const displaySuggestions = originalSuggestions.value.map((suggestion) => {
+        const packageName = getPackageNameFromSearchSuggestionLink(
+          suggestion.link,
+        );
+        if (!packageName) return suggestion;
+
+        return {
+          ...suggestion,
+          title: getPackageSearchResultTitle(suggestion.title, packageName),
+        };
+      });
       if (query.value) {
         return (
           [
@@ -54,9 +71,9 @@ export default defineComponent({
               title: "Search the package list...",
             },
           ] as SearchSuggestion[]
-        ).concat(originalSuggestions.value);
+        ).concat(displaySuggestions);
       }
-      return originalSuggestions.value;
+      return displaySuggestions;
     });
 
     const { focusIndex, focusNext, focusPrev } =

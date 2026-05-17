@@ -13,6 +13,7 @@ import { GlobalFilters } from "@/vue-plugins/global-filters";
 import Layout from "@/layouts/Layout.vue";
 import WideLayout from "@/layouts/WideLayout.vue";
 import PackageDetailLayout from "@/layouts/PackageDetailLayout.vue";
+import NuGetPackageDetailLayout from "@/layouts/NuGetPackageDetailLayout.vue";
 import PackageListLayout from "@/layouts/PackageListLayout.vue";
 import PackageAddLayout from "@/layouts/PackageAddLayout.vue";
 import HomeLayout from "@/layouts/HomeLayout.vue";
@@ -81,6 +82,7 @@ export default defineClientConfig({
     Layout,
     WideLayout,
     PackageDetailLayout,
+    NuGetPackageDetailLayout,
     PackageListLayout,
     PackageAddLayout,
     HomeLayout,
