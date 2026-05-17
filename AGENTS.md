@@ -81,6 +81,11 @@
   different publish date. Keep dates as `YYYY-MM-DD`.
 - Keep frontmatter concise: `title`, `author`, `date`, `readingTime`,
   `description`, and usually `editLink: false`.
+- If a post has a main image for listing, hero, cover, banner, or social
+  sharing, set the post frontmatter `cover` to that public image path so
+  `@vuepress/plugin-seo` uses it for `og:image` and Article JSON-LD image
+  metadata. The plugin checks `banner` first, then `cover`; prefer `cover` for
+  normal blog posts.
 - For a new post, start by reading a recent nearby post and `BLOG_POSTS` so the
   title style, metadata, and closing navigation match the site.
 - Add `<BlogPostMeta />` after the H1 and `<BlogPostNav />` at the end unless
