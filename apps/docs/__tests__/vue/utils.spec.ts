@@ -1,5 +1,6 @@
-import { describe, it } from "vitest";
+import { beforeEach, describe, it } from "vitest";
 import chai from "chai";
+import { createPinia, setActivePinia } from "pinia";
 chai.should();
 
 import { DailyDownload } from "@openupm/types";
@@ -7,10 +8,39 @@ import {
   decodeGitHubBase64Content,
   fillMissingDates,
   generateHueFromStringInRange,
+  isPackageExist,
   stripLeadingBom,
 } from "@/utils";
+import { useDefaultStore } from "@/store";
 
 describe("@/utils.ts", function () {
+  beforeEach(() => {
+    setActivePinia(createPinia());
+  });
+
+  describe("isPackageExist", () => {
+    it("uses generated local package metadata before remote API metadata", () => {
+      const store = useDefaultStore();
+      store.packageMetadataLocalList = [
+        { name: "com.example.local-only" },
+      ] as typeof store.packageMetadataLocalList;
+      store.packageMetadataRemoteDict = {};
+
+      isPackageExist("com.example.local-only").should.equal(true);
+      isPackageExist("com.example.missing").should.equal(false);
+    });
+
+    it("keeps remote API metadata as a fallback", () => {
+      const store = useDefaultStore();
+      store.packageMetadataLocalList = [];
+      store.packageMetadataRemoteDict = {
+        "com.example.remote-only": {},
+      } as typeof store.packageMetadataRemoteDict;
+
+      isPackageExist("com.example.remote-only").should.equal(true);
+    });
+  });
+
   describe("fillMissingDates", () => {
     it("should fill in missing dates with 0 downloads", () => {
       const startDate = new Date("2021-01-01");
