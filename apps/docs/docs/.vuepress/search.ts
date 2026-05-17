@@ -12,6 +12,9 @@ export interface PackageSearchSuggestion {
   title: string;
 }
 
+export const isUnityNuGetPackageName = (packageName: string): boolean =>
+  packageName.startsWith("org.nuget.");
+
 export const getPackageSearchResultDisplayName = (
   pageTitle: string,
   packageName: string,

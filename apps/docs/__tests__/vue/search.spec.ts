@@ -3,6 +3,7 @@ import {
   getPackageSearchResultDisplayName,
   getPackageNameFromSearchSuggestionLink,
   getPackageSearchResultTitle,
+  isUnityNuGetPackageName,
   normalizeSearchQuery,
   usePackageSearchSuggestions,
 } from "@/search";
@@ -17,6 +18,14 @@ describe("normalizeSearchQuery", () => {
     normalizeSearchQuery("(org.nuget.newtonsoft.json)").should.equal(
       "org.nuget.newtonsoft.json",
     );
+  });
+});
+
+describe("isUnityNuGetPackageName", () => {
+  it("only accepts generated UnityNuGet package names", () => {
+    isUnityNuGetPackageName("org.nuget.system.text.json").should.equal(true);
+    isUnityNuGetPackageName("org.kumas.nuget-importer").should.equal(false);
+    isUnityNuGetPackageName("add").should.equal(false);
   });
 });
 

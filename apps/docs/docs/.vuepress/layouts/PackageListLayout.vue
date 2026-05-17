@@ -17,7 +17,7 @@ import { AdPlacementData, PackageMetadata, TOPIC_ALL_SLUG, Topic } from "@openup
 import { getPackageMetadata } from "@openupm/common/build/utils.js";
 import { getPackageDetailPagePath, getPackageListPagePath, isPackageListPath, getTopicAdPlacementUrl } from "@openupm/common/build/urls.js";
 import { topicsWithAll } from '@temp/topics.js';
-import { usePackageSearchSuggestions } from "@/search";
+import { isUnityNuGetPackageName, usePackageSearchSuggestions } from "@/search";
 import UnityAssetAdPlacement from '@/components/UnityAssetAdPlacementForPackageList.vue';
 import DonationSidebarAd from '@/components/DonationSidebarAd.vue';
 import UnityAssetStoreSale from '@/components/UnityAssetStoreSale.vue';
@@ -114,6 +114,7 @@ const packagePageSearchSuggestions = computed(() => {
     store.packageMetadataLocalList.map((metadata) => metadata.name),
   );
   return usePackageSearchSuggestions(searchIndex.value, searchTerm.value)
+    .filter((suggestion) => isUnityNuGetPackageName(suggestion.name))
     .filter((suggestion) => !nativePackageNames.has(suggestion.name))
     .slice(0, 20)
     .map((suggestion) => ({
