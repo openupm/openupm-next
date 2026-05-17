@@ -1,4 +1,5 @@
 import { GithubUserWithScore, PackageMetadataLocal } from '@openupm/types';
+import { getContributorProfilePagePath } from '@openupm/common/build/urls.js';
 
 export type ContributorProfile = {
   githubUser: string;
@@ -9,7 +10,12 @@ export type ContributorProfile = {
   profileHost: string;
 };
 
-const normalizeGithubUser = (githubUser: string): string =>
+export type GithubUserLink = {
+  githubUser?: string | null;
+  url?: string;
+};
+
+export const normalizeGithubUser = (githubUser: string): string =>
   githubUser.trim().toLowerCase();
 
 const matchesGithubUser = (
@@ -72,6 +78,45 @@ export const collectContributorProfileGithubUsers = function (
   return [...profiles.values()].sort((a, b) =>
     a.toLowerCase().localeCompare(b.toLowerCase()),
   );
+};
+
+const hasContributorProfile = function (
+  contributorProfileGithubUsers: string[],
+  githubUser: string,
+): boolean {
+  const normalizedGithubUser = normalizeGithubUser(githubUser);
+  return contributorProfileGithubUsers.some(
+    (profileGithubUser) =>
+      normalizeGithubUser(profileGithubUser) === normalizedGithubUser,
+  );
+};
+
+export const getContributorPageOrGithubUrl = function (
+  githubUser: string,
+  contributorProfileGithubUsers: string[],
+): string {
+  const trimmedGithubUser = githubUser.trim();
+  if (!trimmedGithubUser) return '';
+  if (hasContributorProfile(contributorProfileGithubUsers, trimmedGithubUser)) {
+    return getContributorProfilePagePath(trimmedGithubUser);
+  }
+  return `https://github.com/${trimmedGithubUser}`;
+};
+
+export const addContributorProfileUrls = function <T extends GithubUserLink>(
+  contributors: T[],
+  contributorProfileGithubUsers: string[],
+): T[] {
+  return contributors.map((contributor) => {
+    if (contributor.url) return contributor;
+    if (!contributor.githubUser) return contributor;
+    const url = getContributorPageOrGithubUrl(
+      contributor.githubUser,
+      contributorProfileGithubUsers,
+    );
+    if (!url) return contributor;
+    return { ...contributor, url };
+  });
 };
 
 export const buildContributorProfile = function (
