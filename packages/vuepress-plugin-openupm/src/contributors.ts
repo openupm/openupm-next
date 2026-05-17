@@ -108,6 +108,7 @@ export const addContributorProfileUrls = function <T extends GithubUserLink>(
   contributorProfileGithubUsers: string[],
 ): T[] {
   return contributors.map((contributor) => {
+    if (contributor.url) return contributor;
     if (!contributor.githubUser) return contributor;
     const url = getContributorPageOrGithubUrl(
       contributor.githubUser,

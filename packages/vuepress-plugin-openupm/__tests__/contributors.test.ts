@@ -100,6 +100,11 @@ describe('contributor profile generation', () => {
         [
           { text: 'Alice Backer', githubUser: 'alice' },
           { text: 'Bob Backer', githubUser: 'bob' },
+          {
+            text: 'Custom Backer',
+            githubUser: 'carol',
+            url: 'https://example.com/carol',
+          },
         ],
         ['Alice'],
       ),
@@ -113,6 +118,11 @@ describe('contributor profile generation', () => {
         text: 'Bob Backer',
         githubUser: 'bob',
         url: 'https://github.com/bob',
+      },
+      {
+        text: 'Custom Backer',
+        githubUser: 'carol',
+        url: 'https://example.com/carol',
       },
     ]);
   });
