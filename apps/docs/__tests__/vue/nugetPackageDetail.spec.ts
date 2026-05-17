@@ -67,6 +67,19 @@ describe("NuGet package detail UI", () => {
     });
   });
 
+  it("drops unsafe repository URL schemes from packument metadata", () => {
+    expect(
+      getNuGetRepositoryUrl({
+        repository: { url: "javascript:alert(document.domain)" },
+      }),
+    ).toBe("");
+    expect(
+      getNuGetRepositoryUrl({
+        repository: { url: "https://github.com/JamesNK/Newtonsoft.Json" },
+      }),
+    ).toBe("https://github.com/JamesNK/Newtonsoft.Json");
+  });
+
   it("fetches registry packument, package ads, and shows an unavailable state", () => {
     const source = readFileSync(nugetLayoutPath, "utf8");
 

@@ -62,7 +62,15 @@ export const getNuGetPackageVersions = (
 export const getNuGetRepositoryUrl = (
   versionInfo: NuGetPackumentVersion,
 ): string => {
-  return versionInfo.repository?.url || "";
+  const url = versionInfo.repository?.url || "";
+  try {
+    const parsedUrl = new URL(url);
+    if (parsedUrl.protocol === "http:" || parsedUrl.protocol === "https:")
+      return parsedUrl.href;
+  } catch {
+    return "";
+  }
+  return "";
 };
 
 export const getNuGetPackageMetadata = (
