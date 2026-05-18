@@ -51,6 +51,12 @@ const escapeHtml = (value: string): string =>
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
 
+const serializeStructuredData = (item: StructuredData): string =>
+  JSON.stringify(item)
+    .replace(/</g, '\\u003c')
+    .replace(/>/g, '\\u003e')
+    .replace(/&/g, '\\u0026');
+
 export const getPackageLastModified = (
   metadataLocal: PackageMetadataLocal,
   packageLastModifiedMap: PackageLastModifiedMap = {},
@@ -239,5 +245,5 @@ export const structuredDataHead = (
   structuredData.map((item) => [
     'script',
     { type: 'application/ld+json' },
-    JSON.stringify(item),
+    serializeStructuredData(item),
   ] as HeadConfig);

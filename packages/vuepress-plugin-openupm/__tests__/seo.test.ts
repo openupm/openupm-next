@@ -76,6 +76,19 @@ describe('SEO metadata helpers', () => {
     });
   });
 
+  it('escapes JSON-LD script-breaking characters', () => {
+    const structuredData = structuredDataHead([
+      {
+        '@context': 'https://schema.org',
+        '@type': 'SoftwareApplication',
+        name: '</script><script>alert(1)</script>',
+      },
+    ]);
+
+    expect(structuredData[0][2]).toContain('\\u003c/script\\u003e');
+    expect(structuredData[0][2]).not.toContain('</script>');
+  });
+
   it('uses latest package metadata timestamps for deterministic sitemap dates', () => {
     const packageLastModifiedMap = {
       [packageMetadata.name]: 1_710_000_000_000,
