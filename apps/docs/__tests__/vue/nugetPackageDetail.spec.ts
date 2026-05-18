@@ -86,6 +86,9 @@ describe("NuGet package detail UI", () => {
     expect(source).toContain("const requestedPackageName = packageName.value");
     expect(source).toContain("getPackumentUrl(requestedPackageName)");
     expect(source).toContain("getPackageAdPlacementUrl(requestedPackageName)");
+    expect(source).toContain("const store = useDefaultStore()");
+    expect(source).toContain("fetchPackageDependencyMetadata()");
+    expect(source).toContain("store.fetchCachedPackageMetadataLocalList()");
     expect(source).toContain("isCurrentRequest");
     expect(source).toContain("requestId === latestRequestId");
     expect(source).toContain("<UnityAssetAdPlacement");
