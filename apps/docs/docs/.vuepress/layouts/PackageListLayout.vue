@@ -270,6 +270,7 @@ const fetchAdPlacementData = async (): Promise<void> => {
 // Hooks
 onMounted(() => {
   parseQuery();
+  store.fetchCachedPackageListData();
   fetchAdPlacementData();
 });
 
@@ -296,6 +297,7 @@ watch(() => searchTerm.value, () => {
 });
 
 watch(() => topicSlug.value, () => {
+  store.fetchCachedPackageListData();
   fetchAdPlacementData();
 });
 </script>

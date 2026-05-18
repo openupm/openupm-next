@@ -579,6 +579,8 @@ const metadata = computed(() => {
 
 // Hooks
 onMounted(() => {
+  // Fetch existing package names.
+  store.fetchCachedPackageMetadataLocalList();
   // Fetch blocked scopes.
   fetchBlockedScopes();
   // Fetch licenses.
