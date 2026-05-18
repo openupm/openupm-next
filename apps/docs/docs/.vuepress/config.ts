@@ -15,6 +15,7 @@ import { mediumZoomPlugin } from "@vuepress/plugin-medium-zoom";
 import OpenupmPlugin from "vuepress-plugin-openupm";
 import { blogRssPlugin } from "./blogRssPlugin";
 import { getSearchExtraFields } from "./searchExtraFields";
+import { applyBlogSeoMetadata, getSitemapLastModified } from "./seoMetadata";
 
 const __dirname = getDirname(import.meta.url);
 
@@ -124,6 +125,10 @@ const config: any = mergeWith(
         getExtraFields: getSearchExtraFields,
       }),
       OpenupmPlugin(),
+      {
+        name: "openupm-seo-metadata",
+        extendsPage: applyBlogSeoMetadata,
+      },
       seoPlugin({
         hostname: themeConfig.domain,
         fallBackImage: urlJoin(
@@ -134,10 +139,7 @@ const config: any = mergeWith(
       }),
       sitemapPlugin({
         hostname: themeConfig.domain,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        modifyTimeGetter: (page, app) => {
-          return new Date().toISOString();
-        },
+        modifyTimeGetter: getSitemapLastModified,
       }),
       mediumZoomPlugin({
         selector:

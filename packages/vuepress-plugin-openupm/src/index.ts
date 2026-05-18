@@ -12,10 +12,12 @@ import {
   Topic,
   BLOCKED_SCOPES_FILENAME,
   METADATA_LOCAL_LIST_FILENAME,
+  PackageRelease,
   SDPXLIST_FILENAME,
 } from '@openupm/types';
 import {
   collectPackageHuntersAndOwners,
+  getLocalDataDir,
   loadPackageNames,
   loadPackageMetadataLocal,
   loadTopics,
@@ -47,6 +49,17 @@ import {
   UnityNuGetInventoryEntry,
 } from './unitynuget/registry.js';
 import { writePublicGen } from './utils/write-file.js';
+import {
+  buildCrawlablePackageSummaries,
+  buildPackageListContent,
+  buildPackageListDescription,
+  buildPackageStructuredData,
+  buildUnityNuGetStructuredData,
+  getLatestPackageLastModified,
+  getPackageLastModified,
+  OPENUPM_FALLBACK_IMAGE,
+  structuredDataHead,
+} from './seo.js';
 
 type Contributor = GithubUserWithScore & {
   text: string;
@@ -57,12 +70,47 @@ type PluginData = {
   blockedScopes: string[];
   contributorProfileGithubUsers: string[];
   hunters: Contributor[];
+  packageLastModifiedMap: Record<string, number | undefined>;
   metadataLocalList: PackageMetadataLocal[];
   metadataGroupByNamespace: Record<string, PackageMetadataLocal[]>;
   owners: Contributor[];
   sdpxList: License[];
   topicsWithAll: Topic[];
   unityNuGetInventory: UnityNuGetInventoryEntry[];
+};
+
+const loadPackageLastModifiedMap = async (
+  packageNames: string[],
+): Promise<Record<string, number | undefined>> => {
+  const releasesDir = path.resolve(getLocalDataDir(), 'packages-releases');
+  const entries = await Promise.all(
+    packageNames.map(async (packageName) => {
+      try {
+        const releasesPath = path.resolve(releasesDir, `${packageName}.json`);
+        if (!(await fs.pathExists(releasesPath)))
+          return [packageName, undefined];
+        const packageInfo = JSON.parse(
+          await fs.readFile(releasesPath, 'utf8'),
+        ) as {
+          releases?: PackageRelease[];
+        };
+        const latestReleaseUpdatedAt = Math.max(
+          ...(packageInfo.releases || []).map(
+            (release) => release.updatedAt || 0,
+          ),
+        );
+        return [
+          packageName,
+          Number.isFinite(latestReleaseUpdatedAt) && latestReleaseUpdatedAt > 0
+            ? latestReleaseUpdatedAt
+            : undefined,
+        ];
+      } catch {
+        return [packageName, undefined];
+      }
+    }),
+  );
+  return Object.fromEntries(entries);
 };
 
 type VuePressPlugin = {
@@ -83,6 +131,7 @@ const PLUGIN_DATA = await (async (): Promise<PluginData> => {
   const metadataLocalList = (
     await Promise.all(packageNames.map(loadPackageMetadataLocal))
   ).filter((x) => x) as PackageMetadataLocal[];
+  const packageLastModifiedMap = await loadPackageLastModifiedMap(packageNames);
   // Group package metadata by namespace.
   const metadataGroupByNamespace = groupBy(metadataLocalList, (x) =>
     getPackageNamespace(x.name),
@@ -141,6 +190,7 @@ const PLUGIN_DATA = await (async (): Promise<PluginData> => {
     blockedScopes,
     contributorProfileGithubUsers,
     hunters,
+    packageLastModifiedMap,
     metadataLocalList,
     metadataGroupByNamespace,
     owners,
@@ -202,7 +252,8 @@ const createContributorProfilePages = async function (
  */
 const createDetailPages = async function (app: App): Promise<Page[]> {
   const pages: Page[] = [];
-  const { metadataLocalList, topicsWithAll } = PLUGIN_DATA;
+  const { metadataLocalList, packageLastModifiedMap, topicsWithAll } =
+    PLUGIN_DATA;
   for (const metadataLocal of metadataLocalList) {
     const displayName = getLocalePackageDisplayName(metadataLocal);
     const title = metadataLocal.displayName
@@ -221,6 +272,15 @@ const createDetailPages = async function (app: App): Promise<Page[]> {
       cover,
       author,
       tags,
+      head: structuredDataHead(
+        buildPackageStructuredData(
+          metadataLocal,
+          topicsWithAll.filter(
+            (x) => x.slug && metadataLocal.topics.includes(x.slug),
+          ),
+        ),
+      ),
+      lastmod: getPackageLastModified(metadataLocal, packageLastModifiedMap),
       metadataLocal: metadataLocal,
       topics: topicsWithAll.filter(
         (x) => x.slug && metadataLocal.topics.includes(x.slug),
@@ -250,6 +310,8 @@ const createUnityNuGetDetailPages = async function (app: App): Promise<Page[]> {
       sidebar: [{ text: '', children: [] }],
       title: `${entry.nugetId} | ${entry.packageName} | UnityNuGet Package | Unity Package Manager (UPM)`,
       description: `${entry.nugetId} is available as ${entry.packageName} through the OpenUPM registry UnityNuGet uplink.`,
+      cover: OPENUPM_FALLBACK_IMAGE,
+      head: structuredDataHead(buildUnityNuGetStructuredData(entry)),
       packageKind: 'unitynuget',
       name: entry.packageName,
       nugetId: entry.nugetId,
@@ -271,20 +333,33 @@ const createUnityNuGetDetailPages = async function (app: App): Promise<Page[]> {
  */
 const createListPages = async function (app: App): Promise<Page[]> {
   const pages: Page[] = [];
-  const { topicsWithAll } = PLUGIN_DATA;
+  const { metadataLocalList, packageLastModifiedMap, topicsWithAll } =
+    PLUGIN_DATA;
   for (const topic of topicsWithAll) {
+    const topicMetadataLocalList = metadataLocalList.filter((metadataLocal) =>
+      topic.slug ? metadataLocal.topics.includes(topic.slug) : true,
+    );
+    const crawlablePackageSummaries = buildCrawlablePackageSummaries(
+      topic,
+      topicMetadataLocalList,
+    );
     // Create page
     const frontmatter = {
       layout: 'PackageListLayout',
       // Hack: use an empty element to show sidebar
       sidebar: [{ text: '', children: [] }],
       title: topic.slug ? `Packages - ${topic.name}` : 'Packages',
+      description: buildPackageListDescription(topic),
+      lastmod: getLatestPackageLastModified(
+        topicMetadataLocalList,
+        packageLastModifiedMap,
+      ),
       topicSlug: topic.slug,
     };
     const pageOptions = {
       path: topic.urlPath,
       frontmatter,
-      content: '',
+      content: buildPackageListContent(topic, crawlablePackageSummaries),
     };
     const page = await createPage(app, pageOptions);
     pages.push(page);
