@@ -358,6 +358,7 @@ watch(currentSubPageSlug, () => {
  */
 const fetchAllData = async (): Promise<void> => {
   fetchAdPlacementData();
+  fetchPackageDependencyMetadata();
   await Promise.all([
     fetchPackageInfo(),
     fetchPackument(),
@@ -366,12 +367,13 @@ const fetchAllData = async (): Promise<void> => {
 };
 
 const fetchCurrentSubPageData = (): void => {
-  if (currentSubPageSlug.value === SubPageSlug.deps) {
-    store.fetchCachedPackageMetadataLocalList();
-  }
   if (currentSubPageSlug.value === SubPageSlug.related) {
     fetchRelatedPackages();
   }
+};
+
+const fetchPackageDependencyMetadata = (): void => {
+  store.fetchCachedPackageMetadataLocalList();
 };
 
 /**

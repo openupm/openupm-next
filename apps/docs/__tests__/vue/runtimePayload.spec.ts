@@ -39,8 +39,8 @@ describe("docs runtime payload fetch behavior", () => {
     expect(source).toContain("fetchPackageInfo()");
     expect(source).toContain("fetchPackument()");
     expect(source).toContain("fetchMonthlyDownloads()");
+    expect(source).toContain("fetchPackageDependencyMetadata()");
     expect(source).toContain("const fetchCurrentSubPageData = (): void => {");
-    expect(source).toContain("currentSubPageSlug.value === SubPageSlug.deps");
     expect(source).toContain("currentSubPageSlug.value === SubPageSlug.related");
     expect(source).toContain("if (state.__sameScopePackagesFetched) return;");
   });
