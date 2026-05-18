@@ -85,20 +85,29 @@ const loadPackageLastModifiedMap = async (
   const releasesDir = path.resolve(getLocalDataDir(), 'packages-releases');
   const entries = await Promise.all(
     packageNames.map(async (packageName) => {
-      const releasesPath = path.resolve(releasesDir, `${packageName}.json`);
-      if (!(await fs.pathExists(releasesPath))) return [packageName, undefined];
-      const packageInfo = JSON.parse(await fs.readFile(releasesPath, 'utf8')) as {
-        releases?: PackageRelease[];
-      };
-      const latestReleaseUpdatedAt = Math.max(
-        ...(packageInfo.releases || []).map((release) => release.updatedAt || 0),
-      );
-      return [
-        packageName,
-        Number.isFinite(latestReleaseUpdatedAt) && latestReleaseUpdatedAt > 0
-          ? latestReleaseUpdatedAt
-          : undefined,
-      ];
+      try {
+        const releasesPath = path.resolve(releasesDir, `${packageName}.json`);
+        if (!(await fs.pathExists(releasesPath)))
+          return [packageName, undefined];
+        const packageInfo = JSON.parse(
+          await fs.readFile(releasesPath, 'utf8'),
+        ) as {
+          releases?: PackageRelease[];
+        };
+        const latestReleaseUpdatedAt = Math.max(
+          ...(packageInfo.releases || []).map(
+            (release) => release.updatedAt || 0,
+          ),
+        );
+        return [
+          packageName,
+          Number.isFinite(latestReleaseUpdatedAt) && latestReleaseUpdatedAt > 0
+            ? latestReleaseUpdatedAt
+            : undefined,
+        ];
+      } catch {
+        return [packageName, undefined];
+      }
     }),
   );
   return Object.fromEntries(entries);
