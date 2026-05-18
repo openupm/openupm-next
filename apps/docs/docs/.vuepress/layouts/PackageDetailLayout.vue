@@ -358,7 +358,7 @@ watch(currentSubPageSlug, () => {
  */
 const fetchAllData = async (): Promise<void> => {
   fetchAdPlacementData();
-  fetchPackageDependencyMetadata();
+  fetchPackageMetadata();
   await Promise.all([
     fetchPackageInfo(),
     fetchPackument(),
@@ -372,7 +372,8 @@ const fetchCurrentSubPageData = (): void => {
   }
 };
 
-const fetchPackageDependencyMetadata = (): void => {
+const fetchPackageMetadata = (): void => {
+  store.fetchCachedPackageMetadataRemoteDict();
   store.fetchCachedPackageMetadataLocalList();
 };
 
