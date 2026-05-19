@@ -25,6 +25,18 @@ describe("docs runtime payload fetch behavior", () => {
     const packageListSource = readVuepressFile("layouts/PackageListLayout.vue");
     const homeSource = readVuepressFile("layouts/HomeLayout.vue");
 
+    expect(storeSource).toContain(
+      "const storeFetchPromises = new WeakMap<object, StoreFetchPromises>();",
+    );
+    expect(storeSource).toContain("getStoreFetchPromises(this)");
+    expect(storeSource).not.toContain(
+      "let packageMetadataRemoteDictFetchPromise",
+    );
+    expect(storeSource).not.toContain(
+      "let packageMetadataLocalListFetchPromise",
+    );
+    expect(storeSource).not.toContain("let packageListDataFetchPromise");
+    expect(storeSource).not.toContain("let siteInfoFetchPromise");
     expect(storeSource).toContain("async fetchCachedPackageListData()");
     expect(storeSource).toContain("Promise.all([");
     expect(packageListSource).toContain("store.fetchCachedPackageListData()");
