@@ -40,6 +40,14 @@ Unity 6.3 introduced package signature verification, and unsigned packages may s
 
 Yes. Use GitHub Release asset tracking when OpenUPM should publish a tarball produced by your own build workflow instead of packing directly from the tagged Git checkout. This is also the recommended path for signed packages. See [Signing UPM Packages](./signing-upm-packages.md).
 
+**Q: Should my package use Git LFS on GitHub?**
+
+Be careful with Git LFS on GitHub-hosted package repositories. GitHub's [Git LFS billing documentation](https://docs.github.com/en/github/managing-large-files/about-storage-and-bandwidth-usage) says that LFS downloads count against the repository owner's bandwidth, not against the individual user or service that pulls the files. Forks and automated downloads can also consume the parent repository owner's bandwidth.
+
+OpenUPM needs to fetch package contents when building releases. If your package depends on Git LFS objects, repeated package builds and user workflows can spend the repository owner's Git LFS bandwidth quickly, especially for large binary files or monorepos with unrelated LFS assets.
+
+For packages with large generated files, DLLs, signed tarballs, or other binary artifacts, we recommend publishing a `.tgz` or `.tar.gz` package through GitHub Releases and setting `trackingMode: githubRelease` in the package metadata. In that mode OpenUPM downloads and republishes the release asset you built, instead of cloning the tag and pulling Git LFS objects. See [Publishing from a GitHub Release Asset](./adding-upm-package.md#publishing-from-a-github-release-asset).
+
 **Q: Can I add a commercial option for my open-source packages?**
 
 It depends. In the [Unity Package Guiding Principles & Guidelines](https://unity.com/legal/terms-of-service/software/package-guidelines), it states that:
