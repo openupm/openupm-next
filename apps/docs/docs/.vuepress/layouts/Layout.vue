@@ -26,6 +26,7 @@ const showContentTopAd = computed(() => {
 <template>
   <ParentLayout>
     <template #page-content-top>
+      <SiteBreadcrumb />
       <AdsenseDisplayForContentTop v-if="showContentTopAd" />
     </template>
 

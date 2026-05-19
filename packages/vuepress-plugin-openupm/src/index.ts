@@ -25,8 +25,6 @@ import {
 } from '@openupm/local-data';
 import {
   getPackageNamespace,
-  getLocalePackageDisplayName,
-  getLocalePackageDescription,
 } from '@openupm/common/build/utils.js';
 import {
   getContributorProfilePagePath,
@@ -51,9 +49,14 @@ import {
 import { writePublicGen } from './utils/write-file.js';
 import {
   buildCrawlablePackageSummaries,
+  buildPackageDetailContent,
+  buildPackageDetailDescription,
+  buildPackageDetailTitle,
   buildPackageListContent,
   buildPackageListDescription,
+  buildPackageListTitle,
   buildPackageStructuredData,
+  buildRelatedPackageSummaryIndex,
   buildUnityNuGetStructuredData,
   getLatestPackageLastModified,
   getPackageLastModified,
@@ -254,12 +257,14 @@ const createDetailPages = async function (app: App): Promise<Page[]> {
   const pages: Page[] = [];
   const { metadataLocalList, packageLastModifiedMap, topicsWithAll } =
     PLUGIN_DATA;
+  const getRelatedPackageSummaries =
+    buildRelatedPackageSummaryIndex(metadataLocalList);
   for (const metadataLocal of metadataLocalList) {
-    const displayName = getLocalePackageDisplayName(metadataLocal);
-    const title = metadataLocal.displayName
-      ? `${displayName} | ${metadataLocal.name} | Unity Package Manager (UPM)`
-      : `${metadataLocal.name} | Unity Package Manager (UPM)`;
-    const description = getLocalePackageDescription(metadataLocal);
+    const topics = topicsWithAll.filter(
+      (x) => x.slug && metadataLocal.topics.includes(x.slug),
+    );
+    const title = buildPackageDetailTitle(metadataLocal);
+    const description = buildPackageDetailDescription(metadataLocal);
     const cover = metadataLocal.image;
     const author = metadataLocal.owner;
     const tags = metadataLocal.topics;
@@ -273,23 +278,19 @@ const createDetailPages = async function (app: App): Promise<Page[]> {
       author,
       tags,
       head: structuredDataHead(
-        buildPackageStructuredData(
-          metadataLocal,
-          topicsWithAll.filter(
-            (x) => x.slug && metadataLocal.topics.includes(x.slug),
-          ),
-        ),
+        buildPackageStructuredData(metadataLocal, topics),
       ),
       lastmod: getPackageLastModified(metadataLocal, packageLastModifiedMap),
       metadataLocal: metadataLocal,
-      topics: topicsWithAll.filter(
-        (x) => x.slug && metadataLocal.topics.includes(x.slug),
-      ),
+      topics,
     };
     const pageOptions = {
       path: getPackageDetailPagePath(metadataLocal.name),
       frontmatter,
-      content: '',
+      content: buildPackageDetailContent(metadataLocal, {
+        relatedPackages: getRelatedPackageSummaries(metadataLocal),
+        topics,
+      }),
     };
     const page = await createPage(app, pageOptions);
     pages.push(page);
@@ -348,7 +349,7 @@ const createListPages = async function (app: App): Promise<Page[]> {
       layout: 'PackageListLayout',
       // Hack: use an empty element to show sidebar
       sidebar: [{ text: '', children: [] }],
-      title: topic.slug ? `Packages - ${topic.name}` : 'Packages',
+      title: buildPackageListTitle(topic),
       description: buildPackageListDescription(topic),
       lastmod: getLatestPackageLastModified(
         topicMetadataLocalList,

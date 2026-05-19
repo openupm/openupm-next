@@ -332,6 +332,11 @@ const topics = computed(() => {
   });
 });
 
+const breadcrumbItems = computed(() => [
+  { text: "Packages", link: "/packages/" },
+  { text: packageMetadata.value.displayName || packageMetadata.value.name },
+]);
+
 // Hooks
 onMounted(() => {
   fetchAllData();
@@ -512,6 +517,7 @@ const buildRouterLinkQuery = function (subPage: string): Record<string, string> 
       <ClientOnly>
         <div class="columns columns-contentview">
           <div class="column col-8 col-xl-8 col-lg-8 col-md-12 col-sm-12">
+            <SiteBreadcrumb :items="breadcrumbItems" />
             <div v-if="packageMetadata.repoUnavailable" class="custom-container warning">
               <p class="custom-container-title">{{ $t("repository-is-unavailable-title") }}</p>
               <p>{{ $t("repository-is-unavailable-desc") }}</p>

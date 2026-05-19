@@ -62,3 +62,5 @@ Behind the scenes, Unity records a few changes in the `Packages/manifest.json` f
 ```
 
 If you find the process a bit verbose, you can learn more about the [openupm-cli](./getting-started-cli.md) to simplify the process.
+
+If Unity does not show the package after the manifest changes, check the package name, registry URL, and scope list with [Unity Scoped Registry Troubleshooting](./scoped-registry-troubleshooting.md).

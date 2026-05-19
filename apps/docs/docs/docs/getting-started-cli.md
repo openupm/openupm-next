@@ -103,3 +103,5 @@ $ cat Packages/manifest.json
 The openupm-cli adds `com.littlebigfun.addressable-importer` to dependencies. It also modified the scopedRegistries to link the `com.littlebigfun.addressable-importer` namespace with the openupm registry.
 
 Please visit the [openupm-cli readme](https://github.com/openupm/openupm-cli#openupm-cli) for more usages.
+
+If Unity cannot resolve the package after `openupm add`, compare the generated `scopedRegistries` entry with [Unity Scoped Registry Troubleshooting](./scoped-registry-troubleshooting.md).

@@ -83,3 +83,5 @@ You can get started with OpenUPM by following the links below:
 - [Getting Started with CLI](./getting-started-cli.md)
 
 You can also read [Frequently Asked Questions](./faq.md) and learn about how to [Adding UPM Package](./adding-upm-package.md).
+
+If a package does not appear in Unity after setup, use [Unity Scoped Registry Troubleshooting](./scoped-registry-troubleshooting.md) to check the registry URL, package scope, and lock-file state.
