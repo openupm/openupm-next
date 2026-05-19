@@ -262,7 +262,7 @@ export const buildPackageDetailContent = (
 ): string => {
   const displayName = getLocalePackageDisplayName(metadataLocal);
   const title = displayName || metadataLocal.name;
-  const description = getLocalePackageDescription(metadataLocal);
+  const description = cleanText(getLocalePackageDescription(metadataLocal));
   const topicLinks = options.topics
     .map(
       (topic) =>
