@@ -306,14 +306,10 @@ async function probeMissingGitHubReleaseAssets(
         githubReleaseAssetName: pkg.githubReleaseAssetName,
       });
     } catch (error) {
-      if (
-        error instanceof GitHubReleaseAssetError &&
-        error.reason === ReleaseErrorCode.GitHubReleaseAssetNotFound
-      ) {
+      if (error instanceof GitHubReleaseAssetError) {
         await save(release);
         continue;
       }
-      if (error instanceof GitHubReleaseAssetError) continue;
       throw error;
     }
 

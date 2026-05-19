@@ -165,7 +165,15 @@ describe('buildPackage GitHub Release asset missing probes', () => {
 
     await expect(runBuildPackage(createRelease())).resolves.toBeUndefined();
 
-    expect(saveReleaseMock).not.toHaveBeenCalled();
+    expect(saveReleaseMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        reason: ReleaseErrorCode.GitHubReleaseAssetNotFound,
+        githubReleaseAssetMissingLastProbeAt: Date.parse(
+          '2026-05-10T07:00:00.000Z',
+        ),
+        githubReleaseAssetMissingProbeCount: 1,
+      }),
+    );
   });
 
   it('resets an exhausted release and enqueues a fresh job when the asset appears', async () => {
