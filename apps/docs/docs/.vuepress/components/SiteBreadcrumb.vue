@@ -68,7 +68,7 @@ const breadcrumbItems = computed(() =>
         class="breadcrumb-item"
       >
         <RouterLink v-if="item.link" :to="item.link">{{ item.text }}</RouterLink>
-        <a v-else href="#">{{ item.text }}</a>
+        <span v-else aria-current="page">{{ item.text }}</span>
       </li>
     </ul>
   </nav>

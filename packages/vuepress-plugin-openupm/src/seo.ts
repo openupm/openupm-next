@@ -25,6 +25,12 @@ export interface PackageDetailContentOptions {
   topics: Topic[];
 }
 
+interface RelatedPackageScore {
+  candidate: PackageMetadataLocal;
+  sameOwner: boolean;
+  sharedTopicCount: number;
+}
+
 export type PackageLastModifiedMap = Record<string, number | undefined>;
 
 export const OPENUPM_FALLBACK_IMAGE = '/images/openupm-twitter.png';
@@ -157,33 +163,74 @@ export const buildRelatedPackageSummaries = (
   metadataLocal: PackageMetadataLocal,
   metadataLocalList: PackageMetadataLocal[],
   limit = 6,
-): CrawlablePackageSummary[] => {
-  const topicSet = new Set(metadataLocal.topics);
-  return metadataLocalList
-    .filter((candidate) => candidate.name !== metadataLocal.name)
-    .filter((candidate) => !candidate.excludedFromList)
-    .map((candidate) => ({
-      candidate,
-      sharedTopicCount: candidate.topics.filter((topic) => topicSet.has(topic))
-        .length,
-      sameOwner:
-        Boolean(metadataLocal.owner) && candidate.owner === metadataLocal.owner,
-    }))
-    .filter((entry) => entry.sharedTopicCount > 0 || entry.sameOwner)
-    .sort((a, b) => {
-      if (a.sameOwner !== b.sameOwner) return a.sameOwner ? -1 : 1;
-      if (a.sharedTopicCount !== b.sharedTopicCount) {
-        return b.sharedTopicCount - a.sharedTopicCount;
+): CrawlablePackageSummary[] =>
+  buildRelatedPackageSummaryIndex(metadataLocalList)(metadataLocal, limit);
+
+export const buildRelatedPackageSummaryIndex = (
+  metadataLocalList: PackageMetadataLocal[],
+): ((
+  metadataLocal: PackageMetadataLocal,
+  limit?: number,
+) => CrawlablePackageSummary[]) => {
+  const ownerPackages = new Map<string, PackageMetadataLocal[]>();
+  const topicPackages = new Map<string, PackageMetadataLocal[]>();
+
+  for (const metadataLocal of metadataLocalList) {
+    if (metadataLocal.excludedFromList) continue;
+
+    if (metadataLocal.owner) {
+      const packages = ownerPackages.get(metadataLocal.owner) || [];
+      packages.push(metadataLocal);
+      ownerPackages.set(metadataLocal.owner, packages);
+    }
+
+    for (const topic of metadataLocal.topics) {
+      const packages = topicPackages.get(topic) || [];
+      packages.push(metadataLocal);
+      topicPackages.set(topic, packages);
+    }
+  }
+
+  return (metadataLocal, limit = 6): CrawlablePackageSummary[] => {
+    const candidateMap = new Map<string, PackageMetadataLocal>();
+    const topicSet = new Set(metadataLocal.topics);
+
+    for (const candidate of ownerPackages.get(metadataLocal.owner) || []) {
+      candidateMap.set(candidate.name, candidate);
+    }
+    for (const topic of topicSet) {
+      for (const candidate of topicPackages.get(topic) || []) {
+        candidateMap.set(candidate.name, candidate);
       }
-      return a.candidate.name.localeCompare(b.candidate.name);
-    })
-    .slice(0, limit)
-    .map(({ candidate }) => ({
-      description: truncateText(getLocalePackageDescription(candidate), 160),
-      name: candidate.name,
-      path: getPackageDetailPagePath(candidate.name),
-      title: getLocalePackageDisplayName(candidate) || candidate.name,
-    }));
+    }
+
+    return Array.from(candidateMap.values())
+      .filter((candidate) => candidate.name !== metadataLocal.name)
+      .map<RelatedPackageScore>((candidate) => ({
+        candidate,
+        sharedTopicCount: candidate.topics.filter((topic) =>
+          topicSet.has(topic),
+        ).length,
+        sameOwner:
+          Boolean(metadataLocal.owner) &&
+          candidate.owner === metadataLocal.owner,
+      }))
+      .filter((entry) => entry.sharedTopicCount > 0 || entry.sameOwner)
+      .sort((a, b) => {
+        if (a.sameOwner !== b.sameOwner) return a.sameOwner ? -1 : 1;
+        if (a.sharedTopicCount !== b.sharedTopicCount) {
+          return b.sharedTopicCount - a.sharedTopicCount;
+        }
+        return a.candidate.name.localeCompare(b.candidate.name);
+      })
+      .slice(0, limit)
+      .map(({ candidate }) => ({
+        description: truncateText(getLocalePackageDescription(candidate), 160),
+        name: candidate.name,
+        path: getPackageDetailPagePath(candidate.name),
+        title: getLocalePackageDisplayName(candidate) || candidate.name,
+      }));
+  };
 };
 
 export const buildPackageListContent = (

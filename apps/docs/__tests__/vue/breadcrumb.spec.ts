@@ -41,6 +41,13 @@ describe("site breadcrumbs", () => {
     expect(source).toContain('path === "/contributors/"');
   });
 
+  it("renders the current page breadcrumb as non-link text", () => {
+    const source = readFileSync(breadcrumbPath, "utf8");
+
+    expect(source).toContain('<span v-else aria-current="page">');
+    expect(source).not.toContain('href="#"');
+  });
+
   it("renders breadcrumbs in the default layout for docs and blog pages", () => {
     const source = readFileSync(layoutPath, "utf8");
 

@@ -9,6 +9,7 @@ import {
   buildPackageListDescription,
   buildPackageListTitle,
   buildRelatedPackageSummaries,
+  buildRelatedPackageSummaryIndex,
   buildPackageStructuredData,
   getLatestPackageLastModified,
   getPackageLastModified,
@@ -98,7 +99,7 @@ describe('SEO metadata helpers', () => {
   });
 
   it('builds related package summaries from shared topics and owner', () => {
-    const related = buildRelatedPackageSummaries(packageMetadata, [
+    const metadataList = [
       packageMetadata,
       {
         ...packageMetadata,
@@ -113,7 +114,10 @@ describe('SEO metadata helpers', () => {
         topics: ['rendering'],
         owner: 'other',
       },
-    ]);
+    ];
+    const related = buildRelatedPackageSummaries(packageMetadata, metadataList);
+    const getRelatedPackageSummaries =
+      buildRelatedPackageSummaryIndex(metadataList);
 
     expect(related).toEqual([
       {
@@ -123,6 +127,7 @@ describe('SEO metadata helpers', () => {
         title: 'Example AI Tools',
       },
     ]);
+    expect(getRelatedPackageSummaries(packageMetadata)).toEqual(related);
   });
 
   it('builds hidden package detail fallback content with install, topic, related, and owner links', () => {

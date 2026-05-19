@@ -56,7 +56,7 @@ import {
   buildPackageListDescription,
   buildPackageListTitle,
   buildPackageStructuredData,
-  buildRelatedPackageSummaries,
+  buildRelatedPackageSummaryIndex,
   buildUnityNuGetStructuredData,
   getLatestPackageLastModified,
   getPackageLastModified,
@@ -257,6 +257,8 @@ const createDetailPages = async function (app: App): Promise<Page[]> {
   const pages: Page[] = [];
   const { metadataLocalList, packageLastModifiedMap, topicsWithAll } =
     PLUGIN_DATA;
+  const getRelatedPackageSummaries =
+    buildRelatedPackageSummaryIndex(metadataLocalList);
   for (const metadataLocal of metadataLocalList) {
     const topics = topicsWithAll.filter(
       (x) => x.slug && metadataLocal.topics.includes(x.slug),
@@ -286,10 +288,7 @@ const createDetailPages = async function (app: App): Promise<Page[]> {
       path: getPackageDetailPagePath(metadataLocal.name),
       frontmatter,
       content: buildPackageDetailContent(metadataLocal, {
-        relatedPackages: buildRelatedPackageSummaries(
-          metadataLocal,
-          metadataLocalList,
-        ),
+        relatedPackages: getRelatedPackageSummaries(metadataLocal),
         topics,
       }),
     };
