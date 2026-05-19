@@ -136,3 +136,6 @@ npm run docs:build:limit
 ```
 
 The docs app includes Node 22 compatibility aliases in `apps/docs/docs/.vuepress/config.ts`. Keep those in place unless the VuePress / Vue I18n dependency stack is upgraded and revalidated.
+
+Docs app architecture notes, including runtime data loading rules, live in
+`apps/docs/ARCHITECTURE.md`.
