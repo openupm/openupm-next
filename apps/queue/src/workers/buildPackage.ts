@@ -29,10 +29,16 @@ import { addJob, getQueue } from '../queues/core.js';
 import { createJobId } from '../queues/jobId.js';
 import { cleanupMissingPackage } from '../jobs/cleanupMissingPackage.js';
 import { gitListRemoteTags, RemoteTag } from '../utils/git.js';
+import {
+  GitHubReleaseAssetError,
+  resolveGitHubReleaseAsset,
+} from '../utils/githubReleaseAsset.js';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const config = configRaw as any;
 const logger = createLogger('@openupm/queue/buildPackage');
+const githubReleaseAssetProbeIntervalMs = 6 * 60 * 60 * 1000;
+const githubReleaseAssetProbeWindowMs = 7 * 24 * 60 * 60 * 1000;
 
 function parseGitHubRepo(
   url: string,
@@ -117,6 +123,7 @@ export async function buildPackage(name: string): Promise<void> {
     validTags,
     pkg.trackingMode || 'git',
   );
+  await probeMissingGitHubReleaseAssets(pkg, releases);
   await addReleaseJobs(releases);
 }
 
@@ -274,4 +281,93 @@ async function addReleaseJobs(releases: ReleaseModel[]): Promise<void> {
     });
     i++;
   }
+}
+
+async function probeMissingGitHubReleaseAssets(
+  pkg: Awaited<ReturnType<typeof loadPackageMetadataLocal>>,
+  releases: ReleaseModel[],
+): Promise<void> {
+  if (!pkg || (pkg.trackingMode || 'git') !== 'githubRelease') return;
+
+  for (const release of releases) {
+    if (!(await shouldProbeMissingGitHubReleaseAsset(release))) continue;
+
+    const now = Date.now();
+    release.githubReleaseAssetMissingFirstSeenAt ??= release.updatedAt;
+    release.githubReleaseAssetMissingLastProbeAt = now;
+    release.githubReleaseAssetMissingProbeCount =
+      (release.githubReleaseAssetMissingProbeCount || 0) + 1;
+
+    try {
+      await resolveGitHubReleaseAsset({
+        config,
+        repoUrl: pkg.repoUrl,
+        releaseTag: release.tag,
+        githubReleaseAssetName: pkg.githubReleaseAssetName,
+      });
+    } catch (error) {
+      if (
+        error instanceof GitHubReleaseAssetError &&
+        error.reason === ReleaseErrorCode.GitHubReleaseAssetNotFound
+      ) {
+        await save(release);
+        continue;
+      }
+      if (error instanceof GitHubReleaseAssetError) continue;
+      throw error;
+    }
+
+    const jobConfig = config.jobs.buildRelease;
+    const queue = getQueue(jobConfig.queue);
+    const jobId = createJobId(jobConfig.name, release.packageName, release.version);
+    await queue.remove(jobId, { removeChildren: true });
+    const resetRelease = await save({
+      ...release,
+      state: ReleaseState.Pending,
+      reason: ReleaseErrorCode.None,
+      buildId: '',
+      signed: false,
+      publishedVersion: undefined,
+      githubReleaseAssetMissingFirstSeenAt: undefined,
+      githubReleaseAssetMissingLastProbeAt: undefined,
+      githubReleaseAssetMissingProbeCount: undefined,
+    });
+    Object.assign(release, resetRelease);
+    logger.info(
+      { rel: `${release.packageName}@${release.version}` },
+      'GitHub Release asset is available; release requeued',
+    );
+  }
+}
+
+async function shouldProbeMissingGitHubReleaseAsset(
+  release: ReleaseModel,
+): Promise<boolean> {
+  if (
+    release.state !== ReleaseState.Failed ||
+    release.reason !== ReleaseErrorCode.GitHubReleaseAssetNotFound
+  ) {
+    return false;
+  }
+
+  const firstSeenAt =
+    release.githubReleaseAssetMissingFirstSeenAt || release.updatedAt;
+  const now = Date.now();
+  if (now - firstSeenAt > githubReleaseAssetProbeWindowMs) return false;
+
+  const lastProbeAt = release.githubReleaseAssetMissingLastProbeAt;
+  if (lastProbeAt && now - lastProbeAt < githubReleaseAssetProbeIntervalMs) {
+    return false;
+  }
+
+  const jobConfig = config.jobs.buildRelease;
+  const queue = getQueue(jobConfig.queue);
+  const job = await queue.getJob(
+    createJobId(jobConfig.name, release.packageName, release.version),
+  );
+  if (!job) return false;
+
+  const state = await job.getState();
+  const maxAttempts = job.opts?.attempts ?? 1;
+  return state === 'failed' && job.attemptsMade >= maxAttempts;
 }

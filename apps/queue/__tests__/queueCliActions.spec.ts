@@ -121,6 +121,9 @@ describe('queue-cli destructive actions', () => {
       commit: 'abc123',
       createdAt: 100,
       updatedAt: 200,
+      githubReleaseAssetMissingFirstSeenAt: 150,
+      githubReleaseAssetMissingLastProbeAt: 190,
+      githubReleaseAssetMissingProbeCount: 2,
     };
     fetchOneMock.mockResolvedValue(release);
     saveReleaseMock.mockImplementation(async (value) => ({
@@ -150,6 +153,9 @@ describe('queue-cli destructive actions', () => {
       state: ReleaseState.Pending,
       reason: ReleaseErrorCode.None,
       buildId: '',
+      githubReleaseAssetMissingFirstSeenAt: undefined,
+      githubReleaseAssetMissingLastProbeAt: undefined,
+      githubReleaseAssetMissingProbeCount: undefined,
     });
     expect(addJobMock).toHaveBeenCalledWith({
       queue: expect.anything(),

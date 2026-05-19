@@ -698,6 +698,9 @@ async function releaseRequeue(
     state: ReleaseState.Pending,
     reason: ReleaseErrorCode.None,
     buildId: '',
+    githubReleaseAssetMissingFirstSeenAt: undefined,
+    githubReleaseAssetMissingLastProbeAt: undefined,
+    githubReleaseAssetMissingProbeCount: undefined,
   });
   const job = await addJob({
     queue,

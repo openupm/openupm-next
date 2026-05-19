@@ -11,6 +11,9 @@ export interface ReleaseModel {
   source?: 'git' | 'githubRelease';
   signed?: boolean;
   publishedVersion?: string;
+  githubReleaseAssetMissingFirstSeenAt?: number;
+  githubReleaseAssetMissingLastProbeAt?: number;
+  githubReleaseAssetMissingProbeCount?: number;
 }
 
 export const releaseModelFields: (keyof ReleaseModel)[] = [
@@ -26,6 +29,9 @@ export const releaseModelFields: (keyof ReleaseModel)[] = [
   'source',
   'signed',
   'publishedVersion',
+  'githubReleaseAssetMissingFirstSeenAt',
+  'githubReleaseAssetMissingLastProbeAt',
+  'githubReleaseAssetMissingProbeCount',
 ];
 
 export interface InvalidTag {

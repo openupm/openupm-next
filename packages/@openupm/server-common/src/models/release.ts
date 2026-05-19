@@ -8,7 +8,12 @@
  */
 
 import { pick } from 'lodash-es';
-import { ReleaseModel, releaseModelFields, ReleaseState } from '@openupm/types';
+import {
+  ReleaseErrorCode,
+  ReleaseModel,
+  releaseModelFields,
+  ReleaseState,
+} from '@openupm/types';
 
 import redis from '../redis.js';
 
@@ -135,6 +140,13 @@ export async function save(
     signed: false,
   };
   Object.assign(record, pick(obj, releaseModelFields));
+  if (record.reason === ReleaseErrorCode.GitHubReleaseAssetNotFound) {
+    record.githubReleaseAssetMissingFirstSeenAt ??= now;
+  } else {
+    record.githubReleaseAssetMissingFirstSeenAt = undefined;
+    record.githubReleaseAssetMissingLastProbeAt = undefined;
+    record.githubReleaseAssetMissingProbeCount = undefined;
+  }
   record.updatedAt = now;
   const jsonText = JSON.stringify(record, null, 0);
   const key = getRedisKeyForRelease(record.packageName);
