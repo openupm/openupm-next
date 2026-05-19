@@ -155,6 +155,26 @@ describe('SEO metadata helpers', () => {
     expect(content).toContain('https://github.com/example');
   });
 
+  it('normalizes markdown-like package descriptions in hidden detail content', () => {
+    const content = buildPackageDetailContent(
+      {
+        ...packageMetadata,
+        description:
+          'Expose easily your methods as buttons in editor and runtime.\n\n* It includes an Overlay Toolbar',
+      },
+      {
+        relatedPackages: [],
+        topics: [],
+      },
+    );
+
+    expect(content).toContain(
+      'Expose easily your methods as buttons in editor and runtime. * It includes an Overlay Toolbar',
+    );
+    expect(content).not.toContain('<ul>');
+    expect(content).not.toContain('</p></li>');
+  });
+
   it('builds SoftwareApplication and breadcrumb JSON-LD for package pages', () => {
     const structuredData = buildPackageStructuredData(packageMetadata, [topic]);
 
