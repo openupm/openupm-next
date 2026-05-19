@@ -295,7 +295,7 @@ const subPages = computed(() => {
       text: capitalize(t("related-packages")),
       slug: SubPageSlug.related,
       visible: true,
-      count: relatedPackages.value.length,
+      count: state.__sameScopePackagesFetched ? relatedPackages.value.length : undefined,
       component: PackageRelatedView,
       props: {
         relatedPackages: relatedPackages.value,
