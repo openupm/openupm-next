@@ -308,7 +308,8 @@ async function probeMissingGitHubReleaseAssets(
     } catch (error) {
       if (error instanceof GitHubReleaseAssetError) {
         const saved =
-          error.reason === ReleaseErrorCode.GitHubReleaseAssetNotFound
+          error.reason === ReleaseErrorCode.GitHubReleaseAssetNotFound ||
+          error.reason === ReleaseErrorCode.GitHubReleaseApiError
             ? await save(release)
             : await save({
                 ...release,

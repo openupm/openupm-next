@@ -152,7 +152,7 @@ describe('buildPackage GitHub Release asset missing probes', () => {
     expect(resolveGitHubReleaseAssetMock).not.toHaveBeenCalled();
   });
 
-  it('ignores non-target GitHub Release resolver errors during probes', async () => {
+  it('preserves the missing-asset probe for transient GitHub API errors', async () => {
     const { GitHubReleaseAssetError } = await import(
       '../../src/utils/githubReleaseAsset.js'
     );
@@ -167,7 +167,31 @@ describe('buildPackage GitHub Release asset missing probes', () => {
 
     expect(saveReleaseMock).toHaveBeenCalledWith(
       expect.objectContaining({
-        reason: ReleaseErrorCode.GitHubReleaseApiError,
+        reason: ReleaseErrorCode.GitHubReleaseAssetNotFound,
+        githubReleaseAssetMissingLastProbeAt: Date.parse(
+          '2026-05-10T07:00:00.000Z',
+        ),
+        githubReleaseAssetMissingProbeCount: 1,
+      }),
+    );
+  });
+
+  it('persists actionable non-transient GitHub Release resolver errors', async () => {
+    const { GitHubReleaseAssetError } = await import(
+      '../../src/utils/githubReleaseAsset.js'
+    );
+    resolveGitHubReleaseAssetMock.mockRejectedValue(
+      new GitHubReleaseAssetError(
+        'GitHub Release asset selection was ambiguous',
+        ReleaseErrorCode.GitHubReleaseAssetAmbiguous,
+      ),
+    );
+
+    await expect(runBuildPackage(createRelease())).resolves.toBeUndefined();
+
+    expect(saveReleaseMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        reason: ReleaseErrorCode.GitHubReleaseAssetAmbiguous,
         githubReleaseAssetMissingFirstSeenAt: undefined,
         githubReleaseAssetMissingLastProbeAt: undefined,
         githubReleaseAssetMissingProbeCount: undefined,
