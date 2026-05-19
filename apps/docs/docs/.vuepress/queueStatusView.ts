@@ -177,6 +177,9 @@ export function formatReleaseRetryable(
     case "active":
       return `${prefix}, running`;
     case "exhausted":
+      if (release.reason === "GitHubReleaseAssetNotFound") {
+        return "yes, waiting for GitHub Release asset";
+      }
       return `${prefix}, exhausted`;
     case "ready_to_requeue":
     case undefined:

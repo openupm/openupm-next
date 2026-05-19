@@ -138,6 +138,16 @@ describe("@/queueStatusView", () => {
       now,
     ).should.equal("yes, 3/3, exhausted");
     formatReleaseRetryable(
+      {
+        ...release,
+        reason: "GitHubReleaseAssetNotFound",
+        attempts: 3,
+        maxAttempts: 3,
+        retryState: "exhausted",
+      },
+      now,
+    ).should.equal("yes, waiting for GitHub Release asset");
+    formatReleaseRetryable(
       { ...release, retryState: "ready_to_requeue" },
       now,
     ).should.equal("yes, ready to requeue");

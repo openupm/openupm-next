@@ -10,7 +10,7 @@ import {
   remove,
   save,
 } from '../../src/models/release.js';
-import { ReleaseState } from '@openupm/types';
+import { ReleaseErrorCode, ReleaseState } from '@openupm/types';
 
 const SAMPLE_PACKAGE_NAME = 'sample-package';
 
@@ -97,6 +97,35 @@ describeWithRedis('save', function () {
     await remove(obj2!.packageName, obj2!.version);
     const obj3 = await fetchOne(obj.packageName, obj.version);
     expect(obj3).toBeNull();
+  });
+
+  it('tracks and clears GitHub Release asset missing probe metadata', async () => {
+    const failed = await save({
+      packageName: SAMPLE_PACKAGE_NAME,
+      version: '1.0.0',
+      state: ReleaseState.Failed,
+      reason: ReleaseErrorCode.GitHubReleaseAssetNotFound,
+    });
+    expect(failed.githubReleaseAssetMissingFirstSeenAt).toBeGreaterThan(0);
+
+    const firstSeenAt = failed.githubReleaseAssetMissingFirstSeenAt;
+    const repeated = await save({
+      ...failed,
+      buildId: 'retry-build',
+      reason: ReleaseErrorCode.GitHubReleaseAssetNotFound,
+    });
+    expect(repeated.githubReleaseAssetMissingFirstSeenAt).toEqual(firstSeenAt);
+
+    const succeeded = await save({
+      ...repeated,
+      state: ReleaseState.Succeeded,
+      reason: ReleaseErrorCode.None,
+      githubReleaseAssetMissingLastProbeAt: Date.now(),
+      githubReleaseAssetMissingProbeCount: 2,
+    });
+    expect(succeeded.githubReleaseAssetMissingFirstSeenAt).toBeUndefined();
+    expect(succeeded.githubReleaseAssetMissingLastProbeAt).toBeUndefined();
+    expect(succeeded.githubReleaseAssetMissingProbeCount).toBeUndefined();
   });
 });
 

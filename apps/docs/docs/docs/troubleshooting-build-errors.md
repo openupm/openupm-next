@@ -34,6 +34,8 @@ OpenUPM categorizes these errors into two types: retryable errors and non-retrya
 
 - `E900` connection timeout: This error occurs when the build-pipelines failed to connect to resolve the registry server or the internet is not available.
 
+- `E905` GitHub Release asset not found: For packages using `trackingMode: githubRelease`, this means the matching GitHub Release exists but OpenUPM could not find a publishable `.tgz` or `.tar.gz` asset. After the normal retry attempts are exhausted, OpenUPM checks again every 6 hours for up to 7 days from the first missing-asset failure. After 7 days, attach the asset and request a rebuild.
+
 ## Non-retryable Errors
 
 **Non-retryable errors** are usually caused by specific issues that cannot be fixed automatically by a rebuild. In such cases, the package owner needs to address these errors manually.
