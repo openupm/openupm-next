@@ -90,6 +90,10 @@ interface QueueLike {
     end?: number,
     asc?: boolean,
   ) => Promise<Array<Job | QueueJobLike>>;
+  client?: Promise<{
+    zscore: (key: string, member: string) => Promise<string | null>;
+  }>;
+  toKey?: (type: string) => string;
 }
 
 interface QueueJobLike {
@@ -97,7 +101,6 @@ interface QueueJobLike {
   name: string;
   data: unknown;
   attemptsMade: number;
-  delay?: number;
   opts?: { attempts?: number };
   timestamp: number;
   processedOn?: number;
@@ -215,53 +218,68 @@ function releaseIdentityKey(packageName: string, version: string): string {
   return `${packageName}\0${version}`;
 }
 
-function delayedJobNextRetryAt(job: Job | QueueJobLike): string | undefined {
-  if (typeof job.delay !== 'number' || job.delay <= 0) return undefined;
-  return toIso(job.timestamp + job.delay);
+async function delayedJobNextRetryAt(
+  queue: QueueLike,
+  job: Job | QueueJobLike,
+): Promise<string | undefined> {
+  if (!job.id || !queue.client || !queue.toKey) return undefined;
+  try {
+    const client = await queue.client;
+    const score = await client.zscore(queue.toKey('delayed'), `${job.id}`);
+    if (!score) return undefined;
+    const delayedAt = Math.floor(Number(score) / 0x1000);
+    return Number.isFinite(delayedAt) ? toIso(delayedAt) : undefined;
+  } catch {
+    return undefined;
+  }
 }
 
-function retryMetadataFromJob(
+async function retryMetadataFromJob(
+  queue: QueueLike,
   job: Job | QueueJobLike,
   retryState: Exclude<ReleaseRetryState, 'not_retryable' | 'ready_to_requeue'>,
-): ReleaseRetryMetadata {
+): Promise<ReleaseRetryMetadata> {
   return {
     attempts: job.attemptsMade,
     maxAttempts: job.opts?.attempts ?? 1,
     nextRetryAt:
-      retryState === 'scheduled' ? delayedJobNextRetryAt(job) : undefined,
+      retryState === 'scheduled'
+        ? await delayedJobNextRetryAt(queue, job)
+        : undefined,
     retryState,
   };
 }
 
-function buildReleaseRetryMetadata(
+async function buildReleaseRetryMetadata(
+  releaseQueue: QueueLike,
   jobs: {
     delayed: Array<Job | QueueJobLike>;
     waiting: Array<Job | QueueJobLike>;
     active: Array<Job | QueueJobLike>;
     failed: Array<Job | QueueJobLike>;
   },
-): Map<string, ReleaseRetryMetadata> {
+): Promise<Map<string, ReleaseRetryMetadata>> {
   const metadata = new Map<string, ReleaseRetryMetadata>();
-  const addJob = (
+  const addJob = async (
     job: Job | QueueJobLike,
     retryState: Exclude<
       ReleaseRetryState,
       'not_retryable' | 'ready_to_requeue'
     >,
-  ): void => {
+  ): Promise<void> => {
     const release = parseReleaseJobIdentity(job);
     if (!release.packageName || !release.version) return;
     const key = releaseIdentityKey(release.packageName, release.version);
     if (metadata.has(key)) return;
-    metadata.set(key, retryMetadataFromJob(job, retryState));
+    metadata.set(key, await retryMetadataFromJob(releaseQueue, job, retryState));
   };
 
-  for (const job of jobs.delayed) addJob(job, 'scheduled');
-  for (const job of jobs.waiting) addJob(job, 'waiting');
-  for (const job of jobs.active) addJob(job, 'active');
+  for (const job of jobs.delayed) await addJob(job, 'scheduled');
+  for (const job of jobs.waiting) await addJob(job, 'waiting');
+  for (const job of jobs.active) await addJob(job, 'active');
   for (const job of jobs.failed) {
     const maxAttempts = job.opts?.attempts ?? 1;
-    if (job.attemptsMade >= maxAttempts) addJob(job, 'exhausted');
+    if (job.attemptsMade >= maxAttempts) await addJob(job, 'exhausted');
   }
   return metadata;
 }
@@ -448,12 +466,15 @@ export async function buildPublicQueueStatus(
   const packageFailed = countValue(packageCounts, 'failed');
   const releaseFailed = countValue(releaseCounts, 'failed');
   const releaseWaiting = countValue(releaseCounts, 'waiting');
-  const releaseRetryMetadata = buildReleaseRetryMetadata({
-    delayed: delayedReleaseJobs,
-    waiting: waitingReleaseJobs,
-    active: activeReleaseJobs,
-    failed: failedReleaseJobs,
-  });
+  const releaseRetryMetadata = await buildReleaseRetryMetadata(
+    sources.releaseQueue,
+    {
+      delayed: delayedReleaseJobs,
+      waiting: waitingReleaseJobs,
+      active: activeReleaseJobs,
+      failed: failedReleaseJobs,
+    },
+  );
 
   return {
     generatedAt: new Date(now).toISOString(),

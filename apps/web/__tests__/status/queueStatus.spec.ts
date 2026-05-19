@@ -17,7 +17,6 @@ function createJob(params: {
   finishedOn?: number;
   attemptsMade?: number;
   attempts?: number;
-  delay?: number;
   failedReason?: string;
 }) {
   return {
@@ -25,7 +24,6 @@ function createJob(params: {
     name: 'job',
     data: params.data ?? {},
     attemptsMade: params.attemptsMade ?? 0,
-    delay: params.delay,
     opts: { attempts: params.attempts ?? 3 },
     timestamp: params.timestamp ?? 1_700_000_000_000,
     processedOn: params.processedOn,
@@ -39,6 +37,7 @@ function createQueue(params: {
   counts: Record<string, number>;
   workers?: unknown[];
   jobs?: Record<string, ReturnType<typeof createJob>[]>;
+  delayedScores?: Record<string, number>;
 }) {
   return {
     getJobCounts: vi.fn(async (...types: string[]) => {
@@ -55,6 +54,13 @@ function createQueue(params: {
         : [...jobs].sort((a, b) => b.timestamp - a.timestamp);
       return sorted.slice(0, (end ?? sorted.length - 1) + 1);
     }),
+    client: Promise.resolve({
+      zscore: vi.fn(async (_key: string, member: string) => {
+        const score = params.delayedScores?.[member];
+        return typeof score === 'number' ? `${score}` : null;
+      }),
+    }),
+    toKey: vi.fn((type: string) => `queue:${type}`),
   };
 }
 
@@ -300,8 +306,7 @@ describe('buildPublicQueueStatus', () => {
           createJob({
             id: 'build-rel|com.retry.scheduled|1.0.0',
             state: 'delayed',
-            timestamp: now,
-            delay: 18_000,
+            timestamp: now - 300_000,
             attemptsMade: 1,
             attempts: 3,
           }),
@@ -336,6 +341,9 @@ describe('buildPublicQueueStatus', () => {
             attempts: 3,
           }),
         ],
+      },
+      delayedScores: {
+        'build-rel|com.retry.scheduled|1.0.0': (now + 18_000) * 0x1000,
       },
     });
     const release = (
