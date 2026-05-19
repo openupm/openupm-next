@@ -203,7 +203,7 @@
             </a>
             <span v-else>{{ releaseReasonText(release) }}</span>
           </td>
-          <td>{{ release.retryable ? "yes" : "no" }}</td>
+          <td>{{ formatReleaseRetryable(release, nowMs) }}</td>
         </tr>
       </QueueStatusTable>
 
@@ -247,6 +247,7 @@ import {
   PublicReleaseSummary,
   formatCountdown,
   formatDuration,
+  formatReleaseRetryable,
   formatRelativeTime,
   isQueueStatusEmpty,
   packageUrl,

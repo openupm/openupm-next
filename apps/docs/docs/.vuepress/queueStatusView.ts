@@ -20,6 +20,16 @@ export interface PublicReleaseSummary {
   source: "git" | "githubRelease";
   signed: boolean;
   retryable?: boolean;
+  attempts?: number;
+  maxAttempts?: number;
+  nextRetryAt?: string;
+  retryState?:
+    | "not_retryable"
+    | "scheduled"
+    | "waiting"
+    | "active"
+    | "exhausted"
+    | "ready_to_requeue";
 }
 
 export interface PublicQueueStatus {
@@ -128,6 +138,52 @@ export function formatCountdown(value: string | null, nowMs = Date.now()): strin
     return `Next scan in ${Math.floor(remaining / minute)}m`;
   }
   return `Next scan in ${formatDuration(remaining)}`;
+}
+
+function formatRetryAttempts(release: PublicReleaseSummary): string {
+  if (
+    typeof release.attempts !== "number" ||
+    typeof release.maxAttempts !== "number"
+  ) {
+    return "yes";
+  }
+  return `yes, ${release.attempts}/${release.maxAttempts}`;
+}
+
+function formatNextRetry(value: string | undefined, nowMs: number): string {
+  if (!value) return "soon";
+  const timestamp = new Date(value).getTime();
+  if (!Number.isFinite(timestamp)) return "soon";
+  const remaining = Math.max(0, timestamp - nowMs);
+  if (remaining <= 0) return "soon";
+  if (remaining < 60 * 1000) return `${Math.ceil(remaining / 1000)}s`;
+  return formatDuration(remaining);
+}
+
+export function formatReleaseRetryable(
+  release: PublicReleaseSummary,
+  nowMs = Date.now(),
+): string {
+  if (release.retryable !== true || release.retryState === "not_retryable") {
+    return "no";
+  }
+
+  const prefix = formatRetryAttempts(release);
+  switch (release.retryState) {
+    case "scheduled":
+      return `${prefix}, next in ${formatNextRetry(release.nextRetryAt, nowMs)}`;
+    case "waiting":
+      return `${prefix}, waiting`;
+    case "active":
+      return `${prefix}, running`;
+    case "exhausted":
+      return `${prefix}, exhausted`;
+    case "ready_to_requeue":
+    case undefined:
+      return "yes, ready to requeue";
+    case "not_retryable":
+      return "no";
+  }
 }
 
 export function packageUrl(packageName: string): string {
