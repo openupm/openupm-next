@@ -90,6 +90,7 @@ interface QueueLike {
     end?: number,
     asc?: boolean,
   ) => Promise<Array<Job | QueueJobLike>>;
+  getJob?: (jobId: string) => Promise<Job | QueueJobLike | null | undefined>;
   client?: Promise<{
     zscore: (key: string, member: string) => Promise<string | null>;
   }>;
@@ -218,6 +219,18 @@ function releaseIdentityKey(packageName: string, version: string): string {
   return `${packageName}\0${version}`;
 }
 
+function createQueueJobId(...parts: string[]): string {
+  return parts.map((part) => encodeURIComponent(part)).join('|');
+}
+
+function createReleaseJobId(packageName: string, version: string): string {
+  return createQueueJobId(
+    config.jobs?.buildRelease?.name || 'build-rel',
+    packageName,
+    version,
+  );
+}
+
 async function delayedJobNextRetryAt(
   queue: QueueLike,
   job: Job | QueueJobLike,
@@ -250,37 +263,52 @@ async function retryMetadataFromJob(
   };
 }
 
+async function getReleaseRetryMetadata(
+  releaseQueue: QueueLike,
+  release: ReleaseModel,
+): Promise<ReleaseRetryMetadata | undefined> {
+  if (!releaseQueue.getJob) return undefined;
+  const job = await releaseQueue.getJob(
+    createReleaseJobId(release.packageName, release.version),
+  );
+  if (!job) return undefined;
+
+  const state = await job.getState();
+  if (state === 'delayed') {
+    return await retryMetadataFromJob(releaseQueue, job, 'scheduled');
+  }
+  if (state === 'waiting') {
+    return await retryMetadataFromJob(releaseQueue, job, 'waiting');
+  }
+  if (state === 'active') {
+    return await retryMetadataFromJob(releaseQueue, job, 'active');
+  }
+  const maxAttempts = job.opts?.attempts ?? 1;
+  if (state === 'failed' && job.attemptsMade >= maxAttempts) {
+    return await retryMetadataFromJob(releaseQueue, job, 'exhausted');
+  }
+  return undefined;
+}
+
 async function buildReleaseRetryMetadata(
   releaseQueue: QueueLike,
-  jobs: {
-    delayed: Array<Job | QueueJobLike>;
-    waiting: Array<Job | QueueJobLike>;
-    active: Array<Job | QueueJobLike>;
-    failed: Array<Job | QueueJobLike>;
-  },
+  releases: ReleaseModel[],
 ): Promise<Map<string, ReleaseRetryMetadata>> {
   const metadata = new Map<string, ReleaseRetryMetadata>();
-  const addJob = async (
-    job: Job | QueueJobLike,
-    retryState: Exclude<
-      ReleaseRetryState,
-      'not_retryable' | 'ready_to_requeue'
-    >,
-  ): Promise<void> => {
-    const release = parseReleaseJobIdentity(job);
-    if (!release.packageName || !release.version) return;
-    const key = releaseIdentityKey(release.packageName, release.version);
-    if (metadata.has(key)) return;
-    metadata.set(key, await retryMetadataFromJob(releaseQueue, job, retryState));
-  };
-
-  for (const job of jobs.delayed) await addJob(job, 'scheduled');
-  for (const job of jobs.waiting) await addJob(job, 'waiting');
-  for (const job of jobs.active) await addJob(job, 'active');
-  for (const job of jobs.failed) {
-    const maxAttempts = job.opts?.attempts ?? 1;
-    if (job.attemptsMade >= maxAttempts) await addJob(job, 'exhausted');
-  }
+  await Promise.all(
+    releases.map(async (release) => {
+      const retryMetadata = await getReleaseRetryMetadata(
+        releaseQueue,
+        release,
+      );
+      if (retryMetadata) {
+        metadata.set(
+          releaseIdentityKey(release.packageName, release.version),
+          retryMetadata,
+        );
+      }
+    }),
+  );
   return metadata;
 }
 
@@ -428,7 +456,6 @@ export async function buildPublicQueueStatus(
     oldestWaitingPackageJobs,
     activeReleaseJobs,
     waitingReleaseJobs,
-    delayedReleaseJobs,
     failedReleaseJobs,
     recentSuccessfulReleases,
     recentFailedReleases,
@@ -437,7 +464,6 @@ export async function buildPublicQueueStatus(
     getLimitedJobs(sources.packageQueue, ['waiting'], 1, true),
     getLimitedJobs(sources.releaseQueue, ['active'], jobLimit),
     getLimitedJobs(sources.releaseQueue, ['waiting'], jobLimit, true),
-    getLimitedJobs(sources.releaseQueue, ['delayed'], jobLimit, true),
     getLimitedJobs(sources.releaseQueue, ['failed'], jobLimit),
     (
       sources.getRecentSuccessfulReleases ??
@@ -468,12 +494,7 @@ export async function buildPublicQueueStatus(
   const releaseWaiting = countValue(releaseCounts, 'waiting');
   const releaseRetryMetadata = await buildReleaseRetryMetadata(
     sources.releaseQueue,
-    {
-      delayed: delayedReleaseJobs,
-      waiting: waitingReleaseJobs,
-      active: activeReleaseJobs,
-      failed: failedReleaseJobs,
-    },
+    recentFailedReleases.slice(0, releaseLimit),
   );
 
   return {

@@ -54,6 +54,13 @@ function createQueue(params: {
         : [...jobs].sort((a, b) => b.timestamp - a.timestamp);
       return sorted.slice(0, (end ?? sorted.length - 1) + 1);
     }),
+    getJob: vi.fn(async (jobId: string) => {
+      return (
+        Object.values(params.jobs ?? {})
+          .flat()
+          .find((job) => `${job.id ?? ''}` === jobId) ?? null
+      );
+    }),
     client: Promise.resolve({
       zscore: vi.fn(async (_key: string, member: string) => {
         const score = params.delayedScores?.[member];
@@ -291,7 +298,6 @@ describe('buildPublicQueueStatus', () => {
     expect(status.recentSuccessfulReleases).toHaveLength(2);
     expect(packageQueue.getJobs).toHaveBeenCalledWith(['failed'], 0, 1, false);
     expect(packageQueue.getJobs).toHaveBeenCalledWith(['waiting'], 0, 0, true);
-    expect(releaseQueue.getJobs).toHaveBeenCalledWith(['delayed'], 0, 1, true);
   });
 
   it('adds retry state details to recent failed releases', async () => {
@@ -300,9 +306,16 @@ describe('buildPublicQueueStatus', () => {
       counts: { waiting: 0, active: 0, delayed: 0, failed: 0 },
     });
     const releaseQueue = createQueue({
-      counts: { waiting: 1, active: 1, delayed: 1, failed: 1 },
+      counts: { waiting: 1, active: 1, delayed: 2, failed: 1 },
       jobs: {
         delayed: [
+          createJob({
+            id: 'build-rel|com.other.delayed|1.0.0',
+            state: 'delayed',
+            timestamp: now - 600_000,
+            attemptsMade: 1,
+            attempts: 3,
+          }),
           createJob({
             id: 'build-rel|com.retry.scheduled|1.0.0',
             state: 'delayed',
@@ -343,6 +356,7 @@ describe('buildPublicQueueStatus', () => {
         ],
       },
       delayedScores: {
+        'build-rel|com.other.delayed|1.0.0': (now + 60_000) * 0x1000,
         'build-rel|com.retry.scheduled|1.0.0': (now + 18_000) * 0x1000,
       },
     });
@@ -382,7 +396,7 @@ describe('buildPublicQueueStatus', () => {
         ],
         now: () => now,
       },
-      { jobLimit: 20, releaseLimit: 20 },
+      { jobLimit: 1, releaseLimit: 20 },
     );
 
     expect(status.recentFailedReleases).toMatchObject([
