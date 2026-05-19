@@ -69,6 +69,7 @@ const isQueryMatched = (query: string, toMatch: string[]): boolean => {
   const matchText = toMatch.join(" ");
   const queryTokens = splitSearchQuery(query);
   if (hasNonAscii(query)) {
+    // Match @vuepress/plugin-search behavior for non-ASCII queries.
     return queryTokens.some((token) =>
       matchText.toLowerCase().includes(token),
     );
