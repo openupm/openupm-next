@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { ReleaseErrorCode, ReleaseState } from '@openupm/types';
+import { ReleaseErrorCode, ReleaseModel, ReleaseState } from '@openupm/types';
 
 import {
   buildPublicQueueStatus,
@@ -37,6 +37,7 @@ function createQueue(params: {
   counts: Record<string, number>;
   workers?: unknown[];
   jobs?: Record<string, ReturnType<typeof createJob>[]>;
+  delayedScores?: Record<string, number>;
 }) {
   return {
     getJobCounts: vi.fn(async (...types: string[]) => {
@@ -53,6 +54,20 @@ function createQueue(params: {
         : [...jobs].sort((a, b) => b.timestamp - a.timestamp);
       return sorted.slice(0, (end ?? sorted.length - 1) + 1);
     }),
+    getJob: vi.fn(async (jobId: string) => {
+      return (
+        Object.values(params.jobs ?? {})
+          .flat()
+          .find((job) => `${job.id ?? ''}` === jobId) ?? null
+      );
+    }),
+    client: Promise.resolve({
+      zscore: vi.fn(async (_key: string, member: string) => {
+        const score = params.delayedScores?.[member];
+        return typeof score === 'number' ? `${score}` : null;
+      }),
+    }),
+    toKey: vi.fn((type: string) => `queue:${type}`),
   };
 }
 
@@ -232,6 +247,7 @@ describe('buildPublicQueueStatus', () => {
     expect(status.recentFailedReleases[0]).toMatchObject({
       reason: 'BuildTimeout',
       buildId: '12345',
+      retryState: 'ready_to_requeue',
     });
     expect(JSON.stringify(status)).not.toContain('/srv/private/path');
   });
@@ -282,6 +298,153 @@ describe('buildPublicQueueStatus', () => {
     expect(status.recentSuccessfulReleases).toHaveLength(2);
     expect(packageQueue.getJobs).toHaveBeenCalledWith(['failed'], 0, 1, false);
     expect(packageQueue.getJobs).toHaveBeenCalledWith(['waiting'], 0, 0, true);
+  });
+
+  it('adds retry state details to recent failed releases', async () => {
+    const now = Date.parse('2026-05-14T10:00:00.000Z');
+    const packageQueue = createQueue({
+      counts: { waiting: 0, active: 0, delayed: 0, failed: 0 },
+    });
+    const releaseQueue = createQueue({
+      counts: { waiting: 1, active: 1, delayed: 2, failed: 1 },
+      jobs: {
+        delayed: [
+          createJob({
+            id: 'build-rel|com.other.delayed|1.0.0',
+            state: 'delayed',
+            timestamp: now - 600_000,
+            attemptsMade: 1,
+            attempts: 3,
+          }),
+          createJob({
+            id: 'build-rel|com.retry.scheduled|1.0.0',
+            state: 'delayed',
+            timestamp: now - 300_000,
+            attemptsMade: 1,
+            attempts: 3,
+          }),
+        ],
+        waiting: [
+          createJob({
+            id: 'build-rel|com.retry.waiting|1.0.0',
+            state: 'waiting',
+            attemptsMade: 1,
+            attempts: 3,
+          }),
+        ],
+        active: [
+          createJob({
+            id: 'build-rel|com.retry.running|1.0.0',
+            state: 'active',
+            attemptsMade: 2,
+            attempts: 3,
+          }),
+        ],
+        failed: [
+          createJob({
+            id: 'build-rel|com.retry.exhausted|1.0.0',
+            state: 'failed',
+            attemptsMade: 3,
+            attempts: 3,
+          }),
+          createJob({
+            id: 'build-rel|com.retry.not-exhausted|1.0.0',
+            state: 'failed',
+            attemptsMade: 1,
+            attempts: 3,
+          }),
+        ],
+      },
+      delayedScores: {
+        'build-rel|com.other.delayed|1.0.0': (now + 60_000) * 0x1000,
+        'build-rel|com.retry.scheduled|1.0.0': (now + 18_000) * 0x1000,
+      },
+    });
+    const release = (
+      packageName: string,
+      reason: ReleaseErrorCode,
+    ): ReleaseModel => ({
+      packageName,
+      version: '1.0.0',
+      state: ReleaseState.Failed,
+      reason,
+      commit: '',
+      tag: '',
+      buildId: '',
+      createdAt: now,
+      updatedAt: now,
+      source: 'git',
+      signed: false,
+    });
+
+    const status = await buildPublicQueueStatus(
+      {
+        packageQueue,
+        releaseQueue,
+        getRecentSuccessfulReleases: async () => [],
+        getRecentFailedReleases: async () => [
+          release('com.retry.scheduled', ReleaseErrorCode.BuildTimeout),
+          release('com.retry.waiting', ReleaseErrorCode.ConnectionTimeout),
+          release(
+            'com.retry.running',
+            ReleaseErrorCode.GitHubReleaseApiError,
+          ),
+          release('com.retry.exhausted', ReleaseErrorCode.BuildTimeout),
+          release('com.retry.ready', ReleaseErrorCode.ConnectionTimeout),
+          release('com.retry.not-exhausted', ReleaseErrorCode.BuildTimeout),
+          release('com.no.retry', ReleaseErrorCode.PackageNotFound),
+        ],
+        now: () => now,
+      },
+      { jobLimit: 1, releaseLimit: 20 },
+    );
+
+    expect(status.recentFailedReleases).toMatchObject([
+      {
+        package: 'com.retry.scheduled',
+        retryable: true,
+        retryState: 'scheduled',
+        attempts: 1,
+        maxAttempts: 3,
+        nextRetryAt: '2026-05-14T10:00:18.000Z',
+      },
+      {
+        package: 'com.retry.waiting',
+        retryable: true,
+        retryState: 'waiting',
+        attempts: 1,
+        maxAttempts: 3,
+      },
+      {
+        package: 'com.retry.running',
+        retryable: true,
+        retryState: 'active',
+        attempts: 2,
+        maxAttempts: 3,
+      },
+      {
+        package: 'com.retry.exhausted',
+        retryable: true,
+        retryState: 'exhausted',
+        attempts: 3,
+        maxAttempts: 3,
+      },
+      {
+        package: 'com.retry.ready',
+        retryable: true,
+        retryState: 'ready_to_requeue',
+      },
+      {
+        package: 'com.retry.not-exhausted',
+        retryable: true,
+        retryState: 'ready_to_requeue',
+      },
+      {
+        package: 'com.no.retry',
+        retryable: false,
+        retryState: 'not_retryable',
+      },
+    ]);
   });
 });
 

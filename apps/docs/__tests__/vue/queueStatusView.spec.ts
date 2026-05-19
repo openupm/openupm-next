@@ -6,6 +6,7 @@ import {
   PublicQueueStatus,
   formatCountdown,
   formatDuration,
+  formatReleaseRetryable,
   formatRelativeTime,
   isQueueStatusEmpty,
   packageUrl,
@@ -99,6 +100,51 @@ describe("@/queueStatusView", () => {
     packageUrl("com.example/package").should.equal(
       "/packages/com.example%2Fpackage/",
     );
+  });
+
+  it("formats retryable release cells with retry state details", () => {
+    const now = new Date("2026-05-14T10:00:00.000Z").getTime();
+    const release = {
+      package: "com.example.retry",
+      version: "1.0.0",
+      state: "Failed",
+      reason: "BuildTimeout",
+      updatedAt: "2026-05-14T09:59:00.000Z",
+      source: "git" as const,
+      signed: false,
+      retryable: true,
+    };
+
+    formatReleaseRetryable(
+      {
+        ...release,
+        attempts: 1,
+        maxAttempts: 3,
+        nextRetryAt: "2026-05-14T10:00:18.000Z",
+        retryState: "scheduled",
+      },
+      now,
+    ).should.equal("yes, 1/3, next in 18s");
+    formatReleaseRetryable(
+      { ...release, attempts: 1, maxAttempts: 3, retryState: "waiting" },
+      now,
+    ).should.equal("yes, 1/3, waiting");
+    formatReleaseRetryable(
+      { ...release, attempts: 2, maxAttempts: 3, retryState: "active" },
+      now,
+    ).should.equal("yes, 2/3, running");
+    formatReleaseRetryable(
+      { ...release, attempts: 3, maxAttempts: 3, retryState: "exhausted" },
+      now,
+    ).should.equal("yes, 3/3, exhausted");
+    formatReleaseRetryable(
+      { ...release, retryState: "ready_to_requeue" },
+      now,
+    ).should.equal("yes, ready to requeue");
+    formatReleaseRetryable(
+      { ...release, retryable: false, retryState: "not_retryable" },
+      now,
+    ).should.equal("no");
   });
 
   it("represents api error state as a non-empty absence of data", () => {
