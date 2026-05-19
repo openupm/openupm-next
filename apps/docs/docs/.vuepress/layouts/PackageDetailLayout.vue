@@ -295,7 +295,7 @@ const subPages = computed(() => {
       text: capitalize(t("related-packages")),
       slug: SubPageSlug.related,
       visible: true,
-      count: relatedPackages.value.length,
+      count: state.__sameScopePackagesFetched ? relatedPackages.value.length : undefined,
       component: PackageRelatedView,
       props: {
         relatedPackages: relatedPackages.value,
@@ -335,6 +335,7 @@ const topics = computed(() => {
 // Hooks
 onMounted(() => {
   fetchAllData();
+  fetchCurrentSubPageData();
 });
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -342,7 +343,12 @@ watch(() => route.path, (newPath, oldPath) => {
   if (isPackageDetailPath(newPath)) {
     resetState();
     fetchAllData();
+    fetchCurrentSubPageData();
   }
+});
+
+watch(currentSubPageSlug, () => {
+  fetchCurrentSubPageData();
 });
 
 // Methods
@@ -352,10 +358,23 @@ watch(() => route.path, (newPath, oldPath) => {
  */
 const fetchAllData = async (): Promise<void> => {
   fetchAdPlacementData();
-  await fetchPackageInfo();
-  await fetchPackument();
-  await fetchMonthlyDownloads();
-  await fetchRelatedPackages();
+  fetchPackageMetadata();
+  await Promise.all([
+    fetchPackageInfo(),
+    fetchPackument(),
+    fetchMonthlyDownloads(),
+  ]);
+};
+
+const fetchCurrentSubPageData = (): void => {
+  if (currentSubPageSlug.value === SubPageSlug.related) {
+    fetchRelatedPackages();
+  }
+};
+
+const fetchPackageMetadata = (): void => {
+  store.fetchCachedPackageMetadataRemoteDict();
+  store.fetchCachedPackageMetadataLocalList();
 };
 
 /**
@@ -422,6 +441,7 @@ const fetchPackument = async (): Promise<void> => {
  * Fetch related packages.
  */
 const fetchRelatedPackages = async (): Promise<void> => {
+  if (state.__sameScopePackagesFetched) return;
   try {
     let resp = await axios.get(
       getPackageRelatedPackagesPath(packageMetadata.value.name),

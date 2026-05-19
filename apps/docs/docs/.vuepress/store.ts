@@ -13,6 +13,24 @@ import { parsePackageMetadataRemote } from "@openupm/common/build/utils.js";
 import { METADATA_LOCAL_LIST_FILENAME } from "@openupm/types";
 import numeral from "numeral";
 
+type StoreFetchPromises = {
+  packageMetadataRemoteDict?: Promise<void> | null;
+  packageMetadataLocalList?: Promise<void> | null;
+  packageListData?: Promise<void> | null;
+  siteInfo?: Promise<void> | null;
+};
+
+const storeFetchPromises = new WeakMap<object, StoreFetchPromises>();
+
+const getStoreFetchPromises = (store: object): StoreFetchPromises => {
+  let fetchPromises = storeFetchPromises.get(store);
+  if (!fetchPromises) {
+    fetchPromises = {};
+    storeFetchPromises.set(store, fetchPromises);
+  }
+  return fetchPromises;
+};
+
 export const useDefaultStore = defineStore("pinia-default", {
   persist: __VUEPRESS_SSR__ ? false : true,
   state() {
@@ -78,7 +96,15 @@ export const useDefaultStore = defineStore("pinia-default", {
       const timeElapsed =
         new Date().getTime() - (this.__packageMetadataRemoteDictFetchTime || 0);
       const cacheTime = 5 * 60 * 1000;
-      if (timeElapsed > cacheTime) await this.fetchPackageMetadataRemoteDict();
+      if (timeElapsed <= cacheTime) return;
+      const fetchPromises = getStoreFetchPromises(this);
+      if (!fetchPromises.packageMetadataRemoteDict) {
+        fetchPromises.packageMetadataRemoteDict =
+          this.fetchPackageMetadataRemoteDict().finally(() => {
+            fetchPromises.packageMetadataRemoteDict = null;
+          });
+      }
+      await fetchPromises.packageMetadataRemoteDict;
     },
     /**
      * Fetch package metadata local list into the store.
@@ -102,7 +128,30 @@ export const useDefaultStore = defineStore("pinia-default", {
       const timeElapsed =
         new Date().getTime() - (this.__packageMetadataLocalListFetchTime || 0);
       const cacheTime = 5 * 60 * 1000;
-      if (timeElapsed > cacheTime) await this.fetchPackageMetadataLocalList();
+      if (timeElapsed <= cacheTime) return;
+      const fetchPromises = getStoreFetchPromises(this);
+      if (!fetchPromises.packageMetadataLocalList) {
+        fetchPromises.packageMetadataLocalList =
+          this.fetchPackageMetadataLocalList().finally(() => {
+            fetchPromises.packageMetadataLocalList = null;
+          });
+      }
+      await fetchPromises.packageMetadataLocalList;
+    },
+    /**
+     * Fetch the package list data required by list/search views with cache.
+     */
+    async fetchCachedPackageListData() {
+      const fetchPromises = getStoreFetchPromises(this);
+      if (!fetchPromises.packageListData) {
+        fetchPromises.packageListData = Promise.all([
+          this.fetchCachedPackageMetadataRemoteDict(),
+          this.fetchCachedPackageMetadataLocalList(),
+        ]).then(() => undefined).finally(() => {
+          fetchPromises.packageListData = null;
+        });
+      }
+      await fetchPromises.packageListData;
     },
     /**
      * Fetch recent packages into the store.
@@ -140,7 +189,14 @@ export const useDefaultStore = defineStore("pinia-default", {
       const timeElapsed =
         new Date().getTime() - (this.__siteInfoFetchTime || 0);
       const cacheTime = 5 * 60 * 1000;
-      if (timeElapsed > cacheTime) await this.fetchSiteInfo();
+      if (timeElapsed <= cacheTime) return;
+      const fetchPromises = getStoreFetchPromises(this);
+      if (!fetchPromises.siteInfo) {
+        fetchPromises.siteInfo = this.fetchSiteInfo().finally(() => {
+          fetchPromises.siteInfo = null;
+        });
+      }
+      await fetchPromises.siteInfo;
     },
   },
 });

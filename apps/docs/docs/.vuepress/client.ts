@@ -7,6 +7,7 @@ import { defineClientConfig } from "vuepress/client";
 import messages from "@intlify/unplugin-vue-i18n/messages";
 import { Breakpoints, Vue3Mq } from "vue3-mq";
 import ScriptX from "vue-scriptx";
+import { isPackageListPath } from "@openupm/common/build/urls.js";
 
 import { useDefaultStore } from "@/store";
 import { GlobalFilters } from "@/vue-plugins/global-filters";
@@ -65,17 +66,18 @@ export default defineClientConfig({
     });
   },
   setup() {
-    const fetchSiteData = (): void => {
+    const fetchSiteData = (path: string): void => {
       const store = useDefaultStore();
       store.fetchCachedSiteInfo();
-      store.fetchCachedPackageMetadataRemoteDict();
-      store.fetchCachedPackageMetadataLocalList();
+      if (isPackageListPath(path)) {
+        store.fetchCachedPackageListData();
+      }
     };
-    onMounted(() => fetchSiteData());
     const route = useRoute();
+    onMounted(() => fetchSiteData(route.path));
     watch(
       () => route.path,
-      () => fetchSiteData(),
+      (path) => fetchSiteData(path),
     );
   },
   layouts: {

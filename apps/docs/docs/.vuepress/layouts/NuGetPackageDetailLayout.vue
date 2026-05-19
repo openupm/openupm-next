@@ -10,6 +10,7 @@ import PackageDependenciesView from "@/components/PackageDependenciesView.vue";
 import PackageSetup from "@/components/PackageSetup.vue";
 import PackageVersionsView from "@/components/PackageVersionsView.vue";
 import UnityAssetAdPlacement from "@/components/UnityAssetAdPlacement.vue";
+import { useDefaultStore } from "@/store";
 import {
   getLatestNuGetVersion,
   getNuGetDependencies,
@@ -28,6 +29,7 @@ import {
 
 const route = useRoute();
 const frontmatter = usePageFrontmatter<NuGetPackageFrontmatter>();
+const store = useDefaultStore();
 
 const packagesLink = {
   text: "Packages",
@@ -133,7 +135,12 @@ const fetchAdPlacementData = async (): Promise<void> => {
 
 const fetchAllData = async (): Promise<void> => {
   fetchAdPlacementData();
+  fetchPackageDependencyMetadata();
   await fetchPackument();
+};
+
+const fetchPackageDependencyMetadata = (): void => {
+  store.fetchCachedPackageMetadataLocalList();
 };
 
 onMounted(() => {

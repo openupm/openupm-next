@@ -2,7 +2,7 @@
 import { capitalize, template } from 'lodash-es';
 import { useI18n } from 'vue-i18n';
 import numeral from 'numeral';
-import { computed } from 'vue';
+import { computed, onMounted } from 'vue';
 
 import ParentLayout from "@/layouts/WideLayout.vue";
 import { useDefaultStore } from '@/store';
@@ -43,6 +43,10 @@ const features = computed(() => {
       desc: template(item.desc)({ package_count: readyPackageCount.value }),
     };
   });
+});
+
+onMounted(() => {
+  store.fetchCachedPackageMetadataRemoteDict();
 });
 </script>
 

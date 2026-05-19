@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, onMounted } from "vue";
 import { usePageFrontmatter } from "@vuepress/client";
 
 import ParentLayout from "@/layouts/WideLayout.vue";
@@ -120,6 +120,10 @@ const discoveredPackages = computed(() => {
 
 const isLoading = computed(() => {
   return !metadataLocalList.value.length;
+});
+
+onMounted(() => {
+  store.fetchCachedPackageMetadataLocalList();
 });
 </script>
 
