@@ -46,7 +46,7 @@ const themeConfig: any = mergeWith(
     contributors: false,
     themePlugins: {
       git: false,
-      mediumZoom: true,
+      mediumZoom: false,
     },
   },
   regionConfig.themeConfig,
@@ -150,19 +150,17 @@ const config: any = mergeWith(
     alias: {
       "@": path.resolve(__dirname),
       "@node_modules": path.resolve(__dirname, "../../../../node_modules"),
-      "@theme/AutoLink.vue": path.resolve(__dirname, "components/AutoLink.vue"),
-      "@theme/Navbar.vue": path.resolve(__dirname, "components/Navbar.vue"),
+      "@theme/VPAutoLink.vue": path.resolve(
+        __dirname,
+        "components/AutoLink.vue",
+      ),
+      "@theme/VPNavbar.vue": path.resolve(__dirname, "components/Navbar.vue"),
       // https://github.com/intlify/vue-i18n-next/issues/789
       "vue-i18n": "vue-i18n/dist/vue-i18n.esm-browser.prod.js",
       "@intlify/shared": path.resolve(
         __dirname,
         "../../../../node_modules/vue-i18n/node_modules/@intlify/shared/dist/shared.mjs",
       ),
-    },
-    markdown: {
-      code: {
-        lineNumbers: false,
-      },
     },
     shouldPrefetch: false,
     bundler: viteBundler({
@@ -213,7 +211,7 @@ const config: any = mergeWith(
           }),
         ],
         ssr: {
-          noExternal: ["vue-i18n", "vue-scriptx"],
+          noExternal: ["@vuepress/plugin-git", "vue-i18n", "vue-scriptx"],
         },
       },
     }),

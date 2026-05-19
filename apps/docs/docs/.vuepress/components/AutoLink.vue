@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, PropType } from 'vue'
-import ParentComponent from '@vuepress/theme-default/components/AutoLink.vue';
+import ParentComponent from '@vuepress/theme-default/components/VPAutoLink.vue';
 
 interface AutoLinkItem {
   text: string;
@@ -17,26 +17,34 @@ interface AutoLinkItem {
 const props = defineProps({
   item: {
     type: Object as PropType<AutoLinkItem>,
-    required: true,
+    required: false,
+    default: undefined,
+  },
+  config: {
+    type: Object as PropType<AutoLinkItem>,
+    required: false,
+    default: undefined,
   },
 })
 
+const linkConfig = computed(() => props.item ?? props.config)
+
 const showLeftIcon = computed(() => {
-  return props.item.icon && props.item.iconLeft;
+  return linkConfig.value?.icon && linkConfig.value.iconLeft;
 })
 
 const showRightIcon = computed(() => {
-  return props.item.icon && !props.item.iconLeft;
+  return linkConfig.value?.icon && !linkConfig.value.iconLeft;
 })
 </script>
 
 <template>
-  <ParentComponent :item="item">
+  <ParentComponent v-if="linkConfig" :config="linkConfig">
     <template #before>
-      <i v-if="showLeftIcon" :class="item.icon" aria-hidden="true"></i>
+      <i v-if="showLeftIcon" :class="linkConfig.icon" aria-hidden="true"></i>
     </template>
     <template #after>
-      <i v-if="showRightIcon" :class="item.icon" aria-hidden="true"></i>
+      <i v-if="showRightIcon" :class="linkConfig.icon" aria-hidden="true"></i>
     </template>
   </ParentComponent>
 </template>
