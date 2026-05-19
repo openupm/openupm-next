@@ -38,6 +38,8 @@ To demonstrate the uplinks feature, we have created a staging package at [https:
 
 If you install a package via openupm-cli, the uplink is used by default— all packages under the `org.nuget` scope are resolved directly from the OpenUPM registry.
 
+If Unity cannot find an `org.nuget` package after you add it to the manifest, check the `org.nuget` scope and registry entry with [Unity Scoped Registry Troubleshooting](/docs/scoped-registry-troubleshooting.html).
+
 ## Using UnityNuGet Directly
 
 In general, we recommend using the uplink feature to take advantage of the CDN and openupm-cli. If you prefer to query UnityNuGet directly, you can add the UnityNuGet registry as a scoped registry in your `manifest.json`:

@@ -26,6 +26,8 @@ When it comes to hosting our registry, [DigitalOcean](https://m.do.co/c/50e7f986
 
 If you don't need to host your registry in the cloud, you can simply run Verdaccio on your local machine or on a server in your local network.
 
+Private registries use the same Unity scoped registry matching rules as OpenUPM. If packages do not appear in Unity after setup, compare your private scope and registry URL with [Unity Scoped Registry Troubleshooting](./scoped-registry-troubleshooting.md).
+
 ## Prerequisites
 
 Before we dive into the setup, you'll need a DigitalOcean account. Good news! By using this affiliate link: [DigitalOcean](https://m.do.co/c/50e7f9860fa9), you'll snag *$200 in credits valid for 60 days* (new user only). We'll only be using a small portion of these credits for this demo. After the initial 60 days, maintaining your registry should cost as little as $6 per month in most scenarios.

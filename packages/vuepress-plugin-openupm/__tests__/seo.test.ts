@@ -2,7 +2,13 @@ import { PackageMetadataLocal, Topic } from '@openupm/types';
 
 import {
   buildCrawlablePackageSummaries,
+  buildPackageDetailContent,
+  buildPackageDetailDescription,
+  buildPackageDetailTitle,
+  buildPackageListContent,
   buildPackageListDescription,
+  buildPackageListTitle,
+  buildRelatedPackageSummaries,
   buildPackageStructuredData,
   getLatestPackageLastModified,
   getPackageLastModified,
@@ -47,6 +53,13 @@ describe('SEO metadata helpers', () => {
     expect(buildPackageListDescription(topic)).toContain('machine learning');
   });
 
+  it('builds specific package list titles', () => {
+    expect(buildPackageListTitle(topic)).toBe('AI Unity Packages | OpenUPM');
+    expect(buildPackageListTitle({ ...topic, slug: '' })).toBe(
+      'Unity Packages for OpenUPM',
+    );
+  });
+
   it('builds crawlable package summaries with stable package links', () => {
     expect(buildCrawlablePackageSummaries(topic, [packageMetadata])).toEqual([
       {
@@ -56,6 +69,85 @@ describe('SEO metadata helpers', () => {
         title: 'Example AI',
       },
     ]);
+  });
+
+  it('builds package detail titles and descriptions without empty snippets', () => {
+    expect(buildPackageDetailTitle(packageMetadata)).toBe(
+      'Example AI (com.example.ai) | OpenUPM Unity Package',
+    );
+    expect(buildPackageDetailDescription(packageMetadata)).toContain(
+      'Install Example AI by example from the OpenUPM Unity package registry',
+    );
+  });
+
+  it('builds hidden topic fallback content without affecting the package grid design', () => {
+    const content = buildPackageListContent(topic, [
+      {
+        description: 'AI helpers for Unity projects.',
+        name: 'com.example.ai',
+        path: '/packages/com.example.ai/',
+        title: 'Example AI',
+      },
+    ]);
+
+    expect(content).toContain(
+      '<section class="package-list-crawl-metadata" hidden>',
+    );
+    expect(content).not.toContain('Useful docs');
+    expect(content).toContain('/packages/com.example.ai/');
+  });
+
+  it('builds related package summaries from shared topics and owner', () => {
+    const related = buildRelatedPackageSummaries(packageMetadata, [
+      packageMetadata,
+      {
+        ...packageMetadata,
+        name: 'com.example.ai.tools',
+        displayName: 'Example AI Tools',
+        description: 'Extra AI tooling.',
+      },
+      {
+        ...packageMetadata,
+        name: 'com.other.rendering',
+        displayName: 'Rendering',
+        topics: ['rendering'],
+        owner: 'other',
+      },
+    ]);
+
+    expect(related).toEqual([
+      {
+        description: 'Extra AI tooling.',
+        name: 'com.example.ai.tools',
+        path: '/packages/com.example.ai.tools/',
+        title: 'Example AI Tools',
+      },
+    ]);
+  });
+
+  it('builds hidden package detail fallback content with install, topic, related, and owner links', () => {
+    const content = buildPackageDetailContent(packageMetadata, {
+      relatedPackages: [
+        {
+          description: 'Extra AI tooling.',
+          name: 'com.example.ai.tools',
+          path: '/packages/com.example.ai.tools/',
+          title: 'Example AI Tools',
+        },
+      ],
+      topics: [topic],
+    });
+
+    expect(content).not.toContain('noindex');
+    expect(content).not.toContain('nofollow');
+    expect(content).toContain(
+      '<section class="package-detail-crawl-metadata" hidden>',
+    );
+    expect(content).toContain('/docs/getting-started-cli.html');
+    expect(content).toContain('/docs/scoped-registry-troubleshooting.html');
+    expect(content).toContain('/packages/topics/ai/');
+    expect(content).toContain('/packages/com.example.ai.tools/');
+    expect(content).toContain('https://github.com/example');
   });
 
   it('builds SoftwareApplication and breadcrumb JSON-LD for package pages', () => {

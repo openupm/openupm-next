@@ -181,6 +181,17 @@ const addPackageLink = computed(() => {
   };
 });
 
+const breadcrumbItems = computed(() => {
+  const currentTopic = (topicsWithAll as Topic[]).find(
+    (topic) => topic.slug === topicSlug.value,
+  );
+  if (!currentTopic || !currentTopic.slug) return [{ text: "Packages" }];
+  return [
+    { text: "Packages", link: "/packages/" },
+    { text: currentTopic.name },
+  ];
+});
+
 /* #region Grid layout */
 const gridWrapperElement = ref(null);
 
@@ -364,6 +375,7 @@ watch(() => topicSlug.value, () => {
       </ClientOnly>
     </template>
     <template #page-content-top>
+      <SiteBreadcrumb :items="breadcrumbItems" />
       <ClientOnly>
         <div class="columns">
           <div class="column col-12">
@@ -551,7 +563,7 @@ watch(() => topicSlug.value, () => {
     }
 
     .grid {
-      padding-top: 0.85rem;
+      padding-top: 0;
       display: grid;
       grid-gap: $package-grid-column-hgap;
       place-items: start stretch;

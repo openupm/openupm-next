@@ -96,6 +96,7 @@ const docSideBar = function (): any {
         "/docs/",
         "/docs/getting-started",
         "/docs/getting-started-cli",
+        "/docs/scoped-registry-troubleshooting",
         "/docs/faq",
       ],
     },
