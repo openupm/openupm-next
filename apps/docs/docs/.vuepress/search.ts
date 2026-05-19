@@ -1,5 +1,4 @@
 import { computed } from "vue";
-import { isQueryMatched } from "@node_modules/@vuepress/plugin-search/lib/client/utils";
 import {
   isPackageDetailPath,
   parsePackageNameFromPackageDetailPath,
@@ -53,6 +52,40 @@ export const normalizeSearchQuery = (query: string): string =>
     )
     .filter(Boolean)
     .join(" ");
+
+const hasNonAscii = (str: string): boolean =>
+  Array.from(str).some((char) => (char.codePointAt(0) ?? 0) > 0x7f);
+
+const splitSearchQuery = (query: string): string[] =>
+  query
+    .split(/\s+/gu)
+    .map((token) => token.trim())
+    .filter(Boolean);
+
+const escapeRegExp = (str: string): string =>
+  str.replaceAll(/[-/\\^$*+?.()|[\]{}]/gu, String.raw`\$&`);
+
+const isQueryMatched = (query: string, toMatch: string[]): boolean => {
+  const matchText = toMatch.join(" ");
+  const queryTokens = splitSearchQuery(query);
+  if (hasNonAscii(query)) {
+    return queryTokens.some((token) =>
+      matchText.toLowerCase().includes(token),
+    );
+  }
+
+  const hasTrailingSpace = query.endsWith(" ");
+  return RegExp(
+    `${queryTokens
+      .map((token, index) =>
+        queryTokens.length === index + 1 && !hasTrailingSpace
+          ? `(?=.*\\b${escapeRegExp(token)})`
+          : `(?=.*\\b${escapeRegExp(token)}\\b)`,
+      )
+      .join("")}.+`,
+    "giu",
+  ).test(matchText);
+};
 
 export const usePackageSearchSuggestions = (
   searchIndex: SearchIndex,

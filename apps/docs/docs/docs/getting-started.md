@@ -12,7 +12,7 @@ Start by visiting [OpenUPM](https://openupm.com) and search for the package you 
 
 Click the **Manual installation** button to expand the installation instructions.
 
-![Install Instructions](images/getting-started-editor-install-instructions.png)
+![Install Instructions](./images/getting-started-editor-install-instructions.png)
 
 Following the instructions, open Unity Editor, and go to the menu `Edit/Project Settings`. Click on the `Package Manager` in the left panel.
 
@@ -32,11 +32,11 @@ Click the `Window/Packages` menu to open the Package Manager window. You should 
 
 If it's not shown in the list, click the **+** button and select `Add package by name`.
 
-   ![Package Manager Window](images/getting-started-editor-package-manager-window.png)
+   ![Package Manager Window](./images/getting-started-editor-package-manager-window.png)
 
 Fill in the package name: `com.littlebigfun.addressable-importer` and version `0.16.1`. Click the **Add** button to install the package.
 
-   ![Package Manager Window 2](images/getting-started-editor-package-manager-window-2.png)
+   ![Package Manager Window 2](./images/getting-started-editor-package-manager-window-2.png)
 
 It's done! You can now use the package in your project.
 
