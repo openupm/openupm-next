@@ -307,7 +307,17 @@ async function probeMissingGitHubReleaseAssets(
       });
     } catch (error) {
       if (error instanceof GitHubReleaseAssetError) {
-        await save(release);
+        const saved =
+          error.reason === ReleaseErrorCode.GitHubReleaseAssetNotFound
+            ? await save(release)
+            : await save({
+                ...release,
+                reason: error.reason,
+                githubReleaseAssetMissingFirstSeenAt: undefined,
+                githubReleaseAssetMissingLastProbeAt: undefined,
+                githubReleaseAssetMissingProbeCount: undefined,
+              });
+        Object.assign(release, saved);
         continue;
       }
       throw error;

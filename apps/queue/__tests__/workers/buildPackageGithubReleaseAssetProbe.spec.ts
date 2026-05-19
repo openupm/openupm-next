@@ -167,11 +167,38 @@ describe('buildPackage GitHub Release asset missing probes', () => {
 
     expect(saveReleaseMock).toHaveBeenCalledWith(
       expect.objectContaining({
+        reason: ReleaseErrorCode.GitHubReleaseApiError,
+        githubReleaseAssetMissingFirstSeenAt: undefined,
+        githubReleaseAssetMissingLastProbeAt: undefined,
+        githubReleaseAssetMissingProbeCount: undefined,
+      }),
+    );
+  });
+
+  it('persists probe backoff when the asset is still missing', async () => {
+    const { GitHubReleaseAssetError } = await import(
+      '../../src/utils/githubReleaseAsset.js'
+    );
+    resolveGitHubReleaseAssetMock.mockRejectedValue(
+      new GitHubReleaseAssetError(
+        'GitHub Release asset not found',
+        ReleaseErrorCode.GitHubReleaseAssetNotFound,
+      ),
+    );
+
+    await runBuildPackage(
+      createRelease({
+        githubReleaseAssetMissingProbeCount: 2,
+      }),
+    );
+
+    expect(saveReleaseMock).toHaveBeenCalledWith(
+      expect.objectContaining({
         reason: ReleaseErrorCode.GitHubReleaseAssetNotFound,
         githubReleaseAssetMissingLastProbeAt: Date.parse(
           '2026-05-10T07:00:00.000Z',
         ),
-        githubReleaseAssetMissingProbeCount: 1,
+        githubReleaseAssetMissingProbeCount: 3,
       }),
     );
   });
