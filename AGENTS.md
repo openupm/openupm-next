@@ -62,6 +62,10 @@
   OAuth refresh tokens, and private measurement artifacts. Do not add root
   package scripts, docs app scripts, workspace packages, public docs, or
   generated site assets that reveal or depend on that tooling.
+- If a docs client/site change needs human visual review, do not merge the PR
+  after CI or automated review alone. `openupm-next` client-side docs changes
+  can deploy automatically after merge, so stop at a ready PR plus local or
+  staging review URL until the user explicitly approves merging/deploying.
 - `npm run docs:build:limit` is the fastest full SSR build smoke test for the docs app.
 - If the shell is not already using the repo-pinned Node/npm versions, run docs
   commands through Volta, for example `volta run npm run lint`.
