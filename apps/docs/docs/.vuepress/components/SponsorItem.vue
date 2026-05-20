@@ -12,7 +12,7 @@ defineProps<{ profile: Sponsor }>();
 
 <template>
   <div class="sponsor-item">
-    <a :href="profile.url" rel="noopener" :aria-label="profile.text">
+    <a class="no-external-link-icon" :href="profile.url" rel="noopener" :aria-label="profile.text">
       <LazyImage
         v-if="profile.image"
         :src="profile.image"

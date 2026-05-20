@@ -60,7 +60,7 @@ onMounted(() => {
             <h1 id="main-title">{{ frontmatter.heroText }}</h1>
             <p class="actions">
               <AutoLink class="btn btn-lg btn-default header-anchor" :item="guideLink" />
-              <AutoLink class="btn btn-lg btn-primary header-anchor" :item="githubLink" />
+              <AutoLink class="btn btn-lg btn-primary header-anchor no-external-link-icon" :item="githubLink" />
             </p>
           </div>
         </div>
@@ -84,8 +84,8 @@ onMounted(() => {
 .homepage {
 
   .hero {
-    .external-link-icon {
-      display: none;
+    .external-link.no-external-link-icon::after {
+      content: none;
     }
 
     #main-title {
