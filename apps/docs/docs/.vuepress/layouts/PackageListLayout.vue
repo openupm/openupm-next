@@ -528,10 +528,12 @@ watch(() => topicSlug.value, () => {
     a {
       border: 1px solid $border-color;
       border-radius: 0.25rem;
+      box-shadow: none;
       display: grid;
       gap: 0.15rem;
       min-width: 0;
       padding: 0.45rem 0.6rem;
+      text-decoration: none;
     }
 
     strong {

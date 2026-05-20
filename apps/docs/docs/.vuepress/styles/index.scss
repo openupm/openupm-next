@@ -48,6 +48,7 @@ with ($primary-color: $primary-color,
   --c-scrollbar-thumb: #ccc;
   --c-scrollbar-thumb-hover: #aaa;
   --sidebar-width: 16rem;
+  --code-bg-color: var(--code-c-bg, #{$code-bg-color});
   --code-ln-wrapper-width: 2.8rem;
 }
 
@@ -271,11 +272,26 @@ h6 a:visited {
   pre[class*=language-] {
     padding: 1rem 1rem;
     background-color: var(--code-bg-color);
+    border-radius: 6px;
+    overflow: auto;
+
     code.hljs {
+      background: transparent;
+      color: #fff;
       padding: 0;
+
+      &:hover {
+        background: transparent;
+        color: #fff;
+      }
     }
   }
 
+  pre.readme-code-block {
+    background-color: #23241f;
+  }
+
+  a.btn,
   a.btn:hover {
     text-decoration: none;
   }
@@ -473,7 +489,7 @@ div[class*=language-] {
     }
   }
 
-  .site-name {
+  :is(.site-name, .vp-site-name) {
     color: $primary-color;
   }
 
@@ -802,6 +818,10 @@ main {
 }
 
 // Search box
+.vp-navbar-items-wrapper > .search-box:last-child {
+  display: none;
+}
+
 .search-box {
   margin-right: 1rem;
 

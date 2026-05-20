@@ -711,12 +711,8 @@ onMounted(() => {
     }
 
     :is(.theme-default-content, [vp-content]) {
-      margin: 0;
+      margin: $theme-default-content-margin-top 0 0;
       padding: 0 0 2.5rem;
-
-      :first-child {
-        margin-top: 0;
-      }
     }
 
     .tile-title {

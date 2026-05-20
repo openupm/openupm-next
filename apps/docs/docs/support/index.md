@@ -69,9 +69,15 @@ Discover the incredible individuals powering our journey - visit [contributors p
       width: 100%;
       font-size: 0.9rem;
       color: inherit;
+      text-decoration: none !important;
 
+      &:visited,
       &:hover {
         text-decoration: none !important;
+      }
+
+      &:hover {
+        color: var(--c-text-accent);
       }
 
       i {
