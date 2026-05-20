@@ -1,6 +1,6 @@
 import { createPinia } from "pinia";
 import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
-import { onMounted, watch } from "vue";
+import { defineAsyncComponent, onMounted, watch } from "vue";
 import { useRoute } from "vue-router";
 import { createI18n } from "vue-i18n";
 import { defineClientConfig } from "vuepress/client";
@@ -12,13 +12,24 @@ import { isPackageListPath } from "@openupm/common/build/urls.js";
 import { useDefaultStore } from "@/store";
 import { GlobalFilters } from "@/vue-plugins/global-filters";
 import Layout from "@/layouts/Layout.vue";
-import WideLayout from "@/layouts/WideLayout.vue";
-import PackageDetailLayout from "@/layouts/PackageDetailLayout.vue";
-import NuGetPackageDetailLayout from "@/layouts/NuGetPackageDetailLayout.vue";
-import PackageListLayout from "@/layouts/PackageListLayout.vue";
-import PackageAddLayout from "@/layouts/PackageAddLayout.vue";
-import HomeLayout from "@/layouts/HomeLayout.vue";
-import ContributorProfileLayout from "@/layouts/ContributorProfileLayout.vue";
+
+const WideLayout = defineAsyncComponent(() => import("@/layouts/WideLayout.vue"));
+const PackageDetailLayout = defineAsyncComponent(
+  () => import("@/layouts/PackageDetailLayout.vue"),
+);
+const NuGetPackageDetailLayout = defineAsyncComponent(
+  () => import("@/layouts/NuGetPackageDetailLayout.vue"),
+);
+const PackageListLayout = defineAsyncComponent(
+  () => import("@/layouts/PackageListLayout.vue"),
+);
+const PackageAddLayout = defineAsyncComponent(
+  () => import("@/layouts/PackageAddLayout.vue"),
+);
+const HomeLayout = defineAsyncComponent(() => import("@/layouts/HomeLayout.vue"));
+const ContributorProfileLayout = defineAsyncComponent(
+  () => import("@/layouts/ContributorProfileLayout.vue"),
+);
 
 export default defineClientConfig({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
