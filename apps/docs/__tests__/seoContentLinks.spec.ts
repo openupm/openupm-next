@@ -34,6 +34,18 @@ describe("docs SEO content links", () => {
     }
   });
 
+  it("sets search-focused docs index metadata", () => {
+    const page = readDocsFile("docs/index.md");
+
+    expect(page).toContain(
+      "title: OpenUPM Unity Package Manager Registry Docs",
+    );
+    expect(page).toContain(
+      "description: Set up OpenUPM for Unity Package Manager packages",
+    );
+    expect(page).toContain("# OpenUPM Unity Package Manager Registry Docs");
+  });
+
   it("keeps the troubleshooting page indexable and connected to package paths", () => {
     const page = readDocsFile("docs/scoped-registry-troubleshooting.md");
 
