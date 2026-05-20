@@ -25,7 +25,8 @@ const githubLink = computed(() => {
     link: OpenUPMGitHubRepoUrl,
     text: "Stars " + store.formattedStars,
     icon: "fab fa-github",
-    iconLeft: true
+    iconLeft: true,
+    className: "no-external-link-icon",
   };
 });
 
@@ -59,8 +60,8 @@ onMounted(() => {
           <div>
             <h1 id="main-title">{{ frontmatter.heroText }}</h1>
             <p class="actions">
-              <AutoLink class="btn btn-lg btn-default" :item="guideLink" />
-              <AutoLink class="btn btn-lg btn-primary" :item="githubLink" />
+              <AutoLink class="btn btn-lg btn-default header-anchor" :item="guideLink" />
+              <AutoLink class="btn btn-lg btn-primary header-anchor" :item="githubLink" />
             </p>
           </div>
         </div>
@@ -84,12 +85,16 @@ onMounted(() => {
 .homepage {
 
   .hero {
-    .external-link-icon {
-      display: none;
+    .external-link.no-external-link-icon::after {
+      content: none;
+    }
+
+    #main-title {
+      font-size: 1.8rem;
     }
   }
 
-  .theme-default-content {
+  :is(.theme-default-content, [vp-content]) {
     h1 {
       font-weight: bold;
       background: -webkit-linear-gradient(315deg, $primary-color 10%, #2fc5cd);

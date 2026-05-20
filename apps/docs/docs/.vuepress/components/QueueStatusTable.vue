@@ -78,7 +78,7 @@ defineProps<{
   color: var(--c-text-lighter);
 }
 
-.dark {
+:is(.dark, [data-theme='dark']) {
   .queue-status-table th {
     background: var(--c-bg-dark);
     color: var(--c-text-lighter);

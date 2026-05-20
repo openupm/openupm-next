@@ -5,8 +5,8 @@ const store = useDefaultStore();
 </script>
 
 <template>
-  <div class="navbar-items hide-md">
-    <div class="nav-item growth">
+  <div class="navbar-items vp-navbar-items hide-md">
+    <div class="nav-item vp-navbar-item growth">
       <div class="btn-group">
         <a href="https://github.com/openupm/openupm" rel="noopener noreferrer" class="btn btn-default btn-sm">
           <i class="fab fa-github"></i> Stars <span class="stars">{{ store.formattedStars }}</span>
@@ -22,8 +22,8 @@ const store = useDefaultStore();
 <style lang="scss" scoped>
 @use '@/styles/palette' as *;
 
-.navbar-items {
-  .nav-item {
+:is(.navbar-items, .vp-navbar-items) {
+  :is(.nav-item, .vp-navbar-item) {
     .btn-group {
       flex-wrap: nowrap;
     }

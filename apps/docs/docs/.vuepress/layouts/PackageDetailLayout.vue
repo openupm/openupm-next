@@ -132,7 +132,7 @@ const currentSubPageSlug = computed(() => {
 // Scroll to the top of the page when the sub page changes.
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 watch(currentSubPageSlug, (newValue, oldValue) => {
-  VueScrollTo.scrollTo(".theme-default-content", 500, { offset: -150 });
+  VueScrollTo.scrollTo("[vp-content]", 500, { offset: -150 });
 });
 
 // The current sub page object
@@ -546,7 +546,7 @@ const buildRouterLinkQuery = function (subPage: string): Record<string, string> 
 @use '@/styles/palette' as *;
 
 .package-detail {
-  .theme-default-content {
+  :is(.theme-default-content, [vp-content]) {
 
     .topic-list {
 
@@ -567,7 +567,7 @@ const buildRouterLinkQuery = function (subPage: string): Record<string, string> 
     }
   }
 
-  .sidebar {
+  :is(.sidebar, .vp-sidebar) {
     .subpage-section {
       .menu {
         padding: 0.4rem;
@@ -579,7 +579,7 @@ const buildRouterLinkQuery = function (subPage: string): Record<string, string> 
 
 @media (max-width: $MQMobile) {
   .package-detail {
-    .theme-default-content {
+    :is(.theme-default-content, [vp-content]) {
       .column-meta {
         max-width: 100%;
       }

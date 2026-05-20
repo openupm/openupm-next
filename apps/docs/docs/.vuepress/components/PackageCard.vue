@@ -169,6 +169,9 @@ const imageErrorMessage = computed(() => {
 
         >a {
           font-weight: 600;
+          text-decoration: none;
+          border-bottom: none;
+          box-shadow: none;
         }
       }
     }
@@ -254,11 +257,23 @@ const imageErrorMessage = computed(() => {
   }
 }
 
-.dark {
+:is(.dark, [data-theme='dark']) {
   .package-card {
     .card-inner {
       box-shadow: none;
       background-color: var(--c-bg-light);
+    }
+
+    .card-footer {
+      .chip {
+        background: var(--c-bg-dark);
+        color: var(--c-text);
+
+        &.chip-unavailable {
+          background-color: var(--c-warning);
+          color: var(--c-warning-text, #746000);
+        }
+      }
     }
   }
 }

@@ -111,10 +111,13 @@ const hasDiscount = computed(() => {
   }
 }
 
-.dark {
-  .ad-placement {
-    box-shadow: none;
-    background-color: var(--c-bg-light);
-  }
+:global(:is(.dark, [data-theme='dark']) .ad-placement) {
+  box-shadow: none;
+  background-color: var(--c-bg-light);
+}
+
+:global(:is(.dark, [data-theme='dark']) .ad-placement .chip) {
+  background: var(--c-bg-dark);
+  color: var(--c-text);
 }
 </style>

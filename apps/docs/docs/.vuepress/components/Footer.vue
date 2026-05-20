@@ -173,12 +173,7 @@ const description = computed(() => t("site-desc"));
   }
 }
 
-.dark {
-  .page-footer {
-
-    .page-footer-box {
-      background-color: var(--c-bg-light);
-    }
-  }
+:global(:is(.dark, [data-theme='dark']) .page-footer .page-footer-box) {
+  background-color: var(--c-bg-light);
 }
 </style>

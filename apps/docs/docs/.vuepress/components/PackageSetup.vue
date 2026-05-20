@@ -202,6 +202,9 @@ const repoTagsNavLink = computed(() => {
 .install-cli {
   position: relative;
   margin-bottom: 0.2rem;
+  border: 1px solid var(--c-border);
+  border-radius: 3px;
+  overflow: visible;
 
   a {
     &:hover {
@@ -216,7 +219,8 @@ const repoTagsNavLink = computed(() => {
     padding: 0.6rem 0.5rem;
     font-size: 0.75rem;
     background-color: transparent;
-    border: 1px solid var(--c-border-dark);
+    border: 0;
+    border-radius: 2px;
     color: var(--c-text-accent);
     cursor: pointer;
 

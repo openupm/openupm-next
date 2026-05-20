@@ -64,9 +64,7 @@ onUnmounted(() => {
   }
 }
 
-.dark {
-  .modal-container {
-    background-color: var(--c-bg);
-  }
+:global(:is(.dark, [data-theme='dark']) .modal-container) {
+  background-color: var(--c-bg);
 }
 </style>

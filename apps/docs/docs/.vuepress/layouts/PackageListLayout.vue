@@ -7,7 +7,7 @@ import { useI18n } from 'vue-i18n'
 import { usePageFrontmatter } from "@vuepress/client";
 import Grid from '@node_modules/vue-virtual-scroll-grid/dist/index.es.js';
 import { PageProvider } from '@node_modules/vue-virtual-scroll-grid/pipeline';
-import { useSearchIndex } from '@node_modules/@vuepress/plugin-search/lib/client/composables'
+import { useSearchIndex } from '@vuepress/plugin-search/client'
 
 import ParentLayout from "@/layouts/WideLayout.vue";
 import VueVirtualScrollGridBackToTop from '@/components/VueVirtualScrollGridBackToTop';
@@ -445,7 +445,7 @@ watch(() => topicSlug.value, () => {
 @use '@/styles/palette' as *;
 
 .package-list {
-  .page {
+  :is(.page, .vp-page) {
     padding-bottom: 0;
     padding-left: calc(var(--sidebar-width) + (100vw - var(--sidebar-width) - #{$package-grid-4c-width} - #{$scrollbar-width}*2)/2);
 
@@ -480,7 +480,7 @@ watch(() => topicSlug.value, () => {
       transform: none;
     }
 
-    >.theme-default-content:not(.custom) {
+    >:is(.theme-default-content, [vp-content]):not(.custom) {
       padding: 0;
       margin-top: $navbar-height;
 
@@ -528,10 +528,12 @@ watch(() => topicSlug.value, () => {
     a {
       border: 1px solid $border-color;
       border-radius: 0.25rem;
+      box-shadow: none;
       display: grid;
       gap: 0.15rem;
       min-width: 0;
       padding: 0.45rem 0.6rem;
+      text-decoration: none;
     }
 
     strong {
@@ -625,7 +627,7 @@ watch(() => topicSlug.value, () => {
   }
 }
 
-.sidebar ul.menu {
+:is(.sidebar, .vp-sidebar) ul.menu {
   padding: 0.4rem;
   margin: 0.2rem 0.4rem 0.4rem 0.4rem;
 }

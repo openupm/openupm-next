@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ListLoader } from 'vue-content-loader';
-import { useDarkMode } from '@vuepress/theme-default/lib/client/composables/index.js';
+import { useDarkMode } from '@vuepress/theme-default/client';
 import { computed } from 'vue';
 
 const isDarkMode = useDarkMode();

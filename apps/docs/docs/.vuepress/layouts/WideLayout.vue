@@ -1,4 +1,4 @@
-<!-- The `WideLayout` component increases the width of the theme-default-content section. -->
+<!-- The `WideLayout` component increases the width of the default content section. -->
 <script setup lang="ts">
 import ParentLayout from '@/layouts/Layout.vue'
 </script>
@@ -12,15 +12,15 @@ import ParentLayout from '@/layouts/Layout.vue'
 </template>
 
 <style lang="scss">
-.theme-container.wide-layout {
-  main.page {
-    .theme-default-content {
+:is(.theme-container, .vp-theme-container).wide-layout {
+  main:is(.page, .vp-page) {
+    :is(.theme-default-content, [vp-content]) {
       max-width: 100%;
     }
   }
 
   &:not(.no-sidebar) {
-    main.page {
+    main:is(.page, .vp-page) {
       max-width: 100%;
     }
   }
