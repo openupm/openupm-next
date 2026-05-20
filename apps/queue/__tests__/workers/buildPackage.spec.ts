@@ -54,18 +54,18 @@ describe('buildPackage.filterRemoteTags', () => {
     ]);
   });
 
-  it('strips configured literal prefix before version parsing', () => {
+  it('filters by configured literal prefix before version parsing', () => {
     const names = filterRemoteTags({
       remoteTags: [
-        { tag: 'com.example.package:1.0.0', commit: '10' },
-        { tag: 'com.example.package:1.1.0-rc.1', commit: '11' },
-        { tag: 'com.example.package-other:1.0.0', commit: '12' },
+        { tag: 'com.example.package/1.0.0', commit: '10' },
+        { tag: 'com.example.package/1.1.0-rc.1', commit: '11' },
+        { tag: 'com.example.package-other/1.0.0', commit: '12' },
       ],
-      gitTagPrefix: 'com.example.package:',
+      gitTagPrefix: 'com.example.package/',
     });
     expect(names).toEqual([
-      { tag: 'com.example.package:1.0.0', commit: '10' },
-      { tag: 'com.example.package:1.1.0-rc.1', commit: '11' },
+      { tag: 'com.example.package/1.0.0', commit: '10' },
+      { tag: 'com.example.package/1.1.0-rc.1', commit: '11' },
     ]);
   });
 
