@@ -1,6 +1,8 @@
 ---
+title: OpenUPM Unity Package Manager Registry Docs
+description: Set up OpenUPM for Unity Package Manager packages, scoped registry configuration, CLI install commands, package publishing, UnityNuGet packages, and troubleshooting.
 ---
-# Introduction
+# OpenUPM Unity Package Manager Registry Docs
 
 Welcome to OpenUPM, your solution for open-source Unity Package Manager (UPM) packages. OpenUPM is a user-friendly service that hosts, manages, and automates the building of UPM packages. We're here to make it easy for you to find, share, and distribute open-source UPM packages.
 

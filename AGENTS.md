@@ -56,6 +56,12 @@
 ## Docs App Notes
 
 - Docs commands run from `apps/docs`.
+- Keep operator-only SEO measurement tooling outside this application
+  repository. Use the standalone workspace sibling `openupm-seo-tools` for
+  Search Console, PageSpeed, CrUX, Lighthouse, baseline reports, API keys,
+  OAuth refresh tokens, and private measurement artifacts. Do not add root
+  package scripts, docs app scripts, workspace packages, public docs, or
+  generated site assets that reveal or depend on that tooling.
 - `npm run docs:build:limit` is the fastest full SSR build smoke test for the docs app.
 - If the shell is not already using the repo-pinned Node/npm versions, run docs
   commands through Volta, for example `volta run npm run lint`.
