@@ -20,8 +20,20 @@ with ($primary-color: $primary-color,
 // Vuepress-next default theme css variables
 // https://v2.vuepress.vuejs.org/reference/default-theme/styles.html#style-file
 :root {
+  --vp-c-accent: #{$primary-color};
+  --vp-c-accent-bg: #{$primary-color};
+  --vp-c-accent-hover: #{$primary-color-light};
   --c-brand: #{$primary-color};
   --c-brand-light: #{$primary-color-light};
+  --c-bg: var(--vp-c-bg);
+  --c-bg-dark: var(--vp-c-bg-alt);
+  --c-bg-light: var(--vp-c-bg-alt);
+  --c-bg-lighter: var(--vp-c-bg-elv);
+  --c-text: var(--vp-c-text);
+  --c-text-lightest: var(--vp-c-text-subtle);
+  --c-border: var(--vp-c-border);
+  --c-warning: #{$warning-color};
+  --c-warning-border-dark: #{$warning-color};
   --c-text-accent: #{$primary-color};
   --c-text-accent-strong: #{$primary-color};
   --navbar-height: #{$navbar-height};
@@ -35,6 +47,9 @@ with ($primary-color: $primary-color,
 }
 
 html.dark {
+  --vp-c-accent: #{color.adjust($primary-color, $lightness: 5%)};
+  --vp-c-accent-bg: #{color.adjust($primary-color, $lightness: 5%)};
+  --vp-c-accent-hover: #{color.adjust($primary-color, $lightness: 10%)};
   --c-brand: #{color.adjust($primary-color, $lightness: 5%)};
   --c-text-accent: #{color.adjust($primary-color, $lightness: 5%)};
   --c-text-accent-strong: #{color.adjust($primary-color, $lightness: 10%)};
@@ -181,7 +196,7 @@ h6 a:visited {
   color: inherit;
 }
 
-.theme-default-content {
+:is(.theme-default-content, [vp-content]) {
 
   h1,
   h2,
@@ -261,24 +276,24 @@ h6 a:visited {
 
 }
 
-.page {
-  .theme-default-content:not(.custom) {
+:is(.page, .vp-page) {
+  :is(.theme-default-content, [vp-content]):not(.custom) {
     margin-top: $theme-default-content-margin-top;
     padding: 0 0.5rem 1rem 0.5rem;
   }
 
-  .theme-default-content.custom {
+  :is(.theme-default-content, [vp-content]).custom {
     padding: 0;
   }
 
-  .page-meta {
+  :is(.page-meta, .vp-page-meta) {
     padding: 0 1rem;
   }
 }
 
 @media (max-width: $MQMobileNarrow) {
-  .page {
-    .theme-default-content:not(.custom) {
+  :is(.page, .vp-page) {
+    :is(.theme-default-content, [vp-content]):not(.custom) {
       margin-top: $theme-default-content-margin-top-mobile;
 
       div[class*=language-] {
@@ -431,7 +446,7 @@ div[class*=language-] {
 }
 
 // Navbar
-.navbar {
+:is(.navbar, .vp-navbar) {
 
   a {
     text-decoration: none;
@@ -445,7 +460,7 @@ div[class*=language-] {
     color: $primary-color;
   }
 
-  .toggle-color-mode-button {
+  :is(.toggle-color-mode-button, .vp-toggle-color-mode-button) {
     top: 0.05rem;
     position: relative;
     margin-left: 0.7rem;
@@ -460,7 +475,7 @@ div[class*=language-] {
     }
   }
 
-  .navbar-items {
+  :is(.navbar-items, .vp-navbar-items) {
     font-size: $font-size-sm;
 
     a {
@@ -475,20 +490,20 @@ div[class*=language-] {
       }
     }
 
-    .navbar-item {
+    :is(.navbar-item, .vp-navbar-item) {
       >a {
         font-weight: bold;
       }
 
-      .navbar-dropdown-wrapper {
-        .navbar-dropdown-title {
+      :is(.navbar-dropdown-wrapper, .vp-navbar-dropdown-wrapper) {
+        :is(.navbar-dropdown-title, .vp-navbar-dropdown-title) {
           font-size: $font-size-sm;
           font-weight: bold;
           color: $primary-color;
         }
 
-        .navbar-dropdown {
-          .navbar-dropdown-item {
+        :is(.navbar-dropdown, .vp-navbar-dropdown) {
+          :is(.navbar-dropdown-item, .vp-navbar-dropdown-item) {
             margin-top: 0;
 
             a {
@@ -503,12 +518,12 @@ div[class*=language-] {
 }
 
 .dark {
-  .navbar {
-    .toggle-color-mode-button {
+  :is(.navbar, .vp-navbar) {
+    :is(.toggle-color-mode-button, .vp-toggle-color-mode-button) {
       color: inherit;
     }
 
-    .navbar-items {
+    :is(.navbar-items, .vp-navbar-items) {
       a {
         color: inherit;
 
@@ -517,8 +532,8 @@ div[class*=language-] {
         }
       }
 
-      .navbar-item {
-        .navbar-dropdown-title {
+      :is(.navbar-item, .vp-navbar-item) {
+        :is(.navbar-dropdown-title, .vp-navbar-dropdown-title) {
           color: inherit;
         }
       }
@@ -526,28 +541,28 @@ div[class*=language-] {
   }
 }
 
-.toggle-sidebar-button {
+:is(.toggle-sidebar-button, .vp-toggle-sidebar-button) {
   left: 0.5rem;
   top: 0.4rem;
 }
 
 // Sidebar + Nanvbar
-.sidebar {
+:is(.sidebar, .vp-sidebar) {
   font-size: $font-size-md;
 
-  .navbar-items {
+  :is(.navbar-items, .vp-navbar-items) {
     a {
       color: inherit;
     }
 
-    .navbar-item {
+    :is(.navbar-item, .vp-navbar-item) {
       font-size: $font-size-md;
       padding: 0.3rem 0 0.3rem 1.25rem;
     }
 
-    .navbar-dropdown-wrapper {
-      .navbar-dropdown {
-        .navbar-dropdown-item {
+    :is(.navbar-dropdown-wrapper, .vp-navbar-dropdown-wrapper) {
+      :is(.navbar-dropdown, .vp-navbar-dropdown) {
+        :is(.navbar-dropdown-item, .vp-navbar-dropdown-item) {
           margin-top: 0;
         }
       }
@@ -556,7 +571,7 @@ div[class*=language-] {
 }
 
 // Sidebar
-.sidebar {
+:is(.sidebar, .vp-sidebar) {
   width: $sidebar-width;
   scrollbar-color: var(--c-scrollbar-thumb) var(--c-scrollbar-background);
 
@@ -572,15 +587,15 @@ div[class*=language-] {
     background-color: var(--c-scrollbar-thumb);
   }
 
-  .sidebar-items {
+  :is(.sidebar-items, .vp-sidebar-items) {
     padding: 1.2rem 0;
   }
 
-  .sidebar-item.sidebar-heading {
+  :is(.sidebar-item.sidebar-heading, .vp-sidebar-item.vp-sidebar-heading) {
     font-size: 0.8rem;
   }
 
-  .sidebar-item {
+  :is(.sidebar-item, .vp-sidebar-item) {
     text-decoration: none;
 
     &:visited {
@@ -595,24 +610,24 @@ div[class*=language-] {
       color: $primary-color;
     }
 
-    &.sidebar-heading {
+    &:is(.sidebar-heading, .vp-sidebar-heading) {
       padding: 0.3rem 0.8rem 0 1rem;
     }
 
-    &:not(.sidebar-heading) {
+    &:not(:is(.sidebar-heading, .vp-sidebar-heading)) {
       font-size: $font-size-md;
       padding: 0.15rem 0.8rem 0.15rem 1.6rem;
     }
   }
 
-  .sidebar-item-children {
-    .sidebar-item-children {
+  :is(.sidebar-item-children, .vp-sidebar-children) {
+    :is(.sidebar-item-children, .vp-sidebar-children) {
       >li {
         margin-top: 0.24rem;
       }
 
-      .sidebar-item {
-        &:not(.sidebar-heading) {
+      :is(.sidebar-item, .vp-sidebar-item) {
+        &:not(:is(.sidebar-heading, .vp-sidebar-heading)) {
           padding: 0.15rem 0.8rem 0.15rem 1.2rem;
         }
       }
@@ -621,8 +636,8 @@ div[class*=language-] {
 }
 
 .dark {
-  .sidebar {
-    .sidebar-item {
+  :is(.sidebar, .vp-sidebar) {
+    :is(.sidebar-item, .vp-sidebar-item) {
       &:not(.active) {
         color: inherit;
       }
@@ -631,8 +646,8 @@ div[class*=language-] {
 }
 
 @media (max-width: $MQMobileNarrow) {
-  .sidebar {
-    .sidebar-items {
+  :is(.sidebar, .vp-sidebar) {
+    :is(.sidebar-items, .vp-sidebar-items) {
       padding: 0.3rem 0;
     }
   }
@@ -666,7 +681,8 @@ main {
     }
   }
 
-  &.page {
+  &.page,
+  &.vp-page {
     padding-top: 0;
   }
 }
@@ -740,7 +756,7 @@ main {
     }
   }
 
-  .theme-default-content {
+  :is(.theme-default-content, [vp-content]) {
     font-size: $font-size-sm;
 
     &:not(.custom) {
@@ -753,7 +769,7 @@ main {
   }
 
   // TODO: still needed?
-  .page-meta {
+  :is(.page-meta, .vp-page-meta) {
     .meta-item:first-child {
       margin-top: 0;
     }
@@ -837,7 +853,7 @@ ins.adsbygoogle[data-ad-status='unfilled'] {
   display: none;
 }
 
-.page-nav {
+:is(.page-nav, .vp-page-nav) {
   padding: 0 1rem;
 
   .prev {

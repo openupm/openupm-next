@@ -445,7 +445,7 @@ watch(() => topicSlug.value, () => {
 @use '@/styles/palette' as *;
 
 .package-list {
-  .page {
+  :is(.page, .vp-page) {
     padding-bottom: 0;
     padding-left: calc(var(--sidebar-width) + (100vw - var(--sidebar-width) - #{$package-grid-4c-width} - #{$scrollbar-width}*2)/2);
 
@@ -480,7 +480,7 @@ watch(() => topicSlug.value, () => {
       transform: none;
     }
 
-    >.theme-default-content:not(.custom) {
+    >:is(.theme-default-content, [vp-content]):not(.custom) {
       padding: 0;
       margin-top: $navbar-height;
 
@@ -625,7 +625,7 @@ watch(() => topicSlug.value, () => {
   }
 }
 
-.sidebar ul.menu {
+:is(.sidebar, .vp-sidebar) ul.menu {
   padding: 0.4rem;
   margin: 0.2rem 0.4rem 0.4rem 0.4rem;
 }

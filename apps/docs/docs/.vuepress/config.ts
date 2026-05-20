@@ -143,7 +143,7 @@ const config: any = mergeWith(
       }),
       mediumZoomPlugin({
         selector:
-          ".theme-container:not(.package-list) .theme-default-content :not(a) > img",
+          ":is(.theme-container, .vp-theme-container):not(.package-list) :is(.theme-default-content, [vp-content]) :not(a) > img",
       }),
       blogRssPlugin(),
     ],

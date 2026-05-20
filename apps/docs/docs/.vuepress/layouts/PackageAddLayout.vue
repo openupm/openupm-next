@@ -705,12 +705,12 @@ onMounted(() => {
 }
 
 .package-add {
-  .page {
+  :deep(:is(.page, .vp-page)) {
     .btn-go {
       width: 3rem;
     }
 
-    .theme-default-content {
+    :is(.theme-default-content, [vp-content]) {
       margin: 0;
       padding: 0 0 2.5rem;
 

@@ -89,7 +89,7 @@ onMounted(() => {
     }
   }
 
-  .theme-default-content {
+  :is(.theme-default-content, [vp-content]) {
     h1 {
       font-weight: bold;
       background: -webkit-linear-gradient(315deg, $primary-color 10%, #2fc5cd);

@@ -250,7 +250,7 @@ watch(
 @use '@/styles/palette' as *;
 
 .nuget-package-detail {
-  .theme-default-content {
+  :is(.theme-default-content, [vp-content]) {
     .content__default {
       h1 {
         display: none;
@@ -322,7 +322,7 @@ watch(
       grid-template-columns: 1fr;
     }
 
-    .theme-default-content {
+    :is(.theme-default-content, [vp-content]) {
       .column-meta {
         max-width: 100%;
       }
