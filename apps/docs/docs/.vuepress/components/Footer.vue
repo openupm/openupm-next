@@ -131,6 +131,7 @@ const description = computed(() => t("site-desc"));
 
 .page-footer {
   --c-text-footer: #ccc;
+  background-color: $primary-color;
   color: var(--c-text-footer);
 
   a {
@@ -143,10 +144,6 @@ const description = computed(() => t("site-desc"));
   }
 
   .page-footer-box {
-    position: absolute;
-    left: 0;
-    right: 0;
-    background-color: $primary-color;
     padding: 1.5rem 0 1.5rem 2rem;
 
     h5 {
@@ -173,7 +170,7 @@ const description = computed(() => t("site-desc"));
   }
 }
 
-:global(:is(.dark, [data-theme='dark']) .page-footer .page-footer-box) {
+:global(:is(.dark, [data-theme='dark']) .page-footer) {
   background-color: var(--c-bg-light);
 }
 </style>
