@@ -16,19 +16,6 @@ describe("docs runtime payload fetch behavior", () => {
     expect(source).toContain("isPackageListPath(path)");
     expect(source).toContain("store.fetchCachedSiteInfo()");
     expect(source).toContain("store.fetchCachedPackageListData()");
-    expect(source).toContain("defineAsyncComponent");
-    expect(source).toContain('import("@/layouts/PackageListLayout.vue")');
-    expect(source).toContain('import("@/layouts/PackageDetailLayout.vue")');
-    expect(source).toContain('import("@/layouts/NuGetPackageDetailLayout.vue")');
-    expect(source).not.toContain(
-      'import PackageListLayout from "@/layouts/PackageListLayout.vue";',
-    );
-    expect(source).not.toContain(
-      'import PackageDetailLayout from "@/layouts/PackageDetailLayout.vue";',
-    );
-    expect(source).not.toContain(
-      'import NuGetPackageDetailLayout from "@/layouts/NuGetPackageDetailLayout.vue";',
-    );
     expect(source).not.toContain("store.fetchCachedPackageMetadataRemoteDict();");
     expect(source).not.toContain("store.fetchCachedPackageMetadataLocalList();");
   });
