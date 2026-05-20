@@ -36,9 +36,11 @@ This Code of Conduct applies both within project spaces and in public spaces whe
 
 ## Issues and Pull Requests
 
-Bug reports and feature requests are welcome. If you encounter a bug, please open an issue with clear reproduction steps, expected behavior, and relevant environment details. If you would like to propose a new feature or a change in behavior, please open an issue describing the proposal or support an existing request.
+Bug reports and feature requests are welcome through the [OpenUPM issue tracker](https://github.com/openupm/openupm/issues). If you encounter a bug, please open an issue with clear reproduction steps, expected behavior, actual behavior, relevant environment details, and links to affected OpenUPM pages when applicable.
 
-We do not accept unsolicited pull requests that fix bugs or implement feature requests. The most useful way to help is to share reproduction details, analysis, root-cause hypotheses, or a high-level outline of a possible fix in the issue thread. Maintainers may invite a pull request when the problem is well understood and the proposed approach aligns with the project direction.
+If you would like to propose a new feature or a change in behavior, please open an issue in the same tracker describing the user need, expected outcome, and any relevant examples, or support an existing request with additional context. Please do not open a pull request for the bug fix or feature request.
+
+We do not accept unsolicited pull requests that fix bugs or implement feature requests. The most useful way to help is to share reproduction details, analysis, root-cause hypotheses, screenshots, or a high-level outline of a possible fix in the issue thread. Maintainers may invite a pull request when the problem is well understood and the proposed approach aligns with the project direction.
 
 Pull requests that have not been explicitly invited by a maintainer may be closed without review.
 
