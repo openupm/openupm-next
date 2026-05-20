@@ -37,6 +37,38 @@ describe('buildPackage.filterRemoteTags', () => {
     expect(names).toEqual([{ commit: '0000010', tag: '1.0.2-upm' }]);
   });
 
+  it('@ prefix', () => {
+    const names = filterRemoteTags({
+      remoteTags: [
+        { tag: 'com.example.package@1.0.0', commit: '10' },
+        { tag: 'com.example.package@2.0.0', commit: '11' },
+        { tag: 'com.example.package@2.1.0-preview.1', commit: '13' },
+        { tag: 'com.other.package@1.0.0', commit: '12' },
+      ],
+      gitTagPrefix: 'com.example.package@',
+    });
+    expect(names).toEqual([
+      { tag: 'com.example.package@1.0.0', commit: '10' },
+      { tag: 'com.example.package@2.0.0', commit: '11' },
+      { tag: 'com.example.package@2.1.0-preview.1', commit: '13' },
+    ]);
+  });
+
+  it('filters by configured literal prefix before version parsing', () => {
+    const names = filterRemoteTags({
+      remoteTags: [
+        { tag: 'com.example.package/1.0.0', commit: '10' },
+        { tag: 'com.example.package/1.1.0-rc.1', commit: '11' },
+        { tag: 'com.example.package-other/1.0.0', commit: '12' },
+      ],
+      gitTagPrefix: 'com.example.package/',
+    });
+    expect(names).toEqual([
+      { tag: 'com.example.package/1.0.0', commit: '10' },
+      { tag: 'com.example.package/1.1.0-rc.1', commit: '11' },
+    ]);
+  });
+
   it('prefix, ignore, minVersion', () => {
     const names = filterRemoteTags({
       remoteTags: [
