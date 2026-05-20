@@ -169,6 +169,9 @@ const imageErrorMessage = computed(() => {
 
         >a {
           font-weight: 600;
+          text-decoration: none;
+          border-bottom: none;
+          box-shadow: none;
         }
       }
     }
