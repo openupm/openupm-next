@@ -2,31 +2,19 @@
 
 import { clean } from 'semver';
 
+// Finds the start of a version-like pattern (X.Y.Z...) within a string.
+// Validation is delegated to semver.clean() rather than encoded in the regex.
+const SEMVER_RE = /v?\d+\.\d+\.\d+[^\s]*/i;
+
 // Get version from git tag name.
 export function getVersionFromTag(tag: string): string | null {
-  const parseVersion = function (seg: string): string | null {
-    // Handle upm suffix.
-    const upmRe = /(_|-)(upm|master)$/i;
-    seg = seg.replace(upmRe, '');
-    return clean(seg.toLowerCase(), { loose: true });
-  };
-  const parseSeg = function (tag: string, separator: string): string | null {
-    const segs = tag.split(separator);
-    for (let i = 0; i < segs.length; i++) {
-      const arr = segs.slice(segs.length - i - 1, segs.length);
-      const text = arr.join(separator);
-      version = parseVersion(text);
-      if (version) return version;
-    }
-    return null;
-  };
-  // Try parsing the tag.
-  let version = parseVersion(tag);
-  // Try parsing a path-like tag: prefix/{version}.
-  if (!version) version = parseSeg(tag, '/');
-  // Try parsing a hyphen-joined tag: prefix-{version}.
-  if (!version) version = parseSeg(tag, '-');
-  // Try parsing a underscore-joined tag: prefix_{version}.
-  if (!version) version = parseSeg(tag, '_');
-  return version;
+  // Strip upm/master suffix.
+  tag = tag.replace(/(_|-)(upm|master)$/i, '');
+  // Try the full string first (handles v-prefix, loose versions like 0.10.7b).
+  const direct = clean(tag.toLowerCase(), { loose: true });
+  if (direct) return direct;
+  // Scan for a semver pattern within the string, supporting arbitrary prefix
+  // characters including '@', '/', '-', and '_'.
+  const match = tag.match(SEMVER_RE);
+  return match ? clean(match[0].toLowerCase(), { loose: true }) : null;
 }
