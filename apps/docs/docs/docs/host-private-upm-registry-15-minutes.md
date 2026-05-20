@@ -42,7 +42,7 @@ Visit the [DigitalOcean Marketplace for EasyPanel](https://marketplace.digitaloc
 
 Choose a region close to your team, then scroll to the "Choose Size" section and select a plan that meets your requirements. The $6/month plan (Regular CPU, 1GB memory, 25GB SSD, 1TB transfer) is usually enough for most small teams. However, if you often publish large packages in the hundreds of megabytes, a plan with 2GB memory and a larger SSD disk is advisable.
 
-![Choose Droplet Size](images/choose-droplet-size.png)
+![Choose Droplet Size](./images/choose-droplet-size.png)
 
 Next, consider the "Backups" option for added droplet durability, which involves enabling daily snapshots at an additional cost of 30% of the droplet price. If you're versed in Linux server management, you could opt for a different backup strategy, such as regularly backing up the Verdaccio folder to S3. Given that the starting price for DigitalOcean's S3 alternative, "Spaces," is $5/month, enabling droplet backups is often a more affordable and simpler solution for most users. The choice is yours.
 
@@ -50,13 +50,13 @@ Choose between SSH Keys or Password for droplet access (opt for a password if yo
 
 To complete the setup, click the <kbd>Create Droplet</kbd> button at the bottom of the page. DigitalOcean may take a minute to prepare your droplet.
 
-![Complete Droplet Setup](images/complete-droplet-setup.png)
+![Complete Droplet Setup](./images/complete-droplet-setup.png)
 
 Now that our droplet is set up with the IP address `64.23.136.113`, we'll use this IP to access EasyPanel later.
 
 Click on the droplet name to view its details. Then, click the "Networking" tab, scroll down to the "Firewalls" section, and click the <kbd>Edit</kbd> button to add some rules that allow access to the server.
 
-![Edit firewalls 1](images/edit-firewalls-1.png)
+![Edit firewalls 1](./images/edit-firewalls-1.png)
 
 Click the <kbd>Create Firewall</kbd> button, enter a name for the firewall, and add the following rules for inbound traffic:
 
@@ -69,17 +69,17 @@ The last rule is specifically for initial EasyPanel access. It can be removed af
 
 In the "Apply to Droplets" section, select the droplet you just created and click the <kbd>Create Firewall</kbd> button.
 
-![Edit firewalls 2](images/edit-firewalls-2.png)
+![Edit firewalls 2](./images/edit-firewalls-2.png)
 
 ## Access EasyPanel
 
 To access EasyPanel, open a new browser tab and navigate to `http://64.23.136.113:3000/`. Make sure to replace the IP address with your droplet's IP address. Upon visiting, you'll land on the EasyPanel login page. Here, you'll need to sign up by entering your email and a password. The free plan will cover our requirements, but EasyPanel offers a straightforward way to manage your server and applications, so consider upgrading to a paid plan if you find yourself needing additional features.
 
-![EasyPanel Welcome](images/easypanel-welcome.png)
+![EasyPanel Welcome](./images/easypanel-welcome.png)
 
 After signing in, click on the Settings icon located in the top right corner, then navigate to the "Default Domain" found under the "General>Panel Domain" section.
 
-![EasyPanel Settings](images/easypanel-settings.png)
+![EasyPanel Settings](./images/easypanel-settings.png)
 
 You'll now be able to access EasyPanel through a specific subdomain, such as `https://jw9v2i.easypanel.host/`. Remember to replace `jw9v2i` with the subdomain assigned to you. This subdomain supports HTTPS and is automatically managed by EasyPanel, providing a secure way to access your panel. Once you're set up with your subdomain, the port 3000 rule in the firewall settings is no longer necessary and can be removed for enhanced security.
 
@@ -89,11 +89,11 @@ Open the EasyPanel dashboard and click the <kbd>Create Project</kbd> button. Nam
 
 Next, click the <kbd>+ Service</kbd> button and look for "verdaccio" under the "Pick a template" section.
 
-![EasyPanel Add Service](images/easypanel-add-service.png)
+![EasyPanel Add Service](./images/easypanel-add-service.png)
 
 Then, click on the verdaccio icon. Ensure the App Service Image is set to something like `verdaccio/verdaccio:5`, and click the <kbd>Create</kbd> button to proceed.
 
-![EasyPanel Add Verdaccio](images/easypanel-add-verdaccio.png)
+![EasyPanel Add Verdaccio](./images/easypanel-add-verdaccio.png)
 
 Back on the project details page, you'll notice the Verdaccio service is now being created and will soon be up and running. It's quite a straightforward process!
 
@@ -103,11 +103,11 @@ The default setup of Verdaccio runs in a container, and its data does not persis
 
 Navigate to the "Storage" tab within your Verdaccio service settings in EasyPanel. Click the <kbd>Add Volume Mount</kbd> button to create a new volume. Name this volume "verdaccio-storage" and set the path to `/verdaccio/storage`.
 
-![EasyPanel verdaccio add storage 1](images/easypanel-verdaccio-storage-1.png)
+![EasyPanel verdaccio add storage 1](./images/easypanel-verdaccio-storage-1.png)
 
 Next, click the <kbd>Add File Mount</kbd> button to establish a new file mount, setting the path to `/verdaccio/conf/config.yaml`.
 
-![EasyPanel verdaccio add storage 2](images/easypanel-verdaccio-storage-2.png)
+![EasyPanel verdaccio add storage 2](./images/easypanel-verdaccio-storage-2.png)
 
 Next, use the <kbd>Edit</kbd> button to input below configuration into the `config.yaml` file.
 
@@ -168,19 +168,19 @@ log: { type: stdout, format: pretty, level: http }
 
 Verify everything is correct and ensure the "Mount Path" fields are free of any leading or ending spaces. Click the <kbd>Save</kbd> button to finalize your configuration.
 
-![EasyPanel verdaccio storage save](images/easypanel-verdaccio-storage-save.png)
+![EasyPanel verdaccio storage save](./images/easypanel-verdaccio-storage-save.png)
 
 Then, click the <kbd>Deploy</kbd> button to apply the changes. Navigate to the "Deployment" tab, where you'll see a new deployment message listed in the history.
 
-![EasyPanel verdaccio redeploy](images/easypanel-verdaccio-redeploy.png)
+![EasyPanel verdaccio redeploy](./images/easypanel-verdaccio-redeploy.png)
 
 Proceed to the "Domain" tab and note the domain name `https://upm-verdaccio.jw9v2i.easypanel.host/` to access the Verdaccio web interface. This domain is a subdomain of your EasyPanel domain, incorporating both the project name "upm" and the service name "verdaccio." EasyPanel's ability to automatically generate accessible subdomains for services is a key feature that eliminates the need for manual subdomain configuration and reverse proxy setup for service access.
 
-![EasyPanel verdaccio domains tab](images/easypanel-verdaccio-domains-tab.png)
+![EasyPanel verdaccio domains tab](./images/easypanel-verdaccio-domains-tab.png)
 
 Upon opening the Verdaccio web interface, you'll encounter the login page.
 
-![Verdaccio welcome](images/verdaccio-welcome.png)
+![Verdaccio welcome](./images/verdaccio-welcome.png)
 
 ## Create a User Account
 
@@ -252,7 +252,7 @@ npm notice Publishing to https://upm-verdaccio.jw9v2i.easypanel.host/ with tag l
 
 To view the published package, return to your browser, log in to Verdaccio with the user account you created, and navigate to the package list. If your package does not appear immediately, try refreshing the page.
 
-![Verdaccio package list](images/verdaccio-package-list.png)
+![Verdaccio package list](./images/verdaccio-package-list.png)
 
 ## Access the Registry in Unity
 
@@ -284,7 +284,7 @@ notice please open Unity project to apply changes
 
 Upon completion, open your Unity project to see the changes take effect, and your package should now be integrated successfully.
 
-![Unity scoped registry](images/unity-scoped-registry-added.png)
+![Unity scoped registry](./images/unity-scoped-registry-added.png)
 
 
 ## Protect Your Registry

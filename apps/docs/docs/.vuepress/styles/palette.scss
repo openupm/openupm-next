@@ -1,8 +1,9 @@
 // Spectre.css variables
 // https://github.com/picturepan2/spectre/blob/master/src/_variables.scss
+@use "sass:color";
 @forward "spectre.css/src/variables";
 $primary-color: #3068E5;
-$primary-color-light: lighten($primary-color, 20%);
+$primary-color-light: color.adjust($primary-color, $lightness: 20%);
 $warning-color: #ffc310;
 $base-font-family: "Noto Sans", -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto;
 $mono-font-family: "Source Code Pro", Menlo, Monaco, Consolas, "Courier New", monospace;

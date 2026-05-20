@@ -7,7 +7,7 @@ import { useI18n } from 'vue-i18n'
 import { usePageFrontmatter } from "@vuepress/client";
 import Grid from '@node_modules/vue-virtual-scroll-grid/dist/index.es.js';
 import { PageProvider } from '@node_modules/vue-virtual-scroll-grid/pipeline';
-import { useSearchIndex } from '@node_modules/@vuepress/plugin-search/lib/client/composables'
+import { useSearchIndex } from '@vuepress/plugin-search/client'
 
 import ParentLayout from "@/layouts/WideLayout.vue";
 import VueVirtualScrollGridBackToTop from '@/components/VueVirtualScrollGridBackToTop';

@@ -2,7 +2,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 
-import ParentComponent from '@vuepress/theme-default/components/Navbar.vue';
+import ParentComponent from '@vuepress/theme-default/components/VPNavbar.vue';
 import MySearchBox from '@/components/MySearchBox';
 
 const packageAddLink = computed(() => {

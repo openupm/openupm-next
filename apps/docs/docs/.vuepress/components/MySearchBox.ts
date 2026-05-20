@@ -7,15 +7,15 @@
  * - fix: search index not reset when press escape key.
  */
 import { useRouteLocale } from "@vuepress/client";
+import { useKeys } from "@vuepress/helper/client";
 import { computed, defineComponent, h, ref } from "vue";
 import { useRouter } from "vue-router";
 import {
-  useHotKeys,
   useSearchIndex,
   useSearchSuggestions,
   useSuggestionsFocus,
   SearchSuggestion,
-} from "@node_modules/@vuepress/plugin-search/lib/client/composables";
+} from "@vuepress/plugin-search/client";
 import {
   getPackageNameFromSearchSuggestionLink,
   getPackageSearchResultTitle,
@@ -78,7 +78,7 @@ export default defineComponent({
 
     const { focusIndex, focusNext, focusPrev } =
       useSuggestionsFocus(suggestions);
-    useHotKeys({ input, hotKeys });
+    useKeys(hotKeys, () => input.value?.focus());
 
     const showSuggestions = computed(
       () => isActive.value && !!suggestions.value.length,
