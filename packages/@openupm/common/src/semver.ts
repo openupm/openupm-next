@@ -3,7 +3,7 @@
 import { clean } from 'semver';
 
 // Get version from git tag name.
-export function getVersionFromTag(tag): string | null {
+export function getVersionFromTag(tag: string): string | null {
   const parseVersion = function (seg: string): string | null {
     // Handle upm suffix.
     const upmRe = /(_|-)(upm|master)$/i;
