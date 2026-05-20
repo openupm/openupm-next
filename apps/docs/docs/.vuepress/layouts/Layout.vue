@@ -24,7 +24,7 @@ const showContentTopAd = computed(() => {
 </script>
 
 <template>
-  <ParentLayout>
+  <ParentLayout :class="{ 'has-page-footer': showFooter }">
     <template #page-content-top>
       <SiteBreadcrumb />
       <AdsenseDisplayForContentTop v-if="showContentTopAd" />
@@ -34,11 +34,18 @@ const showContentTopAd = computed(() => {
       <slot :name="name" v-bind="slotData || {}" />
     </template>
 
-    <template #page-bottom>
-      <Footer v-if="showFooter" />
-      <ClientOnly>
-        <CookieConsent />
-      </ClientOnly>
-    </template>
   </ParentLayout>
+
+  <Footer v-if="showFooter" />
+  <ClientOnly>
+    <CookieConsent />
+  </ClientOnly>
 </template>
+
+<style lang="scss">
+:is(.theme-container, .vp-theme-container).has-page-footer {
+  :is(.page, .vp-page) {
+    padding-bottom: 0;
+  }
+}
+</style>
