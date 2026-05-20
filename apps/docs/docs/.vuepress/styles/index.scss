@@ -30,10 +30,15 @@ with ($primary-color: $primary-color,
   --c-bg-light: var(--vp-c-bg-alt);
   --c-bg-lighter: var(--vp-c-bg-elv);
   --c-text: var(--vp-c-text);
+  --c-text-light: var(--vp-c-text-mute);
+  --c-text-lighter: var(--vp-c-text-subtle);
   --c-text-lightest: var(--vp-c-text-subtle);
   --c-border: var(--vp-c-border);
+  --c-tip: var(--vp-c-accent);
   --c-warning: #{$warning-color};
   --c-warning-border-dark: #{$warning-color};
+  --c-warning-bg: var(--vp-c-yellow-soft);
+  --c-warning-title: var(--vp-c-yellow-text);
   --c-text-accent: #{$primary-color};
   --c-text-accent-strong: #{$primary-color};
   --navbar-height: #{$navbar-height};
@@ -384,8 +389,19 @@ div[class*=language-] {
     }
   }
 
+  :is(.sidebar, .vp-sidebar) {
+    .menu {
+      background: var(--c-bg-lighter);
+    }
+  }
+
   .chip {
     background: var(--c-bg-dark);
+    color: var(--c-text);
+  }
+
+  .card {
+    background: var(--c-bg-lighter);
     color: var(--c-text);
   }
 
@@ -641,6 +657,14 @@ div[class*=language-] {
       &:not(.active) {
         color: inherit;
       }
+    }
+  }
+}
+
+.dark {
+  main.applayout {
+    .breadcrumb-container {
+      background-color: var(--c-bg);
     }
   }
 }

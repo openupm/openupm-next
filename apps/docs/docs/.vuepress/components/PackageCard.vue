@@ -260,6 +260,18 @@ const imageErrorMessage = computed(() => {
       box-shadow: none;
       background-color: var(--c-bg-light);
     }
+
+    .card-footer {
+      .chip {
+        background: var(--c-bg-dark);
+        color: var(--c-text);
+
+        &.chip-unavailable {
+          background-color: var(--c-warning);
+          color: var(--c-warning-text, #746000);
+        }
+      }
+    }
   }
 }
 </style>

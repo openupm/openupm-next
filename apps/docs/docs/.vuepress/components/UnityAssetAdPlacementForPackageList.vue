@@ -115,6 +115,11 @@ const hasDiscount = computed(() => {
   .ad-placement {
     box-shadow: none;
     background-color: var(--c-bg-light);
+
+    .chip {
+      background: var(--c-bg-dark);
+      color: var(--c-text);
+    }
   }
 }
 </style>

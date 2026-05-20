@@ -47,6 +47,9 @@ const themeConfig: any = mergeWith(
     themePlugins: {
       git: false,
       mediumZoom: false,
+      prismjs: {
+        lineNumbers: "disable",
+      },
     },
   },
   regionConfig.themeConfig,
