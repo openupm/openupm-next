@@ -28,6 +28,7 @@ describe('getVersionFromTag()', function () {
     ['upm/1.0.0', '1.0.0'],
     ['com.example.package/1.2.3', '1.2.3'],
     ['releases/1.2.3', '1.2.3'],
+    ['release/2024.01.15/v1.2.3', '1.2.3'],
     // hyphen-style prefixes (-)
     ['pkg-1.2.3-rc.1', '1.2.3-rc.1'],
     // underscore-style prefixes (_)

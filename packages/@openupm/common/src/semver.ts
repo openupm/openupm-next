@@ -9,7 +9,8 @@ import { clean } from 'semver';
 // after X.Y.Z. That lets semver.clean() reject malformed suffixes such as
 // `1.2.3/foo`, `1.2.3_alpha`, and `1.2.3-alpha..1` instead of accepting the
 // shorter `1.2.3` prefix by accident.
-const VERSION_TOKEN_RE = /(?:^|[/_@-])(v?\d+\.\d+\.\d+\S*)/i;
+const VERSION_TOKEN_AT_START_RE = /^(v?\d+\.\d+\.\d+\S*)/i;
+const VERSION_TOKEN_SEPARATORS = '/_@-';
 
 function stripOpenUpmSuffix(tag: string): string {
   return tag.replace(/(_|-)(upm|master)$/i, '');
@@ -28,6 +29,17 @@ export function getVersionFromTag(tag: string): string | null {
 
   // Scan inside a prefixed tag after direct parsing fails. The semver package
   // still owns validation and normalization of prerelease/build metadata.
-  const match = tag.match(VERSION_TOKEN_RE);
-  return match ? cleanVersionToken(match[1]) : null;
+  for (let start = 0; start < tag.length; start++) {
+    if (start > 0 && !VERSION_TOKEN_SEPARATORS.includes(tag[start - 1])) {
+      continue;
+    }
+
+    const match = tag.slice(start).match(VERSION_TOKEN_AT_START_RE);
+    if (!match) continue;
+
+    const version = cleanVersionToken(match[1]);
+    if (version) return version;
+  }
+
+  return null;
 }
