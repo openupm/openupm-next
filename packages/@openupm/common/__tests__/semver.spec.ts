@@ -37,6 +37,8 @@ describe('getVersionFromTag()', function () {
     ['com.example.package@1.2.3-beta.1', '1.2.3-beta.1'],
     ['com.example.package@1.2.3-alpha.1+build.7', '1.2.3-alpha.1'],
     ['com.example.package@v1.2.3-preview.10', '1.2.3-preview.10'],
+    // multiple version-looking tokens keep the historical rightmost behavior
+    ['prefix-1.2.3-2.0.0', '2.0.0'],
     // upm/master suffix (stripped)
     ['1.2.3-upm', '1.2.3'],
     ['v1.2.3_upm', '1.2.3'],

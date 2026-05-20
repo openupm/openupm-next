@@ -2,34 +2,39 @@
 
 import { clean } from 'semver';
 
-// Finds a version-looking token inside a tag with a known tag separator, for
-// example `upm/1.2.3-preview.1` or `com.example.package@1.2.3-preview.1`.
-//
-// The regex intentionally captures the rest of the non-space version token
-// after X.Y.Z. That lets semver.clean() reject malformed suffixes such as
-// `1.2.3/foo`, `1.2.3_alpha`, and `1.2.3-alpha..1` instead of accepting the
-// shorter `1.2.3` prefix by accident.
-const VERSION_TOKEN_RE = /(?:^|[/_@-])(v?\d+\.\d+\.\d+\S*)/i;
+const TAG_VERSION_SEPARATORS = ['/', '-', '_', '@'];
 
 function stripOpenUpmSuffix(tag: string): string {
   return tag.replace(/(_|-)(upm|master)$/i, '');
 }
 
 function cleanVersionToken(token: string): string | null {
-  return clean(token.toLowerCase(), { loose: true });
+  return clean(stripOpenUpmSuffix(token).toLowerCase(), { loose: true });
+}
+
+function cleanVersionSuffix(tag: string, separator: string): string | null {
+  const segments = tag.split(separator);
+  for (let index = segments.length - 1; index >= 0; index--) {
+    const candidate = segments.slice(index).join(separator);
+    const version = cleanVersionToken(candidate);
+    if (version) return version;
+  }
+  return null;
 }
 
 // Get version from git tag name.
 export function getVersionFromTag(tag: string): string | null {
-  const tagWithoutOpenUpmSuffix = stripOpenUpmSuffix(tag);
-
   // Try the full string first. This handles bare versions, v-prefixes, and
   // historical loose spellings like `0.10.7b`.
-  const direct = cleanVersionToken(tagWithoutOpenUpmSuffix);
+  const direct = cleanVersionToken(tag);
   if (direct) return direct;
 
-  // Scan inside a prefixed tag after direct parsing fails. The semver package
-  // still owns validation and normalization of prerelease/build metadata.
-  const match = tagWithoutOpenUpmSuffix.match(VERSION_TOKEN_RE);
-  return match ? cleanVersionToken(match[1]) : null;
+  // Walk separator-delimited suffixes from right to left so tags containing
+  // more than one version-looking token keep the historical terminal-version
+  // behavior. semver.clean() still owns validation and normalization.
+  for (const separator of TAG_VERSION_SEPARATORS) {
+    const version = cleanVersionSuffix(tag, separator);
+    if (version) return version;
+  }
+  return null;
 }
