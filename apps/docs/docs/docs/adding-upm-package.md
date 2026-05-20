@@ -125,17 +125,19 @@ The repository you submitted must have at least one versioned Git tag to trigger
 
 ### Naming Git Tags
 
-Use clear semver tags that match `package.json.version`. Recommended tag names include `1.2.3`, `v1.2.3`, `1.2.3-preview.1`, `upm/v1.2.3`, and `com.example.package/v1.2.3`.
+Use clear semver tags that match `package.json.version`. Recommended tag names include `1.2.3`, `v1.2.3`, `1.2.3-preview.1`, `upm/v1.2.3`, `com.example.package/v1.2.3`, and `com.example.package@1.2.3`.
 
 For prereleases, prefer the identifiers `alpha`, `beta`, `rc`, or Unity-friendly `preview`. Dot-numbered prerelease tags such as `1.2.3-rc.1` or `1.2.3-preview.1` are clearer than unnumbered tags when you expect more than one prerelease.
 
-OpenUPM tolerates some historical tag shapes, including build metadata tags such as `v2.0.2+002`, loose spellings such as `0.10.7b`, and leading-zero versions such as `1.2.03`. These forms are accepted for compatibility with existing packages and may be normalized when OpenUPM parses them, but they are not recommended for new releases.
+OpenUPM tolerates some historical tag shapes, including build metadata tags such as `v2.0.2+002`, loose spellings such as `0.10.7b`, and leading-zero versions such as `1.2.03`. These forms are accepted for compatibility with existing packages and may be normalized when OpenUPM parses them, but they are not recommended for new releases. Build metadata is accepted for tag discovery but is not kept in the OpenUPM release version, so `1.2.3+build.1` is stored as `1.2.3` and `1.2.3-alpha.1+build.7` is stored as `1.2.3-alpha.1`.
 
 ### Handling Prefixed Git Tags
 
 Some repositories use different content for different tags, for example, `1.0.0` for the main branch and `upm/1.0.0` for the UPM branch. In such cases, you need to specify the `gitTagPrefix` field in the package YAML file. For instance, set `gitTagPrefix: "upm/"` to prevent confusion in the build pipelines due to duplicated version tags. Without specifying a prefix, the build pipelines will treat `1.0.0` and `upm/1.0.0` as the same version tag and only build one of them. By default, a tag name with the prefix `upm/` takes higher priority. For example, `1.0.0` and `upm/1.1.0` will result in building only `upm/1.1.0`.
 
-For monorepos or repositories with duplicate tag families, set `gitTagPrefix` to the literal prefix that identifies this package's tags, such as `upm/` or `com.example.package/`. This prevents tags for another package or branch family from queueing builds for the wrong package.
+For monorepos or repositories with duplicate tag families, set `gitTagPrefix` to the literal prefix that identifies this package's tags, such as `upm/`, `com.example.package/`, or `com.example.package@`. This prevents tags for another package or branch family from queueing builds for the wrong package. The prefix is only a literal filter, not a regular expression, and OpenUPM extracts the version from the remaining version-looking part of the tag before validating it as semver. For example, `gitTagPrefix: "com.example.package@"` accepts `com.example.package@1.2.3-preview.1` as version `1.2.3-preview.1`.
+
+Avoid adding extra suffixes after the version except for OpenUPM's legacy `-upm`, `_upm`, and `-master` suffixes. Tags such as `com.example.package@1.2.3/foo` or `com.example.package@1.2.3_preview` are rejected instead of being silently shortened to `1.2.3`.
 
 ### Publishing from a GitHub Release Asset
 

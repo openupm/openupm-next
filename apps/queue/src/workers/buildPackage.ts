@@ -122,6 +122,7 @@ export async function buildPackage(name: string): Promise<void> {
     pkg.name,
     validTags,
     pkg.trackingMode || 'git',
+    pkg.gitTagPrefix,
   );
   await probeMissingGitHubReleaseAssets(pkg, releases);
   await addReleaseJobs(releases);
@@ -136,6 +137,10 @@ export function isRepoUnavailableError(message: string): boolean {
   );
 }
 
+function stripTagPrefix(tag: string, prefix?: string): string {
+  return prefix && tag.startsWith(prefix) ? tag.slice(prefix.length) : tag;
+}
+
 export function filterRemoteTags(params: {
   remoteTags: RemoteTag[];
   gitTagIgnore?: string;
@@ -146,7 +151,9 @@ export function filterRemoteTags(params: {
   let tags = remoteTags;
 
   if (gitTagPrefix) tags = tags.filter((x) => x.tag.startsWith(gitTagPrefix));
-  tags = tags.filter((x) => getVersionFromTag(x.tag) != null);
+  tags = tags.filter(
+    (x) => getVersionFromTag(stripTagPrefix(x.tag, gitTagPrefix)) != null,
+  );
 
   if (gitTagIgnore) {
     const ignoreRe = new RegExp(gitTagIgnore, 'i');
@@ -155,12 +162,14 @@ export function filterRemoteTags(params: {
 
   const upmRe = /(^upm\/|(_|-)upm$)/i;
   const validTags = tags.filter((x) => upmRe.test(x.tag));
-  const versionSet = new Set(validTags.map((x) => getVersionFromTag(x.tag)));
+  const versionSet = new Set(
+    validTags.map((x) => getVersionFromTag(stripTagPrefix(x.tag, gitTagPrefix))),
+  );
 
   if (minVersion) {
     try {
       tags = tags.filter((x) => {
-        const lhs = getVersionFromTag(x.tag);
+        const lhs = getVersionFromTag(stripTagPrefix(x.tag, gitTagPrefix));
         const rhs = getVersionFromTag(minVersion);
         if (!lhs || !rhs) return false;
         return compareVersions(lhs, rhs) >= 0;
@@ -171,7 +180,7 @@ export function filterRemoteTags(params: {
   }
 
   for (const element of tags) {
-    const version = getVersionFromTag(element.tag);
+    const version = getVersionFromTag(stripTagPrefix(element.tag, gitTagPrefix));
     if (!versionSet.has(version)) {
       versionSet.add(version);
       validTags.push(element);
@@ -200,7 +209,7 @@ export function getInvalidTags(params: {
   if (minVersion) {
     try {
       tags = tags.filter((x) => {
-        const lhs = getVersionFromTag(x.tag);
+        const lhs = getVersionFromTag(stripTagPrefix(x.tag, gitTagPrefix));
         const rhs = getVersionFromTag(minVersion);
         if (!lhs || !rhs) return false;
         return compareVersions(lhs, rhs) >= 0;
@@ -217,6 +226,7 @@ async function updateReleaseRecords(
   packageName: string,
   remoteTags: RemoteTag[],
   source: ReleaseModel['source'],
+  gitTagPrefix?: string,
 ): Promise<ReleaseModel[]> {
   const existing = await fetchAll(packageName);
   for (const rel of existing) {
@@ -241,7 +251,9 @@ async function updateReleaseRecords(
 
   const releases: ReleaseModel[] = [];
   for (const remoteTag of remoteTags) {
-    const version = getVersionFromTag(remoteTag.tag);
+    const version = getVersionFromTag(
+      stripTagPrefix(remoteTag.tag, gitTagPrefix),
+    );
     if (!version) continue;
     let release = await fetchOne(packageName, version);
     if (!release) {

@@ -14,6 +14,9 @@ describe('getVersionFromTag()', function () {
     ['1.2.3-rc.1', '1.2.3-rc.1'],
     ['1.2.3-preview', '1.2.3-preview'],
     ['1.2.3-preview.1', '1.2.3-preview.1'],
+    ['1.2.3-preview.10', '1.2.3-preview.10'],
+    ['1.2.3-alpha.1+build.7', '1.2.3-alpha.1'],
+    ['1.2.3-rc.01', '1.2.3-rc.1'],
     // build metadata (stripped)
     ['v2.0.2+002', '2.0.2'],
     ['1.2.3+build.1', '1.2.3'],
@@ -32,6 +35,8 @@ describe('getVersionFromTag()', function () {
     // @ prefix (e.g. com.company.package@1.0.0)
     ['com.example.package@1.0.0', '1.0.0'],
     ['com.example.package@1.2.3-beta.1', '1.2.3-beta.1'],
+    ['com.example.package@1.2.3-alpha.1+build.7', '1.2.3-alpha.1'],
+    ['com.example.package@v1.2.3-preview.10', '1.2.3-preview.10'],
     // upm/master suffix (stripped)
     ['1.2.3-upm', '1.2.3'],
     ['v1.2.3_upm', '1.2.3'],
@@ -41,11 +46,16 @@ describe('getVersionFromTag()', function () {
   });
 
   it.each([
-    '1.0.0.0',      // 4-part version, not valid semver
-    'release',      // no version at all
-    'main',         // no version at all
-    'latest',       // no version at all
+    '1.0.0.0', // 4-part version, not valid semver
+    'release', // no version at all
+    'main', // no version at all
+    'latest', // no version at all
     'package/latest', // path with no version
+    'com.example.package1.2.3', // version glued directly to prefix text
+    'com.example.package:1.2.3', // unsupported separator without explicit prefix stripping
+    'com.example.package@1.2.3-alpha..1', // malformed prerelease
+    'com.example.package@1.2.3/foo', // unsupported suffix after version
+    'com.example.package@1.2.3_preview', // unsupported suffix after version
   ])('returns null for %s', function (tag) {
     expect(getVersionFromTag(tag)).toEqual(null);
   });
