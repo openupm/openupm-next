@@ -51,7 +51,8 @@ with ($primary-color: $primary-color,
   --code-ln-wrapper-width: 2.8rem;
 }
 
-html.dark {
+html.dark,
+html[data-theme='dark'] {
   --vp-c-accent: #{color.adjust($primary-color, $lightness: 5%)};
   --vp-c-accent-bg: #{color.adjust($primary-color, $lightness: 5%)};
   --vp-c-accent-hover: #{color.adjust($primary-color, $lightness: 10%)};
@@ -350,7 +351,7 @@ div[class*=language-] {
 }
 
 // Dark color scheme
-.dark {
+:is(.dark, [data-theme='dark']) {
   a {
     color: var(--c-text-accent);
   }
@@ -533,7 +534,7 @@ div[class*=language-] {
   }
 }
 
-.dark {
+:is(.dark, [data-theme='dark']) {
   :is(.navbar, .vp-navbar) {
     :is(.toggle-color-mode-button, .vp-toggle-color-mode-button) {
       color: inherit;
@@ -651,7 +652,7 @@ div[class*=language-] {
   }
 }
 
-.dark {
+:is(.dark, [data-theme='dark']) {
   :is(.sidebar, .vp-sidebar) {
     :is(.sidebar-item, .vp-sidebar-item) {
       &:not(.active) {
@@ -661,7 +662,7 @@ div[class*=language-] {
   }
 }
 
-.dark {
+:is(.dark, [data-theme='dark']) {
   main.applayout {
     .breadcrumb-container {
       background-color: var(--c-bg);

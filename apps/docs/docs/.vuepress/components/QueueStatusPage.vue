@@ -463,7 +463,7 @@ onUnmounted(() => {
   }
 }
 
-.dark {
+:is(.dark, [data-theme='dark']) {
   .queue-status__state {
     &.is-healthy {
       color: #4dd0e1;

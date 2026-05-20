@@ -254,7 +254,7 @@ const imageErrorMessage = computed(() => {
   }
 }
 
-.dark {
+:is(.dark, [data-theme='dark']) {
   .package-card {
     .card-inner {
       box-shadow: none;
