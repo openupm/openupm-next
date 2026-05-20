@@ -25,7 +25,8 @@ const githubLink = computed(() => {
     link: OpenUPMGitHubRepoUrl,
     text: "Stars " + store.formattedStars,
     icon: "fab fa-github",
-    iconLeft: true
+    iconLeft: true,
+    className: "no-external-link-icon",
   };
 });
 
@@ -60,7 +61,7 @@ onMounted(() => {
             <h1 id="main-title">{{ frontmatter.heroText }}</h1>
             <p class="actions">
               <AutoLink class="btn btn-lg btn-default header-anchor" :item="guideLink" />
-              <AutoLink class="btn btn-lg btn-primary header-anchor no-external-link-icon" :item="githubLink" />
+              <AutoLink class="btn btn-lg btn-primary header-anchor" :item="githubLink" />
             </p>
           </div>
         </div>
