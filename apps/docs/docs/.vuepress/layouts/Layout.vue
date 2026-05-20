@@ -2,12 +2,13 @@
 <!-- Wrap default theme layout -->
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, useAttrs } from 'vue';
 import { usePageFrontmatter } from '@vuepress/client';
 
 import ParentLayout from '@vuepress/theme-default/layouts/Layout.vue';
 
 const frontmatter = usePageFrontmatter();
+const attrs = useAttrs();
 
 const showFooter = computed(() => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -21,10 +22,21 @@ const showContentTopAd = computed(() => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (frontmatter.value as any).showContentTopAd === true;
 });
+
+const parentLayoutAttrs = computed(() => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { class: className, ...rest } = attrs;
+  return rest;
+});
+
+const parentLayoutClass = computed(() => [
+  attrs.class,
+  { 'has-page-footer': showFooter.value },
+]);
 </script>
 
 <template>
-  <ParentLayout :class="{ 'has-page-footer': showFooter }">
+  <ParentLayout v-bind="parentLayoutAttrs" :class="parentLayoutClass">
     <template #page-content-top>
       <SiteBreadcrumb />
       <AdsenseDisplayForContentTop v-if="showContentTopAd" />

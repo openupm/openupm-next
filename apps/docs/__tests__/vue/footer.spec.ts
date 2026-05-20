@@ -24,10 +24,19 @@ describe("Footer", () => {
     const layoutSource = readFileSync(layoutPath, "utf8");
 
     expect(layoutSource).toContain(
-      '<ParentLayout :class="{ \'has-page-footer\': showFooter }">',
+      '<ParentLayout v-bind="parentLayoutAttrs" :class="parentLayoutClass">',
     );
     expect(layoutSource).toContain('<Footer v-if="showFooter" />');
     expect(layoutSource).toContain(".has-page-footer");
     expect(layoutSource).toContain("padding-bottom: 0;");
+  });
+
+  it("forwards inherited layout classes through the fragment wrapper", () => {
+    const layoutSource = readFileSync(layoutPath, "utf8");
+
+    expect(layoutSource).toContain("useAttrs");
+    expect(layoutSource).toContain("const parentLayoutAttrs = computed");
+    expect(layoutSource).toContain("const parentLayoutClass = computed");
+    expect(layoutSource).toContain("attrs.class");
   });
 });
