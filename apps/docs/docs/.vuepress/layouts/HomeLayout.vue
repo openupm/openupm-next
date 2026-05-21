@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import { capitalize, template } from 'lodash-es';
 import { useI18n } from 'vue-i18n';
-import numeral from 'numeral';
-import { computed, onMounted } from 'vue';
+import { computed } from 'vue';
 
 import ParentLayout from "@/layouts/WideLayout.vue";
 import { useDefaultStore } from '@/store';
@@ -13,10 +11,13 @@ const store = useDefaultStore();
 const frontmatter = usePageFrontmatter();
 const { t } = useI18n();
 
+const capitalizeText = (text: string): string =>
+  text ? text.charAt(0).toUpperCase() + text.slice(1) : text;
+
 const guideLink = computed(() => {
   return {
     link: "/docs/",
-    text: capitalize(t("guide")),
+    text: capitalizeText(t("guide")),
   };
 });
 
@@ -31,23 +32,28 @@ const githubLink = computed(() => {
 });
 
 const readyPackageCount = computed(() => {
-  const num = store.readyPackageCount;
-  return numeral(num).format("0,0");
+  const num = store.siteInfo.readyPackageCount || 0;
+  if (num > 0) return new Intl.NumberFormat("en-US").format(num);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const fallback = (frontmatter.value as any).readyPackageCountFallback;
+  return typeof fallback === "string" ? fallback : "2,700+";
 });
 
 const features = computed(() => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const items = (frontmatter.value as any).features as { title: string, desc: string }[];
+  const items = (frontmatter.value as any).features as {
+    title: string;
+    desc: string;
+  }[];
   return items.map(item => {
     return {
       title: item.title,
-      desc: template(item.desc)({ package_count: readyPackageCount.value }),
+      desc: item.desc.replace(
+        /<%=\s*package_count\s*%>/g,
+        readyPackageCount.value,
+      ),
     };
   });
-});
-
-onMounted(() => {
-  store.fetchCachedPackageMetadataRemoteDict();
 });
 </script>
 

@@ -142,6 +142,8 @@ export interface PackageDependency {
 export interface SiteInfo {
   // GitHub repo stars
   stars: number;
+  // Packages with a published version, used by lightweight public site widgets
+  readyPackageCount?: number;
 }
 
 export interface GithubUserWithScore {

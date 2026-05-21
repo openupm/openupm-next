@@ -3,6 +3,7 @@ import redis from '../redis.js';
 const siteInfoKey: string = 'site:info';
 const propKeys: { [key: string]: string } = {
   stars: 'stars',
+  readyPackageCount: 'readyPackageCount',
 };
 
 export const setStars = async function (stars: number): Promise<void> {
@@ -11,6 +12,17 @@ export const setStars = async function (stars: number): Promise<void> {
 
 export const getStars = async function (): Promise<number> {
   const text: string | null = await getValue(propKeys.stars);
+  return parseInt(text || '0');
+};
+
+export const setReadyPackageCount = async function (
+  count: number,
+): Promise<void> {
+  await setValue(propKeys.readyPackageCount, count.toString());
+};
+
+export const getReadyPackageCount = async function (): Promise<number> {
+  const text: string | null = await getValue(propKeys.readyPackageCount);
   return parseInt(text || '0');
 };
 

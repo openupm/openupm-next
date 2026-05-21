@@ -13,6 +13,7 @@ import {
   setAggregatedExtraData,
 } from '@openupm/server-common/build/models/packageExtra.js';
 import { createLogger } from '@openupm/server-common/build/log.js';
+import { setReadyPackageCount } from '@openupm/server-common/build/models/siteInfo.js';
 
 const logger = createLogger('@openupm/jobs/aggregatePackageExtra');
 
@@ -31,6 +32,7 @@ type AggregatedEntry = {
 export async function aggregatePackageExtraJob(): Promise<void> {
   const packageNames = await loadPackageNames();
   const aggregated: Record<string, AggregatedEntry> = {};
+  let readyPackageCount = 0;
 
   for (const packageName of packageNames) {
     const pkg = await loadPackageMetadataLocal(packageName);
@@ -49,6 +51,7 @@ export async function aggregatePackageExtraJob(): Promise<void> {
     const repoUnavailable = await getRepoUnavailable(packageName);
     const repoArchived = await getRepoArchived(packageName);
     const dl30d = await getMonthlyDownloads(packageName);
+    if (version) readyPackageCount += 1;
 
     aggregated[packageName] = {
       stars: stars || 0,
@@ -64,4 +67,5 @@ export async function aggregatePackageExtraJob(): Promise<void> {
   }
 
   await setAggregatedExtraData(aggregated);
+  await setReadyPackageCount(readyPackageCount);
 }
