@@ -96,6 +96,8 @@ const config: any = mergeWith(
         {
           rel: "stylesheet",
           href: "/vendors/fontawesome-free@5.15.1/css/all.css",
+          media: "print",
+          onload: "this.media='all'",
         },
       ],
       [
@@ -103,13 +105,15 @@ const config: any = mergeWith(
         {
           rel: "stylesheet",
           href: "/vendors/cookieconsent@3.1.1/build/cookieconsent.min.css",
+          media: "print",
+          onload: "this.media='all'",
         },
       ],
       [
         "script",
         {
           src: "/vendors/cookieconsent@3.1.1/build/cookieconsent.min.js",
-          async: false,
+          defer: true,
         },
       ],
       [

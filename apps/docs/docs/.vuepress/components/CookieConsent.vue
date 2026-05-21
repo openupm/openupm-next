@@ -5,14 +5,13 @@ import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
 
-const initCookieConsent = (): void => {
+const initCookieConsent = (): boolean => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const cookieconsent = (window as any).cookieconsent;
   if (cookieconsent === undefined) {
-    console.error("Cookie Consent script not loaded yet.");
-    return;
+    return false;
   }
-  if (cookieconsent.inited) return;
+  if (cookieconsent.inited) return true;
   cookieconsent.initialise({
     palette: {
       popup: {
@@ -30,9 +29,15 @@ const initCookieConsent = (): void => {
     },
   });
   cookieconsent.inited = true;
+  return true;
 }
 
-onMounted(() => { initCookieConsent(); });
+onMounted(() => {
+  if (initCookieConsent()) return;
+  window.addEventListener("load", () => {
+    initCookieConsent();
+  }, { once: true });
+});
 </script>
 
 <template>

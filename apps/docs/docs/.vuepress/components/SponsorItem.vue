@@ -5,6 +5,8 @@ interface Sponsor {
   url: string;
   image?: string;
   minWidth?: string;
+  width?: number;
+  height?: number;
 }
 
 defineProps<{ profile: Sponsor }>();
@@ -18,7 +20,9 @@ defineProps<{ profile: Sponsor }>();
         :src="profile.image"
         :alt="profile.text"
         :title="profile.text"
-        class="img-responsive"
+        class="sponsor-logo img-responsive"
+        :width="profile.width"
+        :height="profile.height"
         :style="{ minWidth: profile.minWidth || '0' }"
       />
       <span class="hide">{{ profile.text }}</span>
@@ -45,6 +49,12 @@ defineProps<{ profile: Sponsor }>();
   align-items: center;
   width: 100%;
   height: 100%;
+}
+
+.sponsor-logo {
+  height: auto;
+  max-height: 3rem;
+  object-fit: contain;
 }
 
 @media (max-width: $MQMobileNarrow) {

@@ -17,14 +17,20 @@ sponsors:
   slug: digital-ocean
   url: https://m.do.co/c/50e7f9860fa9
   image: https://opensource.nyc3.cdn.digitaloceanspaces.com/attribution/assets/SVG/DO_Logo_horizontal_blue.svg
+  width: 603
+  height: 103
 - text: Host your infrastructure on a DDoS protected VPS from Evolution Host
   slug: evolutionhost
   url: https://evolution-host.com/
   image: /images/evolution-host-logo-001.png
+  width: 740
+  height: 229
 - text: Deploys by Netlify
   slug: netlify
   url: https://www.netlify.com/
   image: https://www.netlify.com/img/global/badges/netlify-dark.svg
+  width: 114
+  height: 50
 ---
 ## Sponsors
 
