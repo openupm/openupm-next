@@ -10,6 +10,24 @@ const readVuepressFile = (path: string): string =>
   readFileSync(vuepressFile(path), "utf8");
 
 describe("docs runtime payload fetch behavior", () => {
+  it("keeps PageSpeed resource hints for Google font and script chains", () => {
+    const configSource = readVuepressFile("config.ts");
+    const regionConfigSource = readVuepressFile("config-us.ts");
+
+    expect(configSource).toContain('href: "https://fonts.googleapis.com"');
+    expect(configSource).toContain('href: "https://fonts.gstatic.com"');
+    expect(configSource).toContain('crossorigin: ""');
+    expect(regionConfigSource).toContain(
+      'href: "https://www.googletagmanager.com"',
+    );
+    expect(regionConfigSource).toContain(
+      'href: "https://pagead2.googlesyndication.com"',
+    );
+    expect(regionConfigSource).toContain(
+      'href: "https://fundingchoicesmessages.google.com"',
+    );
+  });
+
   it("keeps global client fetches route-aware", () => {
     const source = readVuepressFile("client.ts");
 
