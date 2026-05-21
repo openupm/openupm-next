@@ -49,6 +49,18 @@ export const config: any = {
           "openupm,open upm,upm,unity package manager,unity package,scoped registry,unity,open source,unity assets,asset store,unity store,free resource",
       },
     ],
+    ["link", { rel: "preconnect", href: "https://www.googletagmanager.com" }],
+    [
+      "link",
+      { rel: "preconnect", href: "https://pagead2.googlesyndication.com" },
+    ],
+    [
+      "link",
+      {
+        rel: "preconnect",
+        href: "https://fundingchoicesmessages.google.com",
+      },
+    ],
     // GA4
     [
       "script",

@@ -90,6 +90,15 @@ const config: any = mergeWith(
         },
       ],
       ["meta", { name: "msapplication-TileColor", content: "#000000" }],
+      ["link", { rel: "preconnect", href: "https://fonts.googleapis.com" }],
+      [
+        "link",
+        {
+          rel: "preconnect",
+          href: "https://fonts.gstatic.com",
+          crossorigin: "",
+        },
+      ],
       ["link", { rel: "manifest", href: "/manifest.json" }],
       [
         "link",
