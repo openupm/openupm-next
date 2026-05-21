@@ -53,8 +53,12 @@ describe("docs runtime payload fetch behavior", () => {
     expect(storeSource).toContain("async fetchCachedPackageListData()");
     expect(storeSource).toContain("Promise.all([");
     expect(packageListSource).toContain("store.fetchCachedPackageListData()");
-    expect(homeSource).toContain("store.fetchCachedPackageMetadataRemoteDict()");
+    expect(homeSource).toContain("readyPackageCountFallback");
+    expect(homeSource).not.toContain("store.fetchCachedPackageMetadataRemoteDict()");
     expect(homeSource).not.toContain("store.fetchCachedPackageMetadataLocalList()");
+    expect(storeSource).not.toContain('from "axios"');
+    expect(storeSource).not.toContain('from "lodash-es"');
+    expect(storeSource).not.toContain('from "url-join"');
   });
 
   it("loads package detail payloads without a serial all-data waterfall", () => {

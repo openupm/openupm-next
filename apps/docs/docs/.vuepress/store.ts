@@ -1,6 +1,3 @@
-import { mapValues } from "lodash-es";
-import axios from "axios";
-import urlJoin from "url-join";
 import { defineStore } from "pinia";
 
 import { getAPIBaseUrl, getPublicGenPath } from "@openupm/common/build/urls.js";
@@ -9,9 +6,44 @@ import {
   PackageMetadataRemote,
   SiteInfo,
 } from "@openupm/types";
-import { parsePackageMetadataRemote } from "@openupm/common/build/utils.js";
 import { METADATA_LOCAL_LIST_FILENAME } from "@openupm/types";
-import numeral from "numeral";
+
+const joinApiPath = (baseUrl: string, path: string): string =>
+  `${baseUrl.replace(/\/+$/, "")}/${path.replace(/^\/+/, "")}`;
+
+const fetchJson = async <T>(url: string): Promise<T> => {
+  const response = await fetch(url, {
+    headers: { Accept: "application/json" },
+  });
+  if (!response.ok) {
+    throw new Error(`Request failed with status ${response.status}: ${url}`);
+  }
+  return (await response.json()) as T;
+};
+
+const parsePackageMetadataRemoteDict = async (
+  data: Record<string, unknown>,
+): Promise<Record<string, PackageMetadataRemote>> => {
+  const { parsePackageMetadataRemote } = await import(
+    "@openupm/common/build/utils.js"
+  );
+  return Object.fromEntries(
+    Object.entries(data).map(([name, value]) => [
+      name,
+      parsePackageMetadataRemote(value),
+    ]),
+  );
+};
+
+const formatCompactNumber = (value: number): string => {
+  if (value >= 1_000_000) {
+    return `${(value / 1_000_000).toFixed(value >= 10_000_000 ? 0 : 1).replace(/\.0$/, "")}m`;
+  }
+  if (value >= 1_000) {
+    return `${(value / 1_000).toFixed(value >= 10_000 ? 0 : 1).replace(/\.0$/, "")}k`;
+  }
+  return value.toString();
+};
 
 type StoreFetchPromises = {
   packageMetadataRemoteDict?: Promise<void> | null;
@@ -39,7 +71,7 @@ export const useDefaultStore = defineStore("pinia-default", {
       packageMetadataLocalList: [] as PackageMetadataLocal[],
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       recentPackages: [] as any[],
-      siteInfo: { stars: 0 } as SiteInfo,
+      siteInfo: { stars: 0, readyPackageCount: 0 } as SiteInfo,
       __packageMetadataRemoteDictFetchTime: 0,
       __packageMetadataLocalListFetchTime: 0,
       __siteInfoFetchTime: 0,
@@ -54,6 +86,9 @@ export const useDefaultStore = defineStore("pinia-default", {
       );
     },
     readyPackageCount: (state) => {
+      if (state.siteInfo.readyPackageCount) {
+        return state.siteInfo.readyPackageCount;
+      }
       let num = 0;
       for (const name in state.packageMetadataRemoteDict) {
         const metadata = state.packageMetadataRemoteDict[name];
@@ -66,7 +101,7 @@ export const useDefaultStore = defineStore("pinia-default", {
     formattedStars: (state) => {
       const value = Number(state.siteInfo.stars);
       if (isNaN(value) || value == 0) return "...";
-      return numeral(value).format("1.1a");
+      return formatCompactNumber(value);
     },
   },
 
@@ -77,13 +112,12 @@ export const useDefaultStore = defineStore("pinia-default", {
     async fetchPackageMetadataRemoteDict() {
       const apiBaseUrl = getAPIBaseUrl();
       try {
-        const resp = await axios.get(urlJoin(apiBaseUrl, "/packages/extra"), {
-          headers: { Accept: "application/json" },
-        });
+        const data = await fetchJson<Record<string, unknown>>(
+          joinApiPath(apiBaseUrl, "/packages/extra"),
+        );
         this.__packageMetadataRemoteDictFetchTime = new Date().getTime();
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        this.packageMetadataRemoteDict = mapValues(resp.data, (value: any) =>
-          parsePackageMetadataRemote(value),
+        this.packageMetadataRemoteDict = await parsePackageMetadataRemoteDict(
+          data,
         );
       } catch (error) {
         console.error(error);
@@ -111,12 +145,10 @@ export const useDefaultStore = defineStore("pinia-default", {
      */
     async fetchPackageMetadataLocalList() {
       try {
-        const resp = await axios.get(
+        this.packageMetadataLocalList = await fetchJson<PackageMetadataLocal[]>(
           getPublicGenPath(METADATA_LOCAL_LIST_FILENAME),
-          { headers: { Accept: "application/json" } },
         );
         this.__packageMetadataLocalListFetchTime = new Date().getTime();
-        this.packageMetadataLocalList = resp.data as PackageMetadataLocal[];
       } catch (error) {
         console.error(error);
       }
@@ -159,10 +191,9 @@ export const useDefaultStore = defineStore("pinia-default", {
     async fetchRecentPackages() {
       const apiBaseUrl = getAPIBaseUrl();
       try {
-        const resp = await axios.get(urlJoin(apiBaseUrl, "/packages/recent"), {
-          headers: { Accept: "application/json" },
-        });
-        this.recentPackages = resp.data;
+        this.recentPackages = await fetchJson(
+          joinApiPath(apiBaseUrl, "/packages/recent"),
+        );
       } catch (error) {
         console.error(error);
       }
@@ -173,11 +204,11 @@ export const useDefaultStore = defineStore("pinia-default", {
     async fetchSiteInfo() {
       const apiBaseUrl = getAPIBaseUrl();
       try {
-        const resp = await axios.get(urlJoin(apiBaseUrl, "site/info"), {
-          headers: { Accept: "application/json" },
-        });
+        const siteInfo = await fetchJson<SiteInfo>(
+          joinApiPath(apiBaseUrl, "site/info"),
+        );
         this.__siteInfoFetchTime = new Date().getTime();
-        this.siteInfo = resp.data as SiteInfo;
+        this.siteInfo = siteInfo;
       } catch (error) {
         console.error(error);
       }

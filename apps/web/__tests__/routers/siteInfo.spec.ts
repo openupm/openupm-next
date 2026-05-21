@@ -1,7 +1,10 @@
 /* eslint-disable jest/expect-expect */
 import request from 'supertest';
 
-import { setStars } from '@openupm/server-common/build/models/siteInfo.js';
+import {
+  setReadyPackageCount,
+  setStars,
+} from '@openupm/server-common/build/models/siteInfo.js';
 import redis from '@openupm/server-common/build/redis.js';
 
 import { app } from '../../src/apiServer.js';
@@ -12,10 +15,12 @@ describe('packages', () => {
   beforeEach(async () => {
     await app.ready();
     await setStars(STARS);
+    await setReadyPackageCount(1);
   });
 
   afterEach(async () => {
     await setStars(0);
+    await setReadyPackageCount(0);
   });
 
   afterAll(async () => {
@@ -30,5 +35,6 @@ describe('packages', () => {
       .expect('Content-Type', /json/);
     expect(response.body).not.toBeNull();
     expect(response.body.stars).toEqual(STARS);
+    expect(response.body.readyPackageCount).toEqual(1);
   });
 });
