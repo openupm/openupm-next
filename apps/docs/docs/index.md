@@ -22,9 +22,9 @@ sponsors:
 - text: Host your infrastructure on a DDoS protected VPS from Evolution Host
   slug: evolutionhost
   url: https://evolution-host.com/
-  image: /images/evolution-host-logo-001.png
-  width: 740
-  height: 229
+  image: /images/evolution-host-logo-380.png
+  width: 380
+  height: 117
 - text: Deploys by Netlify
   slug: netlify
   url: https://www.netlify.com/

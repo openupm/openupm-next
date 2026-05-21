@@ -161,6 +161,10 @@ const config: any = mergeWith(
         __dirname,
         "components/AutoLink.vue",
       ),
+      "@theme/VPNavbarBrand.vue": path.resolve(
+        __dirname,
+        "theme/NavbarBrand.vue",
+      ),
       "@theme/VPNavbar.vue": path.resolve(__dirname, "components/Navbar.vue"),
       // https://github.com/intlify/vue-i18n-next/issues/789
       "vue-i18n": "vue-i18n/dist/vue-i18n.esm-browser.prod.js",
