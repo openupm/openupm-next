@@ -7,7 +7,10 @@ import {
   ReleaseState,
   RetryableReleaseErrorCodes,
 } from '@openupm/types';
-import { fetchRecentReleases } from '@openupm/server-common/build/models/release.js';
+import {
+  fetchOne,
+  fetchRecentReleases,
+} from '@openupm/server-common/build/models/release.js';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const config = configRaw as any;
@@ -22,6 +25,9 @@ export interface PublicQueueJobSummary {
   attempts: number;
   maxAttempts: number;
   error?: string;
+  buildId?: string;
+  reason?: string;
+  reasonCode?: number;
 }
 
 export interface PublicReleaseSummary {
@@ -29,6 +35,7 @@ export interface PublicReleaseSummary {
   version: string;
   state: string;
   reason: string;
+  reasonCode: number;
   updatedAt: string;
   buildId?: string;
   source: 'git' | 'githubRelease';
@@ -115,6 +122,10 @@ export interface QueueStatusSources {
   releaseQueue: QueueLike;
   getRecentSuccessfulReleases?: (limit: number) => Promise<ReleaseModel[]>;
   getRecentFailedReleases?: (limit: number) => Promise<ReleaseModel[]>;
+  getRelease?: (
+    packageName: string,
+    version: string,
+  ) => Promise<ReleaseModel | null>;
   now?: () => number;
 }
 
@@ -153,6 +164,18 @@ function truncateError(value: unknown): string | undefined {
   const firstLine = value.split(/\r?\n/, 1)[0].trim();
   if (firstLine.length <= 160) return firstLine;
   return `${firstLine.slice(0, 157)}...`;
+}
+
+function parseRetryableReasonCode(
+  value: unknown,
+): ReleaseErrorCode | undefined {
+  if (typeof value !== 'string') return undefined;
+  const match = value.match(/retryable reason:\s*(\d+)\s*$/);
+  if (!match) return undefined;
+  const reasonCode = Number(match[1]);
+  return Number.isInteger(reasonCode)
+    ? (reasonCode as ReleaseErrorCode)
+    : undefined;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -315,9 +338,19 @@ async function buildReleaseRetryMetadata(
 async function summarizeJob(
   job: Job | QueueJobLike,
   type: 'package' | 'release',
+  releaseRecord?: ReleaseModel | null,
 ): Promise<PublicQueueJobSummary> {
   const state = await job.getState();
   const release = type === 'release' ? parseReleaseJobIdentity(job) : null;
+  const storedReasonCode = releaseRecord?.reason;
+  const parsedReasonCode = parseRetryableReasonCode(job.failedReason);
+  const reasonCode =
+    type === 'release'
+      ? storedReasonCode !== undefined &&
+        storedReasonCode !== ReleaseErrorCode.None
+        ? storedReasonCode
+        : parsedReasonCode
+      : undefined;
   return {
     package: release?.packageName || parsePackageJobName(job),
     version: release?.version,
@@ -328,6 +361,12 @@ async function summarizeJob(
     attempts: job.attemptsMade,
     maxAttempts: job.opts?.attempts ?? 1,
     error: truncateError(job.failedReason),
+    buildId: releaseRecord?.buildId || undefined,
+    reason:
+      reasonCode !== undefined
+        ? enumName(ReleaseErrorCode, reasonCode)
+        : undefined,
+    reasonCode,
   };
 }
 
@@ -375,6 +414,7 @@ function summarizeRelease(
     version: release.version,
     state: enumName(ReleaseState, release.state),
     reason: enumName(ReleaseErrorCode, release.reason),
+    reasonCode: release.reason,
     updatedAt: new Date(release.updatedAt).toISOString(),
     buildId: release.buildId || undefined,
     source: release.source || 'git',
@@ -395,6 +435,23 @@ function summarizeRelease(
     }
   }
   return summary;
+}
+
+async function buildFailedReleaseJobSummary(
+  sources: QueueStatusSources,
+  job: Job | QueueJobLike,
+): Promise<PublicQueueJobSummary> {
+  const release = parseReleaseJobIdentity(job);
+  let releaseRecord: ReleaseModel | null = null;
+  try {
+    releaseRecord = await (sources.getRelease ?? fetchOne)(
+      release.packageName,
+      release.version,
+    );
+  } catch {
+    releaseRecord = null;
+  }
+  return await summarizeJob(job, 'release', releaseRecord);
 }
 
 function getSummary(params: {
@@ -552,7 +609,9 @@ export async function buildPublicQueueStatus(
         ),
       ),
     retainedFailedReleaseJobs: await Promise.all(
-      failedReleaseJobs.map(async (job) => await summarizeJob(job, 'release')),
+      failedReleaseJobs.map(
+        async (job) => await buildFailedReleaseJobSummary(sources, job),
+      ),
     ),
   };
 }

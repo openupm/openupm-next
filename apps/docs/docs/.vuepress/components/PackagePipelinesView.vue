@@ -1,26 +1,11 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { useI18n } from "vue-i18n";
-import { paramCase } from "change-case";
 import urlJoin from "url-join";
 
 import { ReleaseState, ReleaseErrorCode } from "@openupm/types";
 import { getAzureWebBuildUrl } from "@openupm/common/build/urls.js";
 import { PackageRelease } from "@openupm/types";
-
-const { t } = useI18n();
-
-// A map from release reason value (number) to note's i18n key (string)
-const releaseReasonLocaleNoteKeyMap = computed(() => {
-  const map: { [key: number]: string } = {};
-  for (const key in ReleaseErrorCode) {
-    if (isNaN(Number(key))) {
-      const value = ReleaseErrorCode[key] as unknown as number;
-      map[value] = "release-reason-" + paramCase(key);
-    }
-  }
-  return map;
-});
+import ReleaseErrorInfo from "./ReleaseErrorInfo.vue";
 
 const props = defineProps({
   invalidTags: {
@@ -72,8 +57,7 @@ const releaseEntries = computed(() => {
       },
       icon: "",
       note: "",
-      errorCode: "",
-      errorMessage: "",
+      errorReasonName: "",
     };
     if (entry.state == ReleaseState.Pending) {
       entry.icon = "far fa-clock";
@@ -85,10 +69,8 @@ const releaseEntries = computed(() => {
       entry.icon = "fa fa-check-circle text-success";
     } else if (entry.state == ReleaseState.Failed) {
       entry.icon = "fa fa-times-circle text-error";
-      entry.errorCode = `E${entry.reason}`;
-      const tkey = releaseReasonLocaleNoteKeyMap.value[entry.reason];
-      const tvalue = t(tkey);
-      entry.errorMessage = tkey == tvalue ? "" : tvalue;
+      entry.errorReasonName =
+        (ReleaseErrorCode[entry.reason] as string | undefined) || "";
     }
     return entry;
   });
@@ -157,10 +139,12 @@ const releaseEntries = computed(() => {
           </td>
           <td>
             <span>{{ entry.note }}</span>
-            <span v-show="entry.errorCode" class="label label-warning mr-2">{{
-              entry.errorCode
-            }}</span>
-            <span class="hide-sm">{{ entry.errorMessage }}</span>
+            <ReleaseErrorInfo
+              v-if="entry.state == ReleaseState.Failed"
+              :reason-code="entry.reason"
+              :reason-name="entry.errorReasonName"
+              :build-url="entry.buildId ? entry.buildLink.link : ''"
+            />
           </td>
         </tr>
       </tbody>

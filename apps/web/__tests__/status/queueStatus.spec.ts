@@ -157,7 +157,8 @@ describe('buildPublicQueueStatus', () => {
             state: 'failed',
             finishedOn: now - 5_000,
             attemptsMade: 3,
-            failedReason: 'build failed because package.json was invalid',
+            failedReason:
+              'build com.failed.pkg@3.0.0 failed with retryable reason: 504',
           }),
         ],
       },
@@ -210,6 +211,24 @@ describe('buildPublicQueueStatus', () => {
             signed: false,
           },
         ],
+        getRelease: async (packageName, version) => {
+          if (packageName !== 'com.failed.pkg' || version !== '3.0.0') {
+            return null;
+          }
+          return {
+            packageName,
+            version,
+            state: ReleaseState.Failed,
+            reason: ReleaseErrorCode.GatewayTimeout,
+            commit: '',
+            tag: '3.0.0',
+            buildId: '67890',
+            createdAt: now,
+            updatedAt: now - 5_000,
+            source: 'git',
+            signed: false,
+          };
+        },
         now: () => now,
       },
       { jobLimit: 20, releaseLimit: 20, ttlSeconds: 15 },
@@ -248,6 +267,16 @@ describe('buildPublicQueueStatus', () => {
       reason: 'BuildTimeout',
       buildId: '12345',
       retryState: 'ready_to_requeue',
+    });
+    expect(status.retainedFailedReleaseJobs[0]).toMatchObject({
+      package: 'com.failed.pkg',
+      version: '3.0.0',
+      attempts: 3,
+      maxAttempts: 3,
+      buildId: '67890',
+      reason: 'GatewayTimeout',
+      reasonCode: 504,
+      error: 'build com.failed.pkg@3.0.0 failed with retryable reason: 504',
     });
     expect(JSON.stringify(status)).not.toContain('/srv/private/path');
   });
@@ -298,6 +327,61 @@ describe('buildPublicQueueStatus', () => {
     expect(status.recentSuccessfulReleases).toHaveLength(2);
     expect(packageQueue.getJobs).toHaveBeenCalledWith(['failed'], 0, 1, false);
     expect(packageQueue.getJobs).toHaveBeenCalledWith(['waiting'], 0, 0, true);
+  });
+
+  it('uses the retryable reason from retained release job failures when the release record has no reason', async () => {
+    const now = 1_700_000_120_000;
+    const packageQueue = createQueue({
+      counts: { waiting: 0, active: 0, delayed: 0, failed: 0 },
+    });
+    const releaseQueue = createQueue({
+      counts: { waiting: 0, active: 0, delayed: 0, failed: 1 },
+      jobs: {
+        failed: [
+          createJob({
+            id: 'build-rel|com.retryable.failure|1.2.3',
+            state: 'failed',
+            attemptsMade: 3,
+            failedReason:
+              'build com.retryable.failure@1.2.3 failed with retryable reason: 502',
+          }),
+        ],
+      },
+    });
+
+    const status = await buildPublicQueueStatus(
+      {
+        packageQueue,
+        releaseQueue,
+        getRecentSuccessfulReleases: async () => [],
+        getRecentFailedReleases: async () => [],
+        getRelease: async (packageName, version) => ({
+          packageName,
+          version,
+          state: ReleaseState.Failed,
+          reason: ReleaseErrorCode.None,
+          commit: '',
+          tag: '1.2.3',
+          buildId: '67891',
+          createdAt: now,
+          updatedAt: now,
+          source: 'git',
+          signed: false,
+        }),
+        now: () => now,
+      },
+      { jobLimit: 20, releaseLimit: 20 },
+    );
+
+    expect(status.retainedFailedReleaseJobs[0]).toMatchObject({
+      package: 'com.retryable.failure',
+      version: '1.2.3',
+      buildId: '67891',
+      reason: 'BadGateway',
+      reasonCode: 502,
+      error:
+        'build com.retryable.failure@1.2.3 failed with retryable reason: 502',
+    });
   });
 
   it('adds retry state details to recent failed releases', async () => {
@@ -385,16 +469,14 @@ describe('buildPublicQueueStatus', () => {
         getRecentFailedReleases: async () => [
           release('com.retry.scheduled', ReleaseErrorCode.BuildTimeout),
           release('com.retry.waiting', ReleaseErrorCode.ConnectionTimeout),
-          release(
-            'com.retry.running',
-            ReleaseErrorCode.GitHubReleaseApiError,
-          ),
+          release('com.retry.running', ReleaseErrorCode.GitHubReleaseApiError),
           release('com.retry.exhausted', ReleaseErrorCode.BuildTimeout),
           release('com.retry.ready', ReleaseErrorCode.ConnectionTimeout),
           release('com.retry.not-exhausted', ReleaseErrorCode.BuildTimeout),
           release('com.no.retry', ReleaseErrorCode.PackageNotFound),
         ],
         now: () => now,
+        getRelease: async () => null,
       },
       { jobLimit: 1, releaseLimit: 20 },
     );

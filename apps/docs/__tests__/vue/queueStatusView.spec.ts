@@ -1,5 +1,7 @@
 import { describe, it } from "vitest";
 import chai from "chai";
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 chai.should();
 
 import {
@@ -11,6 +13,13 @@ import {
   isQueueStatusEmpty,
   packageUrl,
 } from "@/queueStatusView";
+
+const queueStatusPagePath = fileURLToPath(
+  new URL(
+    "../../docs/.vuepress/components/QueueStatusPage.vue",
+    import.meta.url,
+  ),
+);
 
 function createStatus(
   overrides: Partial<PublicQueueStatus> = {},
@@ -72,22 +81,18 @@ describe("@/queueStatusView", () => {
       "2h 15m ago",
     );
     formatDuration(2 * 60 * 60 * 1000 + 14 * 60 * 1000).should.equal("2h 14m");
-    formatCountdown(
-      "2026-05-14T10:02:15.000Z",
-      now,
-    ).should.equal("Next scan in 2m");
-    formatCountdown(
-      "2026-05-14T10:00:45.000Z",
-      now,
-    ).should.equal("Next scan in 45s");
-    formatCountdown(
-      "2026-05-14T10:00:59.500Z",
-      now,
-    ).should.equal("Next scan in 60s");
-    formatCountdown(
-      "2026-05-14T10:02:59.999Z",
-      now,
-    ).should.equal("Next scan in 2m");
+    formatCountdown("2026-05-14T10:02:15.000Z", now).should.equal(
+      "Next scan in 2m",
+    );
+    formatCountdown("2026-05-14T10:00:45.000Z", now).should.equal(
+      "Next scan in 45s",
+    );
+    formatCountdown("2026-05-14T10:00:59.500Z", now).should.equal(
+      "Next scan in 60s",
+    );
+    formatCountdown("2026-05-14T10:02:59.999Z", now).should.equal(
+      "Next scan in 2m",
+    );
     formatCountdown("2026-05-14T09:59:59.000Z", now).should.equal(
       "Next scan soon",
     );
@@ -109,6 +114,7 @@ describe("@/queueStatusView", () => {
       version: "1.0.0",
       state: "Failed",
       reason: "BuildTimeout",
+      reasonCode: 700,
       updatedAt: "2026-05-14T09:59:00.000Z",
       source: "git" as const,
       signed: false,
@@ -166,5 +172,11 @@ describe("@/queueStatusView", () => {
     });
     status.summary.state.should.equal("degraded");
     isQueueStatusEmpty(status).should.equal(true);
+  });
+
+  it("renders retained release error info for E0 failures", () => {
+    const source = readFileSync(queueStatusPagePath, "utf8");
+
+    source.should.contain('v-if="job.reasonCode !== undefined"');
   });
 });
