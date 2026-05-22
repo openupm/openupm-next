@@ -51,7 +51,7 @@ git-deps-replaced: The Git dependency can be replaced by a version available on 
 unity-deps-documentation: This dependency is documented by Unity.
 git-tag: Git tag
 git-tag-ignore: Git tag ignore pattern
-git-tag-ignore-desc: 'The regular expression to exclude Git tags.'
+git-tag-ignore-desc: "The regular expression to exclude Git tags."
 git-tag-ignore-placeholder: leave empty to include all tags
 git-tag-not-found: Cannot find any valid Git tags in the repository. Please ensure that the repository has at least one valid semantic version Git tag.
 git-tag-prefix: Git tag prefix
@@ -128,7 +128,7 @@ pending: Pending
 popularity: Popularity
 powered-by-netlify: This site is powered by Netlify
 prerequisites: Prerequisites
-private-repository-error: "Refuse to publish a private repository (\"private\": true in the package.json)."
+private-repository-error: 'Refuse to publish a private repository ("private": true in the package.json).'
 privacy-policy: Privacy Policy
 project: Project
 promote: Promote
@@ -139,33 +139,40 @@ readme-to-found: Readme is not available, please try again later.
 last-publish: last publish
 region: Region
 related-packages: related packages
-release-reason-bad-gateway: server bad gateway
-release-reason-bad-request: server bad request
-release-reason-build-cancellation: the build is cancelled manually
-release-reason-build-timeout: the build is timeout
+release-reason-bad-gateway: upstream bad gateway
+release-reason-bad-request: registry bad request
+release-reason-build-cancellation: build cancelled manually
+release-reason-build-timeout: build timed out
 release-reason-connection-time: connection timeout
-release-reason-entity-too-large: the package is larger than 512MB
-release-reason-forbidden: server forbidden
-release-reason-gateway-timeout: server timeout
-release-reason-heap-out-of-memroy: heap out of memory (the package is too large)
-release-reason-internal-error: server internal error
-release-reason-invalid-version: invalid version
-release-reason-lfs-budget-exceeded: the repository exceeded its Git LFS budget
-release-reason-lfs-object-not-found: the requested Git LFS object does not exist on the server
+release-reason-connection-timeout: connection timeout
+release-reason-entity-too-large: package is larger than 512MB
+release-reason-forbidden: registry forbidden
+release-reason-gateway-timeout: upstream timeout
+release-reason-git-hub-release-api-error: GitHub Release API error
+release-reason-git-hub-release-asset-ambiguous: multiple matching GitHub Release assets
+release-reason-git-hub-release-asset-download-failed: GitHub Release asset download failed
+release-reason-git-hub-release-asset-not-found: GitHub Release asset not found
+release-reason-git-hub-release-not-found: GitHub Release not found
+release-reason-heap-out-of-memroy: heap out of memory
+release-reason-internal-error: registry internal error
+release-reason-invalid-version: invalid package version
+release-reason-lfs-budget-exceeded: Git LFS budget exceeded
+release-reason-lfs-object-not-found: Git LFS object is missing
 release-reason-none: unknown error
 release-reason-npm-hook-error: npm publish lifecycle hook failed
-release-reason-package-json-parsing-error: invalid format of package.json
-release-reason-package-name-invalid: the package name includes unsupported {'@'} character
-release-reason-package-name-not-match: the name of package.json isn't matched
+release-reason-package-json-parsing-error: invalid package.json format
+release-reason-package-name-invalid: package name is invalid
+release-reason-package-name-not-match: package.json name does not match
 release-reason-package-not-found: error path package.json
-release-reason-private: the package is explicitly private
-release-reason-remote-branch-not-found: error remote branch name
+release-reason-private: package is explicitly private
+release-reason-remote-branch-not-found: remote branch or tag not found
 release-reason-remote-repository-unavailable: remote repository unavailable
 release-reason-remote-submodule-unavailable: remote submodule repository unavailable
 release-reason-submodule-fetching-error: submodule commit cannot be fetched
-release-reason-service-unavailable: server unavailable
-release-reason-unauthorized: server unauthorized
-release-reason-version-conflict: the version already exists (check package.json version)
+release-reason-service-unavailable: upstream service unavailable
+release-reason-unauthorized: registry unauthorized
+release-reason-version-conflict: version already exists
+release-reason-version-mismatch: package.json version does not match release version
 relevance: Relevance
 report-abuse: Report
 report-malware-or-abuse: report malware or abuse

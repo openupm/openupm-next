@@ -198,10 +198,11 @@
           </td>
           <td>{{ release.version }}</td>
           <td>
-            <a v-if="release.buildId" :href="releaseBuildUrl(release)">
-              {{ releaseReasonText(release) }}
-            </a>
-            <span v-else>{{ releaseReasonText(release) }}</span>
+            <ReleaseErrorInfo
+              :reason-code="release.reasonCode"
+              :reason-name="release.reason"
+              :build-url="releaseBuildUrl(release)"
+            />
           </td>
           <td>{{ formatReleaseRetryable(release, nowMs) }}</td>
         </tr>
@@ -225,7 +226,15 @@
             {{ formatRelativeTime(job.finishedAt || job.timestamp, nowMs) }}
           </td>
           <td>{{ job.attempts }}/{{ job.maxAttempts }}</td>
-          <td class="queue-status__error">{{ job.error || "" }}</td>
+          <td class="queue-status__error">
+            <ReleaseErrorInfo
+              v-if="job.reasonCode !== undefined"
+              :reason-code="job.reasonCode"
+              :reason-name="job.reason"
+              :build-url="jobBuildUrl(job)"
+            />
+            <span v-else>{{ job.error || "" }}</span>
+          </td>
         </tr>
       </QueueStatusTable>
     </template>
@@ -235,15 +244,14 @@
 <script setup lang="ts">
 import axios from "axios";
 import urlJoin from "url-join";
-import { paramCase } from "change-case";
 import { computed, onMounted, onUnmounted, ref } from "vue";
-import { useI18n } from "vue-i18n";
 import {
   getAPIBaseUrl,
   getAzureWebBuildUrl,
 } from "@openupm/common/build/urls.js";
 import {
   PublicQueueStatus,
+  PublicQueueJobSummary,
   PublicReleaseSummary,
   formatCountdown,
   formatDuration,
@@ -252,9 +260,9 @@ import {
   isQueueStatusEmpty,
   packageUrl,
 } from "../queueStatusView";
+import ReleaseErrorInfo from "./ReleaseErrorInfo.vue";
 import QueueStatusTable from "./QueueStatusTable.vue";
 
-const { t } = useI18n();
 const loading = ref(true);
 const error = ref("");
 const status = ref<PublicQueueStatus | null>(null);
@@ -268,14 +276,12 @@ const packageNextScanText = computed(() =>
     : "",
 );
 
-function releaseReasonText(release: PublicReleaseSummary): string {
-  const key = `release-reason-${paramCase(release.reason)}`;
-  const value = t(key);
-  return value === key ? release.reason : value;
-}
-
 function releaseBuildUrl(release: PublicReleaseSummary): string {
   return release.buildId ? getAzureWebBuildUrl(release.buildId) : "";
+}
+
+function jobBuildUrl(job: PublicQueueJobSummary): string {
+  return job.buildId ? getAzureWebBuildUrl(job.buildId) : "";
 }
 
 async function fetchQueueStatus(isInitial = false): Promise<void> {
@@ -463,7 +469,7 @@ onUnmounted(() => {
   }
 }
 
-:is(.dark, [data-theme='dark']) {
+:is(.dark, [data-theme="dark"]) {
   .queue-status__state {
     &.is-healthy {
       color: #4dd0e1;

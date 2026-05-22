@@ -8,6 +8,9 @@ export interface PublicQueueJobSummary {
   attempts: number;
   maxAttempts: number;
   error?: string;
+  buildId?: string;
+  reason?: string;
+  reasonCode?: number;
 }
 
 export interface PublicReleaseSummary {
@@ -15,6 +18,7 @@ export interface PublicReleaseSummary {
   version: string;
   state: string;
   reason: string;
+  reasonCode: number;
   updatedAt: string;
   buildId?: string;
   source: "git" | "githubRelease";
@@ -122,7 +126,10 @@ export function formatDuration(value: number | null): string {
   return `${Math.floor(value / day)}d`;
 }
 
-export function formatCountdown(value: string | null, nowMs = Date.now()): string {
+export function formatCountdown(
+  value: string | null,
+  nowMs = Date.now(),
+): string {
   if (!value) return "";
   const timestamp = new Date(value).getTime();
   if (!Number.isFinite(timestamp)) return "";
@@ -171,7 +178,10 @@ export function formatReleaseRetryable(
   const prefix = formatRetryAttempts(release);
   switch (release.retryState) {
     case "scheduled":
-      return `${prefix}, next in ${formatNextRetry(release.nextRetryAt, nowMs)}`;
+      return `${prefix}, next in ${formatNextRetry(
+        release.nextRetryAt,
+        nowMs,
+      )}`;
     case "waiting":
       return `${prefix}, waiting`;
     case "active":
