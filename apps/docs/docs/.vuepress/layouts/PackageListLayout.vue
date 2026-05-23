@@ -495,8 +495,21 @@ watch(() => topicSlug.value, () => {
 
 :is(.dark, [data-theme='dark']) {
   .package-list {
+    --package-list-page-bg: #2d2d2f;
+    --package-list-sidebar-panel-bg: #25262a;
+
     :is(.page, .vp-page) {
-      background: var(--c-bg);
+      background: var(--package-list-page-bg);
+    }
+
+    :is(.sidebar, .vp-sidebar) {
+      :is(.quicklink-section, .state-section, .topic-section) ul.menu {
+        background: var(--package-list-sidebar-panel-bg);
+      }
+
+      :is(.quicklink-section, .state-section, .topic-section) .divider[data-content]::after {
+        background: var(--package-list-sidebar-panel-bg);
+      }
     }
   }
 }
@@ -596,6 +609,7 @@ watch(() => topicSlug.value, () => {
 
       @media screen and (max-width: $MQMobileNarrow) {
         grid-template-columns: 100%;
+        row-gap: 8px;
       }
     }
   }
