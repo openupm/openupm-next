@@ -121,6 +121,7 @@ package-name-manual-verification: Major tech company package names require manua
 package-name: Package name
 package-page-results: Package page results
 package-updates: Package Updates
+blog-rss: Blog RSS
 openupm-packages: OpenUPM Packages
 unitynuget-packages: UnityNuGet Packages
 packages: packages
