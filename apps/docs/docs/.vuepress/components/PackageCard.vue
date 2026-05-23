@@ -152,14 +152,16 @@ const imageErrorMessage = computed(() => {
 @use '@/styles/palette' as *;
 
 .package-card {
-  --card-content-padding-lr: 0.4rem;
+  --card-content-padding-lr: 0.6rem;
   font-size: $font-size-md;
 
   .card-inner {
-    box-shadow: 0 .25rem .5rem var(--c-border);
+    background-color: var(--c-bg);
+    border: 1px solid transparent;
+    box-shadow: 0 0.35rem 0.9rem rgba(34, 48, 74, 0.1);
 
     .card-header {
-      padding: 0.3rem var(--card-content-padding-lr) 0;
+      padding: 0.55rem var(--card-content-padding-lr) 0;
 
       .h5 {
         white-space: nowrap;
@@ -177,15 +179,16 @@ const imageErrorMessage = computed(() => {
     }
 
     .card-body {
-      padding: 0 var(--card-content-padding-lr) 0.5rem;
-      padding-top: 0rem;
-      height: 1.8rem;
+      box-sizing: border-box;
+      padding: 0.05rem var(--card-content-padding-lr) 0.15rem;
+      height: 2rem;
       overflow: hidden;
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       text-overflow: -o-ellipsis-lastline;
       font-size: $font-size-sm;
+      line-height: 0.9rem;
     }
 
     .card-image-wrapper {
@@ -229,7 +232,7 @@ const imageErrorMessage = computed(() => {
 
     .card-footer {
       height: 3.2rem;
-      padding: 0 var(--card-content-padding-lr);
+      padding: 0.1rem var(--card-content-padding-lr) 0;
       box-sizing: border-box;
 
       .chip {
@@ -260,8 +263,9 @@ const imageErrorMessage = computed(() => {
 :is(.dark, [data-theme='dark']) {
   .package-card {
     .card-inner {
-      box-shadow: none;
       background-color: var(--c-bg-light);
+      border-color: var(--c-border);
+      box-shadow: 0 0.35rem 0.9rem rgba(0, 0, 0, 0.2);
     }
 
     .card-footer {

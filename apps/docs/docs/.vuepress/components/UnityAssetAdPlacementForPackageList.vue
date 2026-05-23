@@ -59,8 +59,11 @@ const hasDiscount = computed(() => {
 @use '@/styles/palette' as *;
 
 .ad-placement {
+  background-color: var(--c-bg);
+  border: 1px solid transparent;
+  box-shadow: 0 0.35rem 0.9rem rgba(34, 48, 74, 0.1);
+  box-sizing: border-box;
   position: relative;
-  box-shadow: 0 .25rem .5rem var(--c-border);
 }
 
 .ad-mark {
@@ -84,13 +87,13 @@ const hasDiscount = computed(() => {
 }
 
 .ad-link-container {
-  --card-content-padding-lr: 0.4rem;
-  height: 4.17rem;
-  padding: 0.3rem var(--card-content-padding-lr) 0;
+  --card-content-padding-lr: 0.6rem;
+  height: 4.42rem;
+  padding: 0.5rem var(--card-content-padding-lr) 0;
 
   .h5 {
     font-size: $font-size-md;
-    margin-bottom: 0.2rem;
+    margin-bottom: 0.25rem;
     max-height: 2.2rem;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -112,8 +115,9 @@ const hasDiscount = computed(() => {
 }
 
 :global(:is(.dark, [data-theme='dark']) .ad-placement) {
-  box-shadow: none;
   background-color: var(--c-bg-light);
+  border-color: var(--c-border);
+  box-shadow: 0 0.35rem 0.9rem rgba(0, 0, 0, 0.2);
 }
 
 :global(:is(.dark, [data-theme='dark']) .ad-placement .chip) {
