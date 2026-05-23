@@ -20,6 +20,17 @@ describe("Footer", () => {
     expect(source).not.toContain("position: absolute;");
   });
 
+  it("links footer RSS feeds to concrete feed URLs", () => {
+    const packageUpdatesIndex = source.indexOf('text: t("package-updates")');
+    const blogRssIndex = source.indexOf('text: t("blog-rss")');
+
+    expect(source).toContain('link: `${getAPIBaseUrl()}/feeds/updates/rss`');
+    expect(source).not.toContain('link: `{getAPIBaseUrl()}/feeds/updates/rss`');
+    expect(source).toContain('link: "https://openupm.com/blog/rss.xml"');
+    expect(packageUpdatesIndex).toBeGreaterThan(-1);
+    expect(blogRssIndex).toBeGreaterThan(packageUpdatesIndex);
+  });
+
   it("removes inherited page bottom padding only when the site footer is present", () => {
     const layoutSource = readFileSync(layoutPath, "utf8");
 

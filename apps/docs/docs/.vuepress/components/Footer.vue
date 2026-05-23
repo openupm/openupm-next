@@ -1,7 +1,10 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
 import { computed } from 'vue';
-import { OpenUPMGitHubRepoUrl } from '@openupm/common/build/urls.js';
+import {
+  OpenUPMGitHubRepoUrl,
+  getAPIBaseUrl,
+} from '@openupm/common/build/urls.js';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
@@ -54,8 +57,15 @@ const connectLinks = computed(() => {
       iconLeft: true
     },
     {
-      link: `{getAPIBaseUrl()}/feeds/updates/rss`,
+      link: `${getAPIBaseUrl()}/feeds/updates/rss`,
       text: t("package-updates"),
+      icon: "fa fa-rss-square",
+      raw: true,
+      iconLeft: true
+    },
+    {
+      link: "https://openupm.com/blog/rss.xml",
+      text: t("blog-rss"),
       icon: "fa fa-rss-square",
       raw: true,
       iconLeft: true
