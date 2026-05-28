@@ -7,6 +7,11 @@ import { getAzureWebBuildUrl } from "@openupm/common/build/urls.js";
 import { PackageRelease } from "@openupm/types";
 import ReleaseErrorInfo from "./ReleaseErrorInfo.vue";
 
+const githubReleasePendingProbeInitialIntervalMs = 10 * 60 * 1000;
+const githubReleasePendingProbeMaxIntervalMs = 6 * 60 * 60 * 1000;
+const githubReleasePendingProbeWindowMs = 7 * 24 * 60 * 60 * 1000;
+const troubleshootingUrl = "/docs/troubleshooting-build-errors.html";
+
 const props = defineProps({
   invalidTags: {
     type: Array<string>,
@@ -25,6 +30,53 @@ const props = defineProps({
     default: true,
   },
 });
+
+function isGitHubReleasePendingReason(reason: ReleaseErrorCode): boolean {
+  return (
+    reason === ReleaseErrorCode.GitHubReleaseNotFound ||
+    reason === ReleaseErrorCode.GitHubReleaseAssetNotFound
+  );
+}
+
+function formatDuration(value: number): string {
+  const minute = 60 * 1000;
+  const hour = 60 * minute;
+  if (value < minute) return "soon";
+  if (value < hour) return `${Math.ceil(value / minute)}m`;
+  const hours = Math.floor(value / hour);
+  const minutes = Math.floor((value % hour) / minute);
+  return minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`;
+}
+
+function getGitHubReleasePendingNextProbeAt(release: PackageRelease): number {
+  const probeCount = release.githubReleaseAssetMissingProbeCount || 0;
+  const interval = Math.min(
+    githubReleasePendingProbeMaxIntervalMs,
+    githubReleasePendingProbeInitialIntervalMs * 2 ** Math.max(0, probeCount),
+  );
+  const base =
+    release.githubReleaseAssetMissingLastProbeAt ||
+    release.githubReleaseAssetMissingFirstSeenAt ||
+    release.updatedAt;
+  return base + interval;
+}
+
+function getGitHubReleasePendingNote(release: PackageRelease): string {
+  const target =
+    release.reason === ReleaseErrorCode.GitHubReleaseNotFound
+      ? "GitHub Release"
+      : "GitHub Release asset";
+  const firstSeenAt =
+    release.githubReleaseAssetMissingFirstSeenAt || release.updatedAt;
+  if (Date.now() - firstSeenAt > githubReleasePendingProbeWindowMs) {
+    return `Waiting for ${target}; retry window expired`;
+  }
+  const remaining = Math.max(
+    0,
+    getGitHubReleasePendingNextProbeAt(release) - Date.now(),
+  );
+  return `Waiting for ${target}; retrying ${formatDuration(remaining)}`;
+}
 
 const invalidTagEntries = computed(() => {
   return props.invalidTags.map((x) => {
@@ -57,6 +109,7 @@ const releaseEntries = computed(() => {
       },
       icon: "",
       note: "",
+      docLink: false,
       errorReasonName: "",
     };
     if (entry.state == ReleaseState.Pending) {
@@ -71,6 +124,11 @@ const releaseEntries = computed(() => {
       entry.icon = "fa fa-times-circle text-error";
       entry.errorReasonName =
         (ReleaseErrorCode[entry.reason] as string | undefined) || "";
+      if (isGitHubReleasePendingReason(entry.reason)) {
+        entry.icon = "far fa-clock text-warning";
+        entry.note = getGitHubReleasePendingNote(entry);
+        entry.docLink = true;
+      }
     }
     return entry;
   });
@@ -139,6 +197,9 @@ const releaseEntries = computed(() => {
           </td>
           <td>
             <span>{{ entry.note }}</span>
+            <span v-if="entry.docLink">
+              <RouterLink :to="troubleshootingUrl">Details</RouterLink>
+            </span>
             <ReleaseErrorInfo
               v-if="entry.state == ReleaseState.Failed"
               :reason-code="entry.reason"

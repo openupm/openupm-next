@@ -84,6 +84,9 @@ export interface PackageRelease {
   source?: 'git' | 'githubRelease';
   signed?: boolean;
   publishedVersion?: string;
+  githubReleaseAssetMissingFirstSeenAt?: number;
+  githubReleaseAssetMissingLastProbeAt?: number;
+  githubReleaseAssetMissingProbeCount?: number;
 }
 
 export const releaseFields: (keyof PackageRelease)[] = [
@@ -97,6 +100,9 @@ export const releaseFields: (keyof PackageRelease)[] = [
   'source',
   'signed',
   'publishedVersion',
+  'githubReleaseAssetMissingFirstSeenAt',
+  'githubReleaseAssetMissingLastProbeAt',
+  'githubReleaseAssetMissingProbeCount',
 ];
 
 export interface PackageInfo {

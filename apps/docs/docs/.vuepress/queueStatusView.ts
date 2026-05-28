@@ -23,6 +23,9 @@ export interface PublicReleaseSummary {
   buildId?: string;
   source: "git" | "githubRelease";
   signed: boolean;
+  githubReleaseAssetMissingFirstSeenAt?: number;
+  githubReleaseAssetMissingLastProbeAt?: number;
+  githubReleaseAssetMissingProbeCount?: number;
   retryable?: boolean;
   attempts?: number;
   maxAttempts?: number;
@@ -176,8 +179,20 @@ export function formatReleaseRetryable(
   }
 
   const prefix = formatRetryAttempts(release);
+  const pendingGitHubReleaseText =
+    release.reason === "GitHubReleaseNotFound"
+      ? "waiting for GitHub Release"
+      : release.reason === "GitHubReleaseAssetNotFound"
+        ? "waiting for GitHub Release asset"
+        : "";
   switch (release.retryState) {
     case "scheduled":
+      if (pendingGitHubReleaseText) {
+        return `yes, ${pendingGitHubReleaseText}, next in ${formatNextRetry(
+          release.nextRetryAt,
+          nowMs,
+        )}`;
+      }
       return `${prefix}, next in ${formatNextRetry(
         release.nextRetryAt,
         nowMs,
@@ -187,8 +202,8 @@ export function formatReleaseRetryable(
     case "active":
       return `${prefix}, running`;
     case "exhausted":
-      if (release.reason === "GitHubReleaseAssetNotFound") {
-        return "yes, waiting for GitHub Release asset";
+      if (pendingGitHubReleaseText) {
+        return `yes, ${pendingGitHubReleaseText}`;
       }
       return `${prefix}, exhausted`;
     case "ready_to_requeue":

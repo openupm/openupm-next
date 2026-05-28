@@ -99,12 +99,12 @@ describeWithRedis('save', function () {
     expect(obj3).toBeNull();
   });
 
-  it('tracks and clears GitHub Release asset missing probe metadata', async () => {
+  it('tracks and clears GitHub Release pending probe metadata', async () => {
     const failed = await save({
       packageName: SAMPLE_PACKAGE_NAME,
       version: '1.0.0',
       state: ReleaseState.Failed,
-      reason: ReleaseErrorCode.GitHubReleaseAssetNotFound,
+      reason: ReleaseErrorCode.GitHubReleaseNotFound,
     });
     expect(failed.githubReleaseAssetMissingFirstSeenAt).toBeGreaterThan(0);
 

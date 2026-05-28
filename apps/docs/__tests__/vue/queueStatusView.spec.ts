@@ -146,6 +146,17 @@ describe("@/queueStatusView", () => {
     formatReleaseRetryable(
       {
         ...release,
+        reason: "GitHubReleaseNotFound",
+        attempts: 3,
+        maxAttempts: 3,
+        nextRetryAt: "2026-05-14T10:05:00.000Z",
+        retryState: "scheduled",
+      },
+      now,
+    ).should.equal("yes, waiting for GitHub Release, next in 5m");
+    formatReleaseRetryable(
+      {
+        ...release,
         reason: "GitHubReleaseAssetNotFound",
         attempts: 3,
         maxAttempts: 3,
@@ -178,5 +189,21 @@ describe("@/queueStatusView", () => {
     const source = readFileSync(queueStatusPagePath, "utf8");
 
     source.should.contain('v-if="job.reasonCode !== undefined"');
+  });
+
+  it("links package pipeline GitHub Release retry text to troubleshooting docs", () => {
+    const source = readFileSync(
+      fileURLToPath(
+        new URL(
+          "../../docs/.vuepress/components/PackagePipelinesView.vue",
+          import.meta.url,
+        ),
+      ),
+      "utf8",
+    );
+
+    source.should.contain('RouterLink :to="troubleshootingUrl"');
+    source.should.contain("Waiting for ${target}; retrying");
+    source.should.contain("Waiting for ${target}; retry window expired");
   });
 });

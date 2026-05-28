@@ -59,9 +59,9 @@ const releaseErrorDescriptions: Partial<Record<ReleaseErrorCode, string>> = {
   [ReleaseErrorCode.LfsObjectNotFound]:
     "A required Git LFS object is missing from the source repository.",
   [ReleaseErrorCode.GitHubReleaseNotFound]:
-    "The configured GitHub Release was not found.",
+    "The configured GitHub Release was not found. OpenUPM will keep checking on a limited retry schedule.",
   [ReleaseErrorCode.GitHubReleaseAssetNotFound]:
-    "The configured GitHub Release has no matching package asset.",
+    "The configured GitHub Release has no matching package asset. OpenUPM will keep checking on a limited retry schedule.",
   [ReleaseErrorCode.GitHubReleaseAssetAmbiguous]:
     "The configured GitHub Release has multiple matching package assets.",
   [ReleaseErrorCode.GitHubReleaseApiError]:
