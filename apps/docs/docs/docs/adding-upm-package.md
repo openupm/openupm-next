@@ -147,9 +147,12 @@ set `trackingMode: githubRelease`. OpenUPM will still discover versions from
 Git tags, then find the GitHub Release whose tag name exactly matches the
 discovered Git tag and publish the attached `.tgz` or `.tar.gz` asset unchanged.
 Normal build failures are retried up to three times. If the matching GitHub
-Release exists but does not yet contain a publishable asset, OpenUPM checks for
-the asset again every 6 hours for up to 7 days from the first missing-asset
-failure. After 7 days, add the missing asset and request a rebuild.
+Release does not exist yet, or exists but does not yet contain a publishable
+asset, OpenUPM keeps checking for it after the initial attempts are exhausted.
+The follow-up checks start at 10 minutes, then 20 minutes, then 40 minutes,
+doubling until they reach 6 hours. OpenUPM then checks every 6 hours for up to
+7 days from the first missing-release or missing-asset failure. After 7 days,
+create the missing release or asset and request a rebuild.
 
 Set `githubReleaseAssetName` when the release has multiple assets or when you
 want to require a specific filename pattern. OpenUPM first looks for an exact

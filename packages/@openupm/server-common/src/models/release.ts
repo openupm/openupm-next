@@ -140,7 +140,10 @@ export async function save(
     signed: false,
   };
   Object.assign(record, pick(obj, releaseModelFields));
-  if (record.reason === ReleaseErrorCode.GitHubReleaseAssetNotFound) {
+  if (
+    record.reason === ReleaseErrorCode.GitHubReleaseNotFound ||
+    record.reason === ReleaseErrorCode.GitHubReleaseAssetNotFound
+  ) {
     record.githubReleaseAssetMissingFirstSeenAt ??= now;
   } else {
     record.githubReleaseAssetMissingFirstSeenAt = undefined;

@@ -37,8 +37,9 @@ import {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const config = configRaw as any;
 const logger = createLogger('@openupm/queue/buildPackage');
-const githubReleaseAssetProbeIntervalMs = 6 * 60 * 60 * 1000;
-const githubReleaseAssetProbeWindowMs = 7 * 24 * 60 * 60 * 1000;
+const githubReleasePendingProbeInitialIntervalMs = 10 * 60 * 1000;
+const githubReleasePendingProbeMaxIntervalMs = 6 * 60 * 60 * 1000;
+const githubReleasePendingProbeWindowMs = 7 * 24 * 60 * 60 * 1000;
 
 function parseGitHubRepo(
   url: string,
@@ -123,7 +124,7 @@ export async function buildPackage(name: string): Promise<void> {
     validTags,
     pkg.trackingMode || 'git',
   );
-  await probeMissingGitHubReleaseAssets(pkg, releases);
+  await probePendingGitHubReleaseAssets(pkg, releases);
   await addReleaseJobs(releases);
 }
 
@@ -283,14 +284,46 @@ async function addReleaseJobs(releases: ReleaseModel[]): Promise<void> {
   }
 }
 
-async function probeMissingGitHubReleaseAssets(
+export function isGitHubReleasePendingReason(reason: number): boolean {
+  return (
+    reason === ReleaseErrorCode.GitHubReleaseNotFound ||
+    reason === ReleaseErrorCode.GitHubReleaseAssetNotFound
+  );
+}
+
+export function getGitHubReleasePendingProbeIntervalMs(
+  probeCount: number,
+): number {
+  const multiplier = 2 ** Math.max(0, probeCount);
+  return Math.min(
+    githubReleasePendingProbeMaxIntervalMs,
+    githubReleasePendingProbeInitialIntervalMs * multiplier,
+  );
+}
+
+export function getGitHubReleasePendingNextProbeAt(
+  release: ReleaseModel,
+): number {
+  const base =
+    release.githubReleaseAssetMissingLastProbeAt ||
+    release.githubReleaseAssetMissingFirstSeenAt ||
+    release.updatedAt;
+  return (
+    base +
+    getGitHubReleasePendingProbeIntervalMs(
+      release.githubReleaseAssetMissingProbeCount || 0,
+    )
+  );
+}
+
+async function probePendingGitHubReleaseAssets(
   pkg: Awaited<ReturnType<typeof loadPackageMetadataLocal>>,
   releases: ReleaseModel[],
 ): Promise<void> {
   if (!pkg || (pkg.trackingMode || 'git') !== 'githubRelease') return;
 
   for (const release of releases) {
-    if (!(await shouldProbeMissingGitHubReleaseAsset(release))) continue;
+    if (!(await shouldProbePendingGitHubReleaseAsset(release))) continue;
 
     const now = Date.now();
     release.githubReleaseAssetMissingFirstSeenAt ??= release.updatedAt;
@@ -308,9 +341,16 @@ async function probeMissingGitHubReleaseAssets(
     } catch (error) {
       if (error instanceof GitHubReleaseAssetError) {
         const saved =
+          error.reason === ReleaseErrorCode.GitHubReleaseNotFound ||
           error.reason === ReleaseErrorCode.GitHubReleaseAssetNotFound ||
           error.reason === ReleaseErrorCode.GitHubReleaseApiError
-            ? await save(release)
+            ? await save({
+                ...release,
+                reason:
+                  error.reason === ReleaseErrorCode.GitHubReleaseApiError
+                    ? release.reason
+                    : error.reason,
+              })
             : await save({
                 ...release,
                 reason: error.reason,
@@ -347,12 +387,12 @@ async function probeMissingGitHubReleaseAssets(
   }
 }
 
-async function shouldProbeMissingGitHubReleaseAsset(
+async function shouldProbePendingGitHubReleaseAsset(
   release: ReleaseModel,
 ): Promise<boolean> {
   if (
     release.state !== ReleaseState.Failed ||
-    release.reason !== ReleaseErrorCode.GitHubReleaseAssetNotFound
+    !isGitHubReleasePendingReason(release.reason)
   ) {
     return false;
   }
@@ -360,12 +400,9 @@ async function shouldProbeMissingGitHubReleaseAsset(
   const firstSeenAt =
     release.githubReleaseAssetMissingFirstSeenAt || release.updatedAt;
   const now = Date.now();
-  if (now - firstSeenAt > githubReleaseAssetProbeWindowMs) return false;
+  if (now - firstSeenAt > githubReleasePendingProbeWindowMs) return false;
 
-  const lastProbeAt = release.githubReleaseAssetMissingLastProbeAt;
-  if (lastProbeAt && now - lastProbeAt < githubReleaseAssetProbeIntervalMs) {
-    return false;
-  }
+  if (now < getGitHubReleasePendingNextProbeAt(release)) return false;
 
   const jobConfig = config.jobs.buildRelease;
   const queue = getQueue(jobConfig.queue);

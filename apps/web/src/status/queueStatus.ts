@@ -144,6 +144,9 @@ interface CachedStatus {
 const DEFAULT_TTL_SECONDS = 15;
 const DEFAULT_JOB_LIMIT = 20;
 const DEFAULT_RELEASE_LIMIT = 20;
+const GITHUB_RELEASE_PENDING_PROBE_INITIAL_INTERVAL_MS = 10 * 60 * 1000;
+const GITHUB_RELEASE_PENDING_PROBE_MAX_INTERVAL_MS = 6 * 60 * 60 * 1000;
+const GITHUB_RELEASE_PENDING_PROBE_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
 
 const queues: Record<string, Queue> = {};
 
@@ -252,6 +255,63 @@ function createReleaseJobId(packageName: string, version: string): string {
     packageName,
     version,
   );
+}
+
+function isGitHubReleasePendingReason(reason: number): boolean {
+  return (
+    reason === ReleaseErrorCode.GitHubReleaseNotFound ||
+    reason === ReleaseErrorCode.GitHubReleaseAssetNotFound
+  );
+}
+
+function getGitHubReleasePendingProbeIntervalMs(probeCount: number): number {
+  return Math.min(
+    GITHUB_RELEASE_PENDING_PROBE_MAX_INTERVAL_MS,
+    GITHUB_RELEASE_PENDING_PROBE_INITIAL_INTERVAL_MS *
+      2 ** Math.max(0, probeCount),
+  );
+}
+
+function getGitHubReleasePendingNextProbeAt(
+  release: ReleaseModel,
+): number {
+  const base =
+    release.githubReleaseAssetMissingLastProbeAt ||
+    release.githubReleaseAssetMissingFirstSeenAt ||
+    release.updatedAt;
+  return (
+    base +
+    getGitHubReleasePendingProbeIntervalMs(
+      release.githubReleaseAssetMissingProbeCount || 0,
+    )
+  );
+}
+
+function getGitHubReleasePendingRetryMetadata(
+  release: ReleaseModel,
+  now: number,
+  retryMetadata?: ReleaseRetryMetadata,
+): ReleaseRetryMetadata | undefined {
+  if (!isGitHubReleasePendingReason(release.reason)) return undefined;
+  if (retryMetadata && retryMetadata.retryState !== 'exhausted') {
+    return undefined;
+  }
+  const firstSeenAt =
+    release.githubReleaseAssetMissingFirstSeenAt || release.updatedAt;
+  if (now - firstSeenAt > GITHUB_RELEASE_PENDING_PROBE_WINDOW_MS) {
+    return retryMetadata?.retryState === 'exhausted'
+      ? retryMetadata
+      : undefined;
+  }
+
+  return {
+    attempts: retryMetadata?.attempts,
+    maxAttempts: retryMetadata?.maxAttempts,
+    nextRetryAt: new Date(
+      Math.max(now, getGitHubReleasePendingNextProbeAt(release)),
+    ).toISOString(),
+    retryState: 'scheduled',
+  };
 }
 
 async function delayedJobNextRetryAt(
@@ -407,6 +467,7 @@ async function getLimitedJobs(
 function summarizeRelease(
   release: ReleaseModel,
   includeRetryable: boolean,
+  now: number,
   retryMetadata?: ReleaseRetryMetadata,
 ): PublicReleaseSummary {
   const summary: PublicReleaseSummary = {
@@ -426,12 +487,24 @@ function summarizeRelease(
     if (!retryable) {
       summary.retryState = 'not_retryable';
     } else if (retryMetadata) {
-      summary.attempts = retryMetadata.attempts;
-      summary.maxAttempts = retryMetadata.maxAttempts;
-      summary.nextRetryAt = retryMetadata.nextRetryAt;
-      summary.retryState = retryMetadata.retryState;
+      const effectiveRetryMetadata =
+        getGitHubReleasePendingRetryMetadata(release, now, retryMetadata) ||
+        retryMetadata;
+      summary.attempts = effectiveRetryMetadata.attempts;
+      summary.maxAttempts = effectiveRetryMetadata.maxAttempts;
+      summary.nextRetryAt = effectiveRetryMetadata.nextRetryAt;
+      summary.retryState = effectiveRetryMetadata.retryState;
     } else {
-      summary.retryState = 'ready_to_requeue';
+      const pendingRetryMetadata = getGitHubReleasePendingRetryMetadata(
+        release,
+        now,
+      );
+      if (pendingRetryMetadata) {
+        summary.nextRetryAt = pendingRetryMetadata.nextRetryAt;
+        summary.retryState = pendingRetryMetadata.retryState;
+      } else {
+        summary.retryState = 'ready_to_requeue';
+      }
     }
   }
   return summary;
@@ -596,13 +669,14 @@ export async function buildPublicQueueStatus(
     },
     recentSuccessfulReleases: recentSuccessfulReleases
       .slice(0, releaseLimit)
-      .map((release) => summarizeRelease(release, false)),
+      .map((release) => summarizeRelease(release, false, now)),
     recentFailedReleases: recentFailedReleases
       .slice(0, releaseLimit)
       .map((release) =>
         summarizeRelease(
           release,
           true,
+          now,
           releaseRetryMetadata.get(
             releaseIdentityKey(release.packageName, release.version),
           ),

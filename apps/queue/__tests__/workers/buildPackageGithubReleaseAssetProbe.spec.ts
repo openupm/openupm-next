@@ -81,7 +81,7 @@ async function runBuildPackage(release: ReleaseModel): Promise<void> {
   await buildPackage('com.example.asset');
 }
 
-describe('buildPackage GitHub Release asset missing probes', () => {
+describe('buildPackage GitHub Release pending probes', () => {
   beforeEach(() => {
     vi.resetAllMocks();
     vi.spyOn(Date, 'now').mockReturnValue(
@@ -118,9 +118,34 @@ describe('buildPackage GitHub Release asset missing probes', () => {
     vi.restoreAllMocks();
   });
 
-  it('skips probes before the six hour interval elapses', async () => {
+  it('computes early probe intervals and caps at six hours', async () => {
+    const { getGitHubReleasePendingProbeIntervalMs } = await import(
+      '../../src/workers/buildPackage.js'
+    );
+
+    expect(getGitHubReleasePendingProbeIntervalMs(0)).toEqual(10 * 60 * 1000);
+    expect(getGitHubReleasePendingProbeIntervalMs(1)).toEqual(20 * 60 * 1000);
+    expect(getGitHubReleasePendingProbeIntervalMs(2)).toEqual(40 * 60 * 1000);
+    expect(getGitHubReleasePendingProbeIntervalMs(6)).toEqual(6 * 60 * 60 * 1000);
+    expect(getGitHubReleasePendingProbeIntervalMs(20)).toEqual(6 * 60 * 60 * 1000);
+  });
+
+  it('skips the first probe before the ten minute interval elapses', async () => {
     await runBuildPackage(
       createRelease({
+        githubReleaseAssetMissingFirstSeenAt: Date.parse(
+          '2026-05-10T06:55:00.000Z',
+        ),
+      }),
+    );
+
+    expect(resolveGitHubReleaseAssetMock).not.toHaveBeenCalled();
+  });
+
+  it('skips probes before the capped six hour interval elapses', async () => {
+    await runBuildPackage(
+      createRelease({
+        githubReleaseAssetMissingProbeCount: 6,
         githubReleaseAssetMissingLastProbeAt: Date.parse(
           '2026-05-10T02:00:00.000Z',
         ),
@@ -152,6 +177,38 @@ describe('buildPackage GitHub Release asset missing probes', () => {
     expect(resolveGitHubReleaseAssetMock).not.toHaveBeenCalled();
   });
 
+  it('probes missing GitHub Releases after the early interval elapses', async () => {
+    const { GitHubReleaseAssetError } = await import(
+      '../../src/utils/githubReleaseAsset.js'
+    );
+    resolveGitHubReleaseAssetMock.mockRejectedValue(
+      new GitHubReleaseAssetError(
+        'GitHub Release not found',
+        ReleaseErrorCode.GitHubReleaseNotFound,
+      ),
+    );
+
+    await runBuildPackage(
+      createRelease({
+        reason: ReleaseErrorCode.GitHubReleaseNotFound,
+        githubReleaseAssetMissingFirstSeenAt: Date.parse(
+          '2026-05-10T06:49:00.000Z',
+        ),
+      }),
+    );
+
+    expect(resolveGitHubReleaseAssetMock).toHaveBeenCalled();
+    expect(saveReleaseMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        reason: ReleaseErrorCode.GitHubReleaseNotFound,
+        githubReleaseAssetMissingLastProbeAt: Date.parse(
+          '2026-05-10T07:00:00.000Z',
+        ),
+        githubReleaseAssetMissingProbeCount: 1,
+      }),
+    );
+  });
+
   it('preserves the missing-asset probe for transient GitHub API errors', async () => {
     const { GitHubReleaseAssetError } = await import(
       '../../src/utils/githubReleaseAsset.js'
@@ -163,7 +220,15 @@ describe('buildPackage GitHub Release asset missing probes', () => {
       ),
     );
 
-    await expect(runBuildPackage(createRelease())).resolves.toBeUndefined();
+    await expect(
+      runBuildPackage(
+        createRelease({
+          githubReleaseAssetMissingFirstSeenAt: Date.parse(
+            '2026-05-10T06:49:00.000Z',
+          ),
+        }),
+      ),
+    ).resolves.toBeUndefined();
 
     expect(saveReleaseMock).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -187,7 +252,15 @@ describe('buildPackage GitHub Release asset missing probes', () => {
       ),
     );
 
-    await expect(runBuildPackage(createRelease())).resolves.toBeUndefined();
+    await expect(
+      runBuildPackage(
+        createRelease({
+          githubReleaseAssetMissingFirstSeenAt: Date.parse(
+            '2026-05-10T06:49:00.000Z',
+          ),
+        }),
+      ),
+    ).resolves.toBeUndefined();
 
     expect(saveReleaseMock).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -212,6 +285,9 @@ describe('buildPackage GitHub Release asset missing probes', () => {
 
     await runBuildPackage(
       createRelease({
+        githubReleaseAssetMissingLastProbeAt: Date.parse(
+          '2026-05-10T06:19:00.000Z',
+        ),
         githubReleaseAssetMissingProbeCount: 2,
       }),
     );
@@ -229,6 +305,9 @@ describe('buildPackage GitHub Release asset missing probes', () => {
 
   it('resets an exhausted release and enqueues a fresh job when the asset appears', async () => {
     const release = createRelease({
+      githubReleaseAssetMissingLastProbeAt: Date.parse(
+        '2026-05-10T06:39:00.000Z',
+      ),
       githubReleaseAssetMissingProbeCount: 1,
     });
     resolveGitHubReleaseAssetMock.mockResolvedValue({

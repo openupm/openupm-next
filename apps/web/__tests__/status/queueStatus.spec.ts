@@ -407,6 +407,13 @@ describe('buildPublicQueueStatus', () => {
             attemptsMade: 1,
             attempts: 3,
           }),
+          createJob({
+            id: 'build-rel|com.retry.github-release.scheduled|1.0.0',
+            state: 'delayed',
+            timestamp: now - 300_000,
+            attemptsMade: 1,
+            attempts: 3,
+          }),
         ],
         waiting: [
           createJob({
@@ -432,6 +439,12 @@ describe('buildPublicQueueStatus', () => {
             attempts: 3,
           }),
           createJob({
+            id: 'build-rel|com.retry.github-release|1.0.0',
+            state: 'failed',
+            attemptsMade: 3,
+            attempts: 3,
+          }),
+          createJob({
             id: 'build-rel|com.retry.not-exhausted|1.0.0',
             state: 'failed',
             attemptsMade: 1,
@@ -442,11 +455,14 @@ describe('buildPublicQueueStatus', () => {
       delayedScores: {
         'build-rel|com.other.delayed|1.0.0': (now + 60_000) * 0x1000,
         'build-rel|com.retry.scheduled|1.0.0': (now + 18_000) * 0x1000,
+        'build-rel|com.retry.github-release.scheduled|1.0.0':
+          (now + 18_000) * 0x1000,
       },
     });
     const release = (
       packageName: string,
       reason: ReleaseErrorCode,
+      overrides: Partial<ReleaseModel> = {},
     ): ReleaseModel => ({
       packageName,
       version: '1.0.0',
@@ -459,6 +475,7 @@ describe('buildPublicQueueStatus', () => {
       updatedAt: now,
       source: 'git',
       signed: false,
+      ...overrides,
     });
 
     const status = await buildPublicQueueStatus(
@@ -468,9 +485,27 @@ describe('buildPublicQueueStatus', () => {
         getRecentSuccessfulReleases: async () => [],
         getRecentFailedReleases: async () => [
           release('com.retry.scheduled', ReleaseErrorCode.BuildTimeout),
+          release(
+            'com.retry.github-release.scheduled',
+            ReleaseErrorCode.GitHubReleaseNotFound,
+            {
+              githubReleaseAssetMissingFirstSeenAt: Date.parse(
+                '2026-05-14T09:55:00.000Z',
+              ),
+            },
+          ),
           release('com.retry.waiting', ReleaseErrorCode.ConnectionTimeout),
           release('com.retry.running', ReleaseErrorCode.GitHubReleaseApiError),
           release('com.retry.exhausted', ReleaseErrorCode.BuildTimeout),
+          release(
+            'com.retry.github-release',
+            ReleaseErrorCode.GitHubReleaseNotFound,
+            {
+              githubReleaseAssetMissingFirstSeenAt: Date.parse(
+                '2026-05-14T09:55:00.000Z',
+              ),
+            },
+          ),
           release('com.retry.ready', ReleaseErrorCode.ConnectionTimeout),
           release('com.retry.not-exhausted', ReleaseErrorCode.BuildTimeout),
           release('com.no.retry', ReleaseErrorCode.PackageNotFound),
@@ -484,6 +519,14 @@ describe('buildPublicQueueStatus', () => {
     expect(status.recentFailedReleases).toMatchObject([
       {
         package: 'com.retry.scheduled',
+        retryable: true,
+        retryState: 'scheduled',
+        attempts: 1,
+        maxAttempts: 3,
+        nextRetryAt: '2026-05-14T10:00:18.000Z',
+      },
+      {
+        package: 'com.retry.github-release.scheduled',
         retryable: true,
         retryState: 'scheduled',
         attempts: 1,
@@ -510,6 +553,14 @@ describe('buildPublicQueueStatus', () => {
         retryState: 'exhausted',
         attempts: 3,
         maxAttempts: 3,
+      },
+      {
+        package: 'com.retry.github-release',
+        retryable: true,
+        retryState: 'scheduled',
+        attempts: 3,
+        maxAttempts: 3,
+        nextRetryAt: '2026-05-14T10:05:00.000Z',
       },
       {
         package: 'com.retry.ready',

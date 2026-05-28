@@ -125,10 +125,13 @@ filename prefix. The prefix should never contain a version number; otherwise the
 package metadata would need to change for every release. GitHub Release asset
 names are filenames only; do not include a directory path such as `dist/`.
 OpenUPM still discovers versions from Git tags in this mode. Normal build
-failures are retried up to three times. If the GitHub Release exists but the
-publishable asset is not attached yet, OpenUPM checks again every 6 hours for up
-to 7 days from the first missing-asset failure. After 7 days, attach the asset
-and request a rebuild.
+failures are retried up to three times. If the GitHub Release does not exist
+yet, or the publishable asset is not attached yet, OpenUPM keeps checking after
+the initial attempts are exhausted. The follow-up checks start at 10 minutes,
+then 20 minutes, then 40 minutes, doubling until they reach 6 hours. OpenUPM
+then checks every 6 hours for up to 7 days from the first missing-release or
+missing-asset failure. After 7 days, create the missing release or asset and
+request a rebuild.
 
 Signed release tarballs are often built from a package folder and may contain
 only the package payload plus the signing attestation. The README does not have
