@@ -422,6 +422,25 @@ div[class*=language-] {
     color: var(--c-text);
   }
 
+  .modal {
+    .modal-container {
+      background: var(--c-bg-lighter);
+      color: var(--c-text);
+      box-shadow: 0 0.2rem 0.8rem rgba(0, 0, 0, 0.45);
+    }
+
+    .modal-header,
+    .modal-title,
+    .modal-body,
+    .modal-footer {
+      color: var(--c-text);
+    }
+
+    .modal-overlay {
+      background: rgba(0, 0, 0, 0.6);
+    }
+  }
+
   .divider {
     border-top-color: var(--c-bg-dark) !important;
   }
