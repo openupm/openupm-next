@@ -256,6 +256,12 @@ const imageErrorMessage = computed(() => {
         color: inherit;
         text-decoration: none;
       }
+
+      .row2 {
+        .chip:first-child {
+          padding-left: unset;
+        }
+      }
     }
   }
 }

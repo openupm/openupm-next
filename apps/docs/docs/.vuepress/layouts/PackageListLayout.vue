@@ -138,6 +138,21 @@ type ListItem = {
   value: PackageMetadata | AdPlacementData;
 };
 
+const unityAiTrialCampaignEnd = new Date("2026-07-01T00:00:00");
+
+const unityAiTrialAdPlacementData: AdPlacementData = {
+  title: "Unity AI FREE",
+  image: "/images/ads/unity-ai-trial-600.jpg",
+  originalPrice: "FREE",
+  price: "FREE",
+  url: "https://unity.com/features/ai?aid=1011lJJH",
+  ratingCount: null,
+  ratingAverage: 0,
+  publisher: "Project-aware Assistant, AI Gateway, and MCP Server",
+};
+
+const isUnityAiTrialAdActive = computed(() => new Date() < unityAiTrialCampaignEnd);
+
 /* The ListItems to be displayed in the grid.
  * It includes both package metadata and ad placement data.
  * Ad placement data is inserted repeatly for every a few items.
@@ -146,6 +161,9 @@ const listItems = computed(() => {
   const items = [] as ListItem[];
   const adInterval = 6;
   let adIndex = 0;
+  if (isUnityAiTrialAdActive.value) {
+    items.push({ type: "ad", value: unityAiTrialAdPlacementData });
+  }
   for (let i = 0; i < metadataEntries.value.length; i++) {
     items.push({ type: "package", value: metadataEntries.value[i] });
     if (adPlacementDataList.length > 0) {
@@ -216,6 +234,7 @@ const gridPageProvider = computed(() => {
 // Grid item key for virtual scroll grid.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const getGridKey = (item: any): string => {
+  if (item.type === "ad") return `ad:${item.value.url}`;
   if (item.value) return item.value.name;
   return item.index.toString();
 };

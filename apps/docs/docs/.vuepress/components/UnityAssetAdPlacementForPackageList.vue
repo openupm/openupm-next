@@ -28,24 +28,31 @@ const ratingAverageLeft = computed(() => {
 const hasDiscount = computed(() => {
   return props.data.originalPrice && props.data.price && props.data.originalPrice !== props.data.price;
 });
+
+const hasPriceCurrency = computed(() => {
+  return props.data.price.startsWith('$');
+});
 </script>
 
 <template>
   <div class="ad-placement">
     <span class="ad-mark pl-1 pr-1">Ad</span>
     <div class="ad-img-container">
-      <a :href="data.url" class="ad-img-link" rel="noopener nofollow" target="_blank">
+      <a :href="data.url" class="ad-img-link no-external-link-icon" rel="noopener nofollow" target="_blank">
         <img :src="data.image" alt="Ad Image" class="img-responsive" />
       </a>
     </div>
     <div class="ad-link-container">
       <div class="h5">
-        <a :href="data.url" class="ad-link" rel="noopener nofollow" target="_blank">
+        <a :href="data.url" class="ad-link no-external-link-icon" rel="noopener nofollow" target="_blank">
           <span class="ad-title">{{ data.title }}</span>
         </a>
       </div>
+      <div v-if="data.publisher" class="ad-description">
+        {{ data.publisher }}
+      </div>
       <span class="chip">
-        <i class="fas fa-dollar-sign"></i>{{ priceNumber }}<del v-if="hasDiscount" class="pl-2">{{ originalPriceNumber
+        <i :class="hasPriceCurrency ? 'fas fa-dollar-sign' : 'fas fa-gift'"></i>{{ priceNumber }}<del v-if="hasDiscount" class="pl-2">{{ originalPriceNumber
         }}</del></span>
       <span v-if="data.ratingAverage && data.ratingCount" class="chip">
         <i v-for="index in data.ratingAverage" :key="index" class="fas fa-star"></i>
@@ -64,6 +71,13 @@ const hasDiscount = computed(() => {
   box-shadow: 0 0.35rem 0.9rem rgba(34, 48, 74, 0.1);
   box-sizing: border-box;
   position: relative;
+
+  .no-external-link-icon::after,
+  .no-external-link-icon :deep(.external-link-icon),
+  :global(.external-link-icon .ad-placement a.no-external-link-icon::after) {
+    content: none !important;
+    display: none !important;
+  }
 }
 
 .ad-mark {
@@ -93,8 +107,8 @@ const hasDiscount = computed(() => {
 
   .h5 {
     font-size: $font-size-md;
-    margin-bottom: 0.25rem;
-    max-height: 2.2rem;
+    margin-bottom: 0.1rem;
+    max-height: 1.2rem;
     overflow: hidden;
     text-overflow: ellipsis;
 
@@ -103,9 +117,20 @@ const hasDiscount = computed(() => {
     }
   }
 
+  .ad-description {
+    color: var(--c-text-lighter);
+    font-size: $font-size-xs;
+    line-height: 1.2;
+    margin-bottom: 0.2rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   .chip {
     font-size: $font-size-xs;
     height: 0.8rem;
+    padding-left: unset;
 
     .fas.fa-star,
     .far.fa-star {

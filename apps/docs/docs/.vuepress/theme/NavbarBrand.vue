@@ -3,6 +3,7 @@ import type { FunctionalComponent } from 'vue'
 import { computed, h } from 'vue'
 import { ClientOnly, RouteLink, withBase } from 'vuepress/client'
 
+import UnityAiTrialAd from '@/components/UnityAiTrialAd.vue'
 import { useDarkMode } from '@theme/useDarkMode'
 import { useData } from '@theme/useData'
 
@@ -43,22 +44,39 @@ const NavbarBrandLogo: FunctionalComponent = () => {
 </script>
 
 <template>
-  <RouteLink :to="navbarBrandLink">
-    <NavbarBrandLogo />
+  <div class="openupm-navbar-brand">
+    <RouteLink :to="navbarBrandLink">
+      <NavbarBrandLogo />
 
-    <span
-      v-if="navbarBrandTitle"
-      class="vp-site-name"
-      :class="{ 'vp-hide-mobile': navbarBrandLogo }"
-      :aria-hidden="navBarLogoAltMatchesTitle"
-    >
-      {{ navbarBrandTitle }}
-    </span>
-  </RouteLink>
+      <span
+        v-if="navbarBrandTitle"
+        class="vp-site-name"
+        :class="{ 'vp-hide-mobile': navbarBrandLogo }"
+        :aria-hidden="navBarLogoAltMatchesTitle"
+      >
+        {{ navbarBrandTitle }}
+      </span>
+    </RouteLink>
+    <ClientOnly>
+      <UnityAiTrialAd variant="navbar" />
+    </ClientOnly>
+  </div>
 </template>
 
 <style lang="scss">
 @use '@/styles/palette' as *;
+
+.openupm-navbar-brand {
+  align-items: center;
+  display: inline-flex;
+  min-width: 0;
+
+  > a {
+    align-items: center;
+    display: inline-flex;
+    min-width: 0;
+  }
+}
 
 .vp-site-logo {
   vertical-align: top;
