@@ -16,7 +16,7 @@ function getUrlForAdAssetStore(adAssetStore: AdAssetStore): string {
   const aid = config.unityAffiliateId;
   if (aid === undefined)
     throw new Error('config.unityAffiliateId is not defined');
-  return `https://prf.hn/click/camref:${aid}/destination:https://assetstore.unity.com/packages/slug/${adAssetStore.slug}`;
+  return `https://assetstore.unity.com/packages/slug/${adAssetStore.slug}?aid=${aid}`;
 }
 
 /**
