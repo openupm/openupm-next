@@ -177,6 +177,46 @@ describe('buildPackage GitHub Release pending probes', () => {
     expect(resolveGitHubReleaseAssetMock).not.toHaveBeenCalled();
   });
 
+  it('keeps missing GitHub Release failures gated by the probe interval', async () => {
+    await runBuildPackage(
+      createRelease({
+        reason: ReleaseErrorCode.GitHubReleaseNotFound,
+        githubReleaseAssetMissingFirstSeenAt: Date.parse(
+          '2026-05-10T06:55:00.000Z',
+        ),
+      }),
+    );
+
+    expect(resolveGitHubReleaseAssetMock).not.toHaveBeenCalled();
+    expect(queueRemoveMock).not.toHaveBeenCalled();
+    expect(addJobMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: 'build-rel',
+        data: { name: 'com.example.asset', version: '1.0.0' },
+      }),
+    );
+  });
+
+  it('keeps retryable failed releases retained until explicit reset', async () => {
+    await runBuildPackage(
+      createRelease({
+        reason: ReleaseErrorCode.BuildTimeout,
+        githubReleaseAssetMissingFirstSeenAt: undefined,
+        githubReleaseAssetMissingLastProbeAt: undefined,
+        githubReleaseAssetMissingProbeCount: undefined,
+      }),
+    );
+
+    expect(resolveGitHubReleaseAssetMock).not.toHaveBeenCalled();
+    expect(queueRemoveMock).not.toHaveBeenCalled();
+    expect(addJobMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: 'build-rel',
+        data: { name: 'com.example.asset', version: '1.0.0' },
+      }),
+    );
+  });
+
   it('probes missing GitHub Releases after the early interval elapses', async () => {
     const { GitHubReleaseAssetError } = await import(
       '../../src/utils/githubReleaseAsset.js'
@@ -336,6 +376,37 @@ describe('buildPackage GitHub Release pending probes', () => {
         reason: ReleaseErrorCode.None,
         buildId: '',
       }),
+    );
+    expect(addJobMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: 'build-rel',
+        data: { name: 'com.example.asset', version: '1.0.0' },
+        opts: expect.objectContaining({
+          jobId: 'build-rel|com.example.asset|1.0.0',
+        }),
+      }),
+    );
+  });
+
+  it('removes a retained exhausted failed job before enqueueing a pending release', async () => {
+    await runBuildPackage(
+      createRelease({
+        state: ReleaseState.Pending,
+        reason: ReleaseErrorCode.None,
+        buildId: '',
+        githubReleaseAssetMissingFirstSeenAt: undefined,
+        githubReleaseAssetMissingLastProbeAt: undefined,
+        githubReleaseAssetMissingProbeCount: undefined,
+      }),
+    );
+
+    expect(resolveGitHubReleaseAssetMock).not.toHaveBeenCalled();
+    expect(queueGetJobMock).toHaveBeenCalledWith(
+      'build-rel|com.example.asset|1.0.0',
+    );
+    expect(queueRemoveMock).toHaveBeenCalledWith(
+      'build-rel|com.example.asset|1.0.0',
+      { removeChildren: true },
     );
     expect(addJobMock).toHaveBeenCalledWith(
       expect.objectContaining({
