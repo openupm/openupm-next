@@ -274,6 +274,9 @@ async function addReleaseJobs(releases: ReleaseModel[]): Promise<void> {
     }
 
     const jobId = createJobId(jobConfig.name, rel.packageName, rel.version);
+    if (rel.state === ReleaseState.Pending) {
+      await removeExhaustedFailedJob(queue, jobId);
+    }
     await addJob({
       queue,
       name: jobConfig.name,
@@ -282,6 +285,20 @@ async function addReleaseJobs(releases: ReleaseModel[]): Promise<void> {
     });
     i++;
   }
+}
+
+async function removeExhaustedFailedJob(
+  queue: ReturnType<typeof getQueue>,
+  jobId: string,
+): Promise<void> {
+  const job = await queue.getJob(jobId);
+  if (!job) return;
+
+  const state = await job.getState();
+  const maxAttempts = job.opts?.attempts ?? 1;
+  if (state !== 'failed' || job.attemptsMade < maxAttempts) return;
+
+  await queue.remove(jobId, { removeChildren: true });
 }
 
 export function isGitHubReleasePendingReason(reason: number): boolean {
