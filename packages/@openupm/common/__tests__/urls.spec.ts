@@ -1,7 +1,10 @@
 import {
   getContributorProfilePagePath,
+  getAvatarImageUrl,
+  getMediaBaseUrl,
   getMonthlyDownloadsRangeUrl,
   getMonthlyDownloadsUrl,
+  getPackageImageUrl,
   isPackageDetailPath,
   isPackageListPath,
   parsePackageNameFromPackageDetailPath,
@@ -121,6 +124,24 @@ describe('download count urls', () => {
 
     expect(result).toEqual(
       'https://package.openupm.com/downloads/range/last-month/com.example.package',
+    );
+  });
+});
+
+describe('media urls', () => {
+  it('should use the download domain as the media base url', () => {
+    expect(getMediaBaseUrl()).toEqual('https://download.openupm.com/media/');
+  });
+
+  it('should build package image urls from the media base url', () => {
+    expect(getPackageImageUrl('package-image.png')).toEqual(
+      'https://download.openupm.com/media/package-image.png',
+    );
+  });
+
+  it('should build avatar image urls from the media base url', () => {
+    expect(getAvatarImageUrl('GitHubUser', 48)).toEqual(
+      'https://download.openupm.com/media/githubuser-48x48.png',
     );
   });
 });

@@ -59,7 +59,7 @@ describe('updateFeedsJob', () => {
       {
         packageName: 'pkg.one',
         displayName: 'Package One',
-        image: 'https://openupm.sfo2.cdn.digitaloceanspaces.com/media/img.png',
+        image: 'https://download.openupm.com/media/img.png',
         time: 1000,
         version: '1.0.0',
         author: [

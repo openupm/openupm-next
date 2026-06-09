@@ -150,7 +150,7 @@ export const getAzureWebBuildUrl = function (buildId: string): string {
  * @returns media base url
  */
 export const getMediaBaseUrl = function (): string {
-  return 'https://openupm.sfo2.cdn.digitaloceanspaces.com/media/';
+  return 'https://download.openupm.com/media/';
 };
 
 /**
