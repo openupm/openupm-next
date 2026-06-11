@@ -36,6 +36,11 @@ const packagesLink = {
   link: "/packages/",
 };
 
+const homeLink = {
+  text: "Home",
+  link: "/",
+};
+
 type State = {
   adPlacementDataList: AdPlacementData[];
   packument: Partial<Packument>;
@@ -173,6 +178,9 @@ watch(
           <div class="column col-8 col-xl-8 col-lg-8 col-md-12 col-sm-12">
             <nav aria-label="Breadcrumb">
               <ul class="breadcrumb package-breadcrumb">
+                <li class="breadcrumb-item">
+                  <AutoLink :item="homeLink" />
+                </li>
                 <li class="breadcrumb-item">
                   <AutoLink :item="packagesLink" />
                 </li>

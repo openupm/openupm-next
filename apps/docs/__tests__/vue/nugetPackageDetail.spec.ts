@@ -111,6 +111,7 @@ describe("NuGet package detail UI", () => {
 
     expect(source).toContain('<nav aria-label="Breadcrumb">');
     expect(source).toContain('<ul class="breadcrumb package-breadcrumb">');
+    expect(source).toContain('<AutoLink :item="homeLink" />');
     expect(source).toContain('class="column column-meta col-4');
     expect(source).toContain("<PackageSetup");
     expect(source).toContain(':packument="state.packument"');

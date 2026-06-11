@@ -57,13 +57,20 @@ const inferItems = (): BreadcrumbItem[] => {
 const breadcrumbItems = computed(() =>
   props.items.length ? props.items : inferItems(),
 );
+
+const visibleBreadcrumbItems = computed(() => {
+  const items = breadcrumbItems.value;
+  if (!items.length) return [];
+  if (items[0]?.link === "/") return items;
+  return [{ text: "Home", link: "/" }, ...items];
+});
 </script>
 
 <template>
-  <nav v-if="breadcrumbItems.length" aria-label="Breadcrumb" class="site-breadcrumb">
+  <nav v-if="visibleBreadcrumbItems.length" aria-label="Breadcrumb" class="site-breadcrumb">
     <ul class="breadcrumb">
       <li
-        v-for="(item, index) in breadcrumbItems"
+        v-for="(item, index) in visibleBreadcrumbItems"
         :key="`${item.text}-${index}`"
         class="breadcrumb-item"
       >
