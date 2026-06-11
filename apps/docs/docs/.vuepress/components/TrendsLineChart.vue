@@ -1,20 +1,28 @@
 <template>
-  <ClientOnly>
-    <VChart
-      class="trends-echart"
-      :option="chartOption"
-      autoresize
-      @click="handleChartClick"
-      @mouseover="handleChartHover"
-      @mouseout="clearChartHover"
-    />
-  </ClientOnly>
+  <VChart
+    v-if="mounted"
+    class="trends-echart"
+    :option="chartOption"
+    autoresize
+    @click="handleChartClick"
+    @mouseover="handleChartHover"
+    @mouseout="clearChartHover"
+  />
+  <div v-else class="trends-echart"></div>
   <div v-if="series.length > 1" class="trends-chart__legend">
     <span
       v-for="(entry, index) in series"
       :key="entry.key"
-      :class="{ 'is-active': entry.label === hoveredSeriesName }"
-      :style="{ '--series-color': pickSeriesColor(index) }"
+      role="button"
+      tabindex="0"
+      :class="{
+        'is-active': entry.label === hoveredSeriesName,
+        'is-isolated': entry.key === isolatedSeriesKey,
+      }"
+      :style="{ '--series-color': seriesColor(index) }"
+      @click="toggleIsolatedSeries(entry.key)"
+      @keydown.enter.prevent="toggleIsolatedSeries(entry.key)"
+      @keydown.space.prevent="toggleIsolatedSeries(entry.key)"
     >
       {{ entry.label }}
     </span>
@@ -32,15 +40,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { use } from "echarts/core";
 import { CanvasRenderer } from "echarts/renderers";
 import { LineChart } from "echarts/charts";
 import { GridComponent, TooltipComponent } from "echarts/components";
+import { useDarkMode } from "@vuepress/theme-default/client";
 import VChart from "vue-echarts";
 import { TrendsSeries } from "@openupm/types";
 
-import { formatNumber, pickSeriesColor } from "../trendsView";
+import { formatNumber, pickDarkSeriesColor, pickSeriesColor } from "../trendsView";
 
 use([CanvasRenderer, LineChart, GridComponent, TooltipComponent]);
 
@@ -50,18 +59,54 @@ const props = defineProps<{
 
 const selectedDate = ref("");
 const hoveredSeriesName = ref("");
+const isolatedSeriesKey = ref("");
+const mounted = ref(false);
+const isDarkMode = useDarkMode();
+
+onMounted(() => {
+  mounted.value = true;
+});
+
+watch(
+  () => props.series,
+  (series) => {
+    if (
+      isolatedSeriesKey.value &&
+      !series.some((entry) => entry.key === isolatedSeriesKey.value)
+    ) {
+      isolatedSeriesKey.value = "";
+    }
+  },
+);
+
+const visibleSeries = computed(() =>
+  isolatedSeriesKey.value
+    ? props.series.filter((entry) => entry.key === isolatedSeriesKey.value)
+    : props.series,
+);
+
+function seriesColor(index: number): string {
+  return isDarkMode.value ? pickDarkSeriesColor(index) : pickSeriesColor(index);
+}
 
 const allDates = computed(() =>
   Array.from(
     new Set(
-      props.series.flatMap((entry) => entry.points.map((point) => point.date)),
+      visibleSeries.value.flatMap((entry) =>
+        entry.points.map((point) => point.date),
+      ),
     ),
   ).sort((a, b) => a.localeCompare(b)),
 );
 
 const chartOption = computed(() => ({
   animation: false,
-  color: props.series.map((_, index) => pickSeriesColor(index)),
+  textStyle: {
+    color: isDarkMode.value ? "#cbd5e1" : "#475569",
+  },
+  color: visibleSeries.value.map((entry) =>
+    seriesColor(props.series.findIndex((series) => series.key === entry.key)),
+  ),
   grid: {
     left: 44,
     right: 18,
@@ -71,6 +116,11 @@ const chartOption = computed(() => ({
   tooltip: {
     trigger: "axis",
     axisPointer: { type: "line" },
+    backgroundColor: isDarkMode.value ? "#111827" : "#ffffff",
+    borderColor: isDarkMode.value ? "rgba(148, 163, 184, 0.32)" : "#d8dee8",
+    textStyle: {
+      color: isDarkMode.value ? "#e5e7eb" : "#1f2937",
+    },
     valueFormatter: (value: number): string => formatNumber(value),
   },
   xAxis: {
@@ -78,9 +128,16 @@ const chartOption = computed(() => ({
     boundaryGap: false,
     data: allDates.value,
     axisLabel: {
-      color: "inherit",
+      color: isDarkMode.value ? "#f8fafc" : "#475569",
       hideOverlap: true,
       formatter: formatYearTick,
+    },
+    axisLine: {
+      lineStyle: {
+        color: isDarkMode.value
+          ? "rgba(148, 163, 184, 0.36)"
+          : "rgba(100, 116, 139, 0.32)",
+      },
     },
     axisTick: { show: false },
   },
@@ -88,14 +145,25 @@ const chartOption = computed(() => ({
     type: "value",
     minInterval: 1,
     axisLabel: {
-      color: "inherit",
+      color: isDarkMode.value ? "#f8fafc" : "#475569",
       formatter: (value: number): string => formatNumber(value),
     },
+    axisLine: {
+      lineStyle: {
+        color: isDarkMode.value
+          ? "rgba(148, 163, 184, 0.36)"
+          : "rgba(100, 116, 139, 0.32)",
+      },
+    },
     splitLine: {
-      lineStyle: { color: "rgba(148, 163, 184, 0.18)" },
+      lineStyle: {
+        color: isDarkMode.value
+          ? "rgba(148, 163, 184, 0.2)"
+          : "rgba(148, 163, 184, 0.18)",
+      },
     },
   },
-  series: props.series.map((entry) => {
+  series: visibleSeries.value.map((entry) => {
     const values = new Map(
       entry.points.map((point) => [point.date, point.value]),
     );
@@ -122,13 +190,15 @@ const selectedSnapshot = computed(() =>
   selectedDate.value
     ? {
         date: selectedDate.value,
-        values: props.series.map((entry, index) => ({
+        values: visibleSeries.value.map((entry) => ({
           key: entry.key,
           label: entry.label,
           value:
             entry.points.find((point) => point.date === selectedDate.value)
               ?.value || 0,
-          color: pickSeriesColor(index),
+          color: seriesColor(
+            props.series.findIndex((series) => series.key === entry.key),
+          ),
         })),
       }
     : null,
@@ -145,5 +215,9 @@ function handleChartHover(params: { seriesName?: string }): void {
 
 function clearChartHover(): void {
   hoveredSeriesName.value = "";
+}
+
+function toggleIsolatedSeries(key: string): void {
+  isolatedSeriesKey.value = isolatedSeriesKey.value === key ? "" : key;
 }
 </script>

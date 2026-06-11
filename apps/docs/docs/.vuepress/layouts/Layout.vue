@@ -49,9 +49,7 @@ const parentLayoutClass = computed(() => [
   </ParentLayout>
 
   <Footer v-if="showFooter" />
-  <ClientOnly>
-    <CookieConsent />
-  </ClientOnly>
+  <CookieConsent />
 </template>
 
 <style lang="scss">

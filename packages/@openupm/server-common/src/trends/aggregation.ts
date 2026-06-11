@@ -44,12 +44,33 @@ function addMonths(month: string, months: number): string {
   return date.toISOString().substring(0, 7);
 }
 
+function addMonthsToDay(day: string, months: number): string {
+  const year = Number(day.substring(0, 4));
+  const monthIndex = Number(day.substring(5, 7)) - 1;
+  const dayOfMonth = Number(day.substring(8, 10));
+  const targetMonthStart = new Date(Date.UTC(year, monthIndex + months, 1));
+  const targetYear = targetMonthStart.getUTCFullYear();
+  const targetMonthIndex = targetMonthStart.getUTCMonth();
+  const lastTargetDay = new Date(
+    Date.UTC(targetYear, targetMonthIndex + 1, 0),
+  ).getUTCDate();
+  return new Date(
+    Date.UTC(targetYear, targetMonthIndex, Math.min(dayOfMonth, lastTargetDay)),
+  )
+    .toISOString()
+    .substring(0, 10);
+}
+
 function parseDay(day: string): number {
   return Date.parse(`${day}T00:00:00.000Z`);
 }
 
 function addDays(day: string, days: number): string {
   return toUtcDay(parseDay(day) + days * DAY_MS);
+}
+
+function getMonthEndDay(month: string): string {
+  return addDays(`${addMonths(month, 1)}-01`, -1);
 }
 
 function compareDate(a: string, b: string): number {
@@ -113,9 +134,22 @@ function fillMonthlyPoints(
   mode: 'zero' | 'carry',
 ): TrendsPoint[] {
   if (points.length === 0) return [];
+  return fillMonthlyPointsInRange(
+    points,
+    mode,
+    points[0].date,
+    points[points.length - 1].date,
+  );
+}
+
+function fillMonthlyPointsInRange(
+  points: TrendsPoint[],
+  mode: 'zero' | 'carry',
+  startMonth: string | null,
+  endMonth: string | null,
+): TrendsPoint[] {
+  if (!startMonth || !endMonth) return [];
   const values = new Map(points.map((point) => [point.date, point.value]));
-  const startMonth = points[0].date;
-  const endMonth = points[points.length - 1].date;
   const filled: TrendsPoint[] = [];
   let carriedValue = 0;
   for (let month = startMonth; month <= endMonth; month = addMonths(month, 1)) {
@@ -126,6 +160,19 @@ function fillMonthlyPoints(
     });
   }
   return filled;
+}
+
+function buildMonthlyCountsInRange(
+  days: string[],
+  startMonth: string | null,
+  endMonth: string | null,
+): TrendsPoint[] {
+  return fillMonthlyPointsInRange(
+    buildMonthlyCounts(days),
+    'zero',
+    startMonth,
+    endMonth,
+  );
 }
 
 function sumDownloadsByDay(
@@ -157,6 +204,19 @@ function buildDownloadMonthPoints(
   return fillMonthlyPoints(mapToSortedPoints(counts), 'zero');
 }
 
+function buildDownloadMonthPointsInRange(
+  downloadsByDay: Map<string, number>,
+  startMonth: string | null,
+  endMonth: string | null,
+): TrendsPoint[] {
+  return fillMonthlyPointsInRange(
+    buildDownloadMonthPoints(downloadsByDay),
+    'zero',
+    startMonth,
+    endMonth,
+  );
+}
+
 function buildTopicSeries(
   topics: TopicBase[],
   packages: PackageMetadataLocal[],
@@ -172,6 +232,53 @@ function buildTopicSeries(
       label: topic.name,
       points: sampleMonthly(
         buildCumulativePoints(buildCountByDay(packageDays), startDay, endDay),
+      ),
+    };
+  });
+}
+
+function buildTopicMonthlyPackageSeries(
+  topics: TopicBase[],
+  packages: PackageMetadataLocal[],
+  startMonth: string | null,
+  endMonth: string | null,
+): TrendsSeries[] {
+  return topics.map((topic) => ({
+    key: topic.slug,
+    label: topic.name,
+    points: buildMonthlyCountsInRange(
+      packages
+        .filter((pkg) => pkg.topics.includes(topic.slug))
+        .map((pkg) => toPackageMetadataDay(pkg.createdAt)),
+      startMonth,
+      endMonth,
+    ),
+  }));
+}
+
+function buildTopicMonthlyDownloadSeries(
+  topics: TopicBase[],
+  packages: PackageMetadataLocal[],
+  downloadRanges: PackageDownloadRange[],
+  startMonth: string | null,
+  endMonth: string | null,
+): TrendsSeries[] {
+  const topicsByPackage = new Map(
+    packages.map((pkg) => [pkg.name, new Set(pkg.topics)]),
+  );
+  return topics.map((topic) => {
+    const downloadsByDay = sumDownloadsByDay(
+      downloadRanges.filter((range) =>
+        topicsByPackage.get(range.package)?.has(topic.slug),
+      ),
+    );
+    return {
+      key: topic.slug,
+      label: topic.name,
+      points: buildDownloadMonthPointsInRange(
+        downloadsByDay,
+        startMonth,
+        endMonth,
       ),
     };
   });
@@ -194,17 +301,45 @@ function buildSignedPackageDays(releases: ReleaseModel[]): string[] {
   return Array.from(firstSignedDayByPackage.values());
 }
 
-function buildActivePackageDays(releases: ReleaseModel[]): string[] {
-  const firstReleaseDayByPackage = new Map<string, string>();
+function buildRollingActivePackageMonthPoints(
+  releases: ReleaseModel[],
+  endDay: string,
+): TrendsPoint[] {
+  const releaseDaysByPackage = new Map<string, string[]>();
   for (const release of releases) {
     if (release.state !== ReleaseState.Succeeded) continue;
-    const day = getReleaseDay(release);
-    const existing = firstReleaseDayByPackage.get(release.packageName);
-    if (!existing || day < existing) {
-      firstReleaseDayByPackage.set(release.packageName, day);
-    }
+    const days = releaseDaysByPackage.get(release.packageName) || [];
+    days.push(getReleaseDay(release));
+    releaseDaysByPackage.set(release.packageName, days);
   }
-  return Array.from(firstReleaseDayByPackage.values());
+  for (const days of releaseDaysByPackage.values()) {
+    days.sort(compareDate);
+  }
+  const firstReleaseDay = minDefinedDate(
+    Array.from(releaseDaysByPackage.values()).flat(),
+  );
+  if (!firstReleaseDay) return [];
+
+  const endMonth = toUtcMonth(endDay);
+  const points: TrendsPoint[] = [];
+  for (
+    let month = toUtcMonth(firstReleaseDay);
+    month <= endMonth;
+    month = addMonths(month, 1)
+  ) {
+    const windowEndDay = month === endMonth ? endDay : getMonthEndDay(month);
+    const windowStartDay = addMonthsToDay(windowEndDay, -12);
+    let value = 0;
+    for (const days of releaseDaysByPackage.values()) {
+      if (
+        days.some((day) => day >= windowStartDay && day <= windowEndDay)
+      ) {
+        value += 1;
+      }
+    }
+    points.push({ date: month, value });
+  }
+  return points;
 }
 
 function buildReleaseSourceSeries(
@@ -282,8 +417,11 @@ export function buildPublicTrends(input: {
   );
   const firstPackageDay = minDefinedDate(packageDays);
   const lastPackageDay = maxDefinedDate(packageDays);
+  const firstPackageMonth = firstPackageDay
+    ? toUtcMonth(firstPackageDay)
+    : null;
+  const lastPackageMonth = lastPackageDay ? toUtcMonth(lastPackageDay) : null;
   const signedPackageDays = buildSignedPackageDays(input.releases);
-  const activePackageDays = buildActivePackageDays(input.releases);
   const signedPackagesByDay = sampleMonthly(
     buildCumulativePoints(
       buildCountByDay(signedPackageDays),
@@ -295,6 +433,10 @@ export function buildPublicTrends(input: {
   const downloadDays = Array.from(downloadsByDay.keys());
   const firstDownloadDay = minDefinedDate(downloadDays);
   const lastDownloadDay = maxDefinedDate(downloadDays);
+  const firstDownloadMonth = firstDownloadDay
+    ? toUtcMonth(firstDownloadDay)
+    : null;
+  const lastDownloadMonth = lastDownloadDay ? toUtcMonth(lastDownloadDay) : null;
   const succeededReleaseDays = buildSucceededReleaseDays(input.releases);
   const firstReleaseDay = minDefinedDate(succeededReleaseDays);
   const lastReleaseDay = maxDefinedDate(succeededReleaseDays);
@@ -343,10 +485,9 @@ export function buildPublicTrends(input: {
       ),
       newPackageSubmissionsByMonth: buildMonthlyCounts(packageDays),
       totalActivePackagesByDay: sampleMonthly(
-        buildCumulativePoints(
-          buildCountByDay(activePackageDays),
-          minDefinedDate([...packageDays, ...activePackageDays]),
-          maxDefinedDate([...packageDays, ...activePackageDays]),
+        buildRollingActivePackageMonthPoints(
+          input.releases,
+          toUtcDay(generatedAt.getTime()),
         ),
       ),
       packageSubmissionsByTopicByDay: buildTopicSeries(
@@ -354,6 +495,12 @@ export function buildPublicTrends(input: {
         input.packages,
         firstPackageDay,
         lastPackageDay,
+      ),
+      packageSubmissionsByTopicByMonth: buildTopicMonthlyPackageSeries(
+        input.topics,
+        input.packages,
+        firstPackageMonth,
+        lastPackageMonth,
       ),
     },
     trustAndDistribution: {
@@ -387,6 +534,13 @@ export function buildPublicTrends(input: {
         ),
       ),
       downloadsPerMonth: buildDownloadMonthPoints(downloadsByDay),
+      downloadsPerMonthByTopic: buildTopicMonthlyDownloadSeries(
+        input.topics,
+        input.packages,
+        input.downloadRanges,
+        firstDownloadMonth,
+        lastDownloadMonth,
+      ),
     },
   };
 }

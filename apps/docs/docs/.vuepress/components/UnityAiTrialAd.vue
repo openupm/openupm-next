@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, onMounted, ref } from "vue";
 
 const unityAiTrialUrl = "https://unity.com/features/ai?aid=1011lJJH";
 const campaignEnd = new Date("2026-07-01T00:00:00");
@@ -8,19 +8,28 @@ const props = defineProps<{
   variant: "navbar";
 }>();
 
+const mounted = ref(false);
 const isActive = computed(() => new Date() < campaignEnd);
+
+onMounted(() => {
+  window.setTimeout(() => {
+    mounted.value = true;
+  }, 0);
+});
 </script>
 
 <template>
-  <a
-    v-if="isActive"
-    :href="unityAiTrialUrl"
-    :class="['unity-ai-trial-ad', `unity-ai-trial-ad-${props.variant}`]"
-    rel="noopener nofollow"
-    target="_blank"
-  >
-    <span class="unity-ai-trial-ad-copy">Try Unity AI FREE ✨</span>
-  </a>
+  <span class="unity-ai-trial-ad-slot">
+    <a
+      v-if="mounted && isActive"
+      :href="unityAiTrialUrl"
+      :class="['unity-ai-trial-ad', `unity-ai-trial-ad-${props.variant}`]"
+      rel="noopener nofollow"
+      target="_blank"
+    >
+      <span class="unity-ai-trial-ad-copy">Try Unity AI FREE ✨</span>
+    </a>
+  </span>
 </template>
 
 <style lang="scss" scoped>
@@ -38,6 +47,10 @@ const isActive = computed(() => new Date() < campaignEnd);
     color: $primary-color;
     text-decoration: none;
   }
+}
+
+.unity-ai-trial-ad-slot {
+  display: inline-flex;
 }
 
 .unity-ai-trial-ad-navbar {

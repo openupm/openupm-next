@@ -156,7 +156,14 @@ describe('buildTrendsSnapshotJob', () => {
     expect(setPublicTrendsMock.mock.calls[0][0]).toMatchObject({
       catalogGrowth: {
         totalPackageSubmissionsByDay: [{ date: '2026-01', value: 1 }],
-        totalActivePackagesByDay: [{ date: '2026-01', value: 1 }],
+        totalActivePackagesByDay: [
+          { date: '2026-01', value: 1 },
+          { date: '2026-02', value: 1 },
+          { date: '2026-03', value: 1 },
+          { date: '2026-04', value: 1 },
+          { date: '2026-05', value: 1 },
+          { date: '2026-06', value: 1 },
+        ],
       },
       releaseActivity: {
         activePackagesLast12Months: 1,
@@ -321,7 +328,14 @@ describe('buildTrendsSnapshotJob', () => {
 
     expect(setPublicTrendsMock.mock.calls[0][0]).toMatchObject({
       catalogGrowth: {
-        totalActivePackagesByDay: [{ date: '2026-01', value: 1 }],
+        totalActivePackagesByDay: [
+          { date: '2026-01', value: 1 },
+          { date: '2026-02', value: 1 },
+          { date: '2026-03', value: 1 },
+          { date: '2026-04', value: 1 },
+          { date: '2026-05', value: 1 },
+          { date: '2026-06', value: 1 },
+        ],
       },
       releaseActivity: {
         totalReleasesByTime: [
