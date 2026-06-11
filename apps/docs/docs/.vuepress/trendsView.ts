@@ -18,6 +18,22 @@ export function previousMonth(value: string): string {
   return date.toISOString().substring(0, 7);
 }
 
+export function shouldShowYearTick(dates: string[], index: number): boolean {
+  const value = dates[index];
+  if (!value) return false;
+  const year = value.substring(0, 4);
+  const previousDate = dates[index - 1];
+  return previousDate?.substring(0, 4) !== year;
+}
+
+export function formatYearTick(
+  value: string,
+  index: number,
+  dates: string[],
+): string {
+  return shouldShowYearTick(dates, index) ? value.substring(0, 4) : "";
+}
+
 export function valueAtDate(points: TrendsPoint[], date: string): number {
   return points.find((point) => point.date === date)?.value || 0;
 }

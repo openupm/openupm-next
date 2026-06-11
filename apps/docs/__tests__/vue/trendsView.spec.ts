@@ -3,8 +3,10 @@ import { describe, expect, it } from "vitest";
 import {
   filterSeries,
   formatNumber,
+  formatYearTick,
   latestValue,
   previousMonth,
+  shouldShowYearTick,
   sumValues,
   valueAtDate,
 } from "../../docs/.vuepress/trendsView";
@@ -32,5 +34,20 @@ describe("trends view helpers", () => {
     expect(filterSeries(series, "editor")).toEqual([series[1]]);
     expect(filterSeries(series, "ai")).toEqual([series[0]]);
     expect(filterSeries(series, "")).toEqual(series);
+  });
+
+  it("shows one x-axis label per year boundary", () => {
+    const dates = [
+      "2019-01",
+      "2019-02",
+      "2020-01",
+      "2020-02",
+      "2021-01",
+    ];
+
+    expect(dates.map((date, index) => formatYearTick(date, index, dates)))
+      .toEqual(["2019", "", "2020", "", "2021"]);
+    expect(dates.map((_date, index) => shouldShowYearTick(dates, index)))
+      .toEqual([true, false, true, false, true]);
   });
 });
