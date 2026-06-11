@@ -17,6 +17,12 @@ describe("docs SEO content links", () => {
     expect(config).toContain("/docs/scoped-registry-troubleshooting");
   });
 
+  it("marks the trends page as a no-sidebar route", () => {
+    const config = readDocsFile(".vuepress/config-us.ts");
+
+    expect(config).toContain('"/trends/": false');
+  });
+
   it("links high-intent docs pages to scoped registry troubleshooting", () => {
     const linkedDocs = [
       "docs/index.md",
