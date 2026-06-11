@@ -101,8 +101,10 @@
 - Keep blog frontmatter aligned with the `BlogPost` metadata entry: `title`,
   `author`, `date`, `readingTime`, and `description`/`excerpt` should describe
   the same post.
-- Use the current date for new posts unless the user explicitly asks for a
-  different publish date. Keep dates as `YYYY-MM-DD`.
+- Use the current US Eastern calendar date (`America/New_York`) for new posts
+  unless the user explicitly asks for a different publish date. Keep dates as
+  `YYYY-MM-DD`. This avoids future-dated blog metadata when GitHub-hosted
+  review and publishing automation evaluates the PR from a US timestamp.
 - Keep frontmatter concise: `title`, `author`, `date`, `readingTime`,
   `description`, and usually `editLink: false`.
 - If a post has a main image for listing, hero, cover, banner, or social
