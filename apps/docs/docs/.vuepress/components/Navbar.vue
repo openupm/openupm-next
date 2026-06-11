@@ -1,18 +1,10 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
-import { computed } from 'vue';
+import { RouteLink } from 'vuepress/client';
 
 import ParentComponent from '@vuepress/theme-default/components/VPNavbar.vue';
 import MySearchBox from '@/components/MySearchBox';
 
-const packageAddLink = computed(() => {
-  return {
-    link: "/packages/add/",
-    text: "",
-    icon: "fas fa-plus-circle",
-    iconLeft: true
-  };
-});
 defineEmits<{ (e: 'toggle-sidebar'): void }>()
 </script>
 
@@ -22,7 +14,9 @@ defineEmits<{ (e: 'toggle-sidebar'): void }>()
       <MySearchBox />
       <div class="navbar-items vp-navbar-items can-hide mr-2">
         <div class="nav-item vp-navbar-item packages-add">
-          <AutoLink :item="packageAddLink" class="nav-link" />
+          <RouteLink to="/packages/add/" class="auto-link nav-link">
+            <i class="fas fa-plus-circle" aria-hidden="true"></i>
+          </RouteLink>
         </div>
       </div>
     </template>

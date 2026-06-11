@@ -1,22 +1,10 @@
 
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import { useI18n } from 'vue-i18n'
+import { RouteLink } from 'vuepress/client';
 
-import { capitalize } from "lodash-es";
 import { useDefaultStore } from '@/store';
 const store = useDefaultStore();
-const { t } = useI18n();
-
-const packagesLink = computed(() => {
-  return {
-    link: "/packages/",
-    text: capitalize(t("packages")),
-    icon: "fa fa-box-open",
-    iconLeft: true
-  }
-});
 </script>
 
 <template>
@@ -24,7 +12,10 @@ const packagesLink = computed(() => {
     <div class="columns">
       <div class="column col-12">
         <div class="btn-group">
-          <AutoLink :item="packagesLink" class="btn btn-default btn-sm" />
+          <RouteLink to="/packages/" class="auto-link btn btn-default btn-sm">
+            <i class="fa fa-box-open" aria-hidden="true"></i>
+            Packages
+          </RouteLink>
           <a href="https://github.com/openupm/openupm" rel="noopener noreferrer" class="btn btn-default btn-sm">
             <i class="fab fa-github"></i> Stars
             <span class="stars">{{ store.formattedStars }}</span>

@@ -66,7 +66,10 @@
           <div class="trends-chart__title">
             <div>
               <h3>Total active packages</h3>
-              <p>Packages with at least one successful published release.</p>
+              <p>
+                Packages with at least one successful published release in the
+                last 12 months.
+              </p>
             </div>
             <strong>{{
               formatNumber(
@@ -106,6 +109,13 @@
             />
           </div>
           <TrendsLineChart :series="visibleTopicSeries" />
+        </article>
+
+        <article class="trends-chart">
+          <div class="trends-chart__title">
+            <h3>New packages per month by topic</h3>
+          </div>
+          <TrendsLineChart :series="visibleMonthlyTopicSeries" />
         </article>
       </section>
 
@@ -220,6 +230,13 @@
           </div>
           <TrendsBarChart :points="trends.downloads.downloadsPerMonth" />
         </article>
+
+        <article class="trends-chart">
+          <div class="trends-chart__title">
+            <h3>Downloads per month by topic</h3>
+          </div>
+          <TrendsLineChart :series="visibleMonthlyDownloadTopicSeries" />
+        </article>
       </section>
     </template>
   </main>
@@ -255,6 +272,24 @@ const visibleTopicSeries = computed(() =>
   trends.value
     ? filterSeries(
         trends.value.catalogGrowth.packageSubmissionsByTopicByDay,
+        topicQuery.value,
+      )
+    : [],
+);
+
+const visibleMonthlyTopicSeries = computed(() =>
+  trends.value
+    ? filterSeries(
+        trends.value.catalogGrowth.packageSubmissionsByTopicByMonth || [],
+        topicQuery.value,
+      )
+    : [],
+);
+
+const visibleMonthlyDownloadTopicSeries = computed(() =>
+  trends.value
+    ? filterSeries(
+        trends.value.downloads.downloadsPerMonthByTopic || [],
         topicQuery.value,
       )
     : [],
@@ -504,6 +539,7 @@ onMounted(() => {
     border: 1px solid transparent;
     border-radius: 999px;
     padding: 0.08rem 0.22rem;
+    cursor: pointer;
     opacity: 0.72;
     transition:
       background-color 0.12s ease,
@@ -511,9 +547,15 @@ onMounted(() => {
       color 0.12s ease,
       opacity 0.12s ease,
       font-weight 0.12s ease;
+
+    &:focus-visible {
+      outline: 2px solid var(--series-color);
+      outline-offset: 2px;
+    }
   }
 
-  span.is-active {
+  span.is-active,
+  span.is-isolated {
     border-color: color-mix(in srgb, var(--series-color) 46%, transparent);
     background: color-mix(in srgb, var(--series-color) 16%, transparent);
     color: var(--c-text);
@@ -595,18 +637,18 @@ onMounted(() => {
 
 :is(.dark, [data-theme="dark"]) {
   .trends-chart {
-    border-color: var(--c-border);
-    background: var(--c-bg-light);
+    border-color: color-mix(in srgb, var(--c-border) 78%, #334155);
+    background: linear-gradient(180deg, #1f2937 0%, var(--c-bg-light) 100%);
   }
 
   .trends-echart {
     background: linear-gradient(
         to bottom,
-        rgba(148, 163, 184, 0.12) 1px,
+        rgba(148, 163, 184, 0.16) 1px,
         transparent 1px
       ),
-      linear-gradient(to right, rgba(148, 163, 184, 0.08) 1px, transparent 1px),
-      var(--c-bg);
+      linear-gradient(to right, rgba(148, 163, 184, 0.1) 1px, transparent 1px),
+      linear-gradient(180deg, rgba(15, 23, 42, 0.84), rgba(17, 24, 39, 0.72));
     background-size:
       100% 25%,
       12.5% 100%,

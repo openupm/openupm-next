@@ -204,6 +204,7 @@ export interface PublicTrends {
     totalActivePackagesByDay: TrendsPoint[];
     newPackageSubmissionsByMonth: TrendsPoint[];
     packageSubmissionsByTopicByDay: TrendsSeries[];
+    packageSubmissionsByTopicByMonth: TrendsSeries[];
   };
   trustAndDistribution: {
     signedPackagesByDay: TrendsPoint[];
@@ -217,6 +218,7 @@ export interface PublicTrends {
   downloads: {
     totalDownloadsByTime: TrendsPoint[];
     downloadsPerMonth: TrendsPoint[];
+    downloadsPerMonthByTopic: TrendsSeries[];
   };
 }
 

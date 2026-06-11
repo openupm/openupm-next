@@ -108,16 +108,33 @@ describe('trends aggregation', () => {
       value: 2,
     });
     expect(trends.catalogGrowth.totalActivePackagesByDay).toEqual([
-      { date: '2026-01', value: 0 },
       { date: '2026-02', value: 1 },
       { date: '2026-03', value: 1 },
       { date: '2026-04', value: 2 },
+      { date: '2026-05', value: 2 },
+      { date: '2026-06', value: 2 },
     ]);
     expect(
       trends.catalogGrowth.packageSubmissionsByTopicByDay
         .find((series) => series.key === 'tools')
         ?.points.at(-1),
     ).toEqual({ date: '2026-02', value: 2 });
+    expect(
+      trends.catalogGrowth.packageSubmissionsByTopicByMonth.find(
+        (series) => series.key === 'tools',
+      )?.points,
+    ).toEqual([
+      { date: '2026-01', value: 1 },
+      { date: '2026-02', value: 1 },
+    ]);
+    expect(
+      trends.catalogGrowth.packageSubmissionsByTopicByMonth.find(
+        (series) => series.key === 'ai',
+      )?.points,
+    ).toEqual([
+      { date: '2026-01', value: 0 },
+      { date: '2026-02', value: 1 },
+    ]);
     expect(trends.trustAndDistribution.signedPackagesByDay.at(-1)).toEqual({
       date: '2026-02',
       value: 1,
@@ -146,6 +163,24 @@ describe('trends aggregation', () => {
       { date: '2026-02', value: 32 },
       { date: '2026-03', value: 0 },
       { date: '2026-04', value: 17 },
+    ]);
+    expect(
+      trends.downloads.downloadsPerMonthByTopic.find(
+        (series) => series.key === 'tools',
+      )?.points,
+    ).toEqual([
+      { date: '2026-02', value: 32 },
+      { date: '2026-03', value: 0 },
+      { date: '2026-04', value: 17 },
+    ]);
+    expect(
+      trends.downloads.downloadsPerMonthByTopic.find(
+        (series) => series.key === 'ai',
+      )?.points,
+    ).toEqual([
+      { date: '2026-02', value: 24 },
+      { date: '2026-03', value: 0 },
+      { date: '2026-04', value: 0 },
     ]);
   });
 
@@ -188,9 +223,67 @@ describe('trends aggregation', () => {
       trends.catalogGrowth.packageSubmissionsByTopicByDay[0].points,
     ).toEqual([{ date: '2019-01', value: 1 }]);
     expect(
+      trends.catalogGrowth.packageSubmissionsByTopicByMonth[0].points,
+    ).toEqual([{ date: '2019-01', value: 1 }]);
+    expect(
       trends.trustAndDistribution.releaseSourceAndSigningByDay
         .find((series) => series.key === 'githubReleaseAssets')
-        ?.points,
+      ?.points,
     ).toEqual([{ date: '2019-01', value: 1 }]);
+  });
+
+  it('counts active packages with a day-accurate 12 month cutoff', () => {
+    const trends = buildPublicTrends({
+      generatedAt: new Date('2026-06-11T00:00:00.000Z'),
+      topics: [],
+      packages: [],
+      releases: [
+        {
+          packageName: 'com.example.expired',
+          version: '1.0.0',
+          commit: '',
+          tag: '1.0.0',
+          state: ReleaseState.Succeeded,
+          buildId: '',
+          reason: 0,
+          createdAt: Date.parse('2025-06-10T00:00:00.000Z'),
+          updatedAt: Date.parse('2025-06-10T00:00:00.000Z'),
+          source: 'git',
+          signed: false,
+        },
+        {
+          packageName: 'com.example.cutoff',
+          version: '1.0.0',
+          commit: '',
+          tag: '1.0.0',
+          state: ReleaseState.Succeeded,
+          buildId: '',
+          reason: 0,
+          createdAt: Date.parse('2025-06-12T00:00:00.000Z'),
+          updatedAt: Date.parse('2025-06-12T00:00:00.000Z'),
+          source: 'git',
+          signed: false,
+        },
+        {
+          packageName: 'com.example.current',
+          version: '1.0.0',
+          commit: '',
+          tag: '1.0.0',
+          state: ReleaseState.Succeeded,
+          buildId: '',
+          reason: 0,
+          createdAt: Date.parse('2026-06-01T00:00:00.000Z'),
+          updatedAt: Date.parse('2026-06-01T00:00:00.000Z'),
+          source: 'git',
+          signed: false,
+        },
+      ],
+      downloadRanges: [],
+    });
+
+    expect(trends.catalogGrowth.totalActivePackagesByDay.at(-1)).toEqual({
+      date: '2026-06',
+      value: 2,
+    });
   });
 });

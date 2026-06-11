@@ -1,30 +1,31 @@
 <template>
-  <ClientOnly>
-    <VChart
-      class="trends-echart"
-      :option="chartOption"
-      autoresize
-      @click="handleChartClick"
-    />
-  </ClientOnly>
+  <VChart
+    v-if="mounted"
+    class="trends-echart"
+    :option="chartOption"
+    autoresize
+    @click="handleChartClick"
+  />
+  <div v-else class="trends-echart"></div>
   <div v-if="selectedSnapshot" class="trends-chart__snapshot">
     <strong>{{ selectedSnapshot.date }}</strong>
-    <span :style="{ '--series-color': pickSeriesColor(0) }">
+    <span :style="{ '--series-color': seriesColor(0) }">
       {{ formatNumber(selectedSnapshot.value) }}
     </span>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { use } from "echarts/core";
 import { CanvasRenderer } from "echarts/renderers";
 import { BarChart } from "echarts/charts";
 import { GridComponent, TooltipComponent } from "echarts/components";
+import { useDarkMode } from "@vuepress/theme-default/client";
 import VChart from "vue-echarts";
 import { TrendsPoint } from "@openupm/types";
 
-import { formatNumber, pickSeriesColor } from "../trendsView";
+import { formatNumber, pickDarkSeriesColor, pickSeriesColor } from "../trendsView";
 
 use([CanvasRenderer, BarChart, GridComponent, TooltipComponent]);
 
@@ -33,12 +34,25 @@ const props = defineProps<{
 }>();
 
 const selectedDate = ref("");
+const mounted = ref(false);
+const isDarkMode = useDarkMode();
+
+onMounted(() => {
+  mounted.value = true;
+});
 
 const dates = computed(() => props.points.map((point) => point.date));
 
+function seriesColor(index: number): string {
+  return isDarkMode.value ? pickDarkSeriesColor(index) : pickSeriesColor(index);
+}
+
 const chartOption = computed(() => ({
   animation: false,
-  color: [pickSeriesColor(0)],
+  textStyle: {
+    color: isDarkMode.value ? "#cbd5e1" : "#475569",
+  },
+  color: [seriesColor(0)],
   grid: {
     left: 44,
     right: 18,
@@ -48,15 +62,27 @@ const chartOption = computed(() => ({
   tooltip: {
     trigger: "axis",
     axisPointer: { type: "shadow" },
+    backgroundColor: isDarkMode.value ? "#111827" : "#ffffff",
+    borderColor: isDarkMode.value ? "rgba(148, 163, 184, 0.32)" : "#d8dee8",
+    textStyle: {
+      color: isDarkMode.value ? "#e5e7eb" : "#1f2937",
+    },
     valueFormatter: (value: number): string => formatNumber(value),
   },
   xAxis: {
     type: "category",
     data: dates.value,
     axisLabel: {
-      color: "inherit",
+      color: isDarkMode.value ? "#f8fafc" : "#475569",
       hideOverlap: true,
       formatter: formatYearTick,
+    },
+    axisLine: {
+      lineStyle: {
+        color: isDarkMode.value
+          ? "rgba(148, 163, 184, 0.36)"
+          : "rgba(100, 116, 139, 0.32)",
+      },
     },
     axisTick: { show: false },
   },
@@ -64,11 +90,22 @@ const chartOption = computed(() => ({
     type: "value",
     minInterval: 1,
     axisLabel: {
-      color: "inherit",
+      color: isDarkMode.value ? "#f8fafc" : "#475569",
       formatter: (value: number): string => formatNumber(value),
     },
+    axisLine: {
+      lineStyle: {
+        color: isDarkMode.value
+          ? "rgba(148, 163, 184, 0.36)"
+          : "rgba(100, 116, 139, 0.32)",
+      },
+    },
     splitLine: {
-      lineStyle: { color: "rgba(148, 163, 184, 0.18)" },
+      lineStyle: {
+        color: isDarkMode.value
+          ? "rgba(148, 163, 184, 0.2)"
+          : "rgba(148, 163, 184, 0.18)",
+      },
     },
   },
   series: [

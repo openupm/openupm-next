@@ -54,6 +54,7 @@ describe('trends router', () => {
         totalActivePackagesByDay: [],
         newPackageSubmissionsByMonth: [],
         packageSubmissionsByTopicByDay: [],
+        packageSubmissionsByTopicByMonth: [],
       },
       trustAndDistribution: {
         signedPackagesByDay: [],
@@ -67,6 +68,7 @@ describe('trends router', () => {
       downloads: {
         totalDownloadsByTime: [],
         downloadsPerMonth: [],
+        downloadsPerMonthByTopic: [],
       },
     });
 

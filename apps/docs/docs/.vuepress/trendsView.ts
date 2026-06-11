@@ -36,6 +36,20 @@ export function pickSeriesColor(index: number): string {
   return colors[index % colors.length];
 }
 
+export function pickDarkSeriesColor(index: number): string {
+  const colors = [
+    "#22d3ee",
+    "#facc15",
+    "#a78bfa",
+    "#4ade80",
+    "#fb7185",
+    "#818cf8",
+    "#f472b6",
+    "#34d399",
+  ];
+  return colors[index % colors.length];
+}
+
 export function filterSeries(
   series: TrendsSeries[],
   query: string,

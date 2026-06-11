@@ -57,9 +57,7 @@ const NavbarBrandLogo: FunctionalComponent = () => {
         {{ navbarBrandTitle }}
       </span>
     </RouteLink>
-    <ClientOnly>
-      <UnityAiTrialAd variant="navbar" />
-    </ClientOnly>
+    <UnityAiTrialAd variant="navbar" />
   </div>
 </template>
 
