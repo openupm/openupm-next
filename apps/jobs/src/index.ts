@@ -12,6 +12,10 @@ import { fetchPackageExtraJob } from './jobs/fetchPackageExtra.js';
 import { fetchSiteInfoJob } from './jobs/fetchSiteInfo.js';
 import { updateRecentPackagesJob } from './jobs/updateRecentPackages.js';
 import { updateFeedsJob } from './jobs/updateFeeds.js';
+import {
+  buildTrendsSnapshotBackfillJob,
+  buildTrendsSnapshotJob,
+} from './jobs/buildTrendsSnapshot.js';
 
 const logger = createLogger('@openupm/jobs');
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -115,8 +119,30 @@ function main(): void {
     '1 */2 * * *',
     async () => await fetchPackageExtraJob(null, { all: true, force: false }),
   );
+  scheduleJob(
+    'buildTrendsSnapshotJob',
+    '30 2 * * *',
+    async () => await buildTrendsSnapshotJob(),
+  );
+}
+
+async function run(argv: string[] = process.argv): Promise<void> {
+  const command = argv[2];
+  if (command === 'trends-backfill') {
+    await buildTrendsSnapshotBackfillJob();
+    return;
+  }
+  main();
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
-  main();
+  const command = process.argv[2];
+  void run()
+    .then(() => {
+      if (command === 'trends-backfill') process.exit(0);
+    })
+    .catch((err) => {
+      logger.error({ err, command }, 'jobs command failed');
+      process.exit(1);
+    });
 }

@@ -70,6 +70,12 @@
     },
   },
 
+  // Trends
+  trends: {
+    sqlitePath: '/data/openupm-trends.sqlite',
+    recentRefreshLookbackDays: 14,
+  },
+
   // Cron job switches. Keep defaults enabled for production; override in
   // runtime config for maintenance windows or incident mitigation.
   jobs: {
@@ -100,6 +106,10 @@
       healthcheckPingUrl: '',
     },
     updateRecentPackagesJob: {
+      enabled: true,
+      healthcheckPingUrl: '',
+    },
+    buildTrendsSnapshotJob: {
       enabled: true,
       healthcheckPingUrl: '',
     },

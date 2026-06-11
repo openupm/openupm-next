@@ -91,7 +91,9 @@ export const getPackageListPagePath = function (topic?: string): string {
 export const getContributorProfilePagePath = function (
   githubUser: string,
 ): string {
-  return `/contributors/${encodeURIComponent(githubUser.trim().toLowerCase())}/`;
+  return `/contributors/${encodeURIComponent(
+    githubUser.trim().toLowerCase(),
+  )}/`;
 };
 
 // OpenUPM GitHub repo url.
@@ -242,6 +244,18 @@ export const getMonthlyDownloadsRangeUrl = function (name: string): string {
     'last-month',
     name,
   );
+};
+
+/**
+ * Get downloads range url for package name and period.
+ * @param name package name
+ * @param period period, such as last-month or YYYY-MM-DD:YYYY-MM-DD
+ */
+export const getDownloadsRangeUrl = function (
+  name: string,
+  period: string,
+): string {
+  return urlJoin(getRegistryBaseUrl(), 'downloads', 'range', period, name);
 };
 
 /**
