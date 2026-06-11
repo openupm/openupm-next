@@ -101,12 +101,6 @@
         <article class="trends-chart">
           <div class="trends-chart__title">
             <h3>Packages by topic</h3>
-            <input
-              v-model="topicQuery"
-              class="trends-chart__filter"
-              type="search"
-              placeholder="Filter topics"
-            />
           </div>
           <TrendsLineChart :series="visibleTopicSeries" />
         </article>
@@ -252,7 +246,6 @@ import { computed, onMounted, ref } from "vue";
 import { getAPIBaseUrl } from "@openupm/common/build/urls.js";
 import { PublicTrends } from "@openupm/types";
 import {
-  filterSeries,
   formatNumber,
   latestValue,
   previousMonth,
@@ -264,7 +257,6 @@ import TrendsLineChart from "./TrendsLineChart.vue";
 const loading = ref(true);
 const error = ref("");
 const trends = ref<PublicTrends | null>(null);
-const topicQuery = ref("");
 
 const updatedText = computed(() => {
   if (!trends.value) return "";
@@ -272,30 +264,17 @@ const updatedText = computed(() => {
 });
 
 const visibleTopicSeries = computed(() =>
-  trends.value
-    ? filterSeries(
-        trends.value.catalogGrowth.packageSubmissionsByTopicByDay,
-        topicQuery.value,
-      )
-    : [],
+  trends.value ? trends.value.catalogGrowth.packageSubmissionsByTopicByDay : [],
 );
 
 const visibleMonthlyTopicSeries = computed(() =>
   trends.value
-    ? filterSeries(
-        trends.value.catalogGrowth.packageSubmissionsByTopicByMonth || [],
-        topicQuery.value,
-      )
+    ? trends.value.catalogGrowth.packageSubmissionsByTopicByMonth || []
     : [],
 );
 
 const visibleMonthlyDownloadTopicSeries = computed(() =>
-  trends.value
-    ? filterSeries(
-        trends.value.downloads.downloadsPerMonthByTopic || [],
-        topicQuery.value,
-      )
-    : [],
+  trends.value ? trends.value.downloads.downloadsPerMonthByTopic || [] : [],
 );
 
 const latestPackageMonth = computed(() =>
@@ -495,17 +474,6 @@ onMounted(() => {
   strong {
     font-size: 0.7rem;
   }
-}
-
-.trends-chart__filter {
-  min-width: 10rem;
-  max-width: 16rem;
-  border: 1px solid var(--c-border);
-  border-radius: 4px;
-  padding: 0.25rem 0.35rem;
-  background: var(--c-bg);
-  color: var(--c-text);
-  font-size: 0.68rem;
 }
 
 .trends-echart {
