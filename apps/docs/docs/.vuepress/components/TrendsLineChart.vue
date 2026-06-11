@@ -52,6 +52,7 @@ import { TrendsSeries } from "@openupm/types";
 import {
   formatNumber,
   formatYearTick,
+  isCurrentMonthDate,
   pickDarkSeriesColor,
   pickSeriesColor,
   shouldShowYearTick,
@@ -68,6 +69,14 @@ const hoveredSeriesName = ref("");
 const isolatedSeriesKey = ref("");
 const mounted = ref(false);
 const isDarkMode = useDarkMode();
+
+interface AxisTooltipParam {
+  axisValueLabel?: string;
+  marker?: string;
+  name?: string;
+  seriesName?: string;
+  value?: number | string | null;
+}
 
 onMounted(() => {
   mounted.value = true;
@@ -93,6 +102,36 @@ const visibleSeries = computed(() =>
 
 function seriesColor(index: number): string {
   return isDarkMode.value ? pickDarkSeriesColor(index) : pickSeriesColor(index);
+}
+
+function getTooltipNumber(value: AxisTooltipParam["value"]): number | null {
+  if (typeof value === "number") return value;
+  if (typeof value === "string" && value.trim()) return Number(value);
+  return null;
+}
+
+function formatAxisTooltip(
+  params: AxisTooltipParam | AxisTooltipParam[],
+): string {
+  const entries = Array.isArray(params) ? params : [params];
+  const date = entries[0]?.axisValueLabel || entries[0]?.name || "";
+  const uniqueEntries = new Map<string, AxisTooltipParam>();
+
+  for (const entry of entries) {
+    const label = entry.seriesName;
+    const value = getTooltipNumber(entry.value);
+    if (!label || value === null || Number.isNaN(value)) continue;
+    if (!uniqueEntries.has(label)) uniqueEntries.set(label, entry);
+  }
+
+  const rows = Array.from(uniqueEntries.values()).map((entry) => {
+    const value = getTooltipNumber(entry.value);
+    return `${entry.marker || ""}${entry.seriesName}: ${formatNumber(
+      value || 0,
+    )}`;
+  });
+
+  return [date, ...rows].join("<br/>");
 }
 
 const allDates = computed(() =>
@@ -127,7 +166,7 @@ const chartOption = computed(() => ({
     textStyle: {
       color: isDarkMode.value ? "#e5e7eb" : "#1f2937",
     },
-    valueFormatter: (value: number): string => formatNumber(value),
+    formatter: formatAxisTooltip,
   },
   xAxis: {
     type: "category",
@@ -171,20 +210,63 @@ const chartOption = computed(() => ({
       },
     },
   },
-  series: visibleSeries.value.map((entry) => {
+  series: visibleSeries.value.flatMap((entry) => {
     const values = new Map(
       entry.points.map((point) => [point.date, point.value]),
     );
-    return {
-      name: entry.label,
-      type: "line",
-      symbol: "circle",
-      symbolSize: 5,
-      showSymbol: true,
-      data: allDates.value.map((date) => values.get(date) ?? null),
-      connectNulls: false,
-      emphasis: { focus: "series" },
-    };
+    const color = seriesColor(
+      props.series.findIndex((series) => series.key === entry.key),
+    );
+    const firstIncompleteIndex = allDates.value.findIndex(
+      (date) => values.has(date) && isCurrentMonthDate(date),
+    );
+    const baseData = allDates.value.map((date) =>
+      isCurrentMonthDate(date) ? null : values.get(date) ?? null,
+    );
+    const seriesOptions = [
+      {
+        name: entry.label,
+        type: "line",
+        symbol: "circle",
+        symbolSize: 5,
+        showSymbol: true,
+        data: baseData,
+        connectNulls: false,
+        lineStyle: {
+          color,
+        },
+        itemStyle: {
+          color,
+        },
+        emphasis: { focus: "series" },
+      },
+    ];
+
+    if (firstIncompleteIndex >= 0) {
+      const incompleteStartIndex = Math.max(firstIncompleteIndex - 1, 0);
+      seriesOptions.push({
+        name: entry.label,
+        type: "line",
+        symbol: "circle",
+        symbolSize: 5,
+        showSymbol: true,
+        data: allDates.value.map((date, index) =>
+          index >= incompleteStartIndex ? values.get(date) ?? null : null,
+        ),
+        connectNulls: false,
+        lineStyle: {
+          type: "dashed",
+          width: 2,
+          color,
+        },
+        itemStyle: {
+          color,
+        },
+        emphasis: { focus: "series" },
+      });
+    }
+
+    return seriesOptions;
   }),
 }));
 

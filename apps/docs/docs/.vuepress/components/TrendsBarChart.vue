@@ -28,6 +28,7 @@ import { TrendsPoint } from "@openupm/types";
 import {
   formatNumber,
   formatYearTick,
+  isCurrentMonthDate,
   pickDarkSeriesColor,
   pickSeriesColor,
   shouldShowYearTick,
@@ -53,6 +54,10 @@ const dates = computed(() => props.points.map((point) => point.date));
 function seriesColor(index: number): string {
   return isDarkMode.value ? pickDarkSeriesColor(index) : pickSeriesColor(index);
 }
+
+const incompleteBarColor = computed(() =>
+  isDarkMode.value ? "rgba(248, 250, 252, 0.62)" : "rgba(15, 23, 42, 0.42)",
+);
 
 const chartOption = computed(() => ({
   animation: false,
@@ -121,7 +126,26 @@ const chartOption = computed(() => ({
     {
       name: props.seriesLabel || "Value",
       type: "bar",
-      data: props.points.map((point) => point.value),
+      data: props.points.map((point) =>
+        isCurrentMonthDate(point.date)
+          ? {
+              value: point.value,
+              itemStyle: {
+                borderColor: incompleteBarColor.value,
+                borderType: "dashed",
+                borderWidth: 2,
+                decal: {
+                  symbol: "line",
+                  color: incompleteBarColor.value,
+                  dashArrayX: [1, 0],
+                  dashArrayY: [2, 4],
+                  rotation: -Math.PI / 4,
+                  symbolSize: 1,
+                },
+              },
+            }
+          : point.value,
+      ),
       barMaxWidth: 18,
     },
   ],
