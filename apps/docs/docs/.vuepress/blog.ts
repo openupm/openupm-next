@@ -18,7 +18,7 @@ export const BLOG_POSTS: BlogPost[] = [
     slug: "openupm-trends-page",
     featuredImage: "/images/blog-covers/openupm-trends-total-packages.png",
     author: "Favo Yang",
-    date: "2026-06-12",
+    date: "2026-06-11",
     readingTime: "2 min read",
     excerpt:
       "OpenUPM now has a public trends page for package growth, release activity, signing adoption, publishing modes, downloads, and topic momentum.",
