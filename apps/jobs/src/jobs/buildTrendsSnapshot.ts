@@ -27,6 +27,7 @@ import { openTrendsSqliteStore } from '@openupm/server-common/build/trends/sqlit
 const logger = createLogger('@openupm/jobs/buildTrendsSnapshot');
 const DOWNLOAD_FETCH_CONCURRENCY = 8;
 const DEFAULT_RECENT_REFRESH_LOOKBACK_DAYS = 14;
+const MIN_DOWNLOAD_HISTORY_DAY = '2019-01-01';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const config = configRaw as any;
 
@@ -205,9 +206,13 @@ function getDownloadStartDay(params: {
   options: BuildTrendsSnapshotOptions;
   today: string;
 }): string {
-  if (params.mode === 'full') return params.firstPackageDay;
+  const earliestDownloadDay = maxDay(
+    params.firstPackageDay,
+    MIN_DOWNLOAD_HISTORY_DAY,
+  );
+  if (params.mode === 'full') return earliestDownloadDay;
   const lookbackDays = getRecentRefreshLookbackDays(params.options);
-  return maxDay(params.firstPackageDay, addDays(params.today, -lookbackDays));
+  return maxDay(earliestDownloadDay, addDays(params.today, -lookbackDays));
 }
 
 export async function buildTrendsSnapshotJob(
@@ -267,6 +272,12 @@ export async function buildTrendsSnapshotJob(
           )
         : new Set(packageNamesForDownloads);
     fullDownloadBackfillPackages = packageNamesMissingDownloads.size;
+    const fullDownloadStartDay = getDownloadStartDay({
+      firstPackageDay,
+      mode: 'full',
+      options,
+      today,
+    });
     const recentDownloadStartDay = getDownloadStartDay({
       firstPackageDay,
       mode: 'recent',
@@ -281,7 +292,7 @@ export async function buildTrendsSnapshotJob(
           packageName,
           `${
             packageNamesMissingDownloads.has(packageName)
-              ? firstPackageDay
+              ? fullDownloadStartDay
               : recentDownloadStartDay
           }:${today}`,
         ),
