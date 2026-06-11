@@ -37,8 +37,12 @@ export interface BuildTrendsSnapshotOptions {
   recentRefreshLookbackDays?: number;
 }
 
+function toTimestampMs(value: number): number {
+  return value < 100_000_000_000 ? value * 1000 : value;
+}
+
 function toUtcDay(value: number): string {
-  return new Date(value).toISOString().substring(0, 10);
+  return new Date(toTimestampMs(value)).toISOString().substring(0, 10);
 }
 
 function parseUtcDay(day: string): number {
