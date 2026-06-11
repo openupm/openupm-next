@@ -202,6 +202,7 @@ state: State
 status: Status
 website-status: Uptime Status
 queue-status: Queue Status
+trends: Trends
 submit-pr: Submit Pull Request
 submit-metadata: submit metadata
 supported-unity-version: supported unity version

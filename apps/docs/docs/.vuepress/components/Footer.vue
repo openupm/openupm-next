@@ -27,6 +27,10 @@ const aboutLinks = computed(() => [
   {
     link: "/queue/",
     text: t("queue-status")
+  },
+  {
+    link: "/trends/",
+    text: t("trends")
   }
 ]);
 

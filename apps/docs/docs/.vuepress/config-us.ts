@@ -161,13 +161,14 @@ export const themeConfig: any = {
     { text: "Docs", link: "/docs/" },
     { text: "Blog", link: "/blog/" },
     {
-      text: "Support",
-      ariaLabel: "Support Menu",
+      text: "About",
+      ariaLabel: "About Menu",
       children: [
         { text: "Support OpenUPM", link: "/support/" },
         { text: "Contributors", link: "/contributors/" },
         { text: "Uptime Status", link: "https://openupm.github.io/upptime/" },
         { text: "Queue Status", link: "/queue/" },
+        { text: "Trends", link: "/trends/" },
       ],
     },
     {
