@@ -49,7 +49,13 @@ import { useDarkMode } from "@vuepress/theme-default/client";
 import VChart from "vue-echarts";
 import { TrendsSeries } from "@openupm/types";
 
-import { formatNumber, pickDarkSeriesColor, pickSeriesColor } from "../trendsView";
+import {
+  formatNumber,
+  formatYearTick,
+  pickDarkSeriesColor,
+  pickSeriesColor,
+  shouldShowYearTick,
+} from "../trendsView";
 
 use([CanvasRenderer, LineChart, GridComponent, TooltipComponent]);
 
@@ -129,8 +135,10 @@ const chartOption = computed(() => ({
     data: allDates.value,
     axisLabel: {
       color: isDarkMode.value ? "#f8fafc" : "#475569",
-      hideOverlap: true,
-      formatter: formatYearTick,
+      interval: (index: number): boolean =>
+        shouldShowYearTick(allDates.value, index),
+      formatter: (value: string, index: number): string =>
+        formatYearTick(value, index, allDates.value),
     },
     axisLine: {
       lineStyle: {
@@ -179,12 +187,6 @@ const chartOption = computed(() => ({
     };
   }),
 }));
-
-function formatYearTick(value: string, index: number): string {
-  const year = value.substring(0, 4);
-  const previousDate = allDates.value[index - 1];
-  return previousDate?.substring(0, 4) === year ? "" : year;
-}
 
 const selectedSnapshot = computed(() =>
   selectedDate.value
