@@ -14,6 +14,16 @@ export const BLOG_RSS_PATH = "/blog/rss.xml";
 
 export const BLOG_POSTS: BlogPost[] = [
   {
+    title: "OpenUPM Trends Page Is Live",
+    slug: "openupm-trends-page",
+    featuredImage: "/images/blog-covers/openupm-trends-total-packages.png",
+    author: "Favo Yang",
+    date: "2026-06-12",
+    readingTime: "2 min read",
+    excerpt:
+      "OpenUPM now has a public trends page for package growth, release activity, signing adoption, publishing modes, downloads, and topic momentum.",
+  },
+  {
     title: "Contributor Profile Pages Arrive on OpenUPM",
     slug: "contributor-profile-badges",
     featuredImage: "/images/blog-covers/contributor-profile-pages-and-badges.png",
