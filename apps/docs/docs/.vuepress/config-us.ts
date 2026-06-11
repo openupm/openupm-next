@@ -226,6 +226,7 @@ export const themeConfig: any = {
     "/nuget/": docSideBar(),
     "/support/": docSideBar(),
     "/contributors/": docSideBar(),
+    "/trends/": false,
   },
 };
 
