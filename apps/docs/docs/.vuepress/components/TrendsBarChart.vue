@@ -37,6 +37,7 @@ use([CanvasRenderer, BarChart, GridComponent, TooltipComponent]);
 
 const props = defineProps<{
   points: TrendsPoint[];
+  seriesLabel?: string;
 }>();
 
 const selectedDate = ref("");
@@ -118,7 +119,7 @@ const chartOption = computed(() => ({
   },
   series: [
     {
-      name: "Value",
+      name: props.seriesLabel || "Value",
       type: "bar",
       data: props.points.map((point) => point.value),
       barMaxWidth: 18,

@@ -228,7 +228,10 @@
             <h3>Downloads per month</h3>
             <strong>{{ latestDownloadMonth }}</strong>
           </div>
-          <TrendsBarChart :points="trends.downloads.downloadsPerMonth" />
+          <TrendsBarChart
+            :points="trends.downloads.downloadsPerMonth"
+            series-label="Downloads per month"
+          />
         </article>
 
         <article class="trends-chart">

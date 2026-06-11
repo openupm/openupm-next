@@ -3,7 +3,7 @@
 
 <script setup lang="ts">
 import { computed, useAttrs } from 'vue';
-import { usePageFrontmatter } from '@vuepress/client';
+import { ClientOnly, usePageFrontmatter } from '@vuepress/client';
 
 import ParentLayout from '@vuepress/theme-default/layouts/Layout.vue';
 
@@ -39,7 +39,9 @@ const parentLayoutClass = computed(() => [
   <ParentLayout v-bind="parentLayoutAttrs" :class="parentLayoutClass">
     <template #page-content-top>
       <SiteBreadcrumb />
-      <AdsenseDisplayForContentTop v-if="showContentTopAd" />
+      <ClientOnly>
+        <AdsenseDisplayForContentTop v-if="showContentTopAd" />
+      </ClientOnly>
     </template>
 
     <template v-for="(_, name) in $slots" #[name]="slotData">
