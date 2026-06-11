@@ -34,6 +34,14 @@ export function formatYearTick(
   return shouldShowYearTick(dates, index) ? value.substring(0, 4) : "";
 }
 
+export function currentMonthKey(): string {
+  return new Date().toISOString().substring(0, 7);
+}
+
+export function isCurrentMonthDate(value: string): boolean {
+  return value.substring(0, 7) === currentMonthKey();
+}
+
 export function valueAtDate(points: TrendsPoint[], date: string): number {
   return points.find((point) => point.date === date)?.value || 0;
 }
