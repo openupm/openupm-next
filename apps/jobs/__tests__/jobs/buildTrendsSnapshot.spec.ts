@@ -207,6 +207,42 @@ describe('buildTrendsSnapshotJob', () => {
     );
   });
 
+  it('caps full download backfill history to the OpenUPM era', async () => {
+    mockPackageMetadata();
+    loadPackageMetadataLocalMock.mockResolvedValueOnce({
+      name: 'com.example.pkg',
+      aliases: [],
+      repoUrl: 'https://github.com/example/pkg',
+      displayName: 'Pkg',
+      description: '',
+      licenseSpdxId: null,
+      licenseName: '',
+      topics: ['tools'],
+      hunter: '',
+      createdAt: Date.parse('1975-08-15T00:00:00.000Z') / 1000,
+      trackingMode: 'githubRelease',
+      repo: 'pkg',
+      owner: 'example',
+      ownerUrl: '',
+      parentRepo: null,
+      parentOwner: null,
+      parentOwnerUrl: null,
+      readmeBranch: 'main',
+      hunterUrl: null,
+    });
+    mockReleases();
+
+    const { buildTrendsSnapshotBackfillJob } = await import(
+      '../../src/jobs/buildTrendsSnapshot.js'
+    );
+    await buildTrendsSnapshotBackfillJob();
+
+    expect(fetch).toHaveBeenCalledWith(
+      'https://package.openupm.com/downloads/range/2019-01-01:2026-06-11/com.example.pkg',
+      expect.any(Object),
+    );
+  });
+
   it('backfills full download history for packages missing stored downloads', async () => {
     mockPackageMetadata();
     mockReleases();
@@ -219,6 +255,43 @@ describe('buildTrendsSnapshotJob', () => {
 
     expect(fetch).toHaveBeenCalledWith(
       'https://package.openupm.com/downloads/range/2026-01-01:2026-06-11/com.example.pkg',
+      expect.any(Object),
+    );
+  });
+
+  it('caps missing package download backfills during recent refresh', async () => {
+    mockPackageMetadata();
+    loadPackageMetadataLocalMock.mockResolvedValueOnce({
+      name: 'com.example.pkg',
+      aliases: [],
+      repoUrl: 'https://github.com/example/pkg',
+      displayName: 'Pkg',
+      description: '',
+      licenseSpdxId: null,
+      licenseName: '',
+      topics: ['tools'],
+      hunter: '',
+      createdAt: Date.parse('1975-08-15T00:00:00.000Z') / 1000,
+      trackingMode: 'githubRelease',
+      repo: 'pkg',
+      owner: 'example',
+      ownerUrl: '',
+      parentRepo: null,
+      parentOwner: null,
+      parentOwnerUrl: null,
+      readmeBranch: 'main',
+      hunterUrl: null,
+    });
+    mockReleases();
+    getPackageNamesWithoutDownloadsMock.mockReturnValue(['com.example.pkg']);
+
+    const { buildTrendsSnapshotJob } = await import(
+      '../../src/jobs/buildTrendsSnapshot.js'
+    );
+    await buildTrendsSnapshotJob();
+
+    expect(fetch).toHaveBeenCalledWith(
+      'https://package.openupm.com/downloads/range/2019-01-01:2026-06-11/com.example.pkg',
       expect.any(Object),
     );
   });
