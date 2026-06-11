@@ -67,6 +67,20 @@
   can deploy automatically after merge, so stop at a ready PR plus local or
   staging review URL until the user explicitly approves merging/deploying.
 - `npm run docs:build:limit` is the fastest full SSR build smoke test for the docs app.
+- For docs client/site changes with meaningful browser behavior, use
+  Playwright for targeted e2e verification when practical. Prefer serving the
+  built docs output or running the VuePress dev server, then verify the actual
+  page behavior the user cares about: console errors, hydration warnings,
+  interactive controls, chart labels/tooltips, rendered canvas counts, network
+  status, dark/light theme behavior, and responsive viewport behavior.
+- When using Playwright for local docs review, keep the same staging-server
+  discipline as manual review: bind local dev servers to `0.0.0.0`, use an
+  available port, and do not publish local ports, LAN URLs, screenshots, or
+  workstation-specific paths in public PR text.
+- Browser automation does not replace lint, unit tests, or SSR build checks.
+  Report exactly what the Playwright probe covered and what it did not cover,
+  especially when third-party resources such as ads, analytics, or cookie
+  consent are blocked or allowed during the run.
 - If the shell is not already using the repo-pinned Node/npm versions, run docs
   commands through Volta, for example `volta run npm run lint`.
 - If `docs:build:limit` fails because
