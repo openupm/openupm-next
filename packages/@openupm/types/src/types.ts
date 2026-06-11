@@ -171,6 +171,55 @@ export interface DownloadsRange {
   downloads: Array<DailyDownload>;
 }
 
+export type TrendsCoverageState =
+  | 'exact'
+  | 'estimated'
+  | 'partial'
+  | 'collectedFrom';
+
+export interface TrendsCoverage {
+  state: TrendsCoverageState;
+  source: string;
+  description: string;
+  start?: string;
+  end?: string;
+}
+
+export interface TrendsPoint {
+  date: string;
+  value: number;
+}
+
+export interface TrendsSeries {
+  key: string;
+  label: string;
+  points: TrendsPoint[];
+}
+
+export interface PublicTrends {
+  generatedAt: string;
+  coverage: Record<string, TrendsCoverage>;
+  catalogGrowth: {
+    totalPackageSubmissionsByDay: TrendsPoint[];
+    totalActivePackagesByDay: TrendsPoint[];
+    newPackageSubmissionsByMonth: TrendsPoint[];
+    packageSubmissionsByTopicByDay: TrendsSeries[];
+  };
+  trustAndDistribution: {
+    signedPackagesByDay: TrendsPoint[];
+    releaseSourceAndSigningByDay: TrendsSeries[];
+  };
+  releaseActivity: {
+    activePackagesLast12Months: number;
+    totalReleasesByTime: TrendsPoint[];
+    releasesPerMonth: TrendsPoint[];
+  };
+  downloads: {
+    totalDownloadsByTime: TrendsPoint[];
+    downloadsPerMonth: TrendsPoint[];
+  };
+}
+
 export interface TopicBase {
   name: string;
   slug: string;

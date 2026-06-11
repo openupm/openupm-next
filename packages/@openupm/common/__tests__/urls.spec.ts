@@ -2,6 +2,7 @@ import {
   getContributorProfilePagePath,
   getAvatarImageUrl,
   getMediaBaseUrl,
+  getDownloadsRangeUrl,
   getMonthlyDownloadsRangeUrl,
   getMonthlyDownloadsUrl,
   getPackageImageUrl,
@@ -124,6 +125,17 @@ describe('download count urls', () => {
 
     expect(result).toEqual(
       'https://package.openupm.com/downloads/range/last-month/com.example.package',
+    );
+  });
+
+  it('should build a downloads range url for an explicit date period', () => {
+    const result = getDownloadsRangeUrl(
+      'com.example.package',
+      '2026-01-01:2026-01-31',
+    );
+
+    expect(result).toEqual(
+      'https://package.openupm.com/downloads/range/2026-01-01:2026-01-31/com.example.package',
     );
   });
 });

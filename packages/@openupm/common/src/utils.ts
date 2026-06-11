@@ -13,9 +13,11 @@ import { getPackageImageUrl } from './urls.js';
  * @param name environment variable name
  * @returns environment variable value
  */
-// TODO: https://github.com/vitejs/vite/issues/1149#issuecomment-857686209
 export const getEnv = function (name: string): string | undefined {
-  return process.env[name];
+  const meta = import.meta as ImportMeta & {
+    env?: Record<string, string | undefined>;
+  };
+  return meta.env?.[name] || process.env[name];
 };
 
 /**

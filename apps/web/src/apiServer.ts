@@ -7,6 +7,7 @@ import feedsRouter from './routers/feeds.js';
 import siteInfoRouter from './routers/siteInfo.js';
 import packagesRouter from './routers/packages.js';
 import queueStatusRouter from './routers/queueStatus.js';
+import trendsRouter from './routers/trends.js';
 
 // Touch the redis.client property to prepare the connection as soon as possible
 redis.client;
@@ -38,3 +39,4 @@ feedsRouter(app);
 siteInfoRouter(app);
 packagesRouter(app);
 queueStatusRouter(app);
+trendsRouter(app);
