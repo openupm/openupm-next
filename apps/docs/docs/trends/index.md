@@ -5,4 +5,6 @@ description: OpenUPM package, release, signing, and download trends.
 editLink: false
 ---
 
-<TrendsPageClient />
+<ClientOnly>
+  <TrendsPage />
+</ClientOnly>
