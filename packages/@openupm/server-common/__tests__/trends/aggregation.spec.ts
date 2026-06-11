@@ -148,4 +148,49 @@ describe('trends aggregation', () => {
       { date: '2026-04', value: 17 },
     ]);
   });
+
+  it('caps impossible package metadata dates to the OpenUPM era', () => {
+    const trends = buildPublicTrends({
+      generatedAt: new Date('2026-06-11T00:00:00.000Z'),
+      topics: [{ slug: 'tools', name: 'Tools', keywords: [] }],
+      packages: [
+        {
+          name: 'com.example.legacy',
+          aliases: [],
+          repoUrl: 'https://github.com/example/legacy',
+          displayName: 'Legacy',
+          description: '',
+          licenseSpdxId: null,
+          licenseName: '',
+          topics: ['tools'],
+          hunter: '',
+          createdAt: Date.parse('1975-08-15T00:00:00.000Z') / 1000,
+          trackingMode: 'githubRelease',
+          repo: 'legacy',
+          owner: 'example',
+          ownerUrl: '',
+          parentRepo: null,
+          parentOwner: null,
+          parentOwnerUrl: null,
+          readmeBranch: 'main',
+          hunterUrl: null,
+        },
+      ],
+      releases: [],
+      downloadRanges: [],
+    });
+
+    expect(trends.coverage.catalogGrowth.start).toEqual('2019-01-01');
+    expect(trends.catalogGrowth.totalPackageSubmissionsByDay).toEqual([
+      { date: '2019-01', value: 1 },
+    ]);
+    expect(
+      trends.catalogGrowth.packageSubmissionsByTopicByDay[0].points,
+    ).toEqual([{ date: '2019-01', value: 1 }]);
+    expect(
+      trends.trustAndDistribution.releaseSourceAndSigningByDay
+        .find((series) => series.key === 'githubReleaseAssets')
+        ?.points,
+    ).toEqual([{ date: '2019-01', value: 1 }]);
+  });
 });

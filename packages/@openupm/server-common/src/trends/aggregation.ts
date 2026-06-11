@@ -10,6 +10,7 @@ import {
 import { ReleaseState } from '@openupm/types';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
+const MIN_PACKAGE_METADATA_DAY = '2019-01-01';
 
 export interface PackageDownloadRange {
   package: string;
@@ -22,6 +23,11 @@ function toTimestampMs(value: number): number {
 
 function toUtcDay(value: number): string {
   return new Date(toTimestampMs(value)).toISOString().substring(0, 10);
+}
+
+function toPackageMetadataDay(value: number): string {
+  const day = toUtcDay(value);
+  return day < MIN_PACKAGE_METADATA_DAY ? MIN_PACKAGE_METADATA_DAY : day;
 }
 
 function toUtcMonth(day: string): string {
@@ -160,7 +166,7 @@ function buildTopicSeries(
   return topics.map((topic) => {
     const packageDays = packages
       .filter((pkg) => pkg.topics.includes(topic.slug))
-      .map((pkg) => toUtcDay(pkg.createdAt));
+      .map((pkg) => toPackageMetadataDay(pkg.createdAt));
     return {
       key: topic.slug,
       label: topic.name,
@@ -208,10 +214,10 @@ function buildReleaseSourceSeries(
 ): TrendsSeries[] {
   const gitDays = packages
     .filter((pkg) => (pkg.trackingMode || 'git') === 'git')
-    .map((pkg) => toUtcDay(pkg.createdAt));
+    .map((pkg) => toPackageMetadataDay(pkg.createdAt));
   const githubReleaseDays = packages
     .filter((pkg) => pkg.trackingMode === 'githubRelease')
-    .map((pkg) => toUtcDay(pkg.createdAt));
+    .map((pkg) => toPackageMetadataDay(pkg.createdAt));
   return [
     {
       key: 'githubReleaseAssets',
@@ -271,7 +277,9 @@ export function buildPublicTrends(input: {
   downloadRanges: PackageDownloadRange[];
 }): PublicTrends {
   const generatedAt = input.generatedAt || new Date();
-  const packageDays = input.packages.map((pkg) => toUtcDay(pkg.createdAt));
+  const packageDays = input.packages.map((pkg) =>
+    toPackageMetadataDay(pkg.createdAt),
+  );
   const firstPackageDay = minDefinedDate(packageDays);
   const lastPackageDay = maxDefinedDate(packageDays);
   const signedPackageDays = buildSignedPackageDays(input.releases);
