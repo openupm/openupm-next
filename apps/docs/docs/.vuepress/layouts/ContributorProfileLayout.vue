@@ -59,6 +59,11 @@ const contributorsLink = {
   link: "/contributors/",
 };
 
+const homeLink = {
+  text: "Home",
+  link: "/",
+};
+
 const isGitHubProfileHost = function (profileHost: string): boolean {
   const hostname = profileHost.toLowerCase();
   return hostname === "github.com" || hostname.endsWith(".github.com");
@@ -134,6 +139,9 @@ onMounted(() => {
         <main class="profile-content">
           <nav aria-label="Breadcrumb">
             <ul class="breadcrumb profile-breadcrumb">
+              <li class="breadcrumb-item">
+                <AutoLink :item="homeLink" />
+              </li>
               <li class="breadcrumb-item">
                 <AutoLink :item="contributorsLink" />
               </li>

@@ -11,6 +11,7 @@ import {
   buildRelatedPackageSummaries,
   buildRelatedPackageSummaryIndex,
   buildPackageStructuredData,
+  buildUnityNuGetStructuredData,
   getLatestPackageLastModified,
   getPackageLastModified,
   structuredDataHead,
@@ -187,9 +188,53 @@ describe('SEO metadata helpers', () => {
     });
     expect(structuredData[1]).toMatchObject({
       '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          position: 1,
+          name: 'Home',
+          item: 'https://openupm.com/',
+        },
+        {
+          position: 2,
+          name: 'Packages',
+          item: 'https://openupm.com/packages/',
+        },
+        {
+          position: 3,
+          name: 'Example AI',
+        },
+      ],
     });
     expect(structuredDataHead(structuredData)[0][1]).toEqual({
       type: 'application/ld+json',
+    });
+  });
+
+  it('builds Home-first breadcrumb JSON-LD for UnityNuGet package pages', () => {
+    const structuredData = buildUnityNuGetStructuredData({
+      nugetId: 'Newtonsoft.Json',
+      packageName: 'org.nuget.newtonsoft.json',
+      version: '13.0.3',
+    });
+
+    expect(structuredData[1]).toMatchObject({
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          position: 1,
+          name: 'Home',
+          item: 'https://openupm.com/',
+        },
+        {
+          position: 2,
+          name: 'Packages',
+          item: 'https://openupm.com/packages/',
+        },
+        {
+          position: 3,
+          name: 'Newtonsoft.Json',
+        },
+      ],
     });
   });
 

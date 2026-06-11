@@ -44,6 +44,8 @@ describe("site breadcrumbs", () => {
   it("renders the current page breadcrumb as non-link text", () => {
     const source = readFileSync(breadcrumbPath, "utf8");
 
+    expect(source).toContain('{ text: "Home", link: "/" }');
+    expect(source).toContain("visibleBreadcrumbItems");
     expect(source).toContain('<span v-else aria-current="page">');
     expect(source).not.toContain('href="#"');
   });

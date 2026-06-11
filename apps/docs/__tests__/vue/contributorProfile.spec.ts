@@ -187,6 +187,7 @@ describe("contributor profile filtering", () => {
 
     expect(source).toContain('<ul class="breadcrumb profile-breadcrumb">');
     expect(source).toContain('class="breadcrumb-item"');
+    expect(source).toContain('<AutoLink :item="homeLink" />');
     expect(source).toContain('<AutoLink :item="contributorsLink" />');
     expect(source).toContain("Owned packages");
     expect(source).toContain("Discovered packages");

@@ -341,12 +341,18 @@ export const buildPackageStructuredData = (
       {
         '@type': 'ListItem',
         position: 1,
+        name: 'Home',
+        item: `${OPENUPM_ORIGIN}/`,
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
         name: 'Packages',
         item: `${OPENUPM_ORIGIN}${getPackageListPagePath()}`,
       },
       {
         '@type': 'ListItem',
-        position: 2,
+        position: 3,
         name: displayName || metadataLocal.name,
         item: packageUrl,
       },
@@ -383,14 +389,20 @@ export const buildUnityNuGetStructuredData = (entry: {
       '@type': 'BreadcrumbList',
       itemListElement: [
         {
-        '@type': 'ListItem',
-        position: 1,
-        name: 'Packages',
-        item: `${OPENUPM_ORIGIN}${getPackageListPagePath()}`,
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Home',
+          item: `${OPENUPM_ORIGIN}/`,
         },
         {
           '@type': 'ListItem',
           position: 2,
+          name: 'Packages',
+          item: `${OPENUPM_ORIGIN}${getPackageListPagePath()}`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 3,
           name: entry.nugetId,
           item: packageUrl,
         },
