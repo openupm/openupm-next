@@ -23,6 +23,9 @@ catalog changes over time. The page brings the main ecosystem signals into one
 place, including package growth, active packages, release activity, signing and
 publishing modes, downloads, and topic momentum.
 
+You can find it from the navbar under About > Trends, or from the About section
+in the homepage footer.
+
 The first section focuses on catalog growth. It shows the total number of
 packages, the number of packages with a successful published release in the last
 12 months, and monthly package additions. This makes it easier to separate the
