@@ -188,6 +188,7 @@ describe('buildPackage GitHub Release pending probes', () => {
     );
 
     expect(resolveGitHubReleaseAssetMock).not.toHaveBeenCalled();
+    expect(removeReleaseMock).not.toHaveBeenCalled();
     expect(queueRemoveMock).not.toHaveBeenCalled();
     expect(addJobMock).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -195,6 +196,68 @@ describe('buildPackage GitHub Release pending probes', () => {
         data: { name: 'com.example.asset', version: '1.0.0' },
       }),
     );
+  });
+
+  it('removes a retained failed release job when its Git tag was deleted', async () => {
+    const deletedRelease = createRelease({
+      reason: ReleaseErrorCode.GitHubReleaseNotFound,
+    });
+    gitListRemoteTagsMock.mockResolvedValue([
+      { tag: 'upm/1.0.1', commit: 'def456' },
+    ]);
+    fetchAllMock.mockResolvedValue([deletedRelease]);
+    fetchOneMock.mockResolvedValue(null);
+    saveReleaseMock.mockImplementation(async (value) => ({
+      packageName: 'com.example.asset',
+      version: '1.0.1',
+      commit: 'def456',
+      tag: 'upm/1.0.1',
+      state: ReleaseState.Pending,
+      buildId: '',
+      reason: ReleaseErrorCode.None,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+      source: 'githubRelease',
+      signed: false,
+      ...value,
+    }));
+
+    const { buildPackage } = await import('../../src/workers/buildPackage.js');
+    await buildPackage('com.example.asset');
+
+    expect(queueRemoveMock).toHaveBeenCalledWith(
+      'build-rel|com.example.asset|1.0.0',
+      { removeChildren: true },
+    );
+    expect(removeReleaseMock).toHaveBeenCalledWith(
+      'com.example.asset',
+      '1.0.0',
+    );
+    expect(resolveGitHubReleaseAssetMock).not.toHaveBeenCalledWith(
+      expect.objectContaining({ releaseTag: 'upm/1.0.0' }),
+    );
+  });
+
+  it('removes a retained failed release job when its only valid Git tag was deleted', async () => {
+    const deletedRelease = createRelease({
+      reason: ReleaseErrorCode.GitHubReleaseNotFound,
+    });
+    gitListRemoteTagsMock.mockResolvedValue([]);
+    fetchAllMock.mockResolvedValue([deletedRelease]);
+
+    const { buildPackage } = await import('../../src/workers/buildPackage.js');
+    await buildPackage('com.example.asset');
+
+    expect(queueRemoveMock).toHaveBeenCalledWith(
+      'build-rel|com.example.asset|1.0.0',
+      { removeChildren: true },
+    );
+    expect(removeReleaseMock).toHaveBeenCalledWith(
+      'com.example.asset',
+      '1.0.0',
+    );
+    expect(fetchOneMock).not.toHaveBeenCalled();
+    expect(addJobMock).not.toHaveBeenCalled();
   });
 
   it('keeps retryable failed releases retained until explicit reset', async () => {

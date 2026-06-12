@@ -114,16 +114,16 @@ export async function buildPackage(name: string): Promise<void> {
   });
   await setInvalidTags(name, invalidTags);
 
-  if (!validTags.length) {
-    logger.info({ pkg: name }, 'no valid tags found');
-    return;
-  }
-
   const releases = await updateReleaseRecords(
     pkg.name,
     validTags,
     pkg.trackingMode || 'git',
   );
+  if (!validTags.length) {
+    logger.info({ pkg: name }, 'no valid tags found');
+    return;
+  }
+
   await probePendingGitHubReleaseAssets(pkg, releases);
   await addReleaseJobs(releases);
 }
@@ -235,7 +235,7 @@ async function updateReleaseRecords(
           },
           'remove failed release that not listed in remoteTags',
         );
-        await remove(packageName, rel.version);
+        await removeStaleFailedRelease(packageName, rel);
       }
     }
   }
@@ -257,6 +257,17 @@ async function updateReleaseRecords(
     releases.push(release);
   }
   return releases;
+}
+
+async function removeStaleFailedRelease(
+  packageName: string,
+  release: ReleaseModel,
+): Promise<void> {
+  const jobConfig = config.jobs.buildRelease;
+  const queue = getQueue(jobConfig.queue);
+  const jobId = createJobId(jobConfig.name, packageName, release.version);
+  await queue.remove(jobId, { removeChildren: true });
+  await remove(packageName, release.version);
 }
 
 async function addReleaseJobs(releases: ReleaseModel[]): Promise<void> {
