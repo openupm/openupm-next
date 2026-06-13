@@ -92,6 +92,42 @@ function asClaims(payload: JWTPayload): GitHubActionsOidcClaims {
   return payload as GitHubActionsOidcClaims;
 }
 
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function immutableRepoSubjectPattern(repository: string, ref: string): RegExp {
+  const [owner, repo] = repository.split('/');
+  return new RegExp(
+    `^repo:${escapeRegExp(owner)}@[0-9]+/${escapeRegExp(
+      repo,
+    )}@[0-9]+:ref:${escapeRegExp(ref)}$`,
+    'i',
+  );
+}
+
+function validateSubjectRef(
+  claims: GitHubActionsOidcClaims,
+  packageRepo: string,
+): void {
+  if (!claims.sub || !claims.ref || !claims.sub.includes(':ref:')) return;
+
+  const expectedLegacySubject = `repo:${packageRepo}:ref:${claims.ref}`;
+  if (claims.sub.toLowerCase() === expectedLegacySubject.toLowerCase()) {
+    return;
+  }
+
+  if (immutableRepoSubjectPattern(packageRepo, claims.ref).test(claims.sub)) {
+    return;
+  }
+
+  throw new PublishTriggerAuthError(
+    'SubjectMismatch',
+    'The GitHub Actions OIDC token subject does not match this package.',
+    403,
+  );
+}
+
 export function validateGitHubActionsOidcClaims(
   claims: GitHubActionsOidcClaims,
   options: GitHubActionsOidcValidationOptions,
@@ -141,6 +177,8 @@ export function validateGitHubActionsOidcClaims(
       403,
     );
   }
+
+  validateSubjectRef(claims, packageRepo);
 
   if (requirePublicRepository && claims.repository_visibility !== 'public') {
     throw new PublishTriggerAuthError(

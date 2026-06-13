@@ -18,6 +18,8 @@ function claims(
     event_name: 'push',
     ref_type: 'tag',
     ref: 'refs/tags/upm/1.2.3',
+    sub:
+      'repo:openupm/com.example.openupm-action:ref:refs/tags/upm/1.2.3',
     ...overrides,
   };
 }
@@ -56,6 +58,58 @@ describe('githubOidc', () => {
     });
 
     expect(validated.repository).toBe('openupm/com.example.openupm-action');
+  });
+
+  it('accepts release event claims for a matching registered tag', () => {
+    const validated = validateGitHubActionsOidcClaims(
+      claims({
+        event_name: 'release',
+        ref: 'refs/tags/v1.2.3',
+        sub:
+          'repo:openupm/com.example.openupm-action:ref:refs/tags/v1.2.3',
+      }),
+      {
+        packageRepoUrl:
+          'https://github.com/openupm/com.example.openupm-action',
+        tag: 'v1.2.3',
+      },
+    );
+
+    expect(validated.event_name).toBe('release');
+  });
+
+  it('accepts immutable repository subject formats for a matching tag', () => {
+    const validated = validateGitHubActionsOidcClaims(
+      claims({
+        sub:
+          'repo:openupm@100/com.example.openupm-action@200:ref:refs/tags/upm/1.2.3',
+      }),
+      {
+        packageRepoUrl:
+          'https://github.com/openupm/com.example.openupm-action',
+        tag: 'upm/1.2.3',
+      },
+    );
+
+    expect(validated.sub).toContain('@200');
+  });
+
+  it('rejects subject ref mismatches', () => {
+    expectAuthError(
+      () =>
+        validateGitHubActionsOidcClaims(
+          claims({
+            sub:
+              'repo:openupm/com.example.openupm-action:ref:refs/tags/other',
+          }),
+          {
+            packageRepoUrl:
+              'https://github.com/openupm/com.example.openupm-action',
+            tag: 'upm/1.2.3',
+          },
+        ),
+      'SubjectMismatch',
+    );
   });
 
   it('rejects wrong audience', () => {
@@ -129,10 +183,18 @@ describe('githubOidc', () => {
     );
     expectAuthError(
       () =>
-        validateGitHubActionsOidcClaims(claims({ ref: 'refs/tags/v1.2.3' }), {
-          packageRepoUrl: 'https://github.com/openupm/com.example.openupm-action',
-          tag: 'upm/1.2.3',
-        }),
+        validateGitHubActionsOidcClaims(
+          claims({
+            ref: 'refs/tags/v1.2.3',
+            sub:
+              'repo:openupm/com.example.openupm-action:ref:refs/tags/v1.2.3',
+          }),
+          {
+            packageRepoUrl:
+              'https://github.com/openupm/com.example.openupm-action',
+            tag: 'upm/1.2.3',
+          },
+        ),
       'RefMismatch',
     );
   });
