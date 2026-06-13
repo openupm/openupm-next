@@ -165,6 +165,27 @@ describe('package publish router', () => {
     expect(response.body.deduped).toBe(true);
   });
 
+  it('normalizes refresh request version and tag fields', async () => {
+    const response = await request(app.server)
+      .post(`/packages/${PACKAGE_NAME}/refresh`)
+      .set('Authorization', 'Bearer test-token')
+      .send({ version: ` ${VERSION} `, tag: ' upm/1.2.3 ' })
+      .expect(202);
+
+    expect(mocks.verifyGitHubActionsOidcToken).toHaveBeenCalledWith(
+      'test-token',
+      {
+        packageRepoUrl: 'https://github.com/openupm/com.example.openupm-action',
+        tag: 'upm/1.2.3',
+      },
+    );
+    expect(mocks.fetchOne).toHaveBeenCalledWith(PACKAGE_NAME, VERSION);
+    expect(response.body).toMatchObject({
+      version: VERSION,
+      tag: 'upm/1.2.3',
+    });
+  });
+
   it('accepts GitHub Release event refresh triggers', async () => {
     mocks.verifyGitHubActionsOidcToken.mockResolvedValueOnce({
       repository: 'openupm/com.example.openupm-action',
@@ -198,6 +219,12 @@ describe('package publish router', () => {
       .post(`/packages/${PACKAGE_NAME}/refresh`)
       .set('Authorization', 'Bearer test-token')
       .send({})
+      .expect(400);
+
+    await request(app.server)
+      .post(`/packages/${PACKAGE_NAME}/refresh`)
+      .set('Authorization', 'Bearer test-token')
+      .send({ version: '   ' })
       .expect(400);
 
     await request(app.server)

@@ -102,6 +102,12 @@ function sendError(
   return reply.status(statusCode).send({ error: code, message });
 }
 
+function normalizeOptionalString(value: string | undefined): string | undefined {
+  if (typeof value !== 'string') return undefined;
+  const trimmed = value.trim();
+  return trimmed || undefined;
+}
+
 export default function router(server: FastifyInstance): void {
   server.post(
     '/packages/:name/refresh',
@@ -110,7 +116,8 @@ export default function router(server: FastifyInstance): void {
       reply: FastifyReply,
     ) => {
       const packageName = request.params.name;
-      const { version, tag } = request.body || {};
+      const version = normalizeOptionalString(request.body?.version);
+      const tag = normalizeOptionalString(request.body?.tag);
 
       if (!version) {
         return sendError(
