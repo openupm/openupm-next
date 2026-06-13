@@ -6,6 +6,7 @@ import adsRouter from './routers/ads.js';
 import feedsRouter from './routers/feeds.js';
 import siteInfoRouter from './routers/siteInfo.js';
 import packagesRouter from './routers/packages.js';
+import packagePublishRouter from './routers/packagePublish.js';
 import queueStatusRouter from './routers/queueStatus.js';
 import trendsRouter from './routers/trends.js';
 
@@ -37,6 +38,7 @@ app.get('/', () => {
 adsRouter(app);
 feedsRouter(app);
 siteInfoRouter(app);
+packagePublishRouter(app);
 packagesRouter(app);
 queueStatusRouter(app);
 trendsRouter(app);

@@ -5,4 +5,10 @@
     // enable offline queue mode for testing
     enableOfflineQueue: true,
   },
+
+  publishTrigger: {
+    rateLimit: {
+      enabled: false,
+    },
+  },
 }
