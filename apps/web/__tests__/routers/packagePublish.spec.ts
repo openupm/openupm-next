@@ -165,6 +165,34 @@ describe('package publish router', () => {
     expect(response.body.deduped).toBe(true);
   });
 
+  it('accepts GitHub Release event refresh triggers', async () => {
+    mocks.verifyGitHubActionsOidcToken.mockResolvedValueOnce({
+      repository: 'openupm/com.example.openupm-action',
+      event_name: 'release',
+      ref: 'refs/tags/v1.2.3',
+    });
+
+    const response = await request(app.server)
+      .post(`/packages/${PACKAGE_NAME}/refresh`)
+      .set('Authorization', 'Bearer release-token')
+      .send({ version: VERSION, tag: 'v1.2.3' })
+      .expect(202);
+
+    expect(mocks.verifyGitHubActionsOidcToken).toHaveBeenCalledWith(
+      'release-token',
+      {
+        packageRepoUrl: 'https://github.com/openupm/com.example.openupm-action',
+        tag: 'v1.2.3',
+      },
+    );
+    expect(response.body).toMatchObject({
+      packageName: PACKAGE_NAME,
+      version: VERSION,
+      tag: 'v1.2.3',
+      accepted: true,
+    });
+  });
+
   it('rejects missing version and token before enqueuing', async () => {
     await request(app.server)
       .post(`/packages/${PACKAGE_NAME}/refresh`)
