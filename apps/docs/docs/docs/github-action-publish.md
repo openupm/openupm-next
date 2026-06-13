@@ -131,6 +131,7 @@ match the `version` field in the package's `package.json` at that tag.
 | `published-version` | Registry version reported by OpenUPM when available. |
 | `signed`            | Whether OpenUPM reports the package version as signed. |
 | `package-url`       | OpenUPM package page URL. |
+| `status-url`        | OpenUPM release status API URL. |
 
 ## Failure Behavior
 
