@@ -101,7 +101,7 @@ function immutableRepoSubjectPattern(repository: string, ref: string): RegExp {
   return new RegExp(
     `^repo:${escapeRegExp(owner)}@[0-9]+/${escapeRegExp(
       repo,
-    )}@[0-9]+:ref:${escapeRegExp(ref)}$`,
+    )}@[0-9]+:ref:${escapeRegExp(ref)}(?::|$)`,
     'i',
   );
 }
@@ -113,7 +113,12 @@ function validateSubjectRef(
   if (!claims.sub || !claims.ref || !claims.sub.includes(':ref:')) return;
 
   const expectedLegacySubject = `repo:${packageRepo}:ref:${claims.ref}`;
-  if (claims.sub.toLowerCase() === expectedLegacySubject.toLowerCase()) {
+  const lowerSubject = claims.sub.toLowerCase();
+  const lowerExpectedSubject = expectedLegacySubject.toLowerCase();
+  if (
+    lowerSubject === lowerExpectedSubject ||
+    lowerSubject.startsWith(`${lowerExpectedSubject}:`)
+  ) {
     return;
   }
 

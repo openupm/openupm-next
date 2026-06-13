@@ -94,6 +94,40 @@ describe('githubOidc', () => {
     expect(validated.sub).toContain('@200');
   });
 
+  it('accepts ref subjects with additional custom subject claims', () => {
+    const validated = validateGitHubActionsOidcClaims(
+      claims({
+        sub:
+          'repo:openupm/com.example.openupm-action:ref:refs/tags/upm/1.2.3:job_workflow_ref:openupm/reusable/.github/workflows/publish.yml@refs/heads/main',
+      }),
+      {
+        packageRepoUrl:
+          'https://github.com/openupm/com.example.openupm-action',
+        tag: 'upm/1.2.3',
+      },
+    );
+
+    expect(validated.sub).toContain('job_workflow_ref');
+  });
+
+  it('rejects subject refs that only share a tag prefix', () => {
+    expectAuthError(
+      () =>
+        validateGitHubActionsOidcClaims(
+          claims({
+            sub:
+              'repo:openupm/com.example.openupm-action:ref:refs/tags/upm/1.2.3-extra',
+          }),
+          {
+            packageRepoUrl:
+              'https://github.com/openupm/com.example.openupm-action',
+            tag: 'upm/1.2.3',
+          },
+        ),
+      'SubjectMismatch',
+    );
+  });
+
   it('rejects subject ref mismatches', () => {
     expectAuthError(
       () =>
