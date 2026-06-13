@@ -3,9 +3,10 @@
 
 # Publishing with GitHub Actions
 
-OpenUPM can publish a package version automatically after you push a Git tag.
-The official GitHub Action triggers an OpenUPM package scan and waits until the
-matching version is published, fails, or reaches the workflow timeout.
+OpenUPM can publish a package version automatically after you push a Git tag or
+publish a GitHub Release. The official GitHub Action triggers an OpenUPM
+package scan and waits until the matching version is published, fails, or
+reaches the workflow timeout.
 
 Use this when you maintain the package repository and want the tag workflow to
 report whether the OpenUPM registry has accepted the new package version. This
@@ -26,7 +27,7 @@ You do not need an OpenUPM account, an OpenUPM token, a GitHub personal access
 token, or a shared webhook secret. OpenUPM verifies the GitHub OIDC token and
 checks that the workflow repository matches the package `repoUrl`.
 
-## Workflow Example
+## Tag Push Workflow
 
 For a package that uses plain semver tags such as `1.2.3`, add this workflow to
 the package repository:
@@ -56,6 +57,42 @@ jobs:
 
 The `id-token: write` permission lets the action request a GitHub OIDC token.
 The token is scoped to the workflow run and expires quickly.
+
+## GitHub Release Workflow
+
+You can also trigger OpenUPM after a GitHub Release is published. This example
+accepts release tags such as `v1.2.3` and passes `1.2.3` as the OpenUPM package
+version:
+
+```yaml
+name: OpenUPM
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - id: version
+        env:
+          TAG_NAME: ${{ github.event.release.tag_name }}
+        run: echo "value=${TAG_NAME#v}" >> "$GITHUB_OUTPUT"
+
+      - uses: openupm/openupm-action@v1
+        with:
+          package: com.example.openupm-action
+          version: ${{ steps.version.outputs.value }}
+          tag: ${{ github.event.release.tag_name }}
+```
+
+If your release tags already match `package.json.version`, use the tag value
+directly for both `version` and `tag`.
 
 ## Prefixed Tags
 
