@@ -211,7 +211,7 @@ describe('package publish router', () => {
     });
   });
 
-  it('clears a stale failed release after accepting a refresh', async () => {
+  it('clears a stale failed release before enqueueing a refresh', async () => {
     mocks.fetchOne
       .mockResolvedValueOnce(
         release(ReleaseState.Failed, {
@@ -228,6 +228,11 @@ describe('package publish router', () => {
 
     expect(mocks.enqueuePackageRefresh).toHaveBeenCalledWith(PACKAGE_NAME);
     expect(mocks.removeRelease).toHaveBeenCalledWith(PACKAGE_NAME, VERSION);
+    expect(
+      mocks.removeRelease.mock.invocationCallOrder[0],
+    ).toBeLessThan(
+      mocks.enqueuePackageRefresh.mock.invocationCallOrder[0],
+    );
     expect(response.body.release).toMatchObject({
       state: 'unknown',
       reason: 'unknown',

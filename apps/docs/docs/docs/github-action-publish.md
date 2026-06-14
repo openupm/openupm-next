@@ -42,7 +42,7 @@ name: OpenUPM
 on:
   push:
     tags:
-      - '*'
+      - '**'
 
 permissions:
   id-token: write

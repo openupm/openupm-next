@@ -172,8 +172,8 @@ export default function router(server: FastifyInstance): void {
           ip: request.ip,
         });
 
-        const job = await enqueuePackageRefresh(packageName);
         await clearFailedReleaseForRefresh(packageName, version);
+        const job = await enqueuePackageRefresh(packageName);
         const status = await releaseStatus(packageName, version);
         logger.info(
           {
