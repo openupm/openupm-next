@@ -68,9 +68,19 @@ jobs:
 The `id-token: write` permission lets the action request a GitHub OIDC token.
 The token is scoped to the workflow run and expires quickly.
 
-## GitHub Release Workflow
+## GitHub Release Workflows
 
-You can also trigger OpenUPM after a GitHub Release is published:
+For packages that publish through GitHub Release asset tracking, including
+signed packages, OpenUPM needs the GitHub Release and its package asset to
+exist before it scans the version. Choose the workflow shape based on who
+creates the GitHub Release.
+
+### Case 1: The Release Already Exists
+
+Use a `release: published` workflow when the GitHub Release is created outside
+this workflow, and the package asset is already attached when the release event
+fires. This is a good fit for manually published releases or external release
+tools that publish the release after uploading the asset.
 
 ```yaml
 name: OpenUPM
@@ -93,17 +103,47 @@ jobs:
           tag: ${{ github.event.release.tag_name }}
 ```
 
-Use this release workflow for packages that publish through GitHub Release
-asset tracking, including signed packages, when the GitHub Release is published
-before this workflow starts and the package asset is already attached. In that
-mode, OpenUPM needs the GitHub Release and its package asset to exist before it
-scans the version.
+### Case 2: This Workflow Creates The Release
 
-If another GitHub Actions workflow creates the GitHub Release and uploads the
-asset, add `openupm/openupm-action` as a later step in that same workflow after
-the upload. A release created by a workflow's `GITHUB_TOKEN` does not normally
-start another workflow from the `release` event, and triggering before the asset
-upload can make OpenUPM scan too early.
+If a GitHub Actions workflow builds the package, creates the GitHub Release,
+and uploads the package asset, call `openupm/openupm-action` as a later step in
+that same workflow after the upload:
+
+```yaml
+name: Build signed package and publish to OpenUPM
+
+on:
+  push:
+    tags:
+      - '**'
+
+permissions:
+  id-token: write
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Build, sign, and verify the UPM tarball here.
+
+      - name: Upload GitHub Release asset
+        uses: softprops/action-gh-release@v2
+        with:
+          files: path/to/com.example.package-*.tgz
+
+      - uses: openupm/openupm-action@v1
+        with:
+          package: com.example.package
+          tag: ${{ github.ref_name }}
+```
+
+A release created by a workflow's `GITHUB_TOKEN` does not normally start
+another workflow from the `release` event. Even when a separate release event
+workflow does run, it can start before later asset upload steps finish. Keeping
+the OpenUPM action after the asset upload avoids both cases.
 
 ## Inputs
 
@@ -155,5 +195,4 @@ owner profiles. Normal tag or release publishing should not hit it.
 The [`openupm/com.example.openupm-action`](https://github.com/openupm/com.example.openupm-action)
 repository demonstrates a minimal Unity package that publishes through the
 tag-push workflow. Packages that use GitHub Release asset tracking should use
-the [GitHub Release workflow](#github-release-workflow) or call the action
-after the release asset upload instead.
+one of the [GitHub Release workflows](#github-release-workflows) instead.

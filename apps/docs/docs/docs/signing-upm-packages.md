@@ -98,13 +98,15 @@ Actions workflow artifact. Workflow artifacts and logs expire after their
 retention period. Release assets stay attached to the release until the asset or
 release is deleted, so OpenUPM can process older versions later.
 
-After the workflow publishes the GitHub Release and uploads the signed asset,
-call the [OpenUPM GitHub Action](./github-action-publish.md) and wait until
-that version is available from the registry. Signed packages and other GitHub
-Release asset tracking packages should trigger OpenUPM only after the release
-asset is present. If the same GitHub Actions workflow creates the release,
-invoke `openupm/openupm-action` as a later step in that workflow. Use a separate
-[GitHub Release workflow](./github-action-publish.md#github-release-workflow)
+Optionally, for a more integrated release experience, call the
+[OpenUPM GitHub Action](./github-action-publish.md) after the workflow
+publishes the GitHub Release and uploads the signed asset. The action waits
+until that version is available from the registry. Signed packages and other
+GitHub Release asset tracking packages should trigger OpenUPM only after the
+release asset is present. If the same GitHub Actions workflow creates the
+release, invoke `openupm/openupm-action` as a later step in that workflow. Use a
+separate
+[GitHub Release workflow](./github-action-publish.md#github-release-workflows)
 only when the release event is created outside that workflow and the package
 asset is already attached when the event fires.
 
@@ -190,6 +192,6 @@ your own release workflow. This keeps signing credentials and custom build steps
 in your repository while still letting OpenUPM publish the final UPM package.
 Pair this mode with `openupm/openupm-action` after the release asset upload
 when you want CI to notify OpenUPM immediately. The
-[GitHub Release workflow](./github-action-publish.md#github-release-workflow)
+[GitHub Release workflow](./github-action-publish.md#github-release-workflows)
 is a good fit when the release is published before that workflow starts and its
 package asset is already available.
