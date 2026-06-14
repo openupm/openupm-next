@@ -14,6 +14,13 @@ does not replace the normal OpenUPM package submission process: the package must
 already be registered on OpenUPM, and the registered `repoUrl` must point to the
 same public GitHub repository that runs the workflow.
 
+This workflow is best for new package repositories that are integrated with
+OpenUPM from the beginning, or for repositories that have already been imported
+to OpenUPM and then add the action for future releases. It is not intended to be
+the first importer for an existing repository with a large tag history. Submit
+or import the package normally first, let OpenUPM establish the package state,
+then use this action to speed up later tagged releases.
+
 ## What the Action Does
 
 The action performs three steps:
@@ -120,6 +127,16 @@ If the action reports a build failure, use the package page's build history and
 the [Troubleshooting Build Errors](./troubleshooting-build-errors.md) guide to
 fix the package, then create a new version tag or re-tag a failed version when
 your repository policy allows it.
+
+## Rate Limit
+
+OpenUPM accepts up to 20 refresh trigger requests per hour for each package,
+GitHub repository, and caller IP combination. When the limit is exceeded, the
+API returns `429 RateLimitExceeded` with a `Retry-After` header.
+
+The limit is meant to absorb accidental workflow loops, repeated tag events, and
+short-lived OIDC token replay without requiring OpenUPM accounts or package
+owner profiles. Normal tag or release publishing should not hit it.
 
 ## Example Repository
 
