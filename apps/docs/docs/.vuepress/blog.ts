@@ -14,6 +14,15 @@ export const BLOG_RSS_PATH = "/blog/rss.xml";
 
 export const BLOG_POSTS: BlogPost[] = [
   {
+    title: "OpenUPM GitHub Action Publish Wait",
+    slug: "openupm-github-action-publish-wait",
+    author: "Favo Yang",
+    date: "2026-06-14",
+    readingTime: "1 min read",
+    excerpt:
+      "OpenUPM now has an experimental GitHub Action that can trigger a package refresh from a tag or release workflow and wait until the version is published.",
+  },
+  {
     title: "OpenUPM Trends Page Is Live",
     slug: "openupm-trends-page",
     featuredImage: "/images/blog-covers/openupm-trends-total-packages.png",
