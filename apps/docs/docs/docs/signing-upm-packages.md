@@ -98,6 +98,13 @@ Actions workflow artifact. Workflow artifacts and logs expire after their
 retention period. Release assets stay attached to the release until the asset or
 release is deleted, so OpenUPM can process older versions later.
 
+After the workflow publishes the GitHub Release and uploads the signed asset,
+use the [OpenUPM GitHub Action release workflow](./github-action-publish.md#github-release-workflow)
+to trigger OpenUPM and wait until that version is available from the registry.
+Signed packages and other GitHub Release asset tracking packages should use the
+release workflow instead of the tag-push workflow, so OpenUPM is triggered only
+after the release asset is present.
+
 The [Signed UPM Example](https://github.com/openupm/com.example.signed-upm)
 repository is a minimal reference implementation. Its
 [README](https://github.com/openupm/com.example.signed-upm/blob/main/README.md)
@@ -178,3 +185,6 @@ from the tagged Git checkout.
 Use `trackingMode: githubRelease` when the published package must be produced by
 your own release workflow. This keeps signing credentials and custom build steps
 in your repository while still letting OpenUPM publish the final UPM package.
+Pair this mode with the [OpenUPM GitHub Action release workflow](./github-action-publish.md#github-release-workflow)
+when you want CI to notify OpenUPM immediately after the GitHub Release is
+published.
