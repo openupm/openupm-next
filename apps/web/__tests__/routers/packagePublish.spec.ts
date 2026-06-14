@@ -118,7 +118,7 @@ describe('package publish router', () => {
     const response = await request(app.server)
       .post(`/packages/${PACKAGE_NAME}/refresh`)
       .set('Authorization', 'Bearer test-token')
-      .send({ version: VERSION, tag: 'upm/1.2.3' })
+      .send({ tag: 'upm/1.2.3' })
       .expect(202)
       .expect('Content-Type', /json/);
 
@@ -159,17 +159,17 @@ describe('package publish router', () => {
     const response = await request(app.server)
       .post(`/packages/${PACKAGE_NAME}/refresh`)
       .set('Authorization', 'Bearer test-token')
-      .send({ version: VERSION })
+      .send({ tag: 'upm/1.2.3' })
       .expect(202);
 
     expect(response.body.deduped).toBe(true);
   });
 
-  it('normalizes refresh request version and tag fields', async () => {
+  it('normalizes refresh request tag field', async () => {
     const response = await request(app.server)
       .post(`/packages/${PACKAGE_NAME}/refresh`)
       .set('Authorization', 'Bearer test-token')
-      .send({ version: ` ${VERSION} `, tag: ' upm/1.2.3 ' })
+      .send({ tag: ' upm/1.2.3 ' })
       .expect(202);
 
     expect(mocks.verifyGitHubActionsOidcToken).toHaveBeenCalledWith(
@@ -218,7 +218,7 @@ describe('package publish router', () => {
     const response = await request(app.server)
       .post(`/packages/${PACKAGE_NAME}/refresh`)
       .set('Authorization', 'Bearer release-token')
-      .send({ version: VERSION, tag: 'v1.2.3' })
+      .send({ tag: 'v1.2.3' })
       .expect(202);
 
     expect(mocks.verifyGitHubActionsOidcToken).toHaveBeenCalledWith(
@@ -236,18 +236,24 @@ describe('package publish router', () => {
     });
   });
 
-  it('rejects missing version and token before enqueuing', async () => {
+  it('rejects missing or unparseable tags before enqueuing', async () => {
     await request(app.server)
       .post(`/packages/${PACKAGE_NAME}/refresh`)
       .set('Authorization', 'Bearer test-token')
       .send({})
-      .expect(400);
+      .expect(400)
+      .expect(({ body }) => {
+        expect(body.error).toBe('InvalidTag');
+      });
 
     await request(app.server)
       .post(`/packages/${PACKAGE_NAME}/refresh`)
       .set('Authorization', 'Bearer test-token')
       .send({ version: '   ' })
-      .expect(400);
+      .expect(400)
+      .expect(({ body }) => {
+        expect(body.error).toBe('InvalidTag');
+      });
 
     await request(app.server)
       .post(`/packages/${PACKAGE_NAME}/refresh`)
@@ -257,7 +263,7 @@ describe('package publish router', () => {
 
     await request(app.server)
       .post(`/packages/${PACKAGE_NAME}/refresh`)
-      .send({ version: VERSION })
+      .send({ tag: 'upm/1.2.3' })
       .expect(401);
 
     expect(mocks.enqueuePackageRefresh).not.toHaveBeenCalled();
@@ -275,7 +281,7 @@ describe('package publish router', () => {
     await request(app.server)
       .post(`/packages/${PACKAGE_NAME}/refresh`)
       .set('Authorization', 'Bearer test-token')
-      .send({ version: VERSION })
+      .send({ tag: 'upm/1.2.3' })
       .expect(403)
       .expect(({ body }) => {
         expect(body.error).toBe('RepositoryMismatch');
@@ -288,7 +294,7 @@ describe('package publish router', () => {
     await request(app.server)
       .post(`/packages/${PACKAGE_NAME}/refresh`)
       .set('Authorization', 'Bearer test-token')
-      .send({ version: VERSION })
+      .send({ tag: 'upm/1.2.3' })
       .expect(429)
       .expect('Retry-After', '60');
   });

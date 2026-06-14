@@ -19,7 +19,7 @@ same public GitHub repository that runs the workflow.
 The action performs three steps:
 
 1. Request a short-lived GitHub Actions OIDC token from GitHub.
-2. Send the package name, version, and optional Git tag to OpenUPM.
+2. Send the package name and Git tag to OpenUPM.
 3. Poll OpenUPM until the version is installable from the registry, fails, or
    reaches the configured timeout.
 
@@ -85,31 +85,12 @@ jobs:
           tag: ${{ github.event.release.tag_name }}
 ```
 
-## Prefixed Tags
-
-For normal prefixed package tags, pass only the original tag. OpenUPM parses
-the package version from the tag and still verifies the full tag against the
-GitHub OIDC token. For example, a tag named `upm/1.2.3` should use:
-
-```yaml
-- uses: openupm/openupm-action@v1
-  with:
-    package: com.example.package
-    tag: upm/1.2.3
-```
-
-The `tag` input must match the GitHub workflow ref. If your repository uses a
-tag shape that OpenUPM cannot parse, pass `version` as an explicit override.
-The override must match the `version` field in the package's `package.json` at
-that tag.
-
 ## Inputs
 
 | Input                   | Required | Default                   | Description |
 | ----------------------- | -------- | ------------------------- | ----------- |
 | `package`               | Yes      |                           | OpenUPM package name, such as `com.company.tool`. |
-| `version`               | No       |                           | Optional package version override. Only needed when OpenUPM cannot derive the version from `tag`. |
-| `tag`                   | No       |                           | Git tag that triggered the workflow. Recommended for tag-push workflows. |
+| `tag`                   | Yes      |                           | Git tag that triggered the workflow. It must contain an OpenUPM-compatible package version. |
 | `timeout-minutes`       | No       | `15`                      | Maximum time to wait before failing the workflow. |
 | `poll-interval-seconds` | No       | `15`                      | Delay between status checks. |
 | `api-url`               | No       | `https://api.openupm.com` | OpenUPM API URL. |

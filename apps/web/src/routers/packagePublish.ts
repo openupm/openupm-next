@@ -22,7 +22,6 @@ const config = configRaw as any;
 const logger = createLogger('@openupm/web/packagePublish');
 
 interface RefreshBody {
-  version?: string;
   tag?: string;
 }
 
@@ -109,14 +108,6 @@ function normalizeOptionalString(value: string | undefined): string | undefined 
   return trimmed || undefined;
 }
 
-function resolveRefreshVersion(
-  version: string | undefined,
-  tag: string | undefined,
-): string | null {
-  if (version) return version;
-  return tag ? getVersionFromTag(tag) : null;
-}
-
 export default function router(server: FastifyInstance): void {
   server.post(
     '/packages/:name/refresh',
@@ -126,17 +117,14 @@ export default function router(server: FastifyInstance): void {
     ) => {
       const packageName = request.params.name;
       const tag = normalizeOptionalString(request.body?.tag);
-      const version = resolveRefreshVersion(
-        normalizeOptionalString(request.body?.version),
-        tag,
-      );
+      const version = tag ? getVersionFromTag(tag) : null;
 
       if (!version) {
         return sendError(
           reply,
           400,
-          'MissingVersion',
-          'A package version is required when it cannot be derived from the tag.',
+          'InvalidTag',
+          'A parseable Git tag is required.',
         );
       }
 
