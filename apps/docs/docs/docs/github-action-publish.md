@@ -29,8 +29,12 @@ checks that the workflow repository matches the package `repoUrl`.
 
 ## Tag Push Workflow
 
-For a package that uses plain semver tags such as `1.2.3`, add this workflow to
-the package repository:
+Only send tags that contain a parseable semver package version to the action,
+for example `1.2.3`, `v1.2.3`, `upm/1.2.3`, or
+`com.example.package@v1.2.3`. Other tags are rejected by the action before it
+contacts OpenUPM.
+
+Add this workflow to the package repository:
 
 ```yaml
 name: OpenUPM
@@ -56,9 +60,6 @@ jobs:
 
 The `id-token: write` permission lets the action request a GitHub OIDC token.
 The token is scoped to the workflow run and expires quickly.
-
-OpenUPM derives the package version from common tag shapes such as `1.2.3`,
-`v1.2.3`, `upm/1.2.3`, and `com.example.package@v1.2.3`.
 
 ## GitHub Release Workflow
 
@@ -93,8 +94,6 @@ jobs:
 | `tag`                   | Yes      |                           | Git tag that triggered the workflow. It must contain an OpenUPM-compatible package version. |
 | `timeout-minutes`       | No       | `15`                      | Maximum time to wait before failing the workflow. |
 | `poll-interval-seconds` | No       | `15`                      | Delay between status checks. |
-| `api-url`               | No       | `https://api.openupm.com` | OpenUPM API URL. |
-| `oidc-audience`         | No       | `openupm`                 | OIDC audience requested from GitHub and verified by OpenUPM. |
 
 ## Outputs
 
