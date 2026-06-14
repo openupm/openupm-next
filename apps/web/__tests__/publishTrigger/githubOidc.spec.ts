@@ -1,6 +1,14 @@
 import { describe, expect, it } from 'vitest';
+import {
+  JOSEError,
+  JWKSInvalid,
+  JWKSNoMatchingKey,
+  JWKSTimeout,
+  JWTInvalid,
+} from 'jose/errors';
 
 import {
+  isRetryableJwksError,
   normalizeGitHubRepository,
   PublishTriggerAuthError,
   validateGitHubActionsOidcClaims,
@@ -231,5 +239,32 @@ describe('githubOidc', () => {
         ),
       'RefMismatch',
     );
+  });
+
+  it('classifies transient JWKS fetch failures as retryable', () => {
+    expect(isRetryableJwksError(new JWKSTimeout())).toBe(true);
+    expect(isRetryableJwksError(new JWKSInvalid('JSON Web Key Set malformed'))).toBe(
+      true,
+    );
+    expect(
+      isRetryableJwksError(
+        new JOSEError(
+          'Expected 200 OK from the JSON Web Key Set HTTP response',
+        ),
+      ),
+    ).toBe(true);
+    expect(
+      isRetryableJwksError(
+        new JOSEError(
+          'Failed to parse the JSON Web Key Set HTTP response as JSON',
+        ),
+      ),
+    ).toBe(true);
+    expect(isRetryableJwksError(new TypeError('fetch failed'))).toBe(true);
+  });
+
+  it('does not classify invalid tokens as retryable JWKS failures', () => {
+    expect(isRetryableJwksError(new JWTInvalid('invalid JWT'))).toBe(false);
+    expect(isRetryableJwksError(new JWKSNoMatchingKey())).toBe(false);
   });
 });

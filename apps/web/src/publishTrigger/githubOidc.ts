@@ -5,6 +5,11 @@ import {
   type JWTPayload,
   type JWTVerifyResult,
 } from 'jose';
+import {
+  JOSEError,
+  JWKSInvalid,
+  JWKSTimeout,
+} from 'jose/errors';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const config = configRaw as any;
@@ -66,6 +71,23 @@ function getRemoteJwks(): ReturnType<typeof createRemoteJWKSet> {
 
 export function resetGitHubActionsOidcJwksForTests(): void {
   remoteJwks = null;
+}
+
+export function isRetryableJwksError(error: unknown): boolean {
+  if (error instanceof JWKSTimeout || error instanceof JWKSInvalid) {
+    return true;
+  }
+
+  if (error instanceof TypeError) {
+    return true;
+  }
+
+  return (
+    error instanceof JOSEError &&
+    error.code === 'ERR_JOSE_GENERIC' &&
+    (error.message.includes('JSON Web Key Set HTTP response') ||
+      error.message.includes('JSON Web Key Set malformed'))
+  );
 }
 
 export function normalizeGitHubRepository(value: string): string | null {
@@ -235,7 +257,14 @@ export async function verifyGitHubActionsOidcToken(
       issuer: raw.issuer,
       clockTolerance: raw.clockToleranceSeconds,
     });
-  } catch {
+  } catch (error) {
+    if (isRetryableJwksError(error)) {
+      throw new PublishTriggerAuthError(
+        'OidcUnavailable',
+        'GitHub Actions OIDC verification is temporarily unavailable.',
+        503,
+      );
+    }
     throw new PublishTriggerAuthError(
       'InvalidToken',
       'The GitHub Actions OIDC token could not be verified.',
