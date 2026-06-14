@@ -100,6 +100,26 @@
     tokens: [],
   },
 
+  // Public GitHub Actions OIDC package refresh trigger.
+  publishTrigger: {
+    apiBaseUrl: 'https://api.openupm.com',
+    packageBaseUrl: 'https://openupm.com',
+    registryUrl: 'https://package.openupm.com',
+    githubOidc: {
+      issuer: 'https://token.actions.githubusercontent.com',
+      audience: 'openupm',
+      jwksUri: 'https://token.actions.githubusercontent.com/.well-known/jwks',
+      acceptedEvents: ['push', 'release', 'workflow_dispatch'],
+      requirePublicRepository: true,
+      clockToleranceSeconds: 30,
+    },
+    rateLimit: {
+      enabled: true,
+      max: 20,
+      windowMs: 3600000,
+    },
+  },
+
   // Azure devops.
   azureDevops: {
     endpoint: 'https://dev.azure.com/openupm',

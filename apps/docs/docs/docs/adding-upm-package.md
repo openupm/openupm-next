@@ -117,6 +117,8 @@ Please adhere to one of the specified pull request title formats: either `Create
 
 After a brief pause, during which the build pipelines complete their tasks (usually ranging from 15 minutes to half an hour, depending on the size of your repository), you can access the package's detailed page at the URL `https://openupm.com/packages/com.your-org.package-name` and review the build results in the **version history** and **build issues** sections. You can also search for your package name on the homepage to locate it. If you encounter any issues, please leave a comment on the pull request, and we'll do our best to assist you. If you prefer a chat, feel free to join our Discord server via this link: [https://discord.gg/FnUgWEP](https://discord.gg/FnUgWEP).
 
+After the package is registered, maintainers can use the [OpenUPM GitHub Action](./github-action-publish.md) to trigger a package scan from a tag workflow and wait until the tagged version is installable from the registry.
+
 ## Troubleshooting
 
 ### Handling a Repository without Git Tag
