@@ -55,7 +55,11 @@ describe('packageRefresh', () => {
   });
 
   it('dedupes an existing package refresh job', async () => {
-    queueMocks.getJob.mockResolvedValue({ id: 'build-pkg|com.example.foo' });
+    queueMocks.getJob.mockResolvedValue({
+      getState: vi.fn().mockResolvedValue('waiting'),
+      id: 'build-pkg|com.example.foo',
+      remove: vi.fn(),
+    });
 
     const result = await enqueuePackageRefresh('com.example.foo');
 
@@ -64,6 +68,30 @@ describe('packageRefresh', () => {
       queue: 'pkg',
       jobId: 'build-pkg|com.example.foo',
       added: false,
+    });
+  });
+
+  it('replaces a failed package refresh job', async () => {
+    const existing = {
+      getState: vi.fn().mockResolvedValue('failed'),
+      id: 'build-pkg|com.example.foo',
+      remove: vi.fn().mockResolvedValue(undefined),
+    };
+    queueMocks.getJob.mockResolvedValue(existing);
+    queueMocks.add.mockResolvedValue({ id: 'build-pkg|com.example.foo' });
+
+    const result = await enqueuePackageRefresh('com.example.foo');
+
+    expect(existing.remove).toHaveBeenCalled();
+    expect(queueMocks.add).toHaveBeenCalledWith(
+      'build-pkg',
+      { name: 'com.example.foo' },
+      { jobId: 'build-pkg|com.example.foo' },
+    );
+    expect(result).toEqual({
+      queue: 'pkg',
+      jobId: 'build-pkg|com.example.foo',
+      added: true,
     });
   });
 });

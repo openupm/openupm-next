@@ -1,5 +1,5 @@
 import configRaw from 'config';
-import { Queue } from 'bullmq';
+import { Queue, type Job } from 'bullmq';
 
 import { createLogger } from '@openupm/server-common/build/log.js';
 
@@ -29,6 +29,13 @@ function getQueue(name: string): Queue {
   return queues[name];
 }
 
+async function canReuseExistingJob(job: Job): Promise<boolean> {
+  const state = await job.getState();
+  if (state !== 'failed') return true;
+  await job.remove();
+  return false;
+}
+
 export async function closePackageRefreshQueues(): Promise<void> {
   await Promise.all(Object.values(queues).map(async (queue) => queue.close()));
   for (const name of Object.keys(queues)) delete queues[name];
@@ -41,7 +48,7 @@ export async function enqueuePackageRefresh(
   const queue = getQueue(jobConfig.queue);
   const jobId = createJobId(jobConfig.name, packageName);
   const existing = await queue.getJob(jobId);
-  if (existing) {
+  if (existing && (await canReuseExistingJob(existing))) {
     return { queue: jobConfig.queue, jobId, added: false };
   }
 
