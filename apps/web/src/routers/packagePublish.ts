@@ -1,6 +1,7 @@
 import configRaw from 'config';
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 
+import { getVersionFromTag } from '@openupm/common/build/semver.js';
 import { loadPackageMetadataLocal } from '@openupm/local-data';
 import { ReleaseErrorCode, ReleaseModel, ReleaseState } from '@openupm/types';
 import { fetchOne } from '@openupm/server-common/build/models/release.js';
@@ -108,6 +109,14 @@ function normalizeOptionalString(value: string | undefined): string | undefined 
   return trimmed || undefined;
 }
 
+function resolveRefreshVersion(
+  version: string | undefined,
+  tag: string | undefined,
+): string | null {
+  if (version) return version;
+  return tag ? getVersionFromTag(tag) : null;
+}
+
 export default function router(server: FastifyInstance): void {
   server.post(
     '/packages/:name/refresh',
@@ -116,15 +125,18 @@ export default function router(server: FastifyInstance): void {
       reply: FastifyReply,
     ) => {
       const packageName = request.params.name;
-      const version = normalizeOptionalString(request.body?.version);
       const tag = normalizeOptionalString(request.body?.tag);
+      const version = resolveRefreshVersion(
+        normalizeOptionalString(request.body?.version),
+        tag,
+      );
 
       if (!version) {
         return sendError(
           reply,
           400,
           'MissingVersion',
-          'A package version is required.',
+          'A package version is required when it cannot be derived from the tag.',
         );
       }
 

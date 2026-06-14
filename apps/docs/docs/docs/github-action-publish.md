@@ -51,18 +51,18 @@ jobs:
       - uses: openupm/openupm-action@v1
         with:
           package: com.example.openupm-action
-          version: ${{ github.ref_name }}
           tag: ${{ github.ref_name }}
 ```
 
 The `id-token: write` permission lets the action request a GitHub OIDC token.
 The token is scoped to the workflow run and expires quickly.
 
+OpenUPM derives the package version from common tag shapes such as `1.2.3`,
+`v1.2.3`, `upm/1.2.3`, and `com.example.package@v1.2.3`.
+
 ## GitHub Release Workflow
 
-You can also trigger OpenUPM after a GitHub Release is published. This example
-accepts release tags such as `v1.2.3` and passes `1.2.3` as the OpenUPM package
-version:
+You can also trigger OpenUPM after a GitHub Release is published:
 
 ```yaml
 name: OpenUPM
@@ -79,43 +79,36 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - id: version
-        env:
-          TAG_NAME: ${{ github.event.release.tag_name }}
-        run: echo "value=${TAG_NAME#v}" >> "$GITHUB_OUTPUT"
-
       - uses: openupm/openupm-action@v1
         with:
           package: com.example.openupm-action
-          version: ${{ steps.version.outputs.value }}
           tag: ${{ github.event.release.tag_name }}
 ```
 
-If your release tags already match `package.json.version`, use the tag value
-directly for both `version` and `tag`.
-
 ## Prefixed Tags
 
-If your repository uses prefixed package tags, pass the OpenUPM package version
-separately from the Git tag. For example, a tag named `upm/1.2.3` should use:
+For normal prefixed package tags, pass only the original tag. OpenUPM parses
+the package version from the tag and still verifies the full tag against the
+GitHub OIDC token. For example, a tag named `upm/1.2.3` should use:
 
 ```yaml
 - uses: openupm/openupm-action@v1
   with:
     package: com.example.package
-    version: 1.2.3
     tag: upm/1.2.3
 ```
 
-The `tag` input must match the GitHub workflow ref. The `version` input must
-match the `version` field in the package's `package.json` at that tag.
+The `tag` input must match the GitHub workflow ref. If your repository uses a
+tag shape that OpenUPM cannot parse, pass `version` as an explicit override.
+The override must match the `version` field in the package's `package.json` at
+that tag.
 
 ## Inputs
 
 | Input                   | Required | Default                   | Description |
 | ----------------------- | -------- | ------------------------- | ----------- |
 | `package`               | Yes      |                           | OpenUPM package name, such as `com.company.tool`. |
-| `version`               | Yes      |                           | Package version to wait for, such as `1.2.3`. |
+| `version`               | No       |                           | Optional package version override. Only needed when OpenUPM cannot derive the version from `tag`. |
 | `tag`                   | No       |                           | Git tag that triggered the workflow. Recommended for tag-push workflows. |
 | `timeout-minutes`       | No       | `15`                      | Maximum time to wait before failing the workflow. |
 | `poll-interval-seconds` | No       | `15`                      | Delay between status checks. |
