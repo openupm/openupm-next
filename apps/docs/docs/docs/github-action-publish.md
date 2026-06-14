@@ -93,9 +93,17 @@ jobs:
           tag: ${{ github.event.release.tag_name }}
 ```
 
-Use the release workflow for packages that publish through GitHub Release asset
-tracking, including signed packages. In that mode, OpenUPM needs the GitHub
-Release and its package asset to exist before it scans the version.
+Use this release workflow for packages that publish through GitHub Release
+asset tracking, including signed packages, when the GitHub Release is published
+before this workflow starts and the package asset is already attached. In that
+mode, OpenUPM needs the GitHub Release and its package asset to exist before it
+scans the version.
+
+If another GitHub Actions workflow creates the GitHub Release and uploads the
+asset, add `openupm/openupm-action` as a later step in that same workflow after
+the upload. A release created by a workflow's `GITHUB_TOKEN` does not normally
+start another workflow from the `release` event, and triggering before the asset
+upload can make OpenUPM scan too early.
 
 ## Inputs
 
@@ -147,4 +155,5 @@ owner profiles. Normal tag or release publishing should not hit it.
 The [`openupm/com.example.openupm-action`](https://github.com/openupm/com.example.openupm-action)
 repository demonstrates a minimal Unity package that publishes through the
 tag-push workflow. Packages that use GitHub Release asset tracking should use
-the [GitHub Release workflow](#github-release-workflow) instead.
+the [GitHub Release workflow](#github-release-workflow) or call the action
+after the release asset upload instead.

@@ -99,11 +99,14 @@ retention period. Release assets stay attached to the release until the asset or
 release is deleted, so OpenUPM can process older versions later.
 
 After the workflow publishes the GitHub Release and uploads the signed asset,
-use the [OpenUPM GitHub Action release workflow](./github-action-publish.md#github-release-workflow)
-to trigger OpenUPM and wait until that version is available from the registry.
-Signed packages and other GitHub Release asset tracking packages should use the
-release workflow instead of the tag-push workflow, so OpenUPM is triggered only
-after the release asset is present.
+call the [OpenUPM GitHub Action](./github-action-publish.md) and wait until
+that version is available from the registry. Signed packages and other GitHub
+Release asset tracking packages should trigger OpenUPM only after the release
+asset is present. If the same GitHub Actions workflow creates the release,
+invoke `openupm/openupm-action` as a later step in that workflow. Use a separate
+[GitHub Release workflow](./github-action-publish.md#github-release-workflow)
+only when the release event is created outside that workflow and the package
+asset is already attached when the event fires.
 
 The [Signed UPM Example](https://github.com/openupm/com.example.signed-upm)
 repository is a minimal reference implementation. Its
@@ -185,6 +188,8 @@ from the tagged Git checkout.
 Use `trackingMode: githubRelease` when the published package must be produced by
 your own release workflow. This keeps signing credentials and custom build steps
 in your repository while still letting OpenUPM publish the final UPM package.
-Pair this mode with the [OpenUPM GitHub Action release workflow](./github-action-publish.md#github-release-workflow)
-when you want CI to notify OpenUPM immediately after the GitHub Release is
-published.
+Pair this mode with `openupm/openupm-action` after the release asset upload
+when you want CI to notify OpenUPM immediately. The
+[GitHub Release workflow](./github-action-publish.md#github-release-workflow)
+is a good fit when the release is published before that workflow starts and its
+package asset is already available.
