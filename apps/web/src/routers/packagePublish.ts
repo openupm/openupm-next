@@ -4,7 +4,10 @@ import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { getVersionFromTag } from '@openupm/common/build/semver.js';
 import { loadPackageMetadataLocal } from '@openupm/local-data';
 import { ReleaseErrorCode, ReleaseModel, ReleaseState } from '@openupm/types';
-import { fetchOne } from '@openupm/server-common/build/models/release.js';
+import {
+  fetchOne,
+  remove as removeRelease,
+} from '@openupm/server-common/build/models/release.js';
 import { createLogger } from '@openupm/server-common/build/log.js';
 
 import {
@@ -86,6 +89,16 @@ async function releaseStatus(
   };
 }
 
+async function clearFailedReleaseForRefresh(
+  packageName: string,
+  version: string,
+): Promise<void> {
+  const release = await fetchOne(packageName, version);
+  if (release?.state === ReleaseState.Failed) {
+    await removeRelease(packageName, version);
+  }
+}
+
 function bearerToken(request: FastifyRequest): string | null {
   const header = request.headers.authorization;
   if (!header) return null;
@@ -160,6 +173,7 @@ export default function router(server: FastifyInstance): void {
         });
 
         const job = await enqueuePackageRefresh(packageName);
+        await clearFailedReleaseForRefresh(packageName, version);
         const status = await releaseStatus(packageName, version);
         logger.info(
           {

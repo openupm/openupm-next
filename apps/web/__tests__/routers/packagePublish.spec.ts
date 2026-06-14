@@ -33,6 +33,7 @@ const mocks = vi.hoisted(() => ({
   enqueuePackageRefresh: vi.fn(),
   assertPublishTriggerRateLimit: vi.fn(),
   fetchOne: vi.fn(),
+  removeRelease: vi.fn(),
 }));
 
 vi.mock('@openupm/local-data', () => ({
@@ -41,6 +42,7 @@ vi.mock('@openupm/local-data', () => ({
 
 vi.mock('@openupm/server-common/build/models/release.js', () => ({
   fetchOne: mocks.fetchOne,
+  remove: mocks.removeRelease,
 }));
 
 vi.mock('../../src/publishTrigger/githubOidc.js', () => ({
@@ -104,6 +106,7 @@ describe('package publish router', () => {
       added: true,
     });
     mocks.fetchOne.mockResolvedValue(null);
+    mocks.removeRelease.mockResolvedValue(undefined);
   });
 
   afterEach(() => {
@@ -205,6 +208,47 @@ describe('package publish router', () => {
       version: VERSION,
       tag: 'upm/v1.2.3',
       accepted: true,
+    });
+  });
+
+  it('clears a stale failed release after accepting a refresh', async () => {
+    mocks.fetchOne
+      .mockResolvedValueOnce(
+        release(ReleaseState.Failed, {
+          reason: ReleaseErrorCode.VersionMismatch,
+        }),
+      )
+      .mockResolvedValueOnce(null);
+
+    const response = await request(app.server)
+      .post(`/packages/${PACKAGE_NAME}/refresh`)
+      .set('Authorization', 'Bearer test-token')
+      .send({ tag: 'upm/1.2.3' })
+      .expect(202);
+
+    expect(mocks.enqueuePackageRefresh).toHaveBeenCalledWith(PACKAGE_NAME);
+    expect(mocks.removeRelease).toHaveBeenCalledWith(PACKAGE_NAME, VERSION);
+    expect(response.body.release).toMatchObject({
+      state: 'unknown',
+      reason: 'unknown',
+    });
+  });
+
+  it('keeps non-failed release status while accepting a refresh', async () => {
+    mocks.fetchOne
+      .mockResolvedValueOnce(release(ReleaseState.Succeeded))
+      .mockResolvedValueOnce(release(ReleaseState.Succeeded));
+
+    const response = await request(app.server)
+      .post(`/packages/${PACKAGE_NAME}/refresh`)
+      .set('Authorization', 'Bearer test-token')
+      .send({ tag: 'upm/1.2.3' })
+      .expect(202);
+
+    expect(mocks.removeRelease).not.toHaveBeenCalled();
+    expect(response.body.release).toMatchObject({
+      state: 'succeeded',
+      reason: 'none',
     });
   });
 
