@@ -39,7 +39,7 @@ const config = configRaw as any;
 const logger = createLogger('@openupm/queue/buildPackage');
 const githubReleasePendingProbeInitialIntervalMs = 10 * 60 * 1000;
 const githubReleasePendingProbeMaxIntervalMs = 6 * 60 * 60 * 1000;
-const githubReleasePendingProbeWindowMs = 7 * 24 * 60 * 60 * 1000;
+const githubReleasePendingProbeWindowMs = 3 * 24 * 60 * 60 * 1000;
 
 function parseGitHubRepo(
   url: string,
@@ -285,6 +285,10 @@ async function addReleaseJobs(releases: ReleaseModel[]): Promise<void> {
     }
 
     const jobId = createJobId(jobConfig.name, rel.packageName, rel.version);
+    if (isExpiredGitHubReleasePendingFailure(rel)) {
+      await removeExhaustedFailedJob(queue, jobId);
+      continue;
+    }
     if (rel.state === ReleaseState.Pending) {
       await removeExhaustedFailedJob(queue, jobId);
     }
@@ -425,10 +429,8 @@ async function shouldProbePendingGitHubReleaseAsset(
     return false;
   }
 
-  const firstSeenAt =
-    release.githubReleaseAssetMissingFirstSeenAt || release.updatedAt;
   const now = Date.now();
-  if (now - firstSeenAt > githubReleasePendingProbeWindowMs) return false;
+  if (isGitHubReleasePendingProbeWindowExpired(release, now)) return false;
 
   if (now < getGitHubReleasePendingNextProbeAt(release)) return false;
 
@@ -442,4 +444,21 @@ async function shouldProbePendingGitHubReleaseAsset(
   const state = await job.getState();
   const maxAttempts = job.opts?.attempts ?? 1;
   return state === 'failed' && job.attemptsMade >= maxAttempts;
+}
+
+function isGitHubReleasePendingProbeWindowExpired(
+  release: ReleaseModel,
+  now = Date.now(),
+): boolean {
+  const firstSeenAt =
+    release.githubReleaseAssetMissingFirstSeenAt || release.updatedAt;
+  return now - firstSeenAt > githubReleasePendingProbeWindowMs;
+}
+
+function isExpiredGitHubReleasePendingFailure(release: ReleaseModel): boolean {
+  return (
+    release.state === ReleaseState.Failed &&
+    isGitHubReleasePendingReason(release.reason) &&
+    isGitHubReleasePendingProbeWindowExpired(release)
+  );
 }

@@ -141,8 +141,8 @@ failures are retried up to three times. If the GitHub Release does not exist
 yet, or the publishable asset is not attached yet, OpenUPM keeps checking after
 the initial attempts are exhausted. The follow-up checks start at 10 minutes,
 then 20 minutes, then 40 minutes, doubling until they reach 6 hours. OpenUPM
-then checks every 6 hours for up to 7 days from the first missing-release or
-missing-asset failure. After 7 days, create the missing release or asset and
+then checks every 6 hours for up to 3 days from the first missing-release or
+missing-asset failure. After 3 days, create the missing release or asset and
 request a rebuild.
 
 Signed release tarballs are often built from a package folder and may contain
