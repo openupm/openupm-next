@@ -506,6 +506,15 @@ describe('buildPublicQueueStatus', () => {
               ),
             },
           ),
+          release(
+            'com.retry.github-release.expired',
+            ReleaseErrorCode.GitHubReleaseAssetNotFound,
+            {
+              githubReleaseAssetMissingFirstSeenAt: Date.parse(
+                '2026-05-11T09:59:59.000Z',
+              ),
+            },
+          ),
           release('com.retry.ready', ReleaseErrorCode.ConnectionTimeout),
           release('com.retry.not-exhausted', ReleaseErrorCode.BuildTimeout),
           release('com.no.retry', ReleaseErrorCode.PackageNotFound),
@@ -561,6 +570,11 @@ describe('buildPublicQueueStatus', () => {
         attempts: 3,
         maxAttempts: 3,
         nextRetryAt: '2026-05-14T10:05:00.000Z',
+      },
+      {
+        package: 'com.retry.github-release.expired',
+        retryable: true,
+        retryState: 'ready_to_requeue',
       },
       {
         package: 'com.retry.ready',

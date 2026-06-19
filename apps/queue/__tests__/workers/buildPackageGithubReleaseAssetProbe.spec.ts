@@ -155,16 +155,22 @@ describe('buildPackage GitHub Release pending probes', () => {
     expect(resolveGitHubReleaseAssetMock).not.toHaveBeenCalled();
   });
 
-  it('stops probing after the seven day first-seen window', async () => {
+  it('removes retained failed jobs after the three day first-seen window expires', async () => {
     await runBuildPackage(
       createRelease({
         githubReleaseAssetMissingFirstSeenAt: Date.parse(
-          '2026-05-02T06:59:59.000Z',
+          '2026-05-07T06:59:59.000Z',
         ),
       }),
     );
 
     expect(resolveGitHubReleaseAssetMock).not.toHaveBeenCalled();
+    expect(removeReleaseMock).not.toHaveBeenCalled();
+    expect(queueRemoveMock).toHaveBeenCalledWith(
+      'build-rel|com.example.asset|1.0.0',
+      { removeChildren: true },
+    );
+    expect(addJobMock).not.toHaveBeenCalled();
   });
 
   it('does not probe non-target release errors', async () => {
