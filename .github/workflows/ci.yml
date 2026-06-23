@@ -26,8 +26,8 @@ jobs:
           path: tmp-openupm
       - name: move tmp-openupm/data to data
         run: mv tmp-openupm/data data && rm -rf tmp-openupm
-      - name: install volta
-        uses: volta-cli/action@v4
+      - name: install mise
+        uses: jdx/mise-action@v2
       - name: npm ci
         uses: nick-fields/retry@v2
         with:
@@ -52,8 +52,8 @@ jobs:
           path: tmp-openupm
       - name: move tmp-openupm/data to data
         run: mv tmp-openupm/data data && rm -rf tmp-openupm
-      - name: install volta
-        uses: volta-cli/action@v4
+      - name: install mise
+        uses: jdx/mise-action@v2
       - name: npm ci
         uses: nick-fields/retry@v2
         with:

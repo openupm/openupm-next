@@ -34,13 +34,13 @@ Shared repo config lives in `tooling/`:
 
 ## Requirements
 
-- Volta-managed Node: `22.19.0`
+- mise-managed Node: `22.19.0`
 - npm: `10.9.3`
 
-Install Volta:
+Install tools:
 
 ```bash
-curl https://get.volta.sh | bash
+mise install
 ```
 
 Install dependencies from the repo root:

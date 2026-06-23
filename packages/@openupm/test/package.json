@@ -22,8 +22,5 @@
     "spdx-license-list": "^6.8.0",
     "tslib": "~2.6",
     "@openupm/types": "*"
-  },
-  "volta": {
-    "node": "22.19.0"
   }
 }

@@ -30,8 +30,5 @@
     "lodash-es": "^4.17.21",
     "spdx-license-list": "^6.8.0",
     "tslib": "~2.6"
-  },
-  "volta": {
-    "node": "22.19.0"
   }
 }

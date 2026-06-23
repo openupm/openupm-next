@@ -20,8 +20,5 @@
   "dependencies": {
     "dotenv-flow": "^4.0.1",
     "tslib": "~2.6"
-  },
-  "volta": {
-    "node": "22.19.0"
   }
 }

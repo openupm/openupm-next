@@ -11,11 +11,11 @@
 
 ## Tooling Baseline
 
-- Node is pinned with Volta at `22.19.0`
+- Node is pinned with mise at `22.19.0`
 - Package manager is `npm@10.9.3`
 - Task runner is Turbo (`npm run lint`, `npm run build`, `npm test`)
 - Tests use Vitest across the workspace
-- If Volta is not active in the current shell, run npm through the pinned
+- If mise is not active in the current shell, run npm through the pinned
   version, for example `npx npm@10.9.3 install`, so `package-lock.json` is not
   rewritten by a newer global npm.
 
@@ -82,7 +82,7 @@
   especially when third-party resources such as ads, analytics, or cookie
   consent are blocked or allowed during the run.
 - If the shell is not already using the repo-pinned Node/npm versions, run docs
-  commands through Volta, for example `volta run npm run lint`.
+  commands through mise, for example `mise exec -- npm run lint`.
 - If `docs:build:limit` fails because
   `node_modules/vuepress-plugin-openupm/build/index.js` is missing, first build
   the local plugin dependency from the repo root with
@@ -136,7 +136,7 @@
   unless the test is intentionally covering a specific legacy post.
 - For blog-only changes, run `npm run test -- blog.spec.ts` and
   `npm run lint` from `apps/docs`, then run `npm run docs:build:limit`. Use
-  `volta run` for those commands when needed.
+  `mise exec --` for those commands when needed.
 - If a VuePress dev server is already running, stop it before
   `docs:build:limit`; the build cleans `.vuepress/.temp` and can conflict with
   a live dev server.
