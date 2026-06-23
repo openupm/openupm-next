@@ -95,6 +95,11 @@ describe("NuGet package detail UI", () => {
     expect(source).toContain("AdsenseDisplayForPackageDetail");
     expect(source).toContain("state.isUnavailable = true");
     expect(source).toContain("UnityNuGet package data is unavailable");
+    expect(source).toContain("not every merge to the");
+    expect(source).toContain("UnityNuGet main branch");
+    expect(source).toContain("request a release in the");
+    expect(source).toContain("within about 2");
+    expect(source).toContain("open an OpenUPM issue");
   });
 
   it("does not include native OpenUPM-only sections", () => {

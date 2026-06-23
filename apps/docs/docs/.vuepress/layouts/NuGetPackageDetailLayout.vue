@@ -194,7 +194,18 @@ watch(
               <p class="custom-container-title">UnityNuGet package data is unavailable</p>
               <p>
                 This page is generated from the UnityNuGet package list, but live package data is loaded from the
-                OpenUPM registry uplink and cache. Try again after the registry cache refreshes.
+                OpenUPM registry uplink and cache.
+              </p>
+              <p>
+                OpenUPM's UnityNuGet service follows released UnityNuGet Docker images, not every merge to the
+                UnityNuGet main branch. If the package was merged but UnityNuGet has not published a new release yet,
+                please request a release in the
+                <a href="https://github.com/bdovaz/UnityNuGet/issues">UnityNuGet repository</a>.
+              </p>
+              <p>
+                If a new UnityNuGet Docker image was already released, OpenUPM usually catches up within about 2
+                hours. After that, please
+                <a href="https://github.com/openupm/openupm/issues">open an OpenUPM issue</a> for help.
               </p>
             </div>
 
