@@ -4,6 +4,7 @@ import {
   convertToGitHubRawUrl,
   parseTitle,
   postProcessHtml,
+  renderLegacyMarkdownToHtml,
   renderMarkdownToHtml,
   TRANSPARENT_PIXEL_SRC,
 } from '../../src/utils/readmeMarkdown.js';
@@ -169,8 +170,135 @@ See more in the [openupm/test-package](https://github.com/openupm/test-package) 
         disableTitleParser: true,
       });
       expect(html).toContain('💪');
-      expect(html).toContain('class="hljs js"');
+      expect(html).toMatch(/<code class="[^"]*\bhljs\b[^"]*\blanguage-js\b/);
       expect(html).toContain('hljs-keyword');
+    });
+
+    it('renders GitHub alert blockquotes with alert classes', () => {
+      const html = renderMarkdownToHtml({
+        pkg,
+        markdown: `> [!NOTE]
+> Useful information.
+
+> [!TIP]
+> Helpful advice.
+
+> [!IMPORTANT]
+> Key information.
+
+> [!WARNING]
+> Urgent information.
+
+> [!CAUTION]
+> Risk information.`,
+        disableTitleParser: true,
+      });
+
+      for (const type of ['note', 'tip', 'important', 'warning', 'caution']) {
+        expect(html).toContain(`markdown-alert-${type}`);
+      }
+      expect(html).toContain('markdown-alert-title');
+      expect(html).not.toContain('[!NOTE]');
+    });
+
+    it('renders GFM tables, task lists, and strikethrough locally', () => {
+      const html = renderMarkdownToHtml({
+        pkg,
+        markdown: `| Feature | Status |
+| --- | --- |
+| Tables | Works |
+
+- [x] Done
+- [ ] Pending
+
+~~removed~~`,
+        disableTitleParser: true,
+      });
+
+      expect(html).toContain('<table>');
+      expect(html).toContain('type="checkbox"');
+      expect(html).toContain('checked');
+      expect(html).toContain('<del>removed</del>');
+    });
+
+    it('renders nested blockquotes separately from GitHub alerts', () => {
+      const html = renderMarkdownToHtml({
+        pkg,
+        markdown: `> Outer quote
+>
+> > Inner quote`,
+        disableTitleParser: true,
+      });
+
+      expect(html).toContain('<blockquote>');
+      expect(html).toContain('Outer quote');
+      expect(html).toContain('Inner quote');
+      expect(html).not.toContain('markdown-alert');
+    });
+
+    it('escapes unsupported-language code fences without highlighting', () => {
+      const html = renderMarkdownToHtml({
+        pkg,
+        markdown: '```madeuplang\nconst x = "<unsafe>";\n```',
+        disableTitleParser: true,
+      });
+
+      expect(html).toContain('language-madeuplang');
+      expect(html).toContain('unsafe');
+      expect(html).not.toContain('<unsafe>');
+      expect(html).not.toContain('hljs-keyword');
+    });
+
+    it('strips unsafe link protocols while preserving supported custom protocols', () => {
+      const html = renderMarkdownToHtml({
+        pkg,
+        markdown: [
+          '[unsafe](javascript:alert(1))',
+          '[unity](unityhub://2021.1.19f1/5f5eb8bbdc25)',
+          '[asset](com.unity3d.kharma:content/163802)',
+        ].join('\n\n'),
+        disableTitleParser: true,
+      });
+
+      expect(html).not.toContain('javascript:alert');
+      expect(html).toContain('href="unityhub://2021.1.19f1/5f5eb8bbdc25"');
+      expect(html).toContain('href="com.unity3d.kharma:content/163802"');
+    });
+
+    it('strips raw unsafe HTML from README markdown', () => {
+      const html = renderMarkdownToHtml({
+        pkg,
+        markdown: `<script>alert('xss')</script>
+
+<iframe src="https://example.com"></iframe>
+
+<strong>safe text</strong>`,
+        disableTitleParser: true,
+      });
+
+      expect(html).not.toContain('<script');
+      expect(html).not.toContain('<iframe');
+      expect(html).toContain('safe text');
+    });
+
+    it('keeps the legacy renderer available for before and after comparison', () => {
+      const markdown = `> [!NOTE]
+> Useful information.`;
+
+      expect(
+        renderLegacyMarkdownToHtml({
+          pkg,
+          markdown,
+          disableTitleParser: true,
+        }),
+      ).toContain('[!NOTE]');
+      expect(
+        renderMarkdownToHtml({
+          pkg,
+          markdown,
+          disableTitleParser: true,
+        }),
+      ).toContain('markdown-alert-note');
     });
   });
 });

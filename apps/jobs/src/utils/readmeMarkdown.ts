@@ -3,6 +3,15 @@ import { posix } from 'node:path';
 import hljs from 'highlight.js';
 import { marked, Renderer } from 'marked';
 import { emojify } from 'node-emoji';
+import rehypeHighlight from 'rehype-highlight';
+import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
+import rehypeStringify from 'rehype-stringify';
+import remarkGfm from 'remark-gfm';
+import { remarkAlert } from 'remark-github-blockquote-alert';
+import remarkParse from 'remark-parse';
+import remarkRehype from 'remark-rehype';
+import { unified } from 'unified';
+import { visit } from 'unist-util-visit';
 import urlJoin from 'url-join';
 
 export const TRANSPARENT_PIXEL_SRC =
@@ -10,6 +19,7 @@ export const TRANSPARENT_PIXEL_SRC =
 
 const urlWithProtocolRe = /.*:.*/i;
 const githubBlobRe = /^https?:\/\/github\.com\/.*\/.*\/blob\//i;
+const unsafeUrlProtocolRe = /^(?:javascript|vbscript|data):/i;
 
 export type ReadmeMarkdownPackageContext = {
   name: string;
@@ -148,6 +158,188 @@ function escapeForHtml(input: string): string {
   return input.replace(/([&<>'"])/g, char => escapeMap[char]);
 }
 
+type HastElement = {
+  type: string;
+  tagName: string;
+  properties?: Record<string, unknown>;
+};
+
+type ReadmeUrlContext = {
+  linkBaseUrl: string;
+  linkBaseRelativeUrl: string;
+  imageBaseUrl: string;
+  imageBaseRelativeUrl: string;
+};
+
+function isSafeHref(value: string): boolean {
+  return !unsafeUrlProtocolRe.test(value);
+}
+
+function resolveReadmeLinkUrl(href: string, context: ReadmeUrlContext): string {
+  if (href.startsWith('#')) return href;
+  if (!urlWithProtocolRe.test(href)) {
+    return href.startsWith('/')
+      ? urlJoin(context.linkBaseUrl, href)
+      : urlJoin(context.linkBaseRelativeUrl, href);
+  }
+  return href;
+}
+
+function resolveReadmeImageUrl(src: string, context: ReadmeUrlContext): string {
+  if (!urlWithProtocolRe.test(src)) {
+    return src.startsWith('/')
+      ? urlJoin(context.imageBaseUrl, src)
+      : urlJoin(context.imageBaseRelativeUrl, src);
+  }
+  return convertToGitHubRawUrl(src);
+}
+
+function rewriteReadmeUrls(context: ReadmeUrlContext) {
+  return function transformer(tree: unknown): void {
+    visit(tree as never, 'element', (node: HastElement) => {
+      const properties = node.properties || {};
+      node.properties = properties;
+
+      if (node.tagName === 'a') {
+        const href = properties.href;
+        if (typeof href !== 'string') return;
+        const resolvedHref = resolveReadmeLinkUrl(href, context);
+        if (!isSafeHref(resolvedHref)) {
+          delete properties.href;
+          return;
+        }
+        properties.href = resolvedHref;
+        properties.rel = ['noopener', 'noreferrer'];
+      }
+
+      if (node.tagName === 'img') {
+        const src = properties.src;
+        if (typeof src !== 'string' || src === '') {
+          properties.src = TRANSPARENT_PIXEL_SRC;
+          return;
+        }
+        const resolvedSrc = resolveReadmeImageUrl(src, context);
+        properties.src = unsafeUrlProtocolRe.test(resolvedSrc)
+          ? TRANSPARENT_PIXEL_SRC
+          : resolvedSrc;
+      }
+    });
+  };
+}
+
+const readmeSanitizeSchema = {
+  ...defaultSchema,
+  protocols: {
+    ...defaultSchema.protocols,
+    href: [
+      ...(defaultSchema.protocols?.href || []),
+      'com.unity3d.kharma',
+      'unityhub',
+    ],
+    src: [
+      ...(defaultSchema.protocols?.src || []),
+      'data',
+    ],
+  },
+  attributes: {
+    ...defaultSchema.attributes,
+    a: [
+      ...(defaultSchema.attributes?.a || []),
+      ['rel', 'noopener', 'noreferrer'],
+    ],
+    code: [
+      ...((defaultSchema.attributes?.code || []).filter(attribute => {
+        return !Array.isArray(attribute) || attribute[0] !== 'className';
+      })),
+      ['className', 'hljs', /^language-[\w-]+$/],
+    ],
+    div: [
+      ...(defaultSchema.attributes?.div || []),
+      ['className', 'markdown-alert', /^markdown-alert-[\w-]+$/],
+      ['dir', 'auto'],
+    ],
+    p: [
+      ...(defaultSchema.attributes?.p || []),
+      ['className', 'markdown-alert-title'],
+      ['dir', 'auto'],
+    ],
+    span: [
+      ...(defaultSchema.attributes?.span || []),
+      ['className', /^hljs-[\w-]+$/],
+    ],
+    svg: [
+      ['aria-hidden', 'true'],
+      ['className', 'octicon'],
+      ['viewBox', '0 0 16 16'],
+      ['width', '16'],
+      ['height', '16'],
+    ],
+    path: [
+      ['d'],
+    ],
+  },
+  tagNames: [
+    ...(defaultSchema.tagNames || []),
+    'svg',
+    'path',
+  ],
+};
+
+function buildReadmeUrlContext(
+  pkg: ReadmeMarkdownPackageContext,
+  readmeInfo: ReadmePathInfo,
+): ReadmeUrlContext {
+  return {
+    linkBaseUrl: urlJoin(pkg.repoUrl, `blob/${readmeInfo.readmeBranch}`),
+    linkBaseRelativeUrl: urlJoin(pkg.repoUrl, `blob/${readmeInfo.readmeBase}`),
+    imageBaseUrl: urlJoin(pkg.repoUrl, `raw/${readmeInfo.readmeBranch}`),
+    imageBaseRelativeUrl: urlJoin(pkg.repoUrl, `raw/${readmeInfo.readmeBase}`),
+  };
+}
+
+function prepareMarkdown({
+  pkg,
+  markdown,
+  disableTitleParser,
+}: {
+  pkg: ReadmeMarkdownPackageContext;
+  markdown: string;
+  disableTitleParser?: boolean;
+}): string {
+  if (!disableTitleParser) {
+    markdown = parseTitle({ pkg, markdown });
+  }
+  return emojify(markdown);
+}
+
+export function renderLegacyMarkdownToHtml({
+  pkg,
+  markdown,
+  disableTitleParser,
+}: {
+  pkg: ReadmeMarkdownPackageContext;
+  markdown: string;
+  disableTitleParser?: boolean;
+}): string {
+  const readmeInfo = getReadmePathInfo(pkg.readme);
+  markdown = prepareMarkdown({ pkg, markdown, disableTitleParser });
+
+  const {
+    linkBaseUrl,
+    linkBaseRelativeUrl,
+    imageBaseUrl,
+    imageBaseRelativeUrl,
+  } = buildReadmeUrlContext(pkg, readmeInfo);
+  const renderer = createRenderer({
+    linkBaseUrl,
+    linkBaseRelativeUrl,
+    imageBaseUrl,
+    imageBaseRelativeUrl,
+  });
+  const html = marked.parse(markdown, { renderer }) as string;
+  return postProcessHtml(html, { imageBaseRelativeUrl });
+}
+
 export function renderMarkdownToHtml({
   pkg,
   markdown,
@@ -158,26 +350,22 @@ export function renderMarkdownToHtml({
   disableTitleParser?: boolean;
 }): string {
   const readmeInfo = getReadmePathInfo(pkg.readme);
-  if (!disableTitleParser) {
-    markdown = parseTitle({ pkg, markdown });
-  }
-  markdown = emojify(markdown);
+  const urlContext = buildReadmeUrlContext(pkg, readmeInfo);
+  markdown = prepareMarkdown({ pkg, markdown, disableTitleParser });
 
-  const linkBaseUrl = urlJoin(pkg.repoUrl, `blob/${readmeInfo.readmeBranch}`);
-  const linkBaseRelativeUrl = urlJoin(pkg.repoUrl, `blob/${readmeInfo.readmeBase}`);
-  const imageBaseUrl = urlJoin(pkg.repoUrl, `raw/${readmeInfo.readmeBranch}`);
-  const imageBaseRelativeUrl = urlJoin(
-    pkg.repoUrl,
-    `raw/${readmeInfo.readmeBase}`,
-  );
-  const renderer = createRenderer({
-    linkBaseUrl,
-    linkBaseRelativeUrl,
-    imageBaseUrl,
-    imageBaseRelativeUrl,
-  });
-  const html = marked.parse(markdown, { renderer }) as string;
-  return postProcessHtml(html, { imageBaseRelativeUrl });
+  const html = unified()
+    .use(remarkParse)
+    .use(remarkGfm)
+    .use(remarkAlert)
+    .use(remarkRehype)
+    .use(() => rewriteReadmeUrls(urlContext))
+    .use(rehypeHighlight, { ignoreMissing: true } as never)
+    .use(rehypeSanitize, readmeSanitizeSchema as never)
+    .use(rehypeStringify)
+    .processSync(markdown)
+    .toString();
+
+  return `<div>${html}</div>`;
 }
 
 export function postProcessHtml(
