@@ -15,3 +15,10 @@ Healthchecks ping URLs are also runtime config values, not committed defaults.
 - Keep defaults as skeletons in `config/default.json5`.
 - Mount runtime secrets as `config/local.json5` (gitignored), for example:
   - `github.tokens`: round-robin token array for GitHub API calls.
+
+## One-Shot Maintenance
+
+- Recompute package extra data for every package, including README HTML:
+  `node build/index.js fetch-package-extra --all --force`
+- Recompute selected packages only:
+  `node build/index.js fetch-package-extra com.example.package --force`

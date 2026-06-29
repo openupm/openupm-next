@@ -21,11 +21,12 @@ function getCodeBlockLanguage(codeElement: HTMLElement): string {
 }
 
 function normalizeReadmeCodeBlocks(element: HTMLElement): void {
-  element.querySelectorAll<HTMLElement>("pre > code.hljs").forEach(codeElement => {
+  element.querySelectorAll<HTMLElement>("pre > code").forEach(codeElement => {
     const preElement = codeElement.parentElement;
     const parentElement = preElement?.parentElement;
     if (!preElement || !parentElement || parentElement.className.includes("language-")) return;
 
+    codeElement.classList.add("hljs");
     preElement.classList.add("readme-code-block");
     const wrapperElement = document.createElement("div");
     wrapperElement.className = `language-${getCodeBlockLanguage(codeElement)}`;
@@ -34,10 +35,19 @@ function normalizeReadmeCodeBlocks(element: HTMLElement): void {
   });
 }
 
+function normalizeReadmeLinks(element: HTMLElement): void {
+  element.querySelectorAll<HTMLAnchorElement>("a").forEach(anchorElement => {
+    anchorElement.classList.add("no-external-link-icon");
+  });
+}
+
 function enhanceReadmeHtml(): void {
   void nextTick(() => {
     const element = readmeContainerElement.value;
-    if (element) normalizeReadmeCodeBlocks(element);
+    if (element) {
+      normalizeReadmeCodeBlocks(element);
+      normalizeReadmeLinks(element);
+    }
   });
 }
 
@@ -53,5 +63,32 @@ watch(() => props.content, enhanceReadmeHtml);
 
 <template>
   <!-- eslint-disable-next-line vue/no-v-html -->
-  <div ref="readmeContainerElement" v-html="content"></div>
+  <div ref="readmeContainerElement" class="readme-html" v-html="content"></div>
 </template>
+
+<style lang="scss">
+.readme-html {
+  a.no-external-link-icon::after {
+    content: none !important;
+    display: none !important;
+  }
+
+  div[class*=language-] {
+    pre.readme-code-block {
+      background-color: #23241f;
+
+      code.hljs {
+        background: transparent;
+        color: #fff;
+        display: block;
+        padding: 0;
+
+        &:hover {
+          background: transparent;
+          color: #fff;
+        }
+      }
+    }
+  }
+}
+</style>

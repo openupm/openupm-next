@@ -87,7 +87,7 @@ See more in the [openupm/test-package](https://github.com/openupm/test-package) 
           markdown: '# title',
           disableTitleParser: true,
         }),
-      ).toContain('<h1>title</h1>');
+      ).toContain('<h1 id="title">title</h1>');
     });
 
     it('rewrites relative links against the README branch', () => {
@@ -221,6 +221,54 @@ See more in the [openupm/test-package](https://github.com/openupm/test-package) 
       expect(html).toContain('<del>removed</del>');
     });
 
+    it('renders additional GFM edge cases locally', () => {
+      const html = renderMarkdownToHtml({
+        pkg,
+        markdown: `https://openupm.com
+
+www.openupm.com
+
+hello@example.com
+
+OpenUPM footnote.[^note]
+
+[^note]: Footnote text.
+
+| Left | Center | Right | Escaped pipe | Inline code |
+| :--- | :---: | ---: | --- | --- |
+| alpha | beta | gamma | a \\| b | \`const x = 1;\` |
+
+- [x] Parent task
+  - [ ] Nested pending task
+
+Mention: @openupm (#6635) and openupm/openupm#6635.`,
+        disableTitleParser: true,
+      });
+
+      expect(html).toContain('href="https://openupm.com"');
+      expect(html).toContain('href="http://www.openupm.com"');
+      expect(html).toContain('href="mailto:hello@example.com"');
+      expect(html).toContain('href="#user-content-fn-note"');
+      expect(html).toContain('id="user-content-fn-note"');
+      expect(html).toContain('data-footnotes');
+      expect(html).toContain('align="center"');
+      expect(html).toContain('align="right"');
+      expect(html).toContain('a | b');
+      expect(html).toContain('<code>const x = 1;</code>');
+      expect(html).toContain('contains-task-list');
+      expect(html).toContain('task-list-item');
+      expect(html).toContain('href="https://github.com/openupm"');
+      expect(html).toContain(
+        'href="https://github.com/openupm/test-package/issues/6635"',
+      );
+      expect(html).toContain(
+        'href="https://github.com/openupm/openupm/issues/6635"',
+      );
+      expect(html).toContain('Mention: <a href="https://github.com/openupm"');
+      expect(html).toContain('(<a href="https://github.com/openupm/test-package/issues/6635"');
+      expect(html).toContain('</a>) and <a href="https://github.com/openupm/openupm/issues/6635"');
+    });
+
     it('renders nested blockquotes separately from GitHub alerts', () => {
       const html = renderMarkdownToHtml({
         pkg,
@@ -234,6 +282,22 @@ See more in the [openupm/test-package](https://github.com/openupm/test-package) 
       expect(html).toContain('Outer quote');
       expect(html).toContain('Inner quote');
       expect(html).not.toContain('markdown-alert');
+    });
+
+    it('adds GitHub-style heading ids for README table of contents links', () => {
+      const html = renderMarkdownToHtml({
+        pkg,
+        markdown: `- [Table of Contents](#table-of-contents)
+
+## Table of Contents
+
+## Table of Contents`,
+        disableTitleParser: true,
+      });
+
+      expect(html).toContain('href="#table-of-contents"');
+      expect(html).toContain('<h2 id="table-of-contents">Table of Contents</h2>');
+      expect(html).toContain('<h2 id="table-of-contents-1">Table of Contents</h2>');
     });
 
     it('escapes unsupported-language code fences without highlighting', () => {
