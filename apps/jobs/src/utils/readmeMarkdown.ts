@@ -4,6 +4,7 @@ import hljs from 'highlight.js';
 import { marked, Renderer } from 'marked';
 import { emojify } from 'node-emoji';
 import rehypeHighlight from 'rehype-highlight';
+import rehypeRaw from 'rehype-raw';
 import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
 import rehypeStringify from 'rehype-stringify';
 import remarkGfm from 'remark-gfm';
@@ -357,7 +358,8 @@ export function renderMarkdownToHtml({
     .use(remarkParse)
     .use(remarkGfm)
     .use(remarkAlert)
-    .use(remarkRehype)
+    .use(remarkRehype, { allowDangerousHtml: true })
+    .use(rehypeRaw)
     .use(() => rewriteReadmeUrls(urlContext))
     .use(rehypeHighlight, { ignoreMissing: true } as never)
     .use(rehypeSanitize, readmeSanitizeSchema as never)

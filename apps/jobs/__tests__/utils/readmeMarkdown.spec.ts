@@ -265,12 +265,45 @@ See more in the [openupm/test-package](https://github.com/openupm/test-package) 
       expect(html).toContain('href="com.unity3d.kharma:content/163802"');
     });
 
-    it('strips raw unsafe HTML from README markdown', () => {
+    it('preserves sanitized raw GitHub HTML and rewrites raw HTML URLs', () => {
+      const html = renderMarkdownToHtml({
+        pkg,
+        markdown: `<p align="center">
+  <a href="docs/setup.md"><img src="images/badge.png" alt="Badge"></a>
+</p>
+
+<details>
+<summary>Install details</summary>
+
+See <a href="/absolute-guide.md">absolute guide</a>.
+</details>`,
+        disableTitleParser: true,
+      });
+
+      expect(html).toContain('<p align="center">');
+      expect(html).toContain('<details>');
+      expect(html).toContain('<summary>Install details</summary>');
+      expect(html).toContain(
+        'href="https://github.com/openupm/test-package/blob/main/docs/setup.md"',
+      );
+      expect(html).toContain(
+        'src="https://github.com/openupm/test-package/raw/main/images/badge.png"',
+      );
+      expect(html).toContain(
+        'href="https://github.com/openupm/test-package/blob/main/absolute-guide.md"',
+      );
+    });
+
+    it('strips unsafe raw HTML from README markdown after parsing safe raw HTML', () => {
       const html = renderMarkdownToHtml({
         pkg,
         markdown: `<script>alert('xss')</script>
 
 <iframe src="https://example.com"></iframe>
+
+<a href="javascript:alert(1)">unsafe link</a>
+
+<img src="javascript:alert(1)" onerror="alert(1)">
 
 <strong>safe text</strong>`,
         disableTitleParser: true,
@@ -278,6 +311,9 @@ See more in the [openupm/test-package](https://github.com/openupm/test-package) 
 
       expect(html).not.toContain('<script');
       expect(html).not.toContain('<iframe');
+      expect(html).not.toContain('javascript:alert');
+      expect(html).not.toContain('onerror');
+      expect(html).toContain(`src="${TRANSPARENT_PIXEL_SRC}"`);
       expect(html).toContain('safe text');
     });
 
