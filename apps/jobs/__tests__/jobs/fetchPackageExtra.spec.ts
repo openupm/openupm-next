@@ -142,6 +142,52 @@ describe('fetchPackageExtraJob', () => {
     expect(setReadmeUpdatedAtMock).not.toHaveBeenCalled();
   });
 
+  it('re-renders README content on forced cache hit', async () => {
+    getReadmeCacheKeyMock.mockResolvedValue('v0:main:README.md:1767225600000');
+    const markdown = Buffer.from('# Test Package').toString('base64');
+    const fetchMock = vi.fn().mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        content: markdown,
+        encoding: 'base64',
+      }),
+    });
+    vi.stubGlobal('fetch', fetchMock as unknown as typeof fetch);
+
+    const { fetchPackageReadme } = await import('../../src/jobs/fetchPackageExtra.js');
+    await fetchPackageReadme(
+      {
+        name: 'com.test.pkg',
+        repo: 'openupm/test-package',
+        repoUrl: 'https://github.com/openupm/test-package',
+        readme: 'main:README.md',
+        readmeBranch: 'main',
+      },
+      'com.test.pkg',
+      1767225600000,
+      true,
+    );
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      'https://api.github.com/repos/openupm/test-package/contents/README.md?ref=main',
+      expect.objectContaining({ method: 'GET' }),
+    );
+    expect(setReadmeMock).toHaveBeenCalledWith('com.test.pkg', '# Test Package');
+    expect(setReadmeHtmlMock).toHaveBeenCalledWith(
+      'com.test.pkg',
+      expect.stringContaining('<h1 id="test-package">Test Package</h1>'),
+    );
+    expect(setReadmeCacheKeyMock).toHaveBeenCalledWith(
+      'com.test.pkg',
+      'en-US',
+      'v0:main:README.md:1767225600000',
+    );
+    expect(setReadmeUpdatedAtMock).toHaveBeenCalledWith(
+      'com.test.pkg',
+      expect.any(Number),
+    );
+  });
+
   it('stores fallback README content on GitHub content 404', async () => {
     getReadmeCacheKeyMock.mockResolvedValue('v0:main:README.md:old');
     const fetchMock = vi.fn().mockResolvedValueOnce({
