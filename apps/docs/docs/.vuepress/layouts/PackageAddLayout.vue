@@ -19,6 +19,7 @@ import { isPackageBlockedByScope, isPackageRequiresManualVerification, validPack
 import { topicsWithAll } from '@temp/topics.js';
 import { BLOCKED_SCOPES_FILENAME, SDPXLIST_FILENAME } from "@openupm/types";
 import { decodeGitHubBase64Content } from "@/utils";
+import { getPackageAddFormDefaultReadme } from "@/packageAddForm";
 
 const store = useDefaultStore();
 const { t } = useI18n();
@@ -291,15 +292,8 @@ const fetchGitTrees = async (): Promise<void> => {
     state.form.options.readme = readmePaths.map((x: string) => ({ key: x, text: x }));
     if (readmePaths.length == 0) {
       state.form.errors.readme = t("no-markdown-file-found-fallbacks");
-    } else if (readmePaths.length == 1) {
-      state.form.values.readme = readmePaths[0];
-    } else if (readmePaths.includes("README.md")) {
-      state.form.values.readme = "README.md";
     } else {
-      const filteredPath = readmePaths.filter(x => x.endsWith("README.md"));
-      if (filteredPath.length > 0) {
-        state.form.values.readme = filteredPath[0];
-      }
+      refreshReadmeDefault();
     }
   } catch (error) {
     const errorObj = error as Error;
@@ -483,7 +477,17 @@ const onBranchChange = (): void => {
 const onPackageJsonPathChange = (): void => {
   if (state.form.values.packageJson) {
     fetchPackageJson();
+    refreshReadmeDefault();
   }
+};
+
+const refreshReadmeDefault = (): void => {
+  const readmePaths = state.form.options.readme.map((x) => x.key);
+  const defaultReadme = getPackageAddFormDefaultReadme(
+    readmePaths,
+    state.form.values.packageJson,
+  );
+  if (defaultReadme !== null) state.form.values.readme = defaultReadme;
 };
 
 const onAnalyzeRepo = (): void => {
