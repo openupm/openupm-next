@@ -94,12 +94,8 @@ function escapeHtml(value) {
   })[char]);
 }
 
-function escapeAttribute(value) {
-  return escapeHtml(value).replace(/`/g, '&#96;');
-}
-
 function renderPane(content) {
-  const srcdoc = `<!doctype html>
+  const documentHtml = `<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -126,7 +122,8 @@ function renderPane(content) {
 </head>
 <body>${content}</body>
 </html>`;
-  return `<iframe class="rendered" sandbox="" srcdoc="${escapeAttribute(srcdoc)}"></iframe>`;
+  const src = `data:text/html;base64,${Buffer.from(documentHtml).toString('base64')}`;
+  return `<iframe class="rendered" sandbox="" src="${src}"></iframe>`;
 }
 
 function renderFixture({ title, markdown }) {
@@ -196,7 +193,7 @@ const html = `<!doctype html>
     }
     iframe.rendered {
       border: 0;
-      min-height: 360px;
+      min-height: 560px;
       width: 100%;
     }
     pre {
