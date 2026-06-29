@@ -4,6 +4,7 @@ import {
   convertToGitHubRawUrl,
   parseTitle,
   postProcessHtml,
+  renderLegacyMarkdownToHtml,
   renderMarkdownToHtml,
   TRANSPARENT_PIXEL_SRC,
 } from '../../src/utils/readmeMarkdown.js';
@@ -86,7 +87,7 @@ See more in the [openupm/test-package](https://github.com/openupm/test-package) 
           markdown: '# title',
           disableTitleParser: true,
         }),
-      ).toContain('<h1>title</h1>');
+      ).toContain('<h1 id="title">title</h1>');
     });
 
     it('rewrites relative links against the README branch', () => {
@@ -169,8 +170,235 @@ See more in the [openupm/test-package](https://github.com/openupm/test-package) 
         disableTitleParser: true,
       });
       expect(html).toContain('💪');
-      expect(html).toContain('class="hljs js"');
+      expect(html).toMatch(/<code class="[^"]*\bhljs\b[^"]*\blanguage-js\b/);
       expect(html).toContain('hljs-keyword');
+    });
+
+    it('renders GitHub alert blockquotes with alert classes', () => {
+      const html = renderMarkdownToHtml({
+        pkg,
+        markdown: `> [!NOTE]
+> Useful information.
+
+> [!TIP]
+> Helpful advice.
+
+> [!IMPORTANT]
+> Key information.
+
+> [!WARNING]
+> Urgent information.
+
+> [!CAUTION]
+> Risk information.`,
+        disableTitleParser: true,
+      });
+
+      for (const type of ['note', 'tip', 'important', 'warning', 'caution']) {
+        expect(html).toContain(`markdown-alert-${type}`);
+      }
+      expect(html).toContain('markdown-alert-title');
+      expect(html).not.toContain('[!NOTE]');
+    });
+
+    it('renders GFM tables, task lists, and strikethrough locally', () => {
+      const html = renderMarkdownToHtml({
+        pkg,
+        markdown: `| Feature | Status |
+| --- | --- |
+| Tables | Works |
+
+- [x] Done
+- [ ] Pending
+
+~~removed~~`,
+        disableTitleParser: true,
+      });
+
+      expect(html).toContain('<table>');
+      expect(html).toContain('type="checkbox"');
+      expect(html).toContain('checked');
+      expect(html).toContain('<del>removed</del>');
+    });
+
+    it('renders additional GFM edge cases locally', () => {
+      const html = renderMarkdownToHtml({
+        pkg,
+        markdown: `https://openupm.com
+
+www.openupm.com
+
+hello@example.com
+
+OpenUPM footnote.[^note]
+
+[^note]: Footnote text.
+
+| Left | Center | Right | Escaped pipe | Inline code |
+| :--- | :---: | ---: | --- | --- |
+| alpha | beta | gamma | a \\| b | \`const x = 1;\` |
+
+- [x] Parent task
+  - [ ] Nested pending task
+
+Mention: @openupm (#6635) and openupm/openupm#6635.`,
+        disableTitleParser: true,
+      });
+
+      expect(html).toContain('href="https://openupm.com"');
+      expect(html).toContain('href="http://www.openupm.com"');
+      expect(html).toContain('href="mailto:hello@example.com"');
+      expect(html).toContain('href="#user-content-fn-note"');
+      expect(html).toContain('id="user-content-fn-note"');
+      expect(html).toContain('data-footnotes');
+      expect(html).toContain('align="center"');
+      expect(html).toContain('align="right"');
+      expect(html).toContain('a | b');
+      expect(html).toContain('<code>const x = 1;</code>');
+      expect(html).toContain('contains-task-list');
+      expect(html).toContain('task-list-item');
+      expect(html).toContain('href="https://github.com/openupm"');
+      expect(html).toContain(
+        'href="https://github.com/openupm/test-package/issues/6635"',
+      );
+      expect(html).toContain(
+        'href="https://github.com/openupm/openupm/issues/6635"',
+      );
+      expect(html).toContain('Mention: <a href="https://github.com/openupm"');
+      expect(html).toContain('(<a href="https://github.com/openupm/test-package/issues/6635"');
+      expect(html).toContain('</a>) and <a href="https://github.com/openupm/openupm/issues/6635"');
+    });
+
+    it('renders nested blockquotes separately from GitHub alerts', () => {
+      const html = renderMarkdownToHtml({
+        pkg,
+        markdown: `> Outer quote
+>
+> > Inner quote`,
+        disableTitleParser: true,
+      });
+
+      expect(html).toContain('<blockquote>');
+      expect(html).toContain('Outer quote');
+      expect(html).toContain('Inner quote');
+      expect(html).not.toContain('markdown-alert');
+    });
+
+    it('adds GitHub-style heading ids for README table of contents links', () => {
+      const html = renderMarkdownToHtml({
+        pkg,
+        markdown: `- [Table of Contents](#table-of-contents)
+
+## Table of Contents
+
+## Table of Contents`,
+        disableTitleParser: true,
+      });
+
+      expect(html).toContain('href="#table-of-contents"');
+      expect(html).toContain('<h2 id="table-of-contents">Table of Contents</h2>');
+      expect(html).toContain('<h2 id="table-of-contents-1">Table of Contents</h2>');
+    });
+
+    it('escapes unsupported-language code fences without highlighting', () => {
+      const html = renderMarkdownToHtml({
+        pkg,
+        markdown: '```madeuplang\nconst x = "<unsafe>";\n```',
+        disableTitleParser: true,
+      });
+
+      expect(html).toContain('language-madeuplang');
+      expect(html).toContain('unsafe');
+      expect(html).not.toContain('<unsafe>');
+      expect(html).not.toContain('hljs-keyword');
+    });
+
+    it('strips unsafe link protocols while preserving supported custom protocols', () => {
+      const html = renderMarkdownToHtml({
+        pkg,
+        markdown: [
+          '[unsafe](javascript:alert(1))',
+          '[unity](unityhub://2021.1.19f1/5f5eb8bbdc25)',
+          '[asset](com.unity3d.kharma:content/163802)',
+        ].join('\n\n'),
+        disableTitleParser: true,
+      });
+
+      expect(html).not.toContain('javascript:alert');
+      expect(html).toContain('href="unityhub://2021.1.19f1/5f5eb8bbdc25"');
+      expect(html).toContain('href="com.unity3d.kharma:content/163802"');
+    });
+
+    it('preserves sanitized raw GitHub HTML and rewrites raw HTML URLs', () => {
+      const html = renderMarkdownToHtml({
+        pkg,
+        markdown: `<p align="center">
+  <a href="docs/setup.md"><img src="images/badge.png" alt="Badge"></a>
+</p>
+
+<details>
+<summary>Install details</summary>
+
+See <a href="/absolute-guide.md">absolute guide</a>.
+</details>`,
+        disableTitleParser: true,
+      });
+
+      expect(html).toContain('<p align="center">');
+      expect(html).toContain('<details>');
+      expect(html).toContain('<summary>Install details</summary>');
+      expect(html).toContain(
+        'href="https://github.com/openupm/test-package/blob/main/docs/setup.md"',
+      );
+      expect(html).toContain(
+        'src="https://github.com/openupm/test-package/raw/main/images/badge.png"',
+      );
+      expect(html).toContain(
+        'href="https://github.com/openupm/test-package/blob/main/absolute-guide.md"',
+      );
+    });
+
+    it('strips unsafe raw HTML from README markdown after parsing safe raw HTML', () => {
+      const html = renderMarkdownToHtml({
+        pkg,
+        markdown: `<script>alert('xss')</script>
+
+<iframe src="https://example.com"></iframe>
+
+<a href="javascript:alert(1)">unsafe link</a>
+
+<img src="javascript:alert(1)" onerror="alert(1)">
+
+<strong>safe text</strong>`,
+        disableTitleParser: true,
+      });
+
+      expect(html).not.toContain('<script');
+      expect(html).not.toContain('<iframe');
+      expect(html).not.toContain('javascript:alert');
+      expect(html).not.toContain('onerror');
+      expect(html).toContain(`src="${TRANSPARENT_PIXEL_SRC}"`);
+      expect(html).toContain('safe text');
+    });
+
+    it('keeps the legacy renderer available for before and after comparison', () => {
+      const markdown = `> [!NOTE]
+> Useful information.`;
+
+      expect(
+        renderLegacyMarkdownToHtml({
+          pkg,
+          markdown,
+          disableTitleParser: true,
+        }),
+      ).toContain('[!NOTE]');
+      expect(
+        renderMarkdownToHtml({
+          pkg,
+          markdown,
+          disableTitleParser: true,
+        }),
+      ).toContain('markdown-alert-note');
     });
   });
 });

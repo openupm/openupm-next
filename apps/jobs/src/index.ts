@@ -126,10 +126,29 @@ function main(): void {
   );
 }
 
+function parseFlag(args: string[], flag: string): boolean {
+  return args.includes(flag);
+}
+
+function parsePackageArgs(args: string[]): string[] {
+  return args.filter(arg => !arg.startsWith('-'));
+}
+
 async function run(argv: string[] = process.argv): Promise<void> {
   const command = argv[2];
   if (command === 'trends-backfill') {
     await buildTrendsSnapshotBackfillJob();
+    return;
+  }
+  if (command === 'fetch-package-extra') {
+    const args = argv.slice(3);
+    const all = parseFlag(args, '--all');
+    const force = parseFlag(args, '--force');
+    const packageNames = parsePackageArgs(args);
+    await fetchPackageExtraJob(packageNames.length > 0 ? packageNames : null, {
+      all,
+      force,
+    });
     return;
   }
   main();
@@ -139,7 +158,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const command = process.argv[2];
   void run()
     .then(() => {
-      if (command === 'trends-backfill') process.exit(0);
+      if (command === 'trends-backfill' || command === 'fetch-package-extra')
+        process.exit(0);
     })
     .catch((err) => {
       logger.error({ err, command }, 'jobs command failed');

@@ -105,7 +105,7 @@ describe('fetchPackageExtraJob', () => {
     );
     expect(setReadmeHtmlMock).toHaveBeenCalledWith(
       'com.test.pkg',
-      expect.stringContaining('<h1>Test Package</h1>'),
+      expect.stringContaining('<h1 id="test-package">Test Package</h1>'),
     );
     expect(setReadmeCacheKeyMock).toHaveBeenCalledWith(
       'com.test.pkg',
@@ -210,7 +210,7 @@ describe('fetchPackageExtraJob', () => {
     expect(setReadmeMock).toHaveBeenCalledWith('com.test.pkg', '');
     expect(setReadmeHtmlMock).toHaveBeenCalledWith(
       'com.test.pkg',
-      expect.stringContaining('<h1>Test Package</h1>'),
+      expect.stringContaining('<h1 id="test-package">Test Package</h1>'),
     );
     expect(setReadmeCacheKeyMock).toHaveBeenCalledWith(
       'com.test.pkg',

@@ -291,6 +291,72 @@ h6 a:visited {
     background-color: #23241f;
   }
 
+  .markdown-alert {
+    border-left: 0.25rem solid var(--markdown-alert-border, var(--c-border));
+    color: inherit;
+    margin: 0 0 1rem;
+    padding: 0.5rem 1rem;
+
+    >:last-child {
+      margin-bottom: 0 !important;
+    }
+
+    .markdown-alert-title {
+      align-items: center;
+      display: flex;
+      font-size: $font-size-md;
+      font-weight: 600;
+      line-height: 1.2;
+      margin-bottom: 0.45rem;
+
+      svg.octicon {
+        fill: currentColor;
+        flex: 0 0 auto;
+        margin-right: 0.45rem;
+      }
+    }
+  }
+
+  .markdown-alert-note {
+    --markdown-alert-border: #0969da;
+
+    .markdown-alert-title {
+      color: #0969da;
+    }
+  }
+
+  .markdown-alert-tip {
+    --markdown-alert-border: #1a7f37;
+
+    .markdown-alert-title {
+      color: #1a7f37;
+    }
+  }
+
+  .markdown-alert-important {
+    --markdown-alert-border: #8250df;
+
+    .markdown-alert-title {
+      color: #8250df;
+    }
+  }
+
+  .markdown-alert-warning {
+    --markdown-alert-border: #9a6700;
+
+    .markdown-alert-title {
+      color: #9a6700;
+    }
+  }
+
+  .markdown-alert-caution {
+    --markdown-alert-border: #d1242f;
+
+    .markdown-alert-title {
+      color: #d1242f;
+    }
+  }
+
   a.btn,
   a.btn:hover {
     text-decoration: none;
@@ -493,6 +559,48 @@ div[class*=language-] {
     .form-checkbox .form-icon,
     .form-radio .form-icon {
       border-color: var(--c-warning);
+    }
+  }
+
+  :is(.theme-default-content, [vp-content]) {
+    .markdown-alert-note {
+      --markdown-alert-border: #58a6ff;
+
+      .markdown-alert-title {
+        color: #58a6ff;
+      }
+    }
+
+    .markdown-alert-tip {
+      --markdown-alert-border: #3fb950;
+
+      .markdown-alert-title {
+        color: #3fb950;
+      }
+    }
+
+    .markdown-alert-important {
+      --markdown-alert-border: #a371f7;
+
+      .markdown-alert-title {
+        color: #a371f7;
+      }
+    }
+
+    .markdown-alert-warning {
+      --markdown-alert-border: #d29922;
+
+      .markdown-alert-title {
+        color: #d29922;
+      }
+    }
+
+    .markdown-alert-caution {
+      --markdown-alert-border: #f85149;
+
+      .markdown-alert-title {
+        color: #f85149;
+      }
     }
   }
 }
