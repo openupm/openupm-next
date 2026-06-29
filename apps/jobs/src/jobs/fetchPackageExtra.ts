@@ -123,7 +123,7 @@ export async function fetchExtraData(
     await fetchPackageInfo(packageName);
     await fetchPackageScopes(packageName);
     const repoPushedTime = await fetchRepoInfo(pkg, packageName);
-    await fetchPackageReadme(pkg, packageName, repoPushedTime);
+    await fetchPackageReadme(pkg, packageName, repoPushedTime, force);
     await cacheImage(packageName, force);
     await cacheAvatarImage(pkg.owner || undefined, pkg.parentOwner || undefined, pkg.hunter || undefined, force);
     await fetchPackageInstallCount(packageName);
@@ -289,13 +289,14 @@ export async function fetchPackageReadme(
   pkg: PackageReadmeContext,
   packageName: string,
   repoPushedTime: number | null,
+  force = false,
 ): Promise<void> {
   try {
     const readmeInfo = getReadmePathInfo(pkg.readme);
     const cacheRevision = repoPushedTime === null ? 'unavailable' : repoPushedTime;
     const cacheKey = `v0:${readmeInfo.readme}:${cacheRevision}`;
     const existingCacheKey = await getReadmeCacheKey(packageName);
-    if (existingCacheKey === cacheKey) {
+    if (!force && existingCacheKey === cacheKey) {
       logger.info({ pkg: packageName }, 'fetchPackageReadme cache is available');
       return;
     }
