@@ -65,9 +65,11 @@ export function selectAdsenseInArticleBoundaryIndexes(
 export function shouldAppendAdsenseInArticleFallbackAd(
   totalContentLength: number,
   placementCount: number,
+  boundaryCount: number,
   options: AdsenseInArticlePlacementOptions = {},
 ): boolean {
   if (placementCount > 0) return false;
+  if (boundaryCount === 0) return totalContentLength > 0;
   return (
     estimateReadmeContentHeightPx(totalContentLength, options) >=
     getTargetDistancePx(options) * minFallbackRatio
@@ -183,7 +185,8 @@ function createAdsenseInArticleAd(): HTMLElement {
  *
  * Ads are placed before headings when roughly one viewport of rendered or
  * estimated content has passed since the previous ad. A single end-of-content
- * fallback is used for long README files without enough section headings.
+ * fallback is used for headingless README files or long README files without
+ * enough section headings.
  *
  * @param {HTMLElement} containerElement - The README container element.
  */
@@ -221,6 +224,7 @@ export function addAdsenseInArticleAds(containerElement: HTMLElement): void {
     shouldAppendAdsenseInArticleFallbackAd(
       totalContentLength,
       placementIndexes.length,
+      boundaryElements.length,
       options,
     )
   ) {
