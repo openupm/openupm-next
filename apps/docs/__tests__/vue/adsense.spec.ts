@@ -57,12 +57,28 @@ describe("README in-article ad placement", () => {
     expect(placements).toEqual([1]);
   });
 
-  it("appends one fallback ad for long README content without eligible section boundaries", () => {
-    expect(shouldAppendAdsenseInArticleFallbackAd(2000, 0, options)).toBe(true);
-    expect(shouldAppendAdsenseInArticleFallbackAd(2000, 1, options)).toBe(
+  it("appends one fallback ad for headingless README content", () => {
+    expect(shouldAppendAdsenseInArticleFallbackAd(300, 0, 0, options)).toBe(
+      true,
+    );
+    expect(shouldAppendAdsenseInArticleFallbackAd(0, 0, 0, options)).toBe(
       false,
     );
-    expect(shouldAppendAdsenseInArticleFallbackAd(800, 0, options)).toBe(false);
+    expect(shouldAppendAdsenseInArticleFallbackAd(300, 1, 0, options)).toBe(
+      false,
+    );
+  });
+
+  it("appends one fallback ad for long README content without eligible section boundaries", () => {
+    expect(shouldAppendAdsenseInArticleFallbackAd(2000, 0, 1, options)).toBe(
+      true,
+    );
+    expect(shouldAppendAdsenseInArticleFallbackAd(2000, 1, 1, options)).toBe(
+      false,
+    );
+    expect(shouldAppendAdsenseInArticleFallbackAd(800, 0, 1, options)).toBe(
+      false,
+    );
   });
 
   it("estimates README height from text length relative to viewport height", () => {
