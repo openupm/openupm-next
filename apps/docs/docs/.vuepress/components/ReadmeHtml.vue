@@ -1,19 +1,19 @@
 <script setup lang="ts">
-import { nextTick, onMounted, ref, watch } from 'vue';
-import { addAdsenseInArticleAds } from '@/adsense';
+import { nextTick, onMounted, ref, watch } from "vue";
+import { addAdsenseInArticleAds } from "@/adsense";
 
 const props = defineProps({
   content: {
     type: String,
-    default: ""
-  }
+    default: "",
+  },
 });
 
 // The reference of the readme container element
 const readmeContainerElement = ref<HTMLElement | null>(null);
 
 function getCodeBlockLanguage(codeElement: HTMLElement): string {
-  const languageClass = Array.from(codeElement.classList).find(className => {
+  const languageClass = Array.from(codeElement.classList).find((className) => {
     return className !== "hljs" && /^[a-zA-Z0-9_-]+$/.test(className);
   });
   if (!languageClass) return "text";
@@ -21,10 +21,15 @@ function getCodeBlockLanguage(codeElement: HTMLElement): string {
 }
 
 function normalizeReadmeCodeBlocks(element: HTMLElement): void {
-  element.querySelectorAll<HTMLElement>("pre > code").forEach(codeElement => {
+  element.querySelectorAll<HTMLElement>("pre > code").forEach((codeElement) => {
     const preElement = codeElement.parentElement;
     const parentElement = preElement?.parentElement;
-    if (!preElement || !parentElement || parentElement.className.includes("language-")) return;
+    if (
+      !preElement ||
+      !parentElement ||
+      parentElement.className.includes("language-")
+    )
+      return;
 
     codeElement.classList.add("hljs");
     preElement.classList.add("readme-code-block");
@@ -36,7 +41,7 @@ function normalizeReadmeCodeBlocks(element: HTMLElement): void {
 }
 
 function normalizeReadmeLinks(element: HTMLElement): void {
-  element.querySelectorAll<HTMLAnchorElement>("a").forEach(anchorElement => {
+  element.querySelectorAll<HTMLAnchorElement>("a").forEach((anchorElement) => {
     anchorElement.classList.add("no-external-link-icon");
   });
 }
@@ -47,14 +52,12 @@ function enhanceReadmeHtml(): void {
     if (element) {
       normalizeReadmeCodeBlocks(element);
       normalizeReadmeLinks(element);
+      addAdsenseInArticleAds(element);
     }
   });
 }
 
 onMounted(() => {
-  const element = readmeContainerElement.value;
-  if (element)
-    addAdsenseInArticleAds(element);
   enhanceReadmeHtml();
 });
 
@@ -68,12 +71,16 @@ watch(() => props.content, enhanceReadmeHtml);
 
 <style lang="scss">
 .readme-html {
+  .readme-in-article-ad {
+    margin: 1.2rem 0;
+  }
+
   a.no-external-link-icon::after {
     content: none !important;
     display: none !important;
   }
 
-  div[class*=language-] {
+  div[class*="language-"] {
     pre.readme-code-block {
       background-color: #23241f;
 
