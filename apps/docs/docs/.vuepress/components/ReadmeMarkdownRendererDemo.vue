@@ -117,11 +117,6 @@ const fixtureSlug = (title: string): string => {
 <style lang="scss" scoped>
 @use "@/styles/palette" as *;
 
-:global(.vp-theme-container.wide-layout.no-sidebar .vp-sidebar),
-:global(.vp-theme-container.wide-layout.no-sidebar .vp-sidebar-mask) {
-  display: none;
-}
-
 .readme-markdown-demo {
   margin-top: 1rem;
 }
