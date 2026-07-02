@@ -5,6 +5,7 @@ date: "2021-05-04"
 readingTime: "2 min read"
 originalUrl: "https://medium.com/openupm/openupm-uplinks-to-the-unitynuget-registry-5bb235ff484e"
 description: "OpenUPM adds an experimental uplink to UnityNuGet so packages under the org.nuget scope can be resolved through the OpenUPM registry."
+cover: "/images/blog-covers/openupm-uplinks-to-the-unitynuget-registry-5bb235ff484e.png"
 editLink: false
 ---
 # OpenUPM Uplinks to the UnityNuGet Registry

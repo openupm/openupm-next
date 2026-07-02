@@ -16,6 +16,7 @@ export const BLOG_POSTS: BlogPost[] = [
   {
     title: "OpenUPM GitHub Action Publish Wait",
     slug: "openupm-github-action-publish-wait",
+    featuredImage: "/images/blog-covers/openupm-github-action-publish-wait.png",
     author: "Favo Yang",
     date: "2026-06-14",
     readingTime: "1 min read",
@@ -35,7 +36,7 @@ export const BLOG_POSTS: BlogPost[] = [
   {
     title: "Contributor Profile Pages Arrive on OpenUPM",
     slug: "contributor-profile-badges",
-    featuredImage: "/images/blog-covers/contributor-profile-pages-and-badges.png",
+    featuredImage: "/images/blog-covers/contributor-profile-badges.png",
     author: "Favo Yang",
     date: "2026-05-17",
     readingTime: "2 min read",
@@ -45,6 +46,7 @@ export const BLOG_POSTS: BlogPost[] = [
   {
     title: "UnityNuGet Package Pages Now on OpenUPM",
     slug: "unitynuget-package-pages-now-on-openupm",
+    featuredImage: "/images/blog-covers/unitynuget-package-pages-now-on-openupm.png",
     author: "Favo Yang",
     date: "2026-05-17",
     readingTime: "2 min read",
@@ -54,6 +56,7 @@ export const BLOG_POSTS: BlogPost[] = [
   {
     title: "OpenUPM Recent Improvements, May 2026",
     slug: "openupm-recent-improvements-may-2026",
+    featuredImage: "/images/blog-covers/openupm-recent-improvements-may-2026.png",
     author: "Favo Yang",
     date: "2026-05-17",
     readingTime: "3 min read",
@@ -63,6 +66,7 @@ export const BLOG_POSTS: BlogPost[] = [
   {
     title: "UnityNuGet Search Now Works Through OpenUPM",
     slug: "unitynuget-search-now-works-through-openupm",
+    featuredImage: "/images/blog-covers/unitynuget-search-now-works-through-openupm.png",
     author: "Favo Yang",
     date: "2026-05-15",
     readingTime: "1 min read",
@@ -72,6 +76,7 @@ export const BLOG_POSTS: BlogPost[] = [
   {
     title: "OpenUPM Queue Status Page",
     slug: "openupm-queue-status-page",
+    featuredImage: "/images/blog-covers/openupm-queue-status-page.png",
     author: "Favo Yang",
     date: "2026-05-14",
     readingTime: "1 min read",
@@ -81,6 +86,7 @@ export const BLOG_POSTS: BlogPost[] = [
   {
     title: "UnityNuGet Packages Are Now Code Signed",
     slug: "unitynuget-packages-are-now-code-signed",
+    featuredImage: "/images/blog-covers/unitynuget-packages-are-now-code-signed.png",
     author: "Favo Yang",
     date: "2026-05-13",
     readingTime: "1 min read",
@@ -124,6 +130,7 @@ export const BLOG_POSTS: BlogPost[] = [
   {
     title: "DigitalOcean Sponsorship 2024",
     slug: "digitalocean-sponsorship-2024-b015451e530b",
+    featuredImage: "/images/blog-covers/digitalocean-sponsorship-2024-b015451e530b.png",
     author: "Favo Yang",
     date: "2025-01-13",
     readingTime: "1 min read",
@@ -135,6 +142,7 @@ export const BLOG_POSTS: BlogPost[] = [
   {
     title: "Host Your First Private UPM Registry in Just 15 Minutes",
     slug: "host-your-first-private-upm-registry-in-just-15-minutes-c92d67f27de4",
+    featuredImage: "/images/blog-covers/host-your-first-private-upm-registry-in-just-15-minutes-c92d67f27de4.png",
     author: "Favo Yang",
     date: "2024-02-18",
     readingTime: "1 min read",

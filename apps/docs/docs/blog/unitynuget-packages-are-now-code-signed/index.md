@@ -4,6 +4,7 @@ author: "Favo Yang"
 date: "2026-05-13"
 readingTime: "1 min read"
 description: "UnityNuGet packages served through OpenUPM are now code signed, with daily cache verification to keep mirrored package versions current."
+cover: "/images/blog-covers/unitynuget-packages-are-now-code-signed.png"
 editLink: false
 ---
 # UnityNuGet Packages Are Now Code Signed

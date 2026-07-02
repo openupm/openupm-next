@@ -5,6 +5,7 @@ date: "2025-01-13"
 readingTime: "1 min read"
 originalUrl: "https://medium.com/openupm/digitalocean-sponsorship-2024-b015451e530b"
 description: "DigitalOcean continued its sponsorship of OpenUPM, providing credits that support the website and related infrastructure."
+cover: "/images/blog-covers/digitalocean-sponsorship-2024-b015451e530b.png"
 editLink: false
 ---
 # DigitalOcean Sponsorship 2024

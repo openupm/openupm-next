@@ -4,6 +4,7 @@ author: "Favo Yang"
 date: "2026-05-17"
 readingTime: "3 min read"
 description: "A short roundup of recent OpenUPM package page, build reliability, community support, and registry reliability improvements."
+cover: "/images/blog-covers/openupm-recent-improvements-may-2026.png"
 editLink: false
 ---
 # OpenUPM Recent Improvements, May 2026
