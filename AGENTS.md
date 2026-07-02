@@ -112,6 +112,12 @@
   `@vuepress/plugin-seo` uses it for `og:image` and Article JSON-LD image
   metadata. The plugin checks `banner` first, then `cover`; prefer `cover` for
   normal blog posts.
+- When generating or regenerating blog hero images from the OpenUPM operator
+  workspace, use the workspace-level skill/reference at
+  `.agents/skills/openupm-blog-writing/references/hero-images.md`. Keep cover
+  images 16:9, use OpenUPM blue `#3068E5` as the base color, avoid repeating
+  the title text in the image by default, and prefer one or two main visual
+  elements with an absolute maximum of five.
 - For a new post, start by reading a recent nearby post and `BLOG_POSTS` so the
   title style, metadata, and closing navigation match the site.
 - Add `<BlogPostMeta />` after the H1 and `<BlogPostNav />` at the end unless
