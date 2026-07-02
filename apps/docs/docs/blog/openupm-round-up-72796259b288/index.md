@@ -5,6 +5,7 @@ date: "2020-05-10"
 readingTime: "4 min read"
 originalUrl: "https://medium.com/openupm/openupm-round-up-72796259b288"
 description: "A 2020 OpenUPM progress update covering package counts, package hunters, pending labels, RSS feeds, layout changes, sorting, and README support."
+cover: "/images/blog-covers/openupm-round-up-72796259b288.png"
 editLink: false
 ---
 # OpenUPM Round-up

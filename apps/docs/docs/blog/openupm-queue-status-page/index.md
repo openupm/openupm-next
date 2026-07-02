@@ -4,6 +4,7 @@ author: "Favo Yang"
 date: "2026-05-14"
 readingTime: "1 min read"
 description: "OpenUPM now has a public queue status page for package scan and release build activity."
+cover: "/images/blog-covers/openupm-queue-status-page.png"
 editLink: false
 ---
 # OpenUPM Queue Status Page

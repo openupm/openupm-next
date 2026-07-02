@@ -5,6 +5,7 @@ date: "2022-03-22"
 readingTime: "1 min read"
 originalUrl: "https://medium.com/openupm/digitalocean-sponsorship-2022-c6108c451828"
 description: "DigitalOcean renewed its service sponsorship for OpenUPM in 2022, helping cover hosting costs for the project."
+cover: "/images/blog-covers/digitalocean-sponsorship-2022-c6108c451828.png"
 editLink: false
 ---
 # DigitalOcean Sponsorship 2022

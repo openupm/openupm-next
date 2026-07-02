@@ -5,6 +5,7 @@ date: "2021-03-10"
 readingTime: "2 min read"
 originalUrl: "https://medium.com/openupm/digitalocean-sponsorship-our-server-infrastructure-d1019b84d71c"
 description: "OpenUPM announces DigitalOcean sponsorship and describes the public service infrastructure at a high level."
+cover: "/images/blog-covers/digitalocean-sponsorship-our-server-infrastructure-d1019b84d71c.png"
 editLink: false
 ---
 # DigitalOcean Sponsorship & Our Server Infrastructure

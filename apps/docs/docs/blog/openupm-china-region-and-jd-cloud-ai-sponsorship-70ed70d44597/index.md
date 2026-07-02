@@ -5,6 +5,7 @@ date: "2020-12-03"
 readingTime: "1 min read"
 originalUrl: "https://medium.com/openupm/openupm-china-region-and-jd-cloud-ai-sponsorship-70ed70d44597"
 description: "OpenUPM announces the China region, sponsored by JD Cloud & AI, with localized docs, metadata, registry mirroring, and CLI support."
+cover: "/images/blog-covers/openupm-china-region-and-jd-cloud-ai-sponsorship-70ed70d44597.png"
 editLink: false
 ---
 # OpenUPM China Region and JD Cloud & AI Sponsorship

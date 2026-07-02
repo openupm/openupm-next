@@ -4,6 +4,7 @@ author: "Favo Yang"
 date: "2026-05-15"
 readingTime: "1 min read"
 description: "OpenUPM's registry upgrade experimentally makes org.nuget packages visible through registry search while keeping UnityNuGet package resolution behind the OpenUPM endpoint."
+cover: "/images/blog-covers/unitynuget-search-now-works-through-openupm.png"
 ---
 
 # UnityNuGet Search Now Works Through OpenUPM

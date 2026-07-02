@@ -5,6 +5,7 @@ date: "2021-11-02"
 readingTime: "4 min read"
 originalUrl: "https://medium.com/openupm/registry-changes-to-conform-to-net-standard-2-1-shipped-with-unity-2021-2-1e9753d49826"
 description: "Unity 2021.2 moved to .NET Standard 2.1, requiring OpenUPM and UnityNuGet cache changes for affected NuGet-derived packages."
+cover: "/images/blog-covers/registry-changes-to-conform-to-net-standard-2-1-shipped-with-unity-2021-2-1e9753d49826.png"
 editLink: false
 ---
 # Registry Changes to Conform to .NET Standard 2.1 Shipped with Unity 2021.2

@@ -4,6 +4,7 @@ author: "Favo Yang"
 date: "2026-06-14"
 readingTime: "1 min read"
 description: "OpenUPM now has an experimental GitHub Action that can trigger a package refresh from a tag or release workflow and wait until the version is published."
+cover: "/images/blog-covers/openupm-github-action-publish-wait.png"
 editLink: false
 ---
 # OpenUPM GitHub Action Publish Wait

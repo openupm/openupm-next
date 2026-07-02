@@ -5,6 +5,7 @@ date: "2024-02-18"
 readingTime: "1 min read"
 originalUrl: "https://medium.com/openupm/host-your-first-private-upm-registry-in-just-15-minutes-c92d67f27de4"
 description: "A short guide for setting up a private Unity Package Manager registry with Verdaccio and a small cloud server."
+cover: "/images/blog-covers/host-your-first-private-upm-registry-in-just-15-minutes-c92d67f27de4.png"
 editLink: false
 ---
 # Host Your First Private UPM Registry in Just 15 Minutes
