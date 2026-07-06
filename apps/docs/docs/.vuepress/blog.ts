@@ -14,6 +14,18 @@ export const BLOG_RSS_PATH = "/blog/rss.xml";
 
 export const BLOG_POSTS: BlogPost[] = [
   {
+    title:
+      "Upcoming Unity Editor Change Affecting Package Compatibility: Unity 6.6 Fast Enter Play Mode",
+    slug: "unity-66-fast-enter-play-mode-package-readiness",
+    featuredImage:
+      "/images/blog-covers/unity-66-fast-enter-play-mode-package-readiness.png",
+    author: "Favo Yang",
+    date: "2026-07-06",
+    readingTime: "2 min read",
+    excerpt:
+      "Unity 6.6 enables Fast Enter Play Mode by default for new projects, so package authors should audit static state and add explicit Play Mode cleanup where needed.",
+  },
+  {
     title: "OpenUPM GitHub Action Publish Wait",
     slug: "openupm-github-action-publish-wait",
     featuredImage: "/images/blog-covers/openupm-github-action-publish-wait.png",
