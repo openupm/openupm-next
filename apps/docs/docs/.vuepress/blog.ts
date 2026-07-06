@@ -20,7 +20,7 @@ export const BLOG_POSTS: BlogPost[] = [
     featuredImage:
       "/images/blog-covers/unity-66-fast-enter-play-mode-package-readiness.png",
     author: "Favo Yang",
-    date: "2026-07-01",
+    date: "2026-07-06",
     readingTime: "2 min read",
     excerpt:
       "Unity 6.6 enables Fast Enter Play Mode by default for new projects, so package authors should audit static state and add explicit Play Mode cleanup where needed.",
