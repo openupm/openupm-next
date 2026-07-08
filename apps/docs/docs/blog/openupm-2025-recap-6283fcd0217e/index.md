@@ -11,70 +11,122 @@ editLink: false
 
 <BlogPostMeta />
 
-<p>OpenUPM had a quieter year for new submissions in 2025, but package owners kept shipping. Downloads were slightly lower than in 2024, and release activity picked up hard in the fall.</p>
+OpenUPM had a quieter year for new submissions in 2025, but package owners kept shipping. Downloads were slightly lower than in 2024, and release activity picked up hard in the fall.
 
-<h2>Community in 2025</h2>
+## Community in 2025
 
-<ul><li>489 packages submitted, down from 618 in 2024.</li><li>218 unique package hunters and 232 unique owners.</li><li>336 packages, or 68.7%, were submitted by their own owners. That is a new high for creator-led submissions.</li></ul>
+- 489 packages submitted, down from 618 in 2024.
+- 218 unique package hunters and 232 unique owners.
+- 336 packages, or 68.7%, were submitted by their own owners. That is a new high for creator-led submissions.
 
-<h2>Downloads</h2>
+## Downloads
 
-<ul><li>Total downloads: 4,497,493, down 11.1% from 2024.</li><li>Monthly volume averaged about 374,791 downloads. October had 427,029 downloads, September had 421,651, and December fell to 287,514.</li></ul>
+- Total downloads: 4,497,493, down 11.1% from 2024.
+- Monthly volume averaged about 374,791 downloads. October had 427,029 downloads, September had 421,651, and December fell to 287,514.
 
-<figure><img alt="Monthly downloads in 2025" src="./images/openupm-2025-recap-6283fcd0217e-01-monthly-downloads-in-2025.png" /></figure>
+![Monthly downloads in 2025](./images/openupm-2025-recap-6283fcd0217e-01-monthly-downloads-in-2025.png)
 
-<p>Top 10 downloaded packages:</p>
+Top 10 downloaded packages:
 
-<ol><li>External Dependency Manager for Unity (<a href="/packages/com.google.external-dependency-manager/">com.google.external-dependency-manager</a>): 589,537</li><li>UI Particle (<a href="/packages/com.coffee.ui-particle/">com.coffee.ui-particle</a>): 342,587</li><li>VContainer (<a href="/packages/jp.hadashikick.vcontainer/">jp.hadashikick.vcontainer</a>): 310,184</li><li>UniTask (<a href="/packages/com.cysharp.unitask/">com.cysharp.unitask</a>): 289,844</li><li>NuGetForUnity (<a href="/packages/com.github-glitchenzo.nugetforunity/">com.github-glitchenzo.nugetforunity</a>): 267,166</li><li>Compilation Visualizer (<a href="/packages/com.needle.compilation-visualizer/">com.needle.compilation-visualizer</a>): 136,023</li><li>Google Play Common (<a href="/packages/com.google.play.common/">com.google.play.common</a>): 110,713</li><li>Google Play Core (<a href="/packages/com.google.play.core/">com.google.play.core</a>): 95,834</li><li>Google Play In-app Review (<a href="/packages/com.google.play.review/">com.google.play.review</a>): 89,527</li><li>Backtrace (<a href="/packages/io.backtrace.unity/">io.backtrace.unity</a>): 67,358</li></ol>
+1. External Dependency Manager for Unity ([com.google.external-dependency-manager](/packages/com.google.external-dependency-manager/)): 589,537
+2. UI Particle ([com.coffee.ui-particle](/packages/com.coffee.ui-particle/)): 342,587
+3. VContainer ([jp.hadashikick.vcontainer](/packages/jp.hadashikick.vcontainer/)): 310,184
+4. UniTask ([com.cysharp.unitask](/packages/com.cysharp.unitask/)): 289,844
+5. NuGetForUnity ([com.github-glitchenzo.nugetforunity](/packages/com.github-glitchenzo.nugetforunity/)): 267,166
+6. Compilation Visualizer ([com.needle.compilation-visualizer](/packages/com.needle.compilation-visualizer/)): 136,023
+7. Google Play Common ([com.google.play.common](/packages/com.google.play.common/)): 110,713
+8. Google Play Core ([com.google.play.core](/packages/com.google.play.core/)): 95,834
+9. Google Play In-app Review ([com.google.play.review](/packages/com.google.play.review/)): 89,527
+10. Backtrace ([io.backtrace.unity](/packages/io.backtrace.unity/)): 67,358
 
-<h2>Fastest-growing packages</h2>
+## Fastest-growing packages
 
-<p>Top 10 fastest-growing packages in 2025, by percentage, with at least 100 downloads in 2024. Format: growth rate, current downloads vs 2024 downloads.</p>
+Top 10 fastest-growing packages in 2025, by percentage, with at least 100 downloads in 2024. Format: growth rate, current downloads vs 2024 downloads.
 
-<ol><li>Google Play Integrity (<a href="/packages/com.google.play.integrity/">com.google.play.integrity</a>): 11,341.0% (24,026 vs 210)</li><li>Google Play Common (<a href="/packages/com.google.play.common/">com.google.play.common</a>): 4,169.7% (110,713 vs 2,593)</li><li>Google Play In-app Updates (<a href="/packages/com.google.play.appupdate/">com.google.play.appupdate</a>): 3,737.8% (15,428 vs 402)</li><li>Google Play In-app Review (<a href="/packages/com.google.play.review/">com.google.play.review</a>): 3,714.5% (89,527 vs 2,347)</li><li>Google Play Core (<a href="/packages/com.google.play.core/">com.google.play.core</a>): 3,652.3% (95,834 vs 2,554)</li><li>Nice Vibrations (<a href="/packages/com.github.lofelt.nicevibrations/">com.github.lofelt.nicevibrations</a>): 2,659.9% (4,471 vs 162)</li><li>AppMetrica (<a href="/packages/io.appmetrica.analytics/">io.appmetrica.analytics</a>): 2,017.6% (7,348 vs 347)</li><li>UnitySkiaSharp (<a href="/packages/com.u2sb.skiasharp/">com.u2sb.skiasharp</a>): 1,834.0% (2,727 vs 141)</li><li>MvpToolkit (<a href="/packages/com.behc.mvptoolkit/">com.behc.mvptoolkit</a>): 1,759.9% (3,199 vs 172)</li><li>Adjust (<a href="/packages/com.adjust.sdk/">com.adjust.sdk</a>): 1,566.6% (6,083 vs 365)</li></ol>
+1. Google Play Integrity ([com.google.play.integrity](/packages/com.google.play.integrity/)): 11,341.0% (24,026 vs 210)
+2. Google Play Common ([com.google.play.common](/packages/com.google.play.common/)): 4,169.7% (110,713 vs 2,593)
+3. Google Play In-app Updates ([com.google.play.appupdate](/packages/com.google.play.appupdate/)): 3,737.8% (15,428 vs 402)
+4. Google Play In-app Review ([com.google.play.review](/packages/com.google.play.review/)): 3,714.5% (89,527 vs 2,347)
+5. Google Play Core ([com.google.play.core](/packages/com.google.play.core/)): 3,652.3% (95,834 vs 2,554)
+6. Nice Vibrations ([com.github.lofelt.nicevibrations](/packages/com.github.lofelt.nicevibrations/)): 2,659.9% (4,471 vs 162)
+7. AppMetrica ([io.appmetrica.analytics](/packages/io.appmetrica.analytics/)): 2,017.6% (7,348 vs 347)
+8. UnitySkiaSharp ([com.u2sb.skiasharp](/packages/com.u2sb.skiasharp/)): 1,834.0% (2,727 vs 141)
+9. MvpToolkit ([com.behc.mvptoolkit](/packages/com.behc.mvptoolkit/)): 1,759.9% (3,199 vs 172)
+10. Adjust ([com.adjust.sdk](/packages/com.adjust.sdk/)): 1,566.6% (6,083 vs 365)
 
-<h2>Trending packages</h2>
+## Trending packages
 
-<p>Top 10 packages by download increase in 2025 vs 2024:</p>
+Top 10 packages by download increase in 2025 vs 2024:
 
-<ol><li>External Dependency Manager for Unity (<a href="/packages/com.google.external-dependency-manager/">com.google.external-dependency-manager</a>): +333,557 (130.3% from 255,980)</li><li>NuGetForUnity (<a href="/packages/com.github-glitchenzo.nugetforunity/">com.github-glitchenzo.nugetforunity</a>): +215,026 (412.4% from 52,140)</li><li>Google Play Common (<a href="/packages/com.google.play.common/">com.google.play.common</a>): +108,120 (4,169.7% from 2,593)</li><li>Google Play Core (<a href="/packages/com.google.play.core/">com.google.play.core</a>): +93,280 (3,652.3% from 2,554)</li><li>Google Play In-app Review (<a href="/packages/com.google.play.review/">com.google.play.review</a>): +87,180 (3,714.5% from 2,347)</li><li>VContainer (<a href="/packages/jp.hadashikick.vcontainer/">jp.hadashikick.vcontainer</a>): +70,071 (29.2% from 240,113)</li><li>UI Particle (<a href="/packages/com.coffee.ui-particle/">com.coffee.ui-particle</a>): +69,379 (25.4% from 273,208)</li><li>PlayableGraphMonitor! (<a href="/packages/com.greenbamboogames.playablegraphmonitor/">com.greenbamboogames.playablegraphmonitor</a>): +34,412 (864.2% from 3,982)</li><li>Google Mobile Ads for Unity (<a href="/packages/com.google.ads.mobile/">com.google.ads.mobile</a>): +24,970 (67.8% from 36,808)</li><li>AltTester Unity SDK (<a href="/packages/com.alttester.sdk/">com.alttester.sdk</a>): +24,761 (412.7% from 6,000)</li></ol>
+1. External Dependency Manager for Unity ([com.google.external-dependency-manager](/packages/com.google.external-dependency-manager/)): +333,557 (130.3% from 255,980)
+2. NuGetForUnity ([com.github-glitchenzo.nugetforunity](/packages/com.github-glitchenzo.nugetforunity/)): +215,026 (412.4% from 52,140)
+3. Google Play Common ([com.google.play.common](/packages/com.google.play.common/)): +108,120 (4,169.7% from 2,593)
+4. Google Play Core ([com.google.play.core](/packages/com.google.play.core/)): +93,280 (3,652.3% from 2,554)
+5. Google Play In-app Review ([com.google.play.review](/packages/com.google.play.review/)): +87,180 (3,714.5% from 2,347)
+6. VContainer ([jp.hadashikick.vcontainer](/packages/jp.hadashikick.vcontainer/)): +70,071 (29.2% from 240,113)
+7. UI Particle ([com.coffee.ui-particle](/packages/com.coffee.ui-particle/)): +69,379 (25.4% from 273,208)
+8. PlayableGraphMonitor! ([com.greenbamboogames.playablegraphmonitor](/packages/com.greenbamboogames.playablegraphmonitor/)): +34,412 (864.2% from 3,982)
+9. Google Mobile Ads for Unity ([com.google.ads.mobile](/packages/com.google.ads.mobile/)): +24,970 (67.8% from 36,808)
+10. AltTester Unity SDK ([com.alttester.sdk](/packages/com.alttester.sdk/)): +24,761 (412.7% from 6,000)
 
-<h2>New packages</h2>
+## New packages
 
-<p>Top 10 new packages by downloads:</p>
+Top 10 new packages by downloads:
 
-<ol><li>ZLinq (<a href="/packages/com.cysharp.zlinq/">com.cysharp.zlinq</a>): 5,218</li><li>AI Game Developer - MCP (<a href="/packages/com.ivanmurzak.unity.mcp/">com.ivanmurzak.unity.mcp</a>): 4,940</li><li>HierarchyFinder (<a href="/packages/io.github.hatayama.hierarchyfinder/">io.github.hatayama.hierarchyfinder</a>): 3,334</li><li>InspectorAutoAssigner (<a href="/packages/io.github.hatayama.inspectorautoassigner/">io.github.hatayama.inspectorautoassigner</a>): 2,973</li><li>CleanFormerlySerializedAs (<a href="/packages/io.github.hatayama.cleanformerlyserializedas/">io.github.hatayama.cleanformerlyserializedas</a>): 2,783</li><li>MCP for Unity (<a href="/packages/com.coplaydev.unity-mcp/">com.coplaydev.unity-mcp</a>): 2,367</li><li>Mirage Steamworks.net Socket (<a href="/packages/com.miragenet.steamworkssocket/">com.miragenet.steamworkssocket</a>): 1,557</li><li>Cursor Editor (<a href="/packages/com.boxqkrtm.ide.cursor/">com.boxqkrtm.ide.cursor</a>): 1,215</li><li>AddressablesLoader (<a href="/packages/com.realitygames.addressablesloader/">com.realitygames.addressablesloader</a>): 1,198</li><li>Instant Replay (<a href="/packages/jp.co.cyberagent.instant-replay/">jp.co.cyberagent.instant-replay</a>): 1,105</li></ol>
+1. ZLinq ([com.cysharp.zlinq](/packages/com.cysharp.zlinq/)): 5,218
+2. AI Game Developer - MCP ([com.ivanmurzak.unity.mcp](/packages/com.ivanmurzak.unity.mcp/)): 4,940
+3. HierarchyFinder ([io.github.hatayama.hierarchyfinder](/packages/io.github.hatayama.hierarchyfinder/)): 3,334
+4. InspectorAutoAssigner ([io.github.hatayama.inspectorautoassigner](/packages/io.github.hatayama.inspectorautoassigner/)): 2,973
+5. CleanFormerlySerializedAs ([io.github.hatayama.cleanformerlyserializedas](/packages/io.github.hatayama.cleanformerlyserializedas/)): 2,783
+6. MCP for Unity ([com.coplaydev.unity-mcp](/packages/com.coplaydev.unity-mcp/)): 2,367
+7. Mirage Steamworks.net Socket ([com.miragenet.steamworkssocket](/packages/com.miragenet.steamworkssocket/)): 1,557
+8. Cursor Editor ([com.boxqkrtm.ide.cursor](/packages/com.boxqkrtm.ide.cursor/)): 1,215
+9. AddressablesLoader ([com.realitygames.addressablesloader](/packages/com.realitygames.addressablesloader/)): 1,198
+10. Instant Replay ([jp.co.cyberagent.instant-replay](/packages/jp.co.cyberagent.instant-replay/)): 1,105
 
-<h2>Topics</h2>
+## Topics
 
-<p>By downloads, the top categories were:</p>
+By downloads, the top categories were:
 
-<ul><li>Utilities</li><li>Editor Enhancement</li><li>Package Management</li><li>Integration</li><li>GUI</li></ul>
+- Utilities
+- Editor Enhancement
+- Package Management
+- Integration
+- GUI
 
-<h2>AI packages</h2>
+## AI packages
 
-<p>Top 5 AI packages by downloads:</p>
+Top 5 AI packages by downloads:
 
-<ol><li>OpenAI (<a href="/packages/com.openai.unity/">com.openai.unity</a>): 7,058</li><li>AI Game Developer - MCP (<a href="/packages/com.ivanmurzak.unity.mcp/">com.ivanmurzak.unity.mcp</a>): 4,940</li><li>ElevenLabs (<a href="/packages/com.rest.elevenlabs/">com.rest.elevenlabs</a>): 4,551</li><li>MCP for Unity (<a href="/packages/com.coplaydev.unity-mcp/">com.coplaydev.unity-mcp</a>): 2,367</li><li>Theymes SDK (<a href="/packages/com.theymes.sdk/">com.theymes.sdk</a>): 614</li></ol>
+1. OpenAI ([com.openai.unity](/packages/com.openai.unity/)): 7,058
+2. AI Game Developer - MCP ([com.ivanmurzak.unity.mcp](/packages/com.ivanmurzak.unity.mcp/)): 4,940
+3. ElevenLabs ([com.rest.elevenlabs](/packages/com.rest.elevenlabs/)): 4,551
+4. MCP for Unity ([com.coplaydev.unity-mcp](/packages/com.coplaydev.unity-mcp/)): 2,367
+5. Theymes SDK ([com.theymes.sdk](/packages/com.theymes.sdk/)): 614
 
-<p>AI tooling is still a small slice of OpenUPM traffic, but it is no longer theoretical. Some of these packages now have real usage.</p>
+AI tooling is still a small slice of OpenUPM traffic, but it is no longer theoretical. Some of these packages now have real usage.
 
-<h2>Releases</h2>
+## Releases
 
-<p>Release activity averaged about 742 releases per month, with the largest spike late in the year:</p>
+Release activity averaged about 742 releases per month, with the largest spike late in the year:
 
-<figure><img alt="Monthly Releases in 2025" src="./images/openupm-2025-recap-6283fcd0217e-02-monthly-releases-in-2025.png" /></figure>
+![Monthly Releases in 2025](./images/openupm-2025-recap-6283fcd0217e-02-monthly-releases-in-2025.png)
 
-<ul><li>September: 1,762 releases, the year's peak.</li><li>December: 882 releases.</li></ul>
+- September: 1,762 releases, the year's peak.
+- December: 882 releases.
 
-<p>Top 5 packages by release count:</p>
+Top 5 packages by release count:
 
-<ol><li>Rive (<a href="/packages/app.rive.rive-unity/">app.rive.rive-unity</a>): 1,234</li><li>PurrNet (<a href="/packages/dev.purrnet.purrnet/">dev.purrnet.purrnet</a>): 326</li><li>SaintsField (<a href="/packages/today.comes.saintsfield/">today.comes.saintsfield</a>): 212</li><li>Purrdiction (<a href="/packages/dev.purrnet.purrdiction/">dev.purrnet.purrdiction</a>): 162</li><li>VRCFury (<a href="/packages/com.vrcfury.vrcfury/">com.vrcfury.vrcfury</a>): 151</li></ol>
+1. Rive ([app.rive.rive-unity](/packages/app.rive.rive-unity/)): 1,234
+2. PurrNet ([dev.purrnet.purrnet](/packages/dev.purrnet.purrnet/)): 326
+3. SaintsField ([today.comes.saintsfield](/packages/today.comes.saintsfield/)): 212
+4. Purrdiction ([dev.purrnet.purrdiction](/packages/dev.purrnet.purrdiction/)): 162
+5. VRCFury ([com.vrcfury.vrcfury](/packages/com.vrcfury.vrcfury/)): 151
 
-<h2>Takeaways</h2>
+## Takeaways
 
-<p>Fewer packages were submitted in 2025, but more of them came directly from package owners. The second half of the year also had a lot more release activity, which usually means maintainers were updating existing packages instead of only adding new ones.</p>
+Fewer packages were submitted in 2025, but more of them came directly from package owners. The second half of the year also had a lot more release activity, which usually means maintainers were updating existing packages instead of only adding new ones.
 
-<p>Notes: Download counts are calculated from the package tarball endpoint. Automated traffic is rate limited but hard to fully exclude, so treat the numbers as directional guidance. This is true for most stats services.</p>
+Notes: Download counts are calculated from the package tarball endpoint. Automated traffic is rate limited but hard to fully exclude, so treat the numbers as directional guidance. This is true for most stats services.
 
 <BlogPostNav />
