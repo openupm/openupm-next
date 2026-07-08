@@ -11,6 +11,28 @@ editLink: false
 
 <BlogPostMeta />
 
-<figure><img alt="" src="./images/openupm-launches-alternative-unitynuget-registry-0b8cc663cc41-01-blog-image.png" /></figure><p>In an exciting update for the Unity community, OpenUPM has introduced an alternative hosting solution for the UnityNuGet registry. This change comes as Alexandre Mutel (<a href="http://github.com/xoofx">@xoofx</a>) has resigned from Unity, and as a result, the UnityNuGet Azure feed will be discontinued on March 10th. We want to extend our heartfelt thanks to Alexandre Mutel for creating such an awesome project that has greatly benefited the community.</p><h2>What’s Changing?</h2><p>With the discontinuation of the Azure feed, OpenUPM has stepped in by providing an alternative hosting service. The new hosting can be found at:<br> <a href="https://unitynuget-registry.openupm.com/"><strong>https://unitynuget-registry.openupm.com/</strong></a></p><p>This service tracks the latest Docker image and is continuously updated. Although hosted on a small server, we’ll closely monitor its performance and scale up if necessary to ensure reliable service for the community.</p><p>Our main registry now uplinks directly to the new UnityNuGet registry, ensuring you can continue using the OpenUPM uplinks feature for seamless org.nuget package resolution.</p><h2>Continued Support for UnityNuGet</h2><p>We also want to acknowledge the ongoing dedication of Borja Domínguez (<a href="https://github.com/bdovaz">@bdovaz</a>), who continues to maintain the UnityNuGet project. Developers can still submit NuGet packages to the curated list available at:<br> <a href="https://github.com/xoofx/UnityNuGet/blob/master/registry.json"><strong>https://github.com/xoofx/UnityNuGet/blob/master/registry.json</strong></a></p><h2>How You Can Help</h2><p>Our resources are limited, and we greatly appreciate any support from the community. If you’d like to contribute, please consider donating via one of the following platforms:</p><ul><li><strong>Patreon:</strong> <a href="https://www.patreon.com/openupm">https://www.patreon.com/openupm</a></li><li><strong>GitHub Sponsors:</strong> <a href="https://github.com/sponsors/openupm">https://github.com/sponsors/openupm</a></li><li><strong>One-Time Donation via PayPal:</strong> <a href="https://www.paypal.com/paypalme/favoyang">https://www.paypal.com/paypalme/favoyang</a></li></ul><p>Your support helps us continue to innovate and provide valuable services to the Unity community.</p><p>Thank you for being a part of this journey. We look forward to keeping you updated on future developments and improvements!</p><p><em>References: </em><a href="https://github.com/xoofx/UnityNuGet/issues/480"><em>UnityNuGet Issue #480</em></a><em> | </em><a href="/nuget/"><em>OpenUPM NuGet Registry</em></a></p><p>OpenUPM is hosted on DigitalOcean. Sign up with our referral link <a href="https://m.do.co/c/50e7f9860fa9">https://m.do.co/c/50e7f9860fa9</a> and receive a $200 onboarding reward (valid for 60 days). It’s perfect for hosting a small server for your website or online games.</p>
+<figure><img alt="" src="./images/openupm-launches-alternative-unitynuget-registry-0b8cc663cc41-01-blog-image.png" /></figure>
+
+<p>OpenUPM now hosts an alternative endpoint for the UnityNuGet registry. Alexandre Mutel (<a href="http://github.com/xoofx">@xoofx</a>) has resigned from Unity, and the UnityNuGet Azure feed is scheduled to stop on March 10. Thank you to Alexandre for creating UnityNuGet and keeping it useful for so many Unity projects.</p>
+
+<h2>What changes</h2>
+
+<p>The alternative registry is available at:<br> <a href="https://unitynuget-registry.openupm.com/"><strong>https://unitynuget-registry.openupm.com/</strong></a></p>
+
+<p>The service tracks the latest UnityNuGet Docker image and receives regular updates. It currently runs on a small server, so we will watch usage and add capacity if traffic requires it.</p>
+
+<p>The main OpenUPM registry now uplinks to this UnityNuGet endpoint, so existing OpenUPM uplink users can keep resolving org.nuget packages through OpenUPM.</p>
+
+<h2>UnityNuGet maintenance</h2>
+
+<p>Borja Domínguez (<a href="https://github.com/bdovaz">@bdovaz</a>) continues to maintain the UnityNuGet project. Developers can still submit NuGet packages to the curated list at:<br> <a href="https://github.com/xoofx/UnityNuGet/blob/master/registry.json"><strong>https://github.com/xoofx/UnityNuGet/blob/master/registry.json</strong></a></p>
+
+<h2>How to support the service</h2>
+
+<p>OpenUPM runs on a limited budget. If this registry helps your project, you can support it through <a href="https://www.patreon.com/openupm">Patreon</a>, <a href="https://github.com/sponsors/openupm">GitHub Sponsors</a>, or <a href="https://www.paypal.com/paypalme/favoyang">PayPal</a>.</p>
+
+<p><em>References: </em><a href="https://github.com/xoofx/UnityNuGet/issues/480"><em>UnityNuGet Issue #480</em></a><em> | </em><a href="/nuget/"><em>OpenUPM NuGet Registry</em></a></p>
+
+<p>OpenUPM is hosted on DigitalOcean. Our <a href="https://m.do.co/c/50e7f9860fa9">DigitalOcean referral link</a> includes a $200 onboarding credit valid for 60 days.</p>
 
 <BlogPostNav />

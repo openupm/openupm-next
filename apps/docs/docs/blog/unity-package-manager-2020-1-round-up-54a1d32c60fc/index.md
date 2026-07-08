@@ -12,7 +12,7 @@ editLink: false
 <BlogPostMeta />
 
 
-Unity 2020.1 is now available to download. The update features significant changes to the Package Manager, and advertises as “a new Package Manager experience”. In the article, we’ll break down the changes below.
+Unity 2020.1 is now available to download. The Package Manager has a new UI and several behavior changes. Unity advertises it as “a new Package Manager experience”.
 
 ![Image 13](./images/unity-package-manager-2020-1-round-up-54a1d32c60fc-01-image-13.png)
 
@@ -20,7 +20,7 @@ The new user interface of Unity Package Manager
 
 ## Preview packages in use
 
-Besides the nice looking new UI, a significant change is probably the yellow button warns you “Preview Packages in Use”.
+Besides the nicer UI, the most visible change is the yellow “Preview Packages in Use” warning.
 
 ![Image 14](./images/unity-package-manager-2020-1-round-up-54a1d32c60fc-02-image-14.png)
 
