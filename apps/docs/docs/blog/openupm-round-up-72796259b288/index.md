@@ -78,7 +78,7 @@ For more misc improvements, please check out the [CHANGELOG.md](https://github.c
 
 It’s not the first time that I’ve heard the following expression “Thanks for creating OpenUPM”, which motivated me, to see developers are using the platform and get benefits from it.
 
-OpenUPM is not only a UPM registry but also a very low friction way to add package management to your workflow, by simply adding Git tags or perhaps using CI to fully automate it. I’m very happy to see that the Unity open-source community is growing with us, and following good practices and leave developers more time to focus on the software itself. Writing software is fun, package management should be simple. There are still quite a few open issues on the OpenUPM and OpenUPM-CLI GitHub projects, I will keep you update.
+OpenUPM is a UPM registry, and it is also a low-friction way to add package management to your workflow with Git tags or CI. I’m happy to see the Unity open source community growing with us and adopting practices that leave developers more time to focus on the software itself. Writing software is fun. Package management should be simple. There are still quite a few open issues on the OpenUPM and OpenUPM-CLI GitHub projects, and I will keep you updated.
 
 Stay safe, stay tuned.
 

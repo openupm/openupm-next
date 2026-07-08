@@ -13,7 +13,7 @@ editLink: false
 
 This article is part of a series that discusses best practices of managing a UPM repository on GitHub. See [part 1](/blog/how-to-maintain-upm-package-part-1-7b4daf88d4c4/), [part 2](/blog/how-to-maintain-upm-package-part-2-f352fbf5f87c/), and [part 3](/blog/how-to-maintain-upm-package-part-3-2d08294269ad/).
 
-In [previous posts](/blog/how-to-maintain-upm-package-part-2-f352fbf5f87c/), we introduced a fully automatic way of package release process powered by the semantic-release tool and GitHub Actions. Besides many benefits, the most significant change is to apply the continuous releasing strategy, every commit to the master branch creates a release. But it may be not suitable for everyone. Especially for developers who want to control their version manually for marketing reasons. The alternative way is to use an integrated command-line tool to manage the process. [Release-it](https://github.com/release-it/release-it) is a generic CLI tool to automate versioning and package publishing related tasks.
+In [previous posts](/blog/how-to-maintain-upm-package-part-2-f352fbf5f87c/), we introduced an automatic release process powered by semantic-release and GitHub Actions. That setup publishes from every commit to the master branch, which is not suitable for everyone. Some developers prefer to choose versions manually for marketing or release planning reasons. [Release-it](https://github.com/release-it/release-it) is a generic CLI tool for versioning and package publishing tasks.
 
 ![Image 6](./images/how-to-maintain-upm-package-part-4-managing-package-release-with-cli-972ff5311163-01-image-6.png)
 

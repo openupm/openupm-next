@@ -4,13 +4,44 @@ author: "Favo Yang"
 date: "2023-11-01"
 readingTime: "3 min read"
 originalUrl: "https://medium.com/openupm/openupm-x-hacktoberfest-2023-round-ups-a1d968a7894c"
-description: "A recap of OpenUPM's Hacktoberfest 2023 participation, highlighting package hunters, community submissions, and contribution activity."
+description: "A recap of OpenUPM's Hacktoberfest 2023 work, including package hunters, community submissions, and site improvements."
 editLink: false
 ---
 # OpenUPM x Hacktoberfest 2023 Round-ups
 
 <BlogPostMeta />
 
-<p>Unity may bring ups and downs this month. Amidst the fluctuations, OpenUPM has remained dedicated to enhancing the open-source experience of Unity developers. Hacktoberfest 2023 provided an excellent opportunity for OpenUPM to introduce a series of user-focused improvements.</p><p>Firstly, OpenUPM introduced a dark theme option, perfect for late-night reading or those who simply prefer a sleeker aesthetic. 🌙</p><figure><img alt="OpenUPM Dark Theme" src="./images/openupm-x-hacktoberfest-2023-round-ups-a1d968a7894c-01-openupm-dark-theme.jpg" /><figcaption>OpenUPM Dark Theme</figcaption></figure><p>Another significant change was the consistent look and feel of the package list. 🎨</p><figure><img alt="New Designed Package List" src="./images/openupm-x-hacktoberfest-2023-round-ups-a1d968a7894c-02-new-designed-package-list.jpg" /><figcaption>New Designed Package List</figcaption></figure><p>Optimized package list scrolling was also on the list of updates.</p><p>No longer will users experience browser crashes due to excessive scrolling, thanks to the virtual scrolling optimization. The memory footprint is constantly small to support smoother navigation. 🚀</p><p>For easier and more efficient browsing, we offer a glanceable way to explore topics and categories.📜</p><figure><img alt="New Designed Topic List" src="./images/openupm-x-hacktoberfest-2023-round-ups-a1d968a7894c-03-new-designed-topic-list.jpg" /><figcaption>New Designed Topic List</figcaption></figure><p>OpenUPM also added the ability to sort packages by monthly download counts, allowing users to quickly identify the most popular and trending packages at a glance. 📊</p><figure><img alt="Sort Packages by Monthly Downloads" src="./images/openupm-x-hacktoberfest-2023-round-ups-a1d968a7894c-04-sort-packages-by-monthly-downloads.png" /><figcaption>Sort Packages by Monthly Downloads</figcaption></figure><p>To make searching for specific packages more convenient, OpenUPM introduced a package list filtering feature by keywords. 🔍</p><figure><img alt="Search by Keywords" src="./images/openupm-x-hacktoberfest-2023-round-ups-a1d968a7894c-05-search-by-keywords.jpg" /><figcaption>Search by Keywords</figcaption></figure><p>OpenUPM recreated the package add form with a package card preview. This allows users to preview the details of the packages they are about to add, making informed decisions easier. 📦</p><figure><img alt="" src="./images/openupm-x-hacktoberfest-2023-round-ups-a1d968a7894c-06-blog-image.jpg" /><figcaption>New Designed Package Add Form</figcaption></figure><p>As part of our ongoing efforts to stay at the forefront of technology, we’ve migrated the entire site to <a href="https://github.com/vuepress/vuepress-next">vuepress-next</a>, ensuring a more efficient and modern framework for the platform. Now we’re partially using TypeScript. ⚙️</p><p>Regarding TypeScript, we extend our sincere appreciation to ComradeVanti for the remarkable migration of openupm-cli to TypeScript in pull request <a href="https://github.com/openupm/openupm-cli/pull/52">#52</a>! This remarkable contribution comes as a delightful surprise and a valuable addition to our project. We’re also thrilled to acknowledge ComradeVanti as one of our backers, highlighting the exceptional combination of contribution and support. 🎁👏</p><p>Indeed, all the dedicated efforts have paid off. Since the launch of our revamped website, we’ve witnessed a significant increase in user engagement and traffic.</p><figure><img alt="The Views Bump Up Since the Launch of the Revamped Website" src="./images/openupm-x-hacktoberfest-2023-round-ups-a1d968a7894c-07-the-views-bump-up-since-the-launch-of-the-revamped-website.png" /><figcaption>The Views Bump Up Since the Launch of the Revamped Website</figcaption></figure><p>Lastly, OpenUPM acknowledged the uncertainty some Unity users may be suffering from some bad decisions by Unity. While OpenUPM is an autonomous service. it is worth noting that, at the time of writing, Unity has no involvement in this project in terms of sponsorship or development. All our backers are individuals who are passionate about game development and open-source. The road ahead may be long, but it is vital for Unity to recognize the invaluable contributions of individual developers and their dedication to open-source. Unity should not underestimate the treasure trove of expertise and commitment that lies within its user base. 🤝</p><p>As Hacktoberfest 2023 concludes, OpenUPM’s dedication to enhancing the Unity experience remains unwavering. With these exciting updates and a commitment to open-source collaboration, I hope the future holds promise for Unity developers and enthusiasts alike. 🚀🌟</p><p>If you appreciate our work, please consider sponsoring us on Patreon at <a href="https://www.patreon.com/openupm">patreon.com/openupm</a>. 🙏</p>
+<p>Unity had a rough month, and many Unity developers were watching the ecosystem more closely than usual. OpenUPM used Hacktoberfest 2023 to ship several site improvements that had been waiting in the queue.</p>
+
+<p>OpenUPM now has a dark theme for late-night browsing.</p>
+<figure><img alt="OpenUPM Dark Theme" src="./images/openupm-x-hacktoberfest-2023-round-ups-a1d968a7894c-01-openupm-dark-theme.jpg" /><figcaption>OpenUPM Dark Theme</figcaption></figure>
+
+<p>The package list also received a more consistent layout.</p>
+<figure><img alt="New Designed Package List" src="./images/openupm-x-hacktoberfest-2023-round-ups-a1d968a7894c-02-new-designed-package-list.jpg" /><figcaption>New Designed Package List</figcaption></figure>
+
+<p>Package list scrolling now uses virtualization. That keeps memory usage stable when browsing long result sets and avoids the crashes some users hit with the old list.</p>
+
+<p>Topics and categories are easier to scan now.</p>
+<figure><img alt="New Designed Topic List" src="./images/openupm-x-hacktoberfest-2023-round-ups-a1d968a7894c-03-new-designed-topic-list.jpg" /><figcaption>New Designed Topic List</figcaption></figure>
+
+<p>OpenUPM can sort packages by monthly downloads, which makes popular packages easier to find.</p>
+<figure><img alt="Sort Packages by Monthly Downloads" src="./images/openupm-x-hacktoberfest-2023-round-ups-a1d968a7894c-04-sort-packages-by-monthly-downloads.png" /><figcaption>Sort Packages by Monthly Downloads</figcaption></figure>
+
+<p>The package list now supports keyword filtering.</p>
+<figure><img alt="Search by Keywords" src="./images/openupm-x-hacktoberfest-2023-round-ups-a1d968a7894c-05-search-by-keywords.jpg" /><figcaption>Search by Keywords</figcaption></figure>
+
+<p>The package add form now shows a package card preview, so maintainers can check what they are about to submit.</p>
+<figure><img alt="" src="./images/openupm-x-hacktoberfest-2023-round-ups-a1d968a7894c-06-blog-image.jpg" /><figcaption>New Designed Package Add Form</figcaption></figure>
+
+<p>The site has also moved to <a href="https://github.com/vuepress/vuepress-next">vuepress-next</a>, and parts of the codebase now use TypeScript.</p>
+
+<p>ComradeVanti migrated openupm-cli to TypeScript in pull request <a href="https://github.com/openupm/openupm-cli/pull/52">#52</a>. That was a useful contribution on its own, and ComradeVanti is also one of our backers.</p>
+
+<p>Traffic increased after the redesigned site launched.</p>
+<figure><img alt="The Views Bump Up Since the Launch of the Revamped Website" src="./images/openupm-x-hacktoberfest-2023-round-ups-a1d968a7894c-07-the-views-bump-up-since-the-launch-of-the-revamped-website.png" /><figcaption>The Views Bump Up Since the Launch of the Revamped Website</figcaption></figure>
+
+<p>OpenUPM remains an independent service. Unity is not involved in sponsorship or development. The project is backed by individual developers who care about game development and open source packages, and that support matters when the wider Unity ecosystem feels uncertain.</p>
+
+<p>If you appreciate the work, you can sponsor OpenUPM on Patreon at <a href="https://www.patreon.com/openupm">patreon.com/openupm</a>.</p>
 
 <BlogPostNav />

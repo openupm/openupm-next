@@ -173,7 +173,7 @@ export const BLOG_POSTS: BlogPost[] = [
     originalUrl:
       "https://medium.com/openupm/openupm-x-hacktoberfest-2023-round-ups-a1d968a7894c",
     excerpt:
-      "A recap of OpenUPM's Hacktoberfest 2023 participation, highlighting package hunters, community submissions, and contribution activity.",
+      "A recap of OpenUPM's Hacktoberfest 2023 work, including package hunters, community submissions, and site improvements.",
   },
   {
     title: "DigitalOcean Sponsorship 2022",

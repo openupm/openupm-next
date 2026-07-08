@@ -18,7 +18,7 @@ Those wonderful people over at DO have agreed to sponsor OpenUPM. They’re prov
 
 ![Image 7](./images/digitalocean-sponsorship-our-server-infrastructure-d1019b84d71c-01-image-7.png)
 
-DigitalOcean has proven especially popular with companies developing network-intensive apps. e.g. video and audio streaming, gaming, real-time communication, IoT, web crawling — bandwidth costs can be substantial, perhaps even making up a majority of your cloud computing costs. DO charge much lower than the average cloud computing provider. It’s a strong selling point.
+DigitalOcean has proven especially popular with companies developing network-intensive apps, such as video and audio streaming, gaming, real-time communication, IoT, and web crawling. Bandwidth can take up a large part of the cloud bill, and DO charges much less than the average cloud provider. It’s a strong selling point.
 
 
 Without a deep pocket, OpenUPM uses a simple infrastructure based on our tight budget supported by service sponsorship like DO, [other individual donators](/contributors/), and of course myself:
@@ -32,7 +32,7 @@ OpenUPM server infrastructure v1.0
 *   API server provides extra information for the website.
 *   Registry server serves the Unity Pacman.
 
-I admit that even it’s a trivial setup, the OpenUPM service is consists of lots of small pieces that talk to each other. Especially if you link GitHub Actions, Netlify CDN, and Azure pipelines into the graph. When OpenUPM gets more budget, we will upgrade to a more robust and scalable infrastructure.
+I admit that even this simple setup has a lot of small pieces talking to each other, especially once GitHub Actions, Netlify CDN, and Azure pipelines are part of the graph. When OpenUPM has more budget, we will upgrade the infrastructure.
 
 Anyway, massive thanks to DigitalOcean for their generous sponsorship of this site and supporting open source!
 
