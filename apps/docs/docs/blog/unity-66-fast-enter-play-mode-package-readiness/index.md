@@ -11,12 +11,7 @@ editLink: false
 
 <BlogPostMeta />
 
-<figure>
-  <img
-    alt="Unity package compatibility cleanup illustration"
-    src="/images/blog-covers/unity-66-fast-enter-play-mode-package-readiness.png"
-  />
-</figure>
+![Unity package compatibility cleanup illustration](/images/blog-covers/unity-66-fast-enter-play-mode-package-readiness.png)
 
 Starting with Unity 6.6, Fast Enter Play Mode is enabled by default for new
 projects. For package authors, the main compatibility change is that packages

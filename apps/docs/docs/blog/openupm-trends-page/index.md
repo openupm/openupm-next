@@ -11,12 +11,7 @@ editLink: false
 
 <BlogPostMeta />
 
-<figure>
-  <img
-    alt="OpenUPM Total packages chart"
-    src="/images/blog-covers/openupm-trends-total-packages.png"
-  />
-</figure>
+![OpenUPM Total packages chart](/images/blog-covers/openupm-trends-total-packages.png)
 
 OpenUPM now has a public [Trends](/trends/) page for tracking how the package
 catalog changes over time. The page brings the main ecosystem signals into one
