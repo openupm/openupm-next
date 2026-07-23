@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import axios from "axios";
 import { orderBy, capitalize, groupBy } from "lodash-es";
-import { computed, watch, onMounted, reactive, ref } from "vue";
+import { computed, watch, onMounted, onUnmounted, reactive, ref } from "vue";
 import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n'
 import { usePageFrontmatter } from "@vuepress/client";
@@ -21,6 +21,7 @@ import { isUnityNuGetPackageName, usePackageSearchSuggestions } from "@/search";
 import UnityAssetAdPlacement from '@/components/UnityAssetAdPlacementForPackageList.vue';
 import DonationSidebarAd from '@/components/DonationSidebarAd.vue';
 import UnityAssetStoreSale from '@/components/UnityAssetStoreSale.vue';
+import { createTimedCampaignState } from "@/featuredListingAd";
 
 const route = useRoute();
 const router = useRouter();
@@ -138,20 +139,22 @@ type ListItem = {
   value: PackageMetadata | AdPlacementData;
 };
 
-const unityAiTrialCampaignEnd = new Date("2026-07-01T00:00:00");
+const featuredListingAdCampaignEnd = new Date("2026-07-31T00:00:00Z");
 
-const unityAiTrialAdPlacementData: AdPlacementData = {
-  title: "Unity AI FREE",
-  image: "/images/ads/unity-ai-trial-600.jpg",
-  originalPrice: "FREE",
-  price: "FREE",
-  url: "https://unity.com/features/ai?aid=1011lJJH",
-  ratingCount: null,
-  ratingAverage: 0,
-  publisher: "Project-aware Assistant, AI Gateway, and MCP Server",
+const featuredListingAdPlacementData: AdPlacementData = {
+  title: "PlayMaker 2",
+  image: "https://assetstorev1-prd-cdn.unity3d.com/key-image/4641c0f4-1ec6-46ed-80cf-908e45bccd6c.jpg",
+  originalPrice: "$65",
+  price: "$32.50",
+  url: "https://af.unity.com/sr/camref:1011lJJH/destination:https://assetstore.unity.com/packages/tools/visual-scripting/playmaker2-391026",
+  ratingCount: 2908,
+  ratingAverage: 5,
+  publisher: "Hutong Games LLC · Affiliate",
 };
 
-const isUnityAiTrialAdActive = computed(() => new Date() < unityAiTrialCampaignEnd);
+const featuredListingAdCampaign = createTimedCampaignState(
+  featuredListingAdCampaignEnd,
+);
 
 /* The ListItems to be displayed in the grid.
  * It includes both package metadata and ad placement data.
@@ -161,8 +164,8 @@ const listItems = computed(() => {
   const items = [] as ListItem[];
   const adInterval = 6;
   let adIndex = 0;
-  if (isUnityAiTrialAdActive.value) {
-    items.push({ type: "ad", value: unityAiTrialAdPlacementData });
+  if (featuredListingAdCampaign.isActive.value) {
+    items.push({ type: "ad", value: featuredListingAdPlacementData });
   }
   for (let i = 0; i < metadataEntries.value.length; i++) {
     items.push({ type: "package", value: metadataEntries.value[i] });
@@ -299,10 +302,13 @@ const fetchAdPlacementData = async (): Promise<void> => {
 
 // Hooks
 onMounted(() => {
+  featuredListingAdCampaign.start();
   parseQuery();
   store.fetchCachedPackageListData();
   fetchAdPlacementData();
 });
+
+onUnmounted(featuredListingAdCampaign.stop);
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 watch(() => route.path, (newPath, oldPath) => {
