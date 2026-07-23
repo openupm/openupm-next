@@ -24,22 +24,7 @@ describe("UnityAiTrialAd", () => {
     expect(source).toContain("new Date() < campaignEnd");
     expect(source).toContain("Try Unity AI FREE ✨");
     expect(source).toContain("border: 1px solid rgba($primary-color, 0.25);");
-    expect(packageListSource).toContain(
-      'const unityAiTrialCampaignEnd = new Date("2026-07-01T00:00:00");',
-    );
-    expect(packageListSource).toContain('title: "Unity AI FREE"');
-    expect(packageListSource).toContain(
-      'image: "/images/ads/unity-ai-trial-600.jpg"',
-    );
-    expect(packageListSource).toContain(
-      'publisher: "Project-aware Assistant, AI Gateway, and MCP Server"',
-    );
-    expect(packageListSource).toContain(
-      "const isUnityAiTrialAdActive = computed(() => new Date() < unityAiTrialCampaignEnd);",
-    );
-    expect(packageListSource).toContain(
-      'items.push({ type: "ad", value: unityAiTrialAdPlacementData });',
-    );
+    expect(packageListSource).not.toContain("unityAiTrialAdPlacementData");
   });
 
   it("is shown next to the navbar brand only", () => {
