@@ -249,7 +249,7 @@ describe('validateDataDirectory', () => {
   });
 
   it('covers package semantic checks from openupm data tests', async () => {
-    expect.assertions(10);
+    expect.assertions(16);
     await expectIssue(
       (dataDir) =>
         writePackage(dataDir, validPackage.name, {
@@ -304,6 +304,35 @@ describe('validateDataDirectory', () => {
         }),
       'package-image-url-invalid',
     );
+    await expectIssue(
+      (dataDir) =>
+        writePackage(dataDir, validPackage.name, {
+          ...validPackage,
+          image: 'https://github.com/example/package/blob/main/image.png',
+        }),
+      'package-image-github-blob-url-invalid',
+    );
+    for (const image of [
+      'https://github.com/example/package/blob/main/image.png?raw=true',
+      'https://github.com/example/package/raw/main/image.png',
+      'https://raw.githubusercontent.com/example/package/main/image.png',
+      'https://github.com/example/package/assets/123/image.png',
+      'https://github.com/example/package/wiki/image.png',
+    ]) {
+      const dataDir = await createDataDir();
+      try {
+        await writePackage(dataDir, validPackage.name, {
+          ...validPackage,
+          image,
+        });
+        expect(await validateDataDirectory(dataDir)).toEqual({
+          valid: true,
+          issues: [],
+        });
+      } finally {
+        await afs.rm(dataDir, { recursive: true, force: true });
+      }
+    }
     await expectIssue(
       (dataDir) =>
         writePackage(dataDir, validPackage.name, {

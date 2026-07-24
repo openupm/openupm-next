@@ -69,6 +69,19 @@ function isGitHubRepoUrl(value: string): boolean {
   }
 }
 
+function isPlainGitHubBlobImageUrl(value: string): boolean {
+  try {
+    const parsed = new URL(value);
+    return (
+      parsed.hostname.toLowerCase() === 'github.com' &&
+      /^\/[^/]+\/[^/]+\/blob\//.test(parsed.pathname) &&
+      parsed.searchParams.get('raw') !== 'true'
+    );
+  } catch {
+    return false;
+  }
+}
+
 function messageFromError(error: unknown): string {
   if (error instanceof Error) return error.message;
   return String(error);
@@ -326,10 +339,19 @@ export async function validateDataDirectory(
           });
         }
       }
-      if (pkg.image && !/https?:\/\//i.test(pkg.image)) {
+      const imageIsPlainGitHubBlobUrl =
+        pkg.image && isPlainGitHubBlobImageUrl(pkg.image);
+      if (
+        pkg.image &&
+        (!/https?:\/\//i.test(pkg.image) || imageIsPlainGitHubBlobUrl)
+      ) {
         addIssue(issues, {
-          code: 'package-image-url-invalid',
-          message: 'image field should be a valid URL',
+          code: imageIsPlainGitHubBlobUrl
+            ? 'package-image-github-blob-url-invalid'
+            : 'package-image-url-invalid',
+          message: imageIsPlainGitHubBlobUrl
+            ? 'image field must not use a plain github.com blob URL'
+            : 'image field should be a valid URL',
           path: relPath,
           packageName,
         });
