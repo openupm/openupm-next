@@ -33,6 +33,10 @@ import {
   GitHubReleaseAssetError,
   resolveGitHubReleaseAsset,
 } from '../utils/githubReleaseAsset.js';
+import {
+  ReleaseMutationLockedError,
+  withReleaseMutationLock,
+} from '../utils/releaseMutationLock.js';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const config = configRaw as any;
@@ -41,9 +45,7 @@ const githubReleasePendingProbeInitialIntervalMs = 10 * 60 * 1000;
 const githubReleasePendingProbeMaxIntervalMs = 6 * 60 * 60 * 1000;
 const githubReleasePendingProbeWindowMs = 3 * 24 * 60 * 60 * 1000;
 
-function parseGitHubRepo(
-  url: string,
-): { owner: string; repo: string } | null {
+function parseGitHubRepo(url: string): { owner: string; repo: string } | null {
   if (url.startsWith('git@github.com:')) {
     const path = url.split(':')[1] || '';
     const [owner, rawRepo] = path.split('/').filter(Boolean);
@@ -226,16 +228,28 @@ async function updateReleaseRecords(
         (x) => x.tag === rel.tag && x.commit === rel.commit,
       );
       if (!found) {
-        logger.warn(
-          {
-            pkg: packageName,
-            rel: `${packageName}@${rel.version}`,
-            tag: rel.tag,
-            commit: rel.commit,
-          },
-          'remove failed release that not listed in remoteTags',
-        );
-        await removeStaleFailedRelease(packageName, rel);
+        await withPackageScanReleaseLock(packageName, rel.version, async () => {
+          const current = await fetchOne(packageName, rel.version);
+          if (
+            !current ||
+            current.state !== ReleaseState.Failed ||
+            remoteTags.some(
+              (x) => x.tag === current.tag && x.commit === current.commit,
+            )
+          ) {
+            return;
+          }
+          logger.warn(
+            {
+              pkg: packageName,
+              rel: `${packageName}@${current.version}`,
+              tag: current.tag,
+              commit: current.commit,
+            },
+            'remove failed release that not listed in remoteTags',
+          );
+          await removeStaleFailedRelease(packageName, current);
+        });
       }
     }
   }
@@ -244,19 +258,41 @@ async function updateReleaseRecords(
   for (const remoteTag of remoteTags) {
     const version = getVersionFromTag(remoteTag.tag);
     if (!version) continue;
-    let release = await fetchOne(packageName, version);
-    if (!release) {
-      release = await save({
-        packageName,
-        version,
-        commit: remoteTag.commit,
-        tag: remoteTag.tag,
-        source,
-      });
-    }
-    releases.push(release);
+    const release = await withPackageScanReleaseLock(
+      packageName,
+      version,
+      async () => {
+        const current = await fetchOne(packageName, version);
+        if (current) return current;
+        return await save({
+          packageName,
+          version,
+          commit: remoteTag.commit,
+          tag: remoteTag.tag,
+          source,
+        });
+      },
+    );
+    if (release) releases.push(release);
   }
   return releases;
+}
+
+async function withPackageScanReleaseLock<T>(
+  packageName: string,
+  version: string,
+  action: () => Promise<T>,
+): Promise<T | undefined> {
+  try {
+    return await withReleaseMutationLock(packageName, version, action);
+  } catch (error) {
+    if (!(error instanceof ReleaseMutationLockedError)) throw error;
+    logger.info(
+      { rel: `${packageName}@${version}` },
+      'skip release mutation while another repair is in progress',
+    );
+    return undefined;
+  }
 }
 
 async function removeStaleFailedRelease(
@@ -270,35 +306,48 @@ async function removeStaleFailedRelease(
   await remove(packageName, release.version);
 }
 
-async function addReleaseJobs(releases: ReleaseModel[]): Promise<void> {
+export async function addReleaseJobs(releases: ReleaseModel[]): Promise<void> {
   const jobConfig = config.jobs.buildRelease;
   const queue = getQueue(jobConfig.queue);
   let i = 0;
 
   for (const rel of releases) {
-    if (
-      rel.state === ReleaseState.Succeeded ||
-      (rel.state === ReleaseState.Failed &&
-        !RetryableReleaseErrorCodes.includes(rel.reason as ReleaseErrorCode))
-    ) {
-      continue;
-    }
+    await withPackageScanReleaseLock(rel.packageName, rel.version, async () => {
+      const current = await fetchOne(rel.packageName, rel.version);
+      if (
+        !current ||
+        current.state === ReleaseState.Succeeded ||
+        (current.state === ReleaseState.Failed &&
+          !RetryableReleaseErrorCodes.includes(
+            current.reason as ReleaseErrorCode,
+          ))
+      ) {
+        return;
+      }
 
-    const jobId = createJobId(jobConfig.name, rel.packageName, rel.version);
-    if (isExpiredGitHubReleasePendingFailure(rel)) {
-      await removeExhaustedFailedJob(queue, jobId);
-      continue;
-    }
-    if (rel.state === ReleaseState.Pending) {
-      await removeExhaustedFailedJob(queue, jobId);
-    }
-    await addJob({
-      queue,
-      name: jobConfig.name,
-      data: { name: rel.packageName, version: rel.version },
-      opts: { jobId, delay: jobConfig.interval * i },
+      const jobId = createJobId(
+        jobConfig.name,
+        current.packageName,
+        current.version,
+      );
+      if (isExpiredGitHubReleasePendingFailure(current)) {
+        await removeExhaustedFailedJob(queue, jobId);
+        return;
+      }
+      if (current.state === ReleaseState.Pending) {
+        await removeExhaustedFailedJob(queue, jobId);
+      }
+      await addJob({
+        queue,
+        name: jobConfig.name,
+        data: {
+          name: current.packageName,
+          version: current.version,
+        },
+        opts: { jobId, delay: jobConfig.interval * i },
+      });
+      i++;
     });
-    i++;
   }
 }
 
@@ -354,67 +403,82 @@ async function probePendingGitHubReleaseAssets(
 ): Promise<void> {
   if (!pkg || (pkg.trackingMode || 'git') !== 'githubRelease') return;
 
-  for (const release of releases) {
-    if (!(await shouldProbePendingGitHubReleaseAsset(release))) continue;
+  for (const snapshot of releases) {
+    await withPackageScanReleaseLock(
+      snapshot.packageName,
+      snapshot.version,
+      async () => {
+        const release = await fetchOne(snapshot.packageName, snapshot.version);
+        if (
+          !release ||
+          !(await shouldProbePendingGitHubReleaseAsset(release))
+        ) {
+          return;
+        }
 
-    const now = Date.now();
-    release.githubReleaseAssetMissingFirstSeenAt ??= release.updatedAt;
-    release.githubReleaseAssetMissingLastProbeAt = now;
-    release.githubReleaseAssetMissingProbeCount =
-      (release.githubReleaseAssetMissingProbeCount || 0) + 1;
+        const now = Date.now();
+        release.githubReleaseAssetMissingFirstSeenAt ??= release.updatedAt;
+        release.githubReleaseAssetMissingLastProbeAt = now;
+        release.githubReleaseAssetMissingProbeCount =
+          (release.githubReleaseAssetMissingProbeCount || 0) + 1;
 
-    try {
-      await resolveGitHubReleaseAsset({
-        config,
-        repoUrl: pkg.repoUrl,
-        releaseTag: release.tag,
-        githubReleaseAssetName: pkg.githubReleaseAssetName,
-      });
-    } catch (error) {
-      if (error instanceof GitHubReleaseAssetError) {
-        const saved =
-          error.reason === ReleaseErrorCode.GitHubReleaseNotFound ||
-          error.reason === ReleaseErrorCode.GitHubReleaseAssetNotFound ||
-          error.reason === ReleaseErrorCode.GitHubReleaseApiError
-            ? await save({
-                ...release,
-                reason:
-                  error.reason === ReleaseErrorCode.GitHubReleaseApiError
-                    ? release.reason
-                    : error.reason,
-              })
-            : await save({
-                ...release,
-                reason: error.reason,
-                githubReleaseAssetMissingFirstSeenAt: undefined,
-                githubReleaseAssetMissingLastProbeAt: undefined,
-                githubReleaseAssetMissingProbeCount: undefined,
-              });
-        Object.assign(release, saved);
-        continue;
-      }
-      throw error;
-    }
+        try {
+          await resolveGitHubReleaseAsset({
+            config,
+            repoUrl: pkg.repoUrl,
+            releaseTag: release.tag,
+            githubReleaseAssetName: pkg.githubReleaseAssetName,
+          });
+        } catch (error) {
+          if (error instanceof GitHubReleaseAssetError) {
+            await save(
+              error.reason === ReleaseErrorCode.GitHubReleaseNotFound ||
+                error.reason === ReleaseErrorCode.GitHubReleaseAssetNotFound ||
+                error.reason === ReleaseErrorCode.GitHubReleaseApiError
+                ? {
+                    ...release,
+                    reason:
+                      error.reason === ReleaseErrorCode.GitHubReleaseApiError
+                        ? release.reason
+                        : error.reason,
+                  }
+                : {
+                    ...release,
+                    reason: error.reason,
+                    githubReleaseAssetMissingFirstSeenAt: undefined,
+                    githubReleaseAssetMissingLastProbeAt: undefined,
+                    githubReleaseAssetMissingProbeCount: undefined,
+                  },
+            );
+            return;
+          }
+          throw error;
+        }
 
-    const jobConfig = config.jobs.buildRelease;
-    const queue = getQueue(jobConfig.queue);
-    const jobId = createJobId(jobConfig.name, release.packageName, release.version);
-    await queue.remove(jobId, { removeChildren: true });
-    const resetRelease = await save({
-      ...release,
-      state: ReleaseState.Pending,
-      reason: ReleaseErrorCode.None,
-      buildId: '',
-      signed: false,
-      publishedVersion: undefined,
-      githubReleaseAssetMissingFirstSeenAt: undefined,
-      githubReleaseAssetMissingLastProbeAt: undefined,
-      githubReleaseAssetMissingProbeCount: undefined,
-    });
-    Object.assign(release, resetRelease);
-    logger.info(
-      { rel: `${release.packageName}@${release.version}` },
-      'GitHub Release asset is available; release requeued',
+        const jobConfig = config.jobs.buildRelease;
+        const queue = getQueue(jobConfig.queue);
+        const jobId = createJobId(
+          jobConfig.name,
+          release.packageName,
+          release.version,
+        );
+        await queue.remove(jobId, { removeChildren: true });
+        await save({
+          ...release,
+          state: ReleaseState.Pending,
+          reason: ReleaseErrorCode.None,
+          buildId: '',
+          signed: false,
+          publishedVersion: undefined,
+          githubReleaseAssetMissingFirstSeenAt: undefined,
+          githubReleaseAssetMissingLastProbeAt: undefined,
+          githubReleaseAssetMissingProbeCount: undefined,
+        });
+        logger.info(
+          { rel: `${release.packageName}@${release.version}` },
+          'GitHub Release asset is available; release requeued',
+        );
+      },
     );
   }
 }

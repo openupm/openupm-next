@@ -13,6 +13,21 @@ const logger = createLogger('@openupm/queue/azure');
 export const BuildStatus = buildInterfaces.BuildStatus;
 export const BuildResult = buildInterfaces.BuildResult;
 
+export class AzureBuildNotFoundError extends Error {
+  constructor(public readonly buildId: string) {
+    super(`Azure build not found: ${buildId}`);
+    this.name = 'AzureBuildNotFoundError';
+  }
+}
+
+function isNotFoundError(error: unknown): boolean {
+  if (typeof error !== 'object' || error === null) return false;
+  return (
+    ('statusCode' in error && error.statusCode === 404) ||
+    ('status' in error && error.status === 404)
+  );
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function getBuildApi(): Promise<any> {
   const authHandler = azureDevops.getPersonalAccessTokenHandler(
@@ -45,7 +60,20 @@ export async function waitBuild(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any | null> {
   for (let i = 0; i < config.azureDevops.check.retries; i++) {
-    const build = await buildApi.getBuild(config.azureDevops.project, buildId);
+    let build:
+      | {
+          status?: number;
+          result?: number;
+        }
+      | null
+      | undefined;
+    try {
+      build = await buildApi.getBuild(config.azureDevops.project, buildId);
+    } catch (error) {
+      if (isNotFoundError(error)) throw new AzureBuildNotFoundError(buildId);
+      throw error;
+    }
+    if (!build) throw new AzureBuildNotFoundError(buildId);
     const status = build.status;
     const result = build.result;
     logger.debug({ buildId, status, result }, 'wait build');
@@ -65,7 +93,12 @@ function joinUrl(...parts: Array<string | number>): string {
 }
 
 export function getBuildLogsUrl(buildId: string): string {
-  return joinUrl(config.azureDevops.buildUrlBase, '_apis/build/builds', buildId, 'logs');
+  return joinUrl(
+    config.azureDevops.buildUrlBase,
+    '_apis/build/builds',
+    buildId,
+    'logs',
+  );
 }
 
 export function getBuildSectionLogUrl(buildId: string, stepId: number): string {

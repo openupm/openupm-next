@@ -11,6 +11,7 @@ import {
 } from "@openupm/types";
 import { loadPackageMetadataLocal } from "@openupm/local-data";
 import {
+  fetchOne,
   fetchOneOrThrow,
   save,
 } from "@openupm/server-common/build/models/release.js";
@@ -19,22 +20,77 @@ import { createLogger } from "@openupm/server-common/build/log.js";
 import {
   BuildResult,
   BuildStatus,
+  AzureBuildNotFoundError,
   getBuildApi,
   getBuildLogsUrl,
   getBuildSectionLogUrl,
   queueBuild,
   waitBuild,
 } from "../utils/azure.js";
+import { reconcilePublishedRelease } from "../utils/reconcilePublishedRelease.js";
 import {
   GitHubReleaseAssetError,
   resolveGitHubReleaseAsset,
 } from "../utils/githubReleaseAsset.js";
+import { withReleaseMutationLock } from "../utils/releaseMutationLock.js";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const config = configRaw as any;
 const sleep = util.promisify(setTimeout);
 const logger = createLogger("@openupm/queue/buildRelease");
 const packageResultMarker = "OPENUPM_PACKAGE_RESULT";
+
+interface RecoverMissingAzureBuildDependencies {
+  fetchOne: typeof fetchOne;
+  reconcilePublishedRelease: typeof reconcilePublishedRelease;
+  save: typeof save;
+  withReleaseMutationLock: typeof withReleaseMutationLock;
+}
+
+const recoverMissingAzureBuildDependencies: RecoverMissingAzureBuildDependencies =
+  {
+    fetchOne,
+    reconcilePublishedRelease,
+    save,
+    withReleaseMutationLock,
+  };
+
+export async function recoverMissingAzureBuild(
+  release: ReleaseModel,
+  missingBuildId: string,
+  dependencies: RecoverMissingAzureBuildDependencies = recoverMissingAzureBuildDependencies,
+): Promise<"reconciled" | "reset" | "stale"> {
+  return await dependencies.withReleaseMutationLock(
+    release.packageName,
+    release.version,
+    async () => {
+      const current = await dependencies.fetchOne(
+        release.packageName,
+        release.version,
+      );
+      if (
+        !current ||
+        current.state !== ReleaseState.Building ||
+        current.buildId !== missingBuildId
+      ) {
+        return "stale";
+      }
+
+      const reconciled = await dependencies.reconcilePublishedRelease(current);
+      if (reconciled) return "reconciled";
+
+      await dependencies.save({
+        ...current,
+        state: ReleaseState.Pending,
+        reason: ReleaseErrorCode.None,
+        buildId: "",
+        signed: false,
+        publishedVersion: undefined,
+      });
+      return "reset";
+    },
+  );
+}
 
 export async function buildRelease(
   packageName: string,
@@ -53,7 +109,36 @@ export async function buildRelease(
     const build = await waitReleaseBuild(buildApi, release);
     await handleReleaseBuild(build, release);
   } catch (err) {
-    if ((err as NodeJS.ErrnoException).code === "ETIMEDOUT") {
+    if (err instanceof AzureBuildNotFoundError) {
+      const recovery = await recoverMissingAzureBuild(release, err.buildId);
+      if (recovery === "reconciled") {
+        logger.warn(
+          {
+            rel: `${release.packageName}@${release.version}`,
+            missingBuild: err.buildId,
+          },
+          "missing Azure build reconciled from published registry version",
+        );
+        return;
+      }
+      if (recovery === "stale") {
+        logger.warn(
+          {
+            rel: `${release.packageName}@${release.version}`,
+            missingBuild: err.buildId,
+          },
+          "skip missing Azure build recovery because release state changed",
+        );
+        return;
+      }
+      logger.warn(
+        {
+          rel: `${release.packageName}@${release.version}`,
+          missingBuild: err.buildId,
+        },
+        "missing Azure build reset for a fresh retry",
+      );
+    } else if ((err as NodeJS.ErrnoException).code === "ETIMEDOUT") {
       release.state = ReleaseState.Failed;
       release.reason = ReleaseErrorCode.ConnectionTimeout;
       release.signed = false;

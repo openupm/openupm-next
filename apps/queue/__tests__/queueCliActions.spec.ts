@@ -17,6 +17,9 @@ const removeReleaseRecordMock = vi.fn();
 const saveReleaseMock = vi.fn();
 const redisCloseMock = vi.fn();
 const packageMetadataLocalExistsMock = vi.fn();
+const isReleasePublishedMock = vi.fn();
+const markReleasePublishedMock = vi.fn();
+const withReleaseMutationLockMock = vi.fn();
 
 vi.mock('@openupm/local-data', () => ({
   packageMetadataLocalExists: packageMetadataLocalExistsMock,
@@ -46,6 +49,18 @@ vi.mock('@openupm/server-common/build/redis.js', () => ({
   },
 }));
 
+vi.mock('../src/utils/registry.js', () => ({
+  isReleasePublished: isReleasePublishedMock,
+}));
+
+vi.mock('../src/utils/reconcilePublishedRelease.js', () => ({
+  markReleasePublished: markReleasePublishedMock,
+}));
+
+vi.mock('../src/utils/releaseMutationLock.js', () => ({
+  withReleaseMutationLock: withReleaseMutationLockMock,
+}));
+
 describe('queue-cli destructive actions', () => {
   beforeEach(() => {
     vi.resetAllMocks();
@@ -55,10 +70,19 @@ describe('queue-cli destructive actions', () => {
       add: queueAddMock,
       getJobCounts: vi.fn().mockResolvedValue({ failed: 0 }),
       getJobs: vi.fn().mockResolvedValue([]),
+      getJob: vi.fn().mockResolvedValue({
+        getState: vi.fn().mockResolvedValue('failed'),
+      }),
     });
-    hasQueueMock.mockImplementation((name: string) => name === 'pkg' || name === 'rel');
+    hasQueueMock.mockImplementation(
+      (name: string) => name === 'pkg' || name === 'rel',
+    );
     queueRemoveMock.mockResolvedValue(1);
     packageMetadataLocalExistsMock.mockReturnValue(true);
+    isReleasePublishedMock.mockResolvedValue(true);
+    withReleaseMutationLockMock.mockImplementation(
+      async (_packageName, _version, action) => await action(),
+    );
   });
 
   afterEach(() => {
@@ -79,9 +103,12 @@ describe('queue-cli destructive actions', () => {
     ]);
 
     expect(getQueueMock).toHaveBeenCalledWith('rel');
-    expect(queueRemoveMock).toHaveBeenCalledWith('build-rel|com.foo.bar|1.2.3', {
-      removeChildren: true,
-    });
+    expect(queueRemoveMock).toHaveBeenCalledWith(
+      'build-rel|com.foo.bar|1.2.3',
+      {
+        removeChildren: true,
+      },
+    );
     expect(removeReleaseRecordMock).not.toHaveBeenCalled();
     expect(saveReleaseMock).not.toHaveBeenCalled();
     expect(addJobMock).not.toHaveBeenCalled();
@@ -103,10 +130,16 @@ describe('queue-cli destructive actions', () => {
     ]);
 
     expect(getQueueMock).toHaveBeenCalledWith('rel');
-    expect(queueRemoveMock).toHaveBeenCalledWith('build-rel|com.foo.bar|1.2.3', {
-      removeChildren: true,
-    });
-    expect(removeReleaseRecordMock).toHaveBeenCalledWith('com.foo.bar', '1.2.3');
+    expect(queueRemoveMock).toHaveBeenCalledWith(
+      'build-rel|com.foo.bar|1.2.3',
+      {
+        removeChildren: true,
+      },
+    );
+    expect(removeReleaseRecordMock).toHaveBeenCalledWith(
+      'com.foo.bar',
+      '1.2.3',
+    );
     expect(addJobMock).not.toHaveBeenCalled();
   });
 
@@ -145,9 +178,12 @@ describe('queue-cli destructive actions', () => {
     ]);
 
     expect(fetchOneMock).toHaveBeenCalledWith('com.foo.bar', '1.2.3');
-    expect(queueRemoveMock).toHaveBeenCalledWith('build-rel|com.foo.bar|1.2.3', {
-      removeChildren: true,
-    });
+    expect(queueRemoveMock).toHaveBeenCalledWith(
+      'build-rel|com.foo.bar|1.2.3',
+      {
+        removeChildren: true,
+      },
+    );
     expect(saveReleaseMock).toHaveBeenCalledWith({
       ...release,
       state: ReleaseState.Pending,
@@ -166,6 +202,285 @@ describe('queue-cli destructive actions', () => {
     expect(removeReleaseRecordMock).not.toHaveBeenCalled();
   });
 
+  it('release-reconcile-published verifies and repairs a published release', async () => {
+    const release = {
+      packageName: 'com.foo.bar',
+      version: '1.2.3',
+      state: ReleaseState.Building,
+      reason: ReleaseErrorCode.None,
+      buildId: 'expired-build',
+      tag: 'upm/1.2.3',
+      commit: 'abc123',
+      createdAt: 100,
+      updatedAt: 200,
+    };
+    const reconciled = {
+      ...release,
+      state: ReleaseState.Succeeded,
+      buildId: '',
+      publishedVersion: '1.2.3',
+      updatedAt: 300,
+    };
+    fetchOneMock.mockResolvedValue(release);
+    markReleasePublishedMock.mockResolvedValue(reconciled);
+
+    const { runQueueCli } = await import('../src/queueCli.js');
+
+    await runQueueCli([
+      'node',
+      'index.js',
+      'queue-cli',
+      'release-reconcile-published',
+      'com.foo.bar',
+      '1.2.3',
+      '--json',
+    ]);
+
+    expect(isReleasePublishedMock).toHaveBeenCalledWith('com.foo.bar', '1.2.3');
+    expect(markReleasePublishedMock).toHaveBeenCalledWith(release);
+    expect(queueRemoveMock).toHaveBeenCalledWith(
+      'build-rel|com.foo.bar|1.2.3',
+      { removeChildren: true },
+    );
+    expect(addJobMock).not.toHaveBeenCalled();
+    expect(console.log).toHaveBeenCalledWith(
+      expect.stringContaining('"state": "Succeeded"'),
+    );
+  });
+
+  it('release-reconcile-published leaves an unpublished release unchanged', async () => {
+    const release = {
+      packageName: 'com.foo.bar',
+      version: '1.2.3',
+      state: ReleaseState.Building,
+      reason: ReleaseErrorCode.None,
+      buildId: 'expired-build',
+    };
+    fetchOneMock.mockResolvedValue(release);
+    isReleasePublishedMock.mockResolvedValue(false);
+
+    const { runQueueCli } = await import('../src/queueCli.js');
+
+    await expect(
+      runQueueCli([
+        'node',
+        'index.js',
+        'queue-cli',
+        'release-reconcile-published',
+        'com.foo.bar',
+        '1.2.3',
+        '--json',
+      ]),
+    ).rejects.toThrow(
+      'Release is not published in the registry: com.foo.bar@1.2.3',
+    );
+
+    expect(queueRemoveMock).not.toHaveBeenCalled();
+    expect(markReleasePublishedMock).not.toHaveBeenCalled();
+  });
+
+  it('release-reconcile-published refuses a release outside Building state', async () => {
+    fetchOneMock.mockResolvedValue({
+      packageName: 'com.foo.bar',
+      version: '1.2.3',
+      state: ReleaseState.Pending,
+      reason: ReleaseErrorCode.None,
+      buildId: '',
+    });
+
+    const { runQueueCli } = await import('../src/queueCli.js');
+
+    await expect(
+      runQueueCli([
+        'node',
+        'index.js',
+        'queue-cli',
+        'release-reconcile-published',
+        'com.foo.bar',
+        '1.2.3',
+        '--json',
+      ]),
+    ).rejects.toThrow(
+      'Release must be Building or already reconciled to retry cleanup: com.foo.bar@1.2.3',
+    );
+
+    expect(isReleasePublishedMock).not.toHaveBeenCalled();
+    expect(queueRemoveMock).not.toHaveBeenCalled();
+    expect(markReleasePublishedMock).not.toHaveBeenCalled();
+  });
+
+  it('release-reconcile-published refuses a non-failed release job', async () => {
+    fetchOneMock.mockResolvedValue({
+      packageName: 'com.foo.bar',
+      version: '1.2.3',
+      state: ReleaseState.Building,
+      reason: ReleaseErrorCode.None,
+      buildId: '12345',
+    });
+    getQueueMock.mockReturnValue({
+      remove: queueRemoveMock,
+      add: queueAddMock,
+      getJob: vi.fn().mockResolvedValue({
+        getState: vi.fn().mockResolvedValue('active'),
+      }),
+    });
+
+    const { runQueueCli } = await import('../src/queueCli.js');
+
+    await expect(
+      runQueueCli([
+        'node',
+        'index.js',
+        'queue-cli',
+        'release-reconcile-published',
+        'com.foo.bar',
+        '1.2.3',
+        '--json',
+      ]),
+    ).rejects.toThrow(
+      'Release job must be failed to reconcile: com.foo.bar@1.2.3',
+    );
+
+    expect(isReleasePublishedMock).not.toHaveBeenCalled();
+    expect(queueRemoveMock).not.toHaveBeenCalled();
+    expect(markReleasePublishedMock).not.toHaveBeenCalled();
+  });
+
+  it('release-reconcile-published leaves verified success when job removal races', async () => {
+    fetchOneMock.mockResolvedValue({
+      packageName: 'com.foo.bar',
+      version: '1.2.3',
+      state: ReleaseState.Building,
+      reason: ReleaseErrorCode.None,
+      buildId: '12345',
+    });
+    queueRemoveMock.mockResolvedValue(0);
+
+    const { runQueueCli } = await import('../src/queueCli.js');
+
+    await expect(
+      runQueueCli([
+        'node',
+        'index.js',
+        'queue-cli',
+        'release-reconcile-published',
+        'com.foo.bar',
+        '1.2.3',
+        '--json',
+      ]),
+    ).rejects.toThrow(
+      'Release job could not be removed safely: com.foo.bar@1.2.3',
+    );
+
+    expect(isReleasePublishedMock).toHaveBeenCalledWith('com.foo.bar', '1.2.3');
+    expect(markReleasePublishedMock).toHaveBeenCalledOnce();
+  });
+
+  it('release-reconcile-published retries cleanup for an already reconciled release', async () => {
+    const release = {
+      packageName: 'com.foo.bar',
+      version: '1.2.3',
+      state: ReleaseState.Succeeded,
+      reason: ReleaseErrorCode.None,
+      buildId: '',
+      signed: false,
+      publishedVersion: '1.2.3',
+      githubReleaseAssetMissingFirstSeenAt: undefined,
+      githubReleaseAssetMissingLastProbeAt: undefined,
+      githubReleaseAssetMissingProbeCount: undefined,
+    };
+    fetchOneMock.mockResolvedValue(release);
+    markReleasePublishedMock.mockResolvedValue(release);
+
+    const { runQueueCli } = await import('../src/queueCli.js');
+
+    await runQueueCli([
+      'node',
+      'index.js',
+      'queue-cli',
+      'release-reconcile-published',
+      'com.foo.bar',
+      '1.2.3',
+      '--json',
+    ]);
+
+    expect(isReleasePublishedMock).toHaveBeenCalledWith('com.foo.bar', '1.2.3');
+    expect(markReleasePublishedMock).toHaveBeenCalledOnce();
+    expect(queueRemoveMock).toHaveBeenCalledWith(
+      'build-rel|com.foo.bar|1.2.3',
+      { removeChildren: true },
+    );
+  });
+
+  it('release-reconcile-published accepts an already completed cleanup', async () => {
+    const release = {
+      packageName: 'com.foo.bar',
+      version: '1.2.3',
+      state: ReleaseState.Succeeded,
+      reason: ReleaseErrorCode.None,
+      buildId: '',
+      signed: false,
+      publishedVersion: '1.2.3',
+      githubReleaseAssetMissingFirstSeenAt: undefined,
+      githubReleaseAssetMissingLastProbeAt: undefined,
+      githubReleaseAssetMissingProbeCount: undefined,
+    };
+    fetchOneMock.mockResolvedValue(release);
+    markReleasePublishedMock.mockResolvedValue(release);
+    getQueueMock.mockReturnValue({
+      remove: queueRemoveMock,
+      add: queueAddMock,
+      getJob: vi.fn().mockResolvedValue(null),
+    });
+
+    const { runQueueCli } = await import('../src/queueCli.js');
+
+    await runQueueCli([
+      'node',
+      'index.js',
+      'queue-cli',
+      'release-reconcile-published',
+      'com.foo.bar',
+      '1.2.3',
+      '--json',
+    ]);
+
+    expect(markReleasePublishedMock).toHaveBeenCalledWith(release);
+    expect(queueRemoveMock).not.toHaveBeenCalled();
+    expect(console.log).toHaveBeenCalledWith(
+      expect.stringContaining('"alreadyComplete": true'),
+    );
+  });
+
+  it('release-reconcile-published keeps the failed job when saving success fails', async () => {
+    const release = {
+      packageName: 'com.foo.bar',
+      version: '1.2.3',
+      state: ReleaseState.Building,
+      reason: ReleaseErrorCode.None,
+      buildId: '12345',
+    };
+    fetchOneMock.mockResolvedValue(release);
+    markReleasePublishedMock.mockRejectedValue(new Error('redis write failed'));
+
+    const { runQueueCli } = await import('../src/queueCli.js');
+
+    await expect(
+      runQueueCli([
+        'node',
+        'index.js',
+        'queue-cli',
+        'release-reconcile-published',
+        'com.foo.bar',
+        '1.2.3',
+        '--json',
+      ]),
+    ).rejects.toThrow('redis write failed');
+
+    expect(markReleasePublishedMock).toHaveBeenCalledWith(release);
+    expect(queueRemoveMock).not.toHaveBeenCalled();
+  });
+
   it('release-show includes release metadata fields in json output', async () => {
     fetchOneMock.mockResolvedValue({
       packageName: 'com.foo.bar',
@@ -179,6 +494,10 @@ describe('queue-cli destructive actions', () => {
       updatedAt: 200,
       source: 'githubRelease',
       signed: true,
+      publishedVersion: '1.2.3-signed',
+      githubReleaseAssetMissingFirstSeenAt: 150,
+      githubReleaseAssetMissingLastProbeAt: 190,
+      githubReleaseAssetMissingProbeCount: 2,
     });
 
     const { runQueueCli } = await import('../src/queueCli.js');
@@ -198,6 +517,50 @@ describe('queue-cli destructive actions', () => {
     );
     expect(console.log).toHaveBeenCalledWith(
       expect.stringContaining('"signed": true'),
+    );
+    expect(console.log).toHaveBeenCalledWith(
+      expect.stringContaining('"publishedVersion": "1.2.3-signed"'),
+    );
+    expect(console.log).toHaveBeenCalledWith(
+      expect.stringContaining('"githubReleaseAssetMissingProbeCount": 2'),
+    );
+  });
+
+  it('release-show includes release metadata fields in text output', async () => {
+    fetchOneMock.mockResolvedValue({
+      packageName: 'com.foo.bar',
+      version: '1.2.3',
+      state: ReleaseState.Succeeded,
+      reason: ReleaseErrorCode.None,
+      buildId: '',
+      tag: '1.2.3',
+      commit: 'abc123',
+      createdAt: 100,
+      updatedAt: 200,
+      source: 'githubRelease',
+      signed: false,
+      publishedVersion: '1.2.3',
+      githubReleaseAssetMissingFirstSeenAt: 150,
+      githubReleaseAssetMissingLastProbeAt: 190,
+      githubReleaseAssetMissingProbeCount: 2,
+    });
+
+    const { runQueueCli } = await import('../src/queueCli.js');
+
+    await runQueueCli([
+      'node',
+      'index.js',
+      'queue-cli',
+      'release-show',
+      'com.foo.bar',
+      '1.2.3',
+    ]);
+
+    expect(console.log).toHaveBeenCalledWith(
+      expect.stringContaining('publishedVersion: 1.2.3'),
+    );
+    expect(console.log).toHaveBeenCalledWith(
+      expect.stringContaining('githubReleaseAssetMissingProbeCount: 2'),
     );
   });
 

@@ -62,10 +62,17 @@
     },
   },
 
+  // OpenUPM package registry.
+  registry: {
+    url: 'https://package.openupm.com',
+    requestTimeoutMs: 10000,
+  },
+
   // GitHub.
   github: {
     // Round-robin tokens for GitHub access.
     tokens: [],
+    requestTimeoutMs: 10000,
   },
 
   // Azure devops.

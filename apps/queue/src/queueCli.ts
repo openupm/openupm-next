@@ -14,6 +14,9 @@ import {
 import { addJob, closeQueues, getQueue, hasQueue } from './queues/core.js';
 import { createJobId } from './queues/jobId.js';
 import { cleanupMissingPackageJobs } from './jobs/cleanupMissingPackage.js';
+import { isReleasePublished } from './utils/registry.js';
+import { markReleasePublished } from './utils/reconcilePublishedRelease.js';
+import { withReleaseMutationLock } from './utils/releaseMutationLock.js';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const config = configRaw as any;
@@ -67,6 +70,10 @@ interface ReleaseSummary {
   updatedAt: number;
   source?: 'git' | 'githubRelease';
   signed?: boolean;
+  publishedVersion?: string;
+  githubReleaseAssetMissingFirstSeenAt?: number;
+  githubReleaseAssetMissingLastProbeAt?: number;
+  githubReleaseAssetMissingProbeCount?: number;
 }
 
 const knownJobTypes: JobType[] = [
@@ -156,6 +163,11 @@ function getUsage(): string {
     '  release-requeue <package> <version> [--json]',
     '    Reset one release to Pending/None with an empty buildId, remove its',
     '    deterministic rel queue job, then enqueue a fresh rel build job.',
+    '',
+    '  release-reconcile-published <package> <version> [--json]',
+    '    Verify that a release exists in the OpenUPM registry, mark its Redis',
+    '    record Succeeded/None, and remove its deterministic rel queue job.',
+    '    This is destructive.',
     '',
     '  package-requeue <package> [--json]',
     '    Remove the deterministic pkg queue job and enqueue a fresh package scan.',
@@ -292,6 +304,26 @@ function getCommandUsage(topic: string | undefined): string {
         'Examples:',
         '  queue-cli release-requeue com.foo.bar 1.2.3 --json',
       ].join('\n');
+    case 'release-reconcile-published':
+      return [
+        'Usage: queue-cli release-reconcile-published <package> <version> [--json]',
+        '',
+        'Verify that the exact version exists in the OpenUPM registry, mark its',
+        'release record state=Succeeded and reason=None, clear a stale buildId,',
+        'and remove its deterministic rel queue job.',
+        '',
+        'This is destructive. It repairs stale state only after registry',
+        'verification. Initially the release must be Building; a cleanup retry',
+        'also accepts the exact already-reconciled Succeeded state. The job must',
+        'be failed unless cleanup already completed, and the exact version must',
+        'be published.',
+        '',
+        'A release-scoped lock prevents package scans and other model-level CLI',
+        'operations from replacing the job while verification is in progress.',
+        '',
+        'Examples:',
+        '  queue-cli release-reconcile-published com.foo.bar 1.2.3 --json',
+      ].join('\n');
     case 'package-requeue':
       return [
         'Usage: queue-cli package-requeue <package> [--json]',
@@ -360,6 +392,10 @@ function summarizeRelease(rel: {
   updatedAt: number;
   source?: 'git' | 'githubRelease';
   signed?: boolean;
+  publishedVersion?: string;
+  githubReleaseAssetMissingFirstSeenAt?: number;
+  githubReleaseAssetMissingLastProbeAt?: number;
+  githubReleaseAssetMissingProbeCount?: number;
 }): ReleaseSummary {
   return {
     packageName: rel.packageName,
@@ -374,6 +410,13 @@ function summarizeRelease(rel: {
     updatedAt: rel.updatedAt,
     source: rel.source,
     signed: rel.signed,
+    publishedVersion: rel.publishedVersion,
+    githubReleaseAssetMissingFirstSeenAt:
+      rel.githubReleaseAssetMissingFirstSeenAt,
+    githubReleaseAssetMissingLastProbeAt:
+      rel.githubReleaseAssetMissingLastProbeAt,
+    githubReleaseAssetMissingProbeCount:
+      rel.githubReleaseAssetMissingProbeCount,
   };
 }
 
@@ -390,7 +433,8 @@ function formatValue(value: unknown): string {
   if (typeof value !== 'object' || value === null) return `${value}`;
 
   if (Array.isArray(value)) return value.map(formatValue).join('\n\n');
-  if (isQueueStatusList(value)) return value.map(formatQueueStatus).join('\n\n');
+  if (isQueueStatusList(value))
+    return value.map(formatQueueStatus).join('\n\n');
   if (isQueueStatus(value)) return formatQueueStatus(value);
   if (isQueueJobsResult(value)) return formatQueueJobsResult(value);
   if (isQueueJobSummary(value)) return formatQueueJob(value);
@@ -413,12 +457,16 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-function isQueueStatusList(value: unknown): value is Array<Record<string, unknown>> {
+function isQueueStatusList(
+  value: unknown,
+): value is Array<Record<string, unknown>> {
   return Array.isArray(value) && value.every(isQueueStatus);
 }
 
 function isQueueStatus(value: unknown): value is Record<string, unknown> {
-  return isRecord(value) && typeof value.queue === 'string' && isRecord(value.counts);
+  return (
+    isRecord(value) && typeof value.queue === 'string' && isRecord(value.counts)
+  );
 }
 
 function isQueueJobsResult(value: unknown): value is QueueJobsResult {
@@ -505,9 +553,12 @@ function formatQueueJob(job: QueueJobSummary, indent = ''): string {
     `${indent}  timestamp: ${formatTimestamp(job.timestamp)}`,
     `${indent}  data: ${JSON.stringify(job.data)}`,
   ];
-  if (job.processedOn) lines.push(`${indent}  processedOn: ${formatTimestamp(job.processedOn)}`);
-  if (job.finishedOn) lines.push(`${indent}  finishedOn: ${formatTimestamp(job.finishedOn)}`);
-  if (job.failedReason) lines.push(`${indent}  failedReason: ${job.failedReason}`);
+  if (job.processedOn)
+    lines.push(`${indent}  processedOn: ${formatTimestamp(job.processedOn)}`);
+  if (job.finishedOn)
+    lines.push(`${indent}  finishedOn: ${formatTimestamp(job.finishedOn)}`);
+  if (job.failedReason)
+    lines.push(`${indent}  failedReason: ${job.failedReason}`);
   return lines.join('\n');
 }
 
@@ -521,6 +572,20 @@ function formatRelease(release: ReleaseSummary): string {
     `  commit: ${release.commit}`,
     `  source: ${release.source || 'git'}`,
     `  signed: ${release.signed === true ? 'true' : 'false'}`,
+    `  publishedVersion: ${release.publishedVersion || ''}`,
+    `  githubReleaseAssetMissingFirstSeenAt: ${
+      release.githubReleaseAssetMissingFirstSeenAt
+        ? formatTimestamp(release.githubReleaseAssetMissingFirstSeenAt)
+        : ''
+    }`,
+    `  githubReleaseAssetMissingLastProbeAt: ${
+      release.githubReleaseAssetMissingLastProbeAt
+        ? formatTimestamp(release.githubReleaseAssetMissingLastProbeAt)
+        : ''
+    }`,
+    `  githubReleaseAssetMissingProbeCount: ${
+      release.githubReleaseAssetMissingProbeCount ?? ''
+    }`,
     `  updatedAt: ${formatTimestamp(release.updatedAt)}`,
   ].join('\n');
 }
@@ -563,9 +628,9 @@ async function queueJobs(
 ): Promise<QueueJobsResult> {
   assertQueue(queueName);
   const queue = getQueue(queueName);
-  const jobTypes = (states.length
-    ? states
-    : ['failed', 'active', 'waiting']) as JobType[];
+  const jobTypes = (
+    states.length ? states : ['failed', 'active', 'waiting']
+  ) as JobType[];
   const counts = await queue.getJobCounts(...jobTypes);
   const total = Object.values(counts).reduce((sum, count) => sum + count, 0);
   const effectiveLimit = limit ?? total;
@@ -623,7 +688,8 @@ function matchesReason(
   reasonFilter: string | undefined,
 ): boolean {
   if (!reasonFilter) return true;
-  if (reasonFilter === 'unknown') return rel.reasonCode === ReleaseErrorCode.None;
+  if (reasonFilter === 'unknown')
+    return rel.reasonCode === ReleaseErrorCode.None;
   if (reasonFilter === 'timeout') {
     return (
       rel.reasonCode === ReleaseErrorCode.BuildTimeout ||
@@ -668,50 +734,126 @@ async function releaseRemove(
   packageName: string,
   version: string,
 ): Promise<Record<string, unknown>> {
-  const jobId = getBuildReleaseJobId(packageName, version);
-  const queueName = config.jobs.buildRelease.queue;
-  const removedJob = await getQueue(queueName).remove(jobId, {
-    removeChildren: true,
+  return await withReleaseMutationLock(packageName, version, async () => {
+    const jobId = getBuildReleaseJobId(packageName, version);
+    const queueName = config.jobs.buildRelease.queue;
+    const removedJob = await getQueue(queueName).remove(jobId, {
+      removeChildren: true,
+    });
+    await removeReleaseRecord(packageName, version);
+    return {
+      packageName,
+      version,
+      releaseRemoved: true,
+      relatedJob: { queue: queueName, jobId, removed: removedJob === 1 },
+    };
   });
-  await removeReleaseRecord(packageName, version);
-  return {
-    packageName,
-    version,
-    releaseRemoved: true,
-    relatedJob: { queue: queueName, jobId, removed: removedJob === 1 },
-  };
 }
 
 async function releaseRequeue(
   packageName: string,
   version: string,
 ): Promise<Record<string, unknown>> {
-  const release = await fetchOne(packageName, version);
-  if (!release) throw new Error(`Release not found: ${packageName}@${version}`);
+  return await withReleaseMutationLock(packageName, version, async () => {
+    const release = await fetchOne(packageName, version);
+    if (!release)
+      throw new Error(`Release not found: ${packageName}@${version}`);
 
-  const jobConfig = config.jobs.buildRelease;
-  const queue = getQueue(jobConfig.queue);
-  const jobId = getBuildReleaseJobId(packageName, version);
-  await queue.remove(jobId, { removeChildren: true });
-  const saved = await saveRelease({
-    ...release,
-    state: ReleaseState.Pending,
-    reason: ReleaseErrorCode.None,
-    buildId: '',
-    githubReleaseAssetMissingFirstSeenAt: undefined,
-    githubReleaseAssetMissingLastProbeAt: undefined,
-    githubReleaseAssetMissingProbeCount: undefined,
+    const jobConfig = config.jobs.buildRelease;
+    const queue = getQueue(jobConfig.queue);
+    const jobId = getBuildReleaseJobId(packageName, version);
+    await queue.remove(jobId, { removeChildren: true });
+    const saved = await saveRelease({
+      ...release,
+      state: ReleaseState.Pending,
+      reason: ReleaseErrorCode.None,
+      buildId: '',
+      githubReleaseAssetMissingFirstSeenAt: undefined,
+      githubReleaseAssetMissingLastProbeAt: undefined,
+      githubReleaseAssetMissingProbeCount: undefined,
+    });
+    const job = await addJob({
+      queue,
+      name: jobConfig.name,
+      data: { name: packageName, version },
+      opts: { jobId },
+    });
+    return {
+      release: summarizeRelease(saved),
+      job: { queue: jobConfig.queue, jobId, added: job !== null },
+    };
   });
-  const job = await addJob({
-    queue,
-    name: jobConfig.name,
-    data: { name: packageName, version },
-    opts: { jobId },
+}
+
+async function releaseReconcilePublished(
+  packageName: string,
+  version: string,
+): Promise<Record<string, unknown>> {
+  return await withReleaseMutationLock(packageName, version, async () => {
+    const release = await fetchOne(packageName, version);
+    if (!release)
+      throw new Error(`Release not found: ${packageName}@${version}`);
+    const alreadyReconciled =
+      release.state === ReleaseState.Succeeded &&
+      release.reason === ReleaseErrorCode.None &&
+      release.buildId === '' &&
+      release.signed === false &&
+      release.publishedVersion === version &&
+      release.githubReleaseAssetMissingFirstSeenAt === undefined &&
+      release.githubReleaseAssetMissingLastProbeAt === undefined &&
+      release.githubReleaseAssetMissingProbeCount === undefined;
+    if (release.state !== ReleaseState.Building && !alreadyReconciled) {
+      throw new Error(
+        `Release must be Building or already reconciled to retry cleanup: ${packageName}@${version}`,
+      );
+    }
+
+    const jobConfig = config.jobs.buildRelease;
+    const queue = getQueue(jobConfig.queue);
+    const jobId = getBuildReleaseJobId(packageName, version);
+    const job = await queue.getJob(jobId);
+    const jobState = job ? await job.getState() : null;
+    if (jobState !== 'failed' && !(alreadyReconciled && jobState === null)) {
+      throw new Error(
+        `Release job must be failed to reconcile: ${packageName}@${version}`,
+      );
+    }
+
+    if (!(await isReleasePublished(packageName, version))) {
+      throw new Error(
+        `Release is not published in the registry: ${packageName}@${version}`,
+      );
+    }
+
+    const reconciled = await markReleasePublished(release);
+    if (jobState === null) {
+      return {
+        release: summarizeRelease(reconciled),
+        relatedJob: {
+          queue: jobConfig.queue,
+          jobId,
+          previousState: null,
+          removed: false,
+          alreadyComplete: true,
+        },
+      };
+    }
+    const removedJob = await queue.remove(jobId, { removeChildren: true });
+    if (removedJob !== 1) {
+      throw new Error(
+        `Release job could not be removed safely: ${packageName}@${version}`,
+      );
+    }
+    return {
+      release: summarizeRelease(reconciled),
+      relatedJob: {
+        queue: jobConfig.queue,
+        jobId,
+        previousState: jobState,
+        removed: true,
+      },
+    };
   });
-  return {
-    release: summarizeRelease(saved),
-    job: { queue: jobConfig.queue, jobId, added: job !== null },
-  };
 }
 
 async function packageRequeue(
@@ -737,7 +879,9 @@ function requireArgs(args: string[], count: number): void {
   if (args.length < count) throw new Error(getUsage());
 }
 
-export async function runQueueCli(argv: string[] = process.argv): Promise<void> {
+export async function runQueueCli(
+  argv: string[] = process.argv,
+): Promise<void> {
   const args = parseQueueCliArgs(argv);
   if (args.command === 'help') {
     const helpArgs = args as QueueCliHelpArgs;
@@ -777,6 +921,10 @@ export async function runQueueCli(argv: string[] = process.argv): Promise<void> 
       case 'release-requeue':
         requireArgs(args.rest, 2);
         result = await releaseRequeue(args.rest[0], args.rest[1]);
+        break;
+      case 'release-reconcile-published':
+        requireArgs(args.rest, 2);
+        result = await releaseReconcilePublished(args.rest[0], args.rest[1]);
         break;
       case 'package-requeue':
         requireArgs(args.rest, 1);
