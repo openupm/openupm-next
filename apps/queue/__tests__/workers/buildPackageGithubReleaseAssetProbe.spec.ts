@@ -1,5 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { ReleaseErrorCode, ReleaseState, type ReleaseModel } from '@openupm/types';
+import {
+  ReleaseErrorCode,
+  ReleaseState,
+  type ReleaseModel,
+} from '@openupm/types';
 
 const loadPackageMetadataLocalMock = vi.fn();
 const packageMetadataLocalExistsMock = vi.fn();
@@ -15,6 +19,7 @@ const queueRemoveMock = vi.fn();
 const resolveGitHubReleaseAssetMock = vi.fn();
 const setInvalidTagsMock = vi.fn();
 const setRepoUnavailableMock = vi.fn();
+const withReleaseMutationLockMock = vi.fn();
 
 vi.mock('@openupm/local-data', () => ({
   loadPackageMetadataLocal: loadPackageMetadataLocalMock,
@@ -52,9 +57,12 @@ vi.mock('../../src/utils/githubReleaseAsset.js', async () => {
   };
 });
 
-function createRelease(
-  overrides: Partial<ReleaseModel> = {},
-): ReleaseModel {
+vi.mock('../../src/utils/releaseMutationLock.js', () => ({
+  ReleaseMutationLockedError: class ReleaseMutationLockedError extends Error {},
+  withReleaseMutationLock: withReleaseMutationLockMock,
+}));
+
+function createRelease(overrides: Partial<ReleaseModel> = {}): ReleaseModel {
   return {
     packageName: 'com.example.asset',
     version: '1.0.0',
@@ -84,6 +92,9 @@ async function runBuildPackage(release: ReleaseModel): Promise<void> {
 describe('buildPackage GitHub Release pending probes', () => {
   beforeEach(() => {
     vi.resetAllMocks();
+    withReleaseMutationLockMock.mockImplementation(
+      async (_packageName, _version, action) => await action(),
+    );
     vi.spyOn(Date, 'now').mockReturnValue(
       Date.parse('2026-05-10T07:00:00.000Z'),
     );
@@ -126,8 +137,12 @@ describe('buildPackage GitHub Release pending probes', () => {
     expect(getGitHubReleasePendingProbeIntervalMs(0)).toEqual(10 * 60 * 1000);
     expect(getGitHubReleasePendingProbeIntervalMs(1)).toEqual(20 * 60 * 1000);
     expect(getGitHubReleasePendingProbeIntervalMs(2)).toEqual(40 * 60 * 1000);
-    expect(getGitHubReleasePendingProbeIntervalMs(6)).toEqual(6 * 60 * 60 * 1000);
-    expect(getGitHubReleasePendingProbeIntervalMs(20)).toEqual(6 * 60 * 60 * 1000);
+    expect(getGitHubReleasePendingProbeIntervalMs(6)).toEqual(
+      6 * 60 * 60 * 1000,
+    );
+    expect(getGitHubReleasePendingProbeIntervalMs(20)).toEqual(
+      6 * 60 * 60 * 1000,
+    );
   });
 
   it('skips the first probe before the ten minute interval elapses', async () => {
@@ -212,7 +227,9 @@ describe('buildPackage GitHub Release pending probes', () => {
       { tag: 'upm/1.0.1', commit: 'def456' },
     ]);
     fetchAllMock.mockResolvedValue([deletedRelease]);
-    fetchOneMock.mockResolvedValue(null);
+    fetchOneMock.mockImplementation(async (_packageName, version) =>
+      version === '1.0.0' ? deletedRelease : null,
+    );
     saveReleaseMock.mockImplementation(async (value) => ({
       packageName: 'com.example.asset',
       version: '1.0.1',
@@ -250,6 +267,7 @@ describe('buildPackage GitHub Release pending probes', () => {
     });
     gitListRemoteTagsMock.mockResolvedValue([]);
     fetchAllMock.mockResolvedValue([deletedRelease]);
+    fetchOneMock.mockResolvedValue(deletedRelease);
 
     const { buildPackage } = await import('../../src/workers/buildPackage.js');
     await buildPackage('com.example.asset');
@@ -262,7 +280,29 @@ describe('buildPackage GitHub Release pending probes', () => {
       'com.example.asset',
       '1.0.0',
     );
-    expect(fetchOneMock).not.toHaveBeenCalled();
+    expect(fetchOneMock).toHaveBeenCalledWith('com.example.asset', '1.0.0');
+    expect(addJobMock).not.toHaveBeenCalled();
+  });
+
+  it('refetches under the lock and skips a stale job mutation after reconciliation', async () => {
+    const stale = createRelease({
+      state: ReleaseState.Building,
+      reason: ReleaseErrorCode.None,
+    });
+    fetchOneMock.mockResolvedValue({
+      ...stale,
+      state: ReleaseState.Succeeded,
+      buildId: '',
+      publishedVersion: stale.version,
+    });
+
+    const { addReleaseJobs } = await import(
+      '../../src/workers/buildPackage.js'
+    );
+    await addReleaseJobs([stale]);
+
+    expect(fetchOneMock).toHaveBeenCalledWith('com.example.asset', '1.0.0');
+    expect(queueRemoveMock).not.toHaveBeenCalled();
     expect(addJobMock).not.toHaveBeenCalled();
   });
 
@@ -486,5 +526,26 @@ describe('buildPackage GitHub Release pending probes', () => {
         }),
       }),
     );
+  });
+
+  it('skips release job mutation while an operator repair holds the lock', async () => {
+    const { ReleaseMutationLockedError } = await import(
+      '../../src/utils/releaseMutationLock.js'
+    );
+    withReleaseMutationLockMock.mockRejectedValueOnce(
+      new ReleaseMutationLockedError(),
+    );
+
+    await expect(
+      runBuildPackage(
+        createRelease({
+          state: ReleaseState.Building,
+          reason: ReleaseErrorCode.None,
+        }),
+      ),
+    ).resolves.toBeUndefined();
+
+    expect(addJobMock).not.toHaveBeenCalled();
+    expect(queueRemoveMock).not.toHaveBeenCalled();
   });
 });

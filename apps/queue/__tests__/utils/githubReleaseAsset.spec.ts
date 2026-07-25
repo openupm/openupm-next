@@ -14,7 +14,9 @@ describe('githubReleaseAsset utils', () => {
   });
 
   it('parses GitHub repo URLs', () => {
-    expect(parseGitHubRepoUrl('https://github.com/openupm/openupm.git')).toEqual({
+    expect(
+      parseGitHubRepoUrl('https://github.com/openupm/openupm.git'),
+    ).toEqual({
       owner: 'openupm',
       repo: 'openupm',
     });
@@ -22,11 +24,17 @@ describe('githubReleaseAsset utils', () => {
       owner: 'openupm',
       repo: 'openupm',
     });
-    expect(parseGitHubRepoUrl('https://example.com/openupm/openupm')).toBeNull();
-    expect(parseGitHubRepoUrl('https://notgithub.com/openupm/openupm')).toBeNull();
+    expect(
+      parseGitHubRepoUrl('https://example.com/openupm/openupm'),
+    ).toBeNull();
+    expect(
+      parseGitHubRepoUrl('https://notgithub.com/openupm/openupm'),
+    ).toBeNull();
     expect(parseGitHubRepoUrl('https://github.com/')).toBeNull();
     expect(parseGitHubRepoUrl('git@github.com:')).toBeNull();
-    expect(parseGitHubRepoUrl('git@github.com:openupm/openupm/path')).toBeNull();
+    expect(
+      parseGitHubRepoUrl('git@github.com:openupm/openupm/path'),
+    ).toBeNull();
   });
 
   it('selects configured publishable asset by exact name', () => {
@@ -114,8 +122,10 @@ describe('githubReleaseAsset utils', () => {
         new Response(
           JSON.stringify({
             tag_name: 'v1.0.0',
-            zipball_url: 'https://api.github.com/repos/openupm/openupm/zipball/v1.0.0',
-            tarball_url: 'https://api.github.com/repos/openupm/openupm/tarball/v1.0.0',
+            zipball_url:
+              'https://api.github.com/repos/openupm/openupm/zipball/v1.0.0',
+            tarball_url:
+              'https://api.github.com/repos/openupm/openupm/tarball/v1.0.0',
             assets: [
               {
                 name: 'package.tgz',
@@ -180,6 +190,7 @@ describe('githubReleaseAsset utils', () => {
       'https://api.github.com/repos/openupm/openupm/releases/tags/v1.0.0',
       expect.objectContaining({
         headers: expect.objectContaining({ Authorization: 'Bearer token-a' }),
+        signal: expect.any(AbortSignal),
       }),
     );
   });

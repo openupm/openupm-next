@@ -1,12 +1,18 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
-import { ReleaseErrorCode, RetryableReleaseErrorCodes } from "@openupm/types";
+import {
+  ReleaseErrorCode,
+  ReleaseState,
+  RetryableReleaseErrorCodes,
+} from "@openupm/types";
 import {
   getPackageResultFromBuildLogText,
   getQueueBuildParameters,
   getReasonFromBuildLogText,
   getReleaseSource,
+  recoverMissingAzureBuild,
 } from "../../src/workers/buildRelease.js";
+import { ReleaseMutationLockedError } from "../../src/utils/releaseMutationLock.js";
 
 describe("buildRelease.getReasonFromBuildLogText", () => {
   it("None", () => {
@@ -164,6 +170,111 @@ describe("buildRelease.getReleaseSource", () => {
     expect(
       getReleaseSource({ trackingMode: "git" }, { source: "githubRelease" }),
     ).toEqual("githubRelease");
+  });
+});
+
+describe("buildRelease.recoverMissingAzureBuild", () => {
+  const release = {
+    packageName: "com.foo.bar",
+    version: "1.2.3",
+    state: ReleaseState.Building,
+    reason: ReleaseErrorCode.None,
+    buildId: "expired-build",
+    tag: "upm/1.2.3",
+    commit: "abc123",
+    createdAt: 100,
+    updatedAt: 200,
+    source: "git" as const,
+    signed: false,
+  };
+
+  it("accepts a release already reconciled from the registry", async () => {
+    const save = vi.fn();
+
+    await expect(
+      recoverMissingAzureBuild(release, "expired-build", {
+        fetchOne: vi.fn().mockResolvedValue(release) as never,
+        reconcilePublishedRelease: vi.fn().mockResolvedValue({
+          ...release,
+          state: ReleaseState.Succeeded,
+          buildId: "",
+        }),
+        save: save as never,
+        withReleaseMutationLock: vi.fn(
+          async (_packageName, _version, action) => await action(),
+        ) as never,
+      }),
+    ).resolves.toBe("reconciled");
+
+    expect(save).not.toHaveBeenCalled();
+  });
+
+  it("resets an unpublished release for a fresh build retry", async () => {
+    const save = vi.fn(async (value) => value);
+
+    await expect(
+      recoverMissingAzureBuild(release, "expired-build", {
+        fetchOne: vi.fn().mockResolvedValue(release) as never,
+        reconcilePublishedRelease: vi.fn().mockResolvedValue(null),
+        save: save as never,
+        withReleaseMutationLock: vi.fn(
+          async (_packageName, _version, action) => await action(),
+        ) as never,
+      }),
+    ).resolves.toBe("reset");
+
+    expect(save).toHaveBeenCalledWith({
+      ...release,
+      state: ReleaseState.Pending,
+      reason: ReleaseErrorCode.None,
+      buildId: "",
+      signed: false,
+      publishedVersion: undefined,
+    });
+  });
+
+  it("does not overwrite a release changed while the Azure build was polled", async () => {
+    const save = vi.fn();
+    const reconcile = vi.fn();
+
+    await expect(
+      recoverMissingAzureBuild(release, "expired-build", {
+        fetchOne: vi.fn().mockResolvedValue({
+          ...release,
+          state: ReleaseState.Succeeded,
+          buildId: "",
+        }) as never,
+        reconcilePublishedRelease: reconcile,
+        save: save as never,
+        withReleaseMutationLock: vi.fn(
+          async (_packageName, _version, action) => await action(),
+        ) as never,
+      }),
+    ).resolves.toBe("stale");
+
+    expect(reconcile).not.toHaveBeenCalled();
+    expect(save).not.toHaveBeenCalled();
+  });
+
+  it("retries instead of completing while another mutation holds the lock", async () => {
+    const save = vi.fn();
+    const reconcile = vi.fn();
+    const lockError = new ReleaseMutationLockedError(
+      release.packageName,
+      release.version,
+    );
+
+    await expect(
+      recoverMissingAzureBuild(release, "expired-build", {
+        fetchOne: vi.fn() as never,
+        reconcilePublishedRelease: reconcile,
+        save: save as never,
+        withReleaseMutationLock: vi.fn().mockRejectedValue(lockError) as never,
+      }),
+    ).rejects.toBe(lockError);
+
+    expect(reconcile).not.toHaveBeenCalled();
+    expect(save).not.toHaveBeenCalled();
   });
 });
 

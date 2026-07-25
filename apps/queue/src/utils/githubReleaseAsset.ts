@@ -116,9 +116,9 @@ export async function resolveGitHubReleaseAsset(options: {
     );
   }
 
-  const releaseUrl = `https://api.github.com/repos/${repo.owner}/${repo.repo}/releases/tags/${encodeURIComponent(
-    options.releaseTag,
-  )}`;
+  const releaseUrl = `https://api.github.com/repos/${repo.owner}/${
+    repo.repo
+  }/releases/tags/${encodeURIComponent(options.releaseTag)}`;
   const headers = withGitHubAuthorizationHeader(options.config, {
     Accept: 'application/vnd.github+json',
     'X-GitHub-Api-Version': '2022-11-28',
@@ -126,10 +126,17 @@ export async function resolveGitHubReleaseAsset(options: {
 
   let response: Response;
   try {
-    response = await fetch(releaseUrl, { headers });
+    const requestTimeoutMs =
+      Number(options.config.github?.requestTimeoutMs) || 10_000;
+    response = await fetch(releaseUrl, {
+      headers,
+      signal: AbortSignal.timeout(requestTimeoutMs),
+    });
   } catch (error) {
     throw new GitHubReleaseAssetError(
-      `GitHub Release API request failed: ${error instanceof Error ? error.message : String(error)}`,
+      `GitHub Release API request failed: ${
+        error instanceof Error ? error.message : String(error)
+      }`,
       ReleaseErrorCode.GitHubReleaseApiError,
     );
   }
@@ -140,7 +147,11 @@ export async function resolveGitHubReleaseAsset(options: {
       ReleaseErrorCode.GitHubReleaseNotFound,
     );
   }
-  if (response.status === 403 || response.status === 429 || response.status >= 500) {
+  if (
+    response.status === 403 ||
+    response.status === 429 ||
+    response.status >= 500
+  ) {
     throw new GitHubReleaseAssetError(
       `GitHub Release API failed with status ${response.status}`,
       ReleaseErrorCode.GitHubReleaseApiError,
@@ -158,13 +169,17 @@ export async function resolveGitHubReleaseAsset(options: {
     release = (await response.json()) as GitHubReleaseResponse;
   } catch (error) {
     throw new GitHubReleaseAssetError(
-      `GitHub Release API response was not valid JSON: ${error instanceof Error ? error.message : String(error)}`,
+      `GitHub Release API response was not valid JSON: ${
+        error instanceof Error ? error.message : String(error)
+      }`,
       ReleaseErrorCode.GitHubReleaseApiError,
     );
   }
   if (release.tag_name !== options.releaseTag) {
     throw new GitHubReleaseAssetError(
-      `GitHub Release tag mismatch: actual=${release.tag_name || ''}, expected=${options.releaseTag}`,
+      `GitHub Release tag mismatch: actual=${
+        release.tag_name || ''
+      }, expected=${options.releaseTag}`,
       ReleaseErrorCode.GitHubReleaseNotFound,
     );
   }

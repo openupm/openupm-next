@@ -46,6 +46,13 @@ Common commands:
   remove its deterministic release queue job. This is destructive.
 - `release-requeue <package> <version> [--json]`: reset one release and enqueue
   a fresh release build job.
+- `release-reconcile-published <package> <version> [--json]`: verify that the
+  exact version exists in the OpenUPM registry, mark its release record
+  `Succeeded/None`, clear stale signing and GitHub Release probe metadata, set
+  `publishedVersion` to the requested version, and remove its deterministic
+  release job. This is destructive; an initial repair requires a `Building`
+  release with a failed job and refuses unpublished versions. Cleanup can be
+  retried when the record already has the exact reconciled state.
 - `package-requeue <package> [--json]`: remove the deterministic package queue
   job and enqueue a fresh package scan.
 - `cleanup-missing-packages [--json]`: clean failed package jobs for packages

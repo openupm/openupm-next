@@ -98,7 +98,12 @@ describe('parseQueueCliArgs', () => {
 
   it('parses top-level help', async () => {
     const { parseQueueCliArgs } = await import('../src/queueCli.js');
-    const parsed = parseQueueCliArgs(['node', 'index.js', 'queue-cli', '--help']);
+    const parsed = parseQueueCliArgs([
+      'node',
+      'index.js',
+      'queue-cli',
+      '--help',
+    ]);
     expect(parsed).toEqual({ command: 'help' });
   });
 
@@ -126,7 +131,9 @@ describe('parseQueueCliArgs', () => {
   it('documents the full releases-failed interface', async () => {
     const { getCommandUsage } = await import('../src/queueCli.js');
     const help = getCommandUsage('releases-failed');
-    expect(help).toContain('queue-cli releases-failed [reason|unknown|timeout]');
+    expect(help).toContain(
+      'queue-cli releases-failed [reason|unknown|timeout]',
+    );
     expect(help).toContain('BuildTimeout/ConnectionTimeout/GatewayTimeout');
     expect(help).toContain('VersionConflict');
   });
@@ -145,14 +152,30 @@ describe('parseQueueCliArgs', () => {
     expect(help).toContain('remove-job <queue> <jobId>');
     expect(help).toContain('This is destructive');
     expect(help).toContain('release-remove <package> <version>');
+    expect(help).toContain('release-reconcile-published <package> <version>');
     expect(help).toContain('cleanup-missing-packages');
+  });
+
+  it('documents safe guards for published release reconciliation', async () => {
+    const { getCommandUsage } = await import('../src/queueCli.js');
+    const help = getCommandUsage('release-reconcile-published');
+    expect(help).toContain(
+      'queue-cli release-reconcile-published <package> <version>',
+    );
+    expect(help).toContain('This is destructive');
+    expect(help).toContain(
+      'Initially the release must be Building; a cleanup retry',
+    );
+    expect(help).toContain('A release-scoped lock prevents package scans');
   });
 
   it('documents cleanup-missing-packages behavior', async () => {
     const { getCommandUsage } = await import('../src/queueCli.js');
     const help = getCommandUsage('cleanup-missing-packages');
     expect(help).toContain('queue-cli cleanup-missing-packages');
-    expect(help).toContain('Successful and non-failed release records are preserved.');
+    expect(help).toContain(
+      'Successful and non-failed release records are preserved.',
+    );
   });
 
   it('queue-jobs includes total and limit metadata', async () => {
