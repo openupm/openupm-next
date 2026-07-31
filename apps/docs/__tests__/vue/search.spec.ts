@@ -290,4 +290,24 @@ describe("PackageListLayout search result counts", () => {
     );
     expect(source).toContain("{{ resultCount }}");
   });
+
+  it("keeps every result type inside the shared results scroller", () => {
+    const source = readFileSync(packageListLayoutPath, "utf8");
+    const gridWrapperIndex = source.indexOf('class="grid-wrapper"');
+    const packagePageResultsIndex = source.indexOf(
+      'class="package-page-results"',
+    );
+
+    expect(source).toContain(
+      "metadataEntries.length || packagePageSearchSuggestions.length",
+    );
+    expect(gridWrapperIndex).toBeGreaterThan(-1);
+    expect(packagePageResultsIndex).toBeGreaterThan(gridWrapperIndex);
+    expect(source).toContain(
+      'v-if="searchTerm && metadataEntries.length"',
+    );
+    expect(source).toContain(
+      '<Grid v-if="metadataEntries.length"',
+    );
+  });
 });

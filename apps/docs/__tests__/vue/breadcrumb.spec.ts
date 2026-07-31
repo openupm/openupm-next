@@ -65,6 +65,17 @@ describe("site breadcrumbs", () => {
     expect(source).toContain('<SiteBreadcrumb :items="breadcrumbItems" />');
   });
 
+  it("lets the breadcrumb size itself above the package results scroller", () => {
+    const source = readFileSync(packageListLayoutPath, "utf8");
+
+    expect(source).toContain("display: flex");
+    expect(source).toContain("height: 100vh");
+    expect(source).toContain("min-height: 0");
+    expect(source).toContain(">.column {\n          height: 100%");
+    expect(source).toContain(".grid-wrapper {\n    height: 100%");
+    expect(source).not.toContain("height: calc(100vh");
+  });
+
   it("passes exact OpenUPM package detail breadcrumb items", () => {
     const source = readFileSync(packageDetailLayoutPath, "utf8");
 

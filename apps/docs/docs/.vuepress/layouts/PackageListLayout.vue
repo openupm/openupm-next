@@ -410,31 +410,35 @@ watch(() => topicSlug.value, () => {
               </div>
               <div v-else>
                 <client-only>
-                  <section
-                    v-if="packagePageSearchSuggestions.length"
-                    class="package-page-results"
-                  >
-                    <h2>{{ $t("unitynuget-packages") }}</h2>
-                    <ul>
-                      <li
-                        v-for="suggestion in packagePageSearchSuggestions"
-                        :key="suggestion.name"
-                      >
-                        <RouterLink :to="suggestion.link">
-                          <strong>{{ suggestion.displayName }}</strong>
-                          <small>{{ suggestion.name }}</small>
-                        </RouterLink>
-                      </li>
-                    </ul>
-                  </section>
                   <div v-if="!metadataEntries.length && !packagePageSearchSuggestions.length" class="no-data">
                     {{ noDataAvailableText }}
                   </div>
-                  <div v-if="metadataEntries.length" ref="gridWrapperElement" class="grid-wrapper">
-                    <h2 v-if="searchTerm" class="package-results-heading">
+                  <div
+                    v-if="metadataEntries.length || packagePageSearchSuggestions.length"
+                    ref="gridWrapperElement"
+                    class="grid-wrapper"
+                  >
+                    <section
+                      v-if="packagePageSearchSuggestions.length"
+                      class="package-page-results"
+                    >
+                      <h2>{{ $t("unitynuget-packages") }}</h2>
+                      <ul>
+                        <li
+                          v-for="suggestion in packagePageSearchSuggestions"
+                          :key="suggestion.name"
+                        >
+                          <RouterLink :to="suggestion.link">
+                            <strong>{{ suggestion.displayName }}</strong>
+                            <small>{{ suggestion.name }}</small>
+                          </RouterLink>
+                        </li>
+                      </ul>
+                    </section>
+                    <h2 v-if="searchTerm && metadataEntries.length" class="package-results-heading">
                       {{ $t("openupm-packages") }}
                     </h2>
-                    <Grid class="grid" :length="listItems.length" :page-size="gridPageSize"
+                    <Grid v-if="metadataEntries.length" class="grid" :length="listItems.length" :page-size="gridPageSize"
                       :page-provider="gridPageProvider" :get-key="getGridKey">
                       <template #probe>
                         <!-- The virtual grid is designed to be used with a network provider.
@@ -507,12 +511,26 @@ watch(() => topicSlug.value, () => {
     }
 
     >:is(.theme-default-content, [vp-content]):not(.custom) {
-      padding: 0;
-      margin-top: $navbar-height;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      margin-top: 0;
+      padding: $navbar-height 0 0;
+
+      >.columns {
+        flex: 1;
+        min-height: 0;
+
+        >.column {
+          height: 100%;
+          min-height: 0;
+        }
+      }
 
       @media (max-width: $MQMobileNarrow) {
-        padding: 0 0.5rem;
-        margin-top: $navbar-height-mobile;
+        margin-top: 0;
+        padding: $navbar-height-mobile 0.5rem 0;
       }
     }
   }
@@ -544,6 +562,12 @@ watch(() => topicSlug.value, () => {
 @use '@/styles/palette' as *;
 
 .package-section {
+  height: 100%;
+
+  >div {
+    height: 100%;
+  }
+
   .package-results-heading,
   .package-page-results h2 {
     font-size: 1rem;
@@ -602,11 +626,10 @@ watch(() => topicSlug.value, () => {
   }
 
   .grid-wrapper {
-    height: calc(100vh - $navbar-height);
+    height: 100%;
     overflow: auto;
 
     @media (max-width: $MQMobileNarrow) {
-      height: calc(100vh - $navbar-height-mobile);
       // Hide scrollbar
       --scrollbar-width: 0;
     }
