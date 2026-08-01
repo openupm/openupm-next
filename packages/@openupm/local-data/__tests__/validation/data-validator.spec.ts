@@ -100,6 +100,20 @@ describe('validateDataDirectory', () => {
     }
   });
 
+  it('accepts an explicitly empty hunter for legacy data', async () => {
+    const dataDir = await createDataDir();
+    try {
+      await writePackage(dataDir, validPackage.name, {
+        ...validPackage,
+        hunter: '',
+      });
+      const result = await validateDataDirectory(dataDir);
+      expect(result).toEqual({ valid: true, issues: [] });
+    } finally {
+      await afs.rm(dataDir, { recursive: true, force: true });
+    }
+  });
+
   it('accepts GitHub Release tracking metadata with optional asset name', async () => {
     const dataDir = await createDataDir();
     try {
@@ -180,7 +194,7 @@ describe('validateDataDirectory', () => {
   });
 
   it('covers required package field checks from openupm data tests', async () => {
-    expect.assertions(8);
+    expect.assertions(11);
     await expectIssue(
       (dataDir) =>
         writePackage(dataDir, validPackage.name, {
@@ -237,6 +251,30 @@ describe('validateDataDirectory', () => {
           hunter: ' ',
         }),
       'package-hunter-empty',
+    );
+    await expectIssue(
+      (dataDir) =>
+        writePackage(dataDir, validPackage.name, {
+          ...validPackage,
+          hunter: undefined,
+        }),
+      'package-metadata-invalid',
+    );
+    await expectIssue(
+      (dataDir) =>
+        writePackage(dataDir, validPackage.name, {
+          ...validPackage,
+          hunter: false,
+        }),
+      'package-metadata-invalid',
+    );
+    await expectIssue(
+      (dataDir) =>
+        writePackage(dataDir, validPackage.name, {
+          ...validPackage,
+          hunter: 0,
+        }),
+      'package-metadata-invalid',
     );
     await expectIssue(
       (dataDir) =>
