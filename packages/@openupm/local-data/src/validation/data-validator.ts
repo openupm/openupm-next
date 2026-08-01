@@ -90,7 +90,7 @@ function messageFromError(error: unknown): string {
 function normalizePackageForLegacyData(raw: unknown): unknown {
   if (raw && typeof raw === 'object' && !Array.isArray(raw)) {
     const record = raw as Record<string, unknown>;
-    if (!record.hunter) record.hunter = '-';
+    if (record.hunter === '') record.hunter = '-';
   }
   return raw;
 }
