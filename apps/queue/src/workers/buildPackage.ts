@@ -33,6 +33,8 @@ import {
   GitHubReleaseAssetError,
   resolveGitHubReleaseAsset,
 } from '../utils/githubReleaseAsset.js';
+import { markReleasePublished } from '../utils/reconcilePublishedRelease.js';
+import { isReleasePublished } from '../utils/registry.js';
 import {
   ReleaseMutationLockedError,
   withReleaseMutationLock,
@@ -314,8 +316,18 @@ export async function addReleaseJobs(releases: ReleaseModel[]): Promise<void> {
   for (const rel of releases) {
     await withPackageScanReleaseLock(rel.packageName, rel.version, async () => {
       const current = await fetchOne(rel.packageName, rel.version);
+      if (!current) {
+        return;
+      }
+
+      const jobId = createJobId(
+        jobConfig.name,
+        current.packageName,
+        current.version,
+      );
+      if (await recoverPublishedBuildTimeout(queue, jobId, current)) return;
+
       if (
-        !current ||
         current.state === ReleaseState.Succeeded ||
         (current.state === ReleaseState.Failed &&
           !RetryableReleaseErrorCodes.includes(
@@ -325,11 +337,6 @@ export async function addReleaseJobs(releases: ReleaseModel[]): Promise<void> {
         return;
       }
 
-      const jobId = createJobId(
-        jobConfig.name,
-        current.packageName,
-        current.version,
-      );
       if (isExpiredGitHubReleasePendingFailure(current)) {
         await removeExhaustedFailedJob(queue, jobId);
         return;
@@ -349,6 +356,60 @@ export async function addReleaseJobs(releases: ReleaseModel[]): Promise<void> {
       i++;
     });
   }
+}
+
+async function recoverPublishedBuildTimeout(
+  queue: ReturnType<typeof getQueue>,
+  jobId: string,
+  release: ReleaseModel,
+): Promise<boolean> {
+  const isBuildTimeout =
+    release.state === ReleaseState.Failed &&
+    release.reason === ReleaseErrorCode.BuildTimeout;
+  const isReconciledCleanup =
+    release.state === ReleaseState.Succeeded &&
+    release.reason === ReleaseErrorCode.None &&
+    release.buildId === '' &&
+    release.publishedVersion === release.version;
+  if (!isBuildTimeout && !isReconciledCleanup) return false;
+
+  const job = await queue.getJob(jobId);
+  if (!job) return false;
+
+  const state = await job.getState();
+  const maxAttempts = job.opts?.attempts ?? 1;
+  if (state !== 'failed' || job.attemptsMade < maxAttempts) return false;
+
+  let published: boolean;
+  try {
+    published = await isReleasePublished(release.packageName, release.version);
+  } catch (error) {
+    logger.warn(
+      {
+        err: error,
+        rel: `${release.packageName}@${release.version}`,
+        jobId,
+      },
+      'published build timeout registry check failed',
+    );
+    return false;
+  }
+  if (!published) return false;
+
+  await markReleasePublished(release);
+
+  const removed = await queue.remove(jobId, { removeChildren: true });
+  logger.info(
+    {
+      rel: `${release.packageName}@${release.version}`,
+      jobId,
+      removed: removed === 1,
+    },
+    isBuildTimeout
+      ? 'published build timeout reconciled'
+      : 'reconciled release failed job cleanup completed',
+  );
+  return true;
 }
 
 async function removeExhaustedFailedJob(

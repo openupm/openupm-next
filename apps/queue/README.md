@@ -59,6 +59,17 @@ Common commands:
   removed from local data, deleting failed release records and related release
   jobs while preserving successful releases.
 
+## Automatic Release Recovery
+
+Package scans automatically reconcile an exhausted `BuildTimeout` release job
+when the exact package version is already present in the OpenUPM registry. The
+release is marked `Succeeded/None`, its stale build metadata is cleared, and
+the retained failed job is removed. Unpublished timeouts remain failed for
+operator investigation.
+
+`VersionConflict` remains non-retryable. The queue does not treat an existing
+version as proof that a conflicting publish produced the intended artifact.
+
 ## Production Entry Points
 
 - `queue-pkg`: `npm run start`

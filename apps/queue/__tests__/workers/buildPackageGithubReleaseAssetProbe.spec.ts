@@ -17,6 +17,8 @@ const getQueueMock = vi.fn();
 const queueGetJobMock = vi.fn();
 const queueRemoveMock = vi.fn();
 const resolveGitHubReleaseAssetMock = vi.fn();
+const isReleasePublishedMock = vi.fn();
+const markReleasePublishedMock = vi.fn();
 const setInvalidTagsMock = vi.fn();
 const setRepoUnavailableMock = vi.fn();
 const withReleaseMutationLockMock = vi.fn();
@@ -56,6 +58,14 @@ vi.mock('../../src/utils/githubReleaseAsset.js', async () => {
     resolveGitHubReleaseAsset: resolveGitHubReleaseAssetMock,
   };
 });
+
+vi.mock('../../src/utils/reconcilePublishedRelease.js', () => ({
+  markReleasePublished: markReleasePublishedMock,
+}));
+
+vi.mock('../../src/utils/registry.js', () => ({
+  isReleasePublished: isReleasePublishedMock,
+}));
 
 vi.mock('../../src/utils/releaseMutationLock.js', () => ({
   ReleaseMutationLockedError: class ReleaseMutationLockedError extends Error {},
@@ -123,6 +133,14 @@ describe('buildPackage GitHub Release pending probes', () => {
     });
     queueRemoveMock.mockResolvedValue(1);
     addJobMock.mockResolvedValue({ id: 'build-rel|com.example.asset|1.0.0' });
+    isReleasePublishedMock.mockResolvedValue(false);
+    markReleasePublishedMock.mockImplementation(async (release) => ({
+      ...release,
+      state: ReleaseState.Succeeded,
+      reason: ReleaseErrorCode.None,
+      buildId: '',
+      publishedVersion: release.version,
+    }));
   });
 
   afterEach(() => {
@@ -306,7 +324,7 @@ describe('buildPackage GitHub Release pending probes', () => {
     expect(addJobMock).not.toHaveBeenCalled();
   });
 
-  it('keeps retryable failed releases retained until explicit reset', async () => {
+  it('keeps unpublished BuildTimeout releases retained', async () => {
     await runBuildPackage(
       createRelease({
         reason: ReleaseErrorCode.BuildTimeout,
@@ -317,6 +335,11 @@ describe('buildPackage GitHub Release pending probes', () => {
     );
 
     expect(resolveGitHubReleaseAssetMock).not.toHaveBeenCalled();
+    expect(isReleasePublishedMock).toHaveBeenCalledWith(
+      'com.example.asset',
+      '1.0.0',
+    );
+    expect(markReleasePublishedMock).not.toHaveBeenCalled();
     expect(queueRemoveMock).not.toHaveBeenCalled();
     expect(addJobMock).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -324,6 +347,131 @@ describe('buildPackage GitHub Release pending probes', () => {
         data: { name: 'com.example.asset', version: '1.0.0' },
       }),
     );
+  });
+
+  it('reconciles an exhausted BuildTimeout when the exact version is published', async () => {
+    const release = createRelease({
+      reason: ReleaseErrorCode.BuildTimeout,
+      githubReleaseAssetMissingFirstSeenAt: undefined,
+      githubReleaseAssetMissingLastProbeAt: undefined,
+      githubReleaseAssetMissingProbeCount: undefined,
+    });
+    isReleasePublishedMock.mockResolvedValue(true);
+
+    await runBuildPackage(release);
+
+    expect(isReleasePublishedMock).toHaveBeenCalledWith(
+      release.packageName,
+      release.version,
+    );
+    expect(markReleasePublishedMock).toHaveBeenCalledWith(release);
+    expect(queueRemoveMock).toHaveBeenCalledWith(
+      'build-rel|com.example.asset|1.0.0',
+      { removeChildren: true },
+    );
+    expect(addJobMock).not.toHaveBeenCalled();
+  });
+
+  it('does not reconcile a BuildTimeout before its queue job is exhausted', async () => {
+    queueGetJobMock.mockResolvedValue({
+      attemptsMade: 2,
+      opts: { attempts: 3 },
+      getState: vi.fn(async () => 'failed'),
+    });
+
+    await runBuildPackage(
+      createRelease({
+        reason: ReleaseErrorCode.BuildTimeout,
+        githubReleaseAssetMissingFirstSeenAt: undefined,
+        githubReleaseAssetMissingLastProbeAt: undefined,
+        githubReleaseAssetMissingProbeCount: undefined,
+      }),
+    );
+
+    expect(isReleasePublishedMock).not.toHaveBeenCalled();
+    expect(markReleasePublishedMock).not.toHaveBeenCalled();
+    expect(queueRemoveMock).not.toHaveBeenCalled();
+  });
+
+  it('defers recovery when the registry check fails transiently', async () => {
+    isReleasePublishedMock.mockRejectedValue(new Error('registry timeout'));
+
+    await expect(
+      runBuildPackage(
+        createRelease({
+          reason: ReleaseErrorCode.BuildTimeout,
+          githubReleaseAssetMissingFirstSeenAt: undefined,
+          githubReleaseAssetMissingLastProbeAt: undefined,
+          githubReleaseAssetMissingProbeCount: undefined,
+        }),
+      ),
+    ).resolves.toBeUndefined();
+
+    expect(markReleasePublishedMock).not.toHaveBeenCalled();
+    expect(queueRemoveMock).not.toHaveBeenCalled();
+    expect(addJobMock).toHaveBeenCalled();
+  });
+
+  it('fails the scan without removing the job when reconciliation cannot be saved', async () => {
+    isReleasePublishedMock.mockResolvedValue(true);
+    markReleasePublishedMock.mockRejectedValue(new Error('redis unavailable'));
+
+    await expect(
+      runBuildPackage(
+        createRelease({
+          reason: ReleaseErrorCode.BuildTimeout,
+          githubReleaseAssetMissingFirstSeenAt: undefined,
+          githubReleaseAssetMissingLastProbeAt: undefined,
+          githubReleaseAssetMissingProbeCount: undefined,
+        }),
+      ),
+    ).rejects.toThrow('redis unavailable');
+
+    expect(queueRemoveMock).not.toHaveBeenCalled();
+    expect(addJobMock).not.toHaveBeenCalled();
+  });
+
+  it('finishes failed-job cleanup after a partial BuildTimeout reconciliation', async () => {
+    const release = createRelease({
+      state: ReleaseState.Succeeded,
+      reason: ReleaseErrorCode.None,
+      buildId: '',
+      publishedVersion: '1.0.0',
+      githubReleaseAssetMissingFirstSeenAt: undefined,
+      githubReleaseAssetMissingLastProbeAt: undefined,
+      githubReleaseAssetMissingProbeCount: undefined,
+    });
+    isReleasePublishedMock.mockResolvedValue(true);
+    markReleasePublishedMock.mockResolvedValue(release);
+
+    await runBuildPackage(release);
+
+    expect(isReleasePublishedMock).toHaveBeenCalledWith(
+      release.packageName,
+      release.version,
+    );
+    expect(markReleasePublishedMock).toHaveBeenCalledWith(release);
+    expect(queueRemoveMock).toHaveBeenCalledWith(
+      'build-rel|com.example.asset|1.0.0',
+      { removeChildren: true },
+    );
+    expect(addJobMock).not.toHaveBeenCalled();
+  });
+
+  it('does not reconcile or requeue VersionConflict releases', async () => {
+    await runBuildPackage(
+      createRelease({
+        reason: ReleaseErrorCode.VersionConflict,
+        githubReleaseAssetMissingFirstSeenAt: undefined,
+        githubReleaseAssetMissingLastProbeAt: undefined,
+        githubReleaseAssetMissingProbeCount: undefined,
+      }),
+    );
+
+    expect(isReleasePublishedMock).not.toHaveBeenCalled();
+    expect(markReleasePublishedMock).not.toHaveBeenCalled();
+    expect(queueRemoveMock).not.toHaveBeenCalled();
+    expect(addJobMock).not.toHaveBeenCalled();
   });
 
   it('probes missing GitHub Releases after the early interval elapses', async () => {
