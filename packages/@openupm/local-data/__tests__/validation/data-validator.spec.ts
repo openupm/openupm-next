@@ -143,6 +143,22 @@ describe('validateDataDirectory', () => {
     }
   });
 
+  it('accepts an empty GitHub Release asset placeholder for Git tracking', async () => {
+    const dataDir = await createDataDir();
+    try {
+      await writePackage(dataDir, validPackage.name, {
+        ...validPackage,
+        githubReleaseAssetName: '',
+      });
+      expect(await validateDataDirectory(dataDir)).toEqual({
+        valid: true,
+        issues: [],
+      });
+    } finally {
+      await afs.rm(dataDir, { recursive: true, force: true });
+    }
+  });
+
   it('requires aliases as an array', async () => {
     expect.assertions(3);
     await expectIssue(
