@@ -357,6 +357,7 @@ export async function validateDataDirectory(
         });
       }
       if (
+        pkg.trackingMode === 'githubRelease' &&
         pkg.githubReleaseAssetName !== undefined &&
         !isNonEmptyString(pkg.githubReleaseAssetName)
       ) {
