@@ -279,6 +279,102 @@ describe('buildPackage GitHub Release pending probes', () => {
     );
   });
 
+  it('requeues a failed release after its tracking source changes', async () => {
+    const release = createRelease({
+      reason: ReleaseErrorCode.PackageNotFound,
+      buildId: '74007',
+    });
+    loadPackageMetadataLocalMock.mockResolvedValue({
+      name: 'com.example.asset',
+      repoUrl: 'https://github.com/example/asset',
+      trackingMode: 'git',
+    });
+    fetchOneMock
+      .mockResolvedValueOnce(release)
+      .mockResolvedValue({
+        ...release,
+        state: ReleaseState.Pending,
+        reason: ReleaseErrorCode.None,
+        buildId: '',
+        source: 'git',
+      });
+
+    fetchAllMock.mockResolvedValue([release]);
+    const { buildPackage } = await import('../../src/workers/buildPackage.js');
+    await buildPackage('com.example.asset');
+
+    expect(saveReleaseMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        state: ReleaseState.Pending,
+        reason: ReleaseErrorCode.None,
+        buildId: '',
+        source: 'git',
+        githubReleaseAssetMissingFirstSeenAt: undefined,
+        githubReleaseAssetMissingLastProbeAt: undefined,
+        githubReleaseAssetMissingProbeCount: undefined,
+      }),
+    );
+    expect(resolveGitHubReleaseAssetMock).not.toHaveBeenCalled();
+    expect(addJobMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: 'build-rel',
+        data: { name: 'com.example.asset', version: '1.0.0' },
+      }),
+    );
+  });
+
+  it('does not requeue a published failed release after its tracking source changes', async () => {
+    const release = createRelease({
+      reason: ReleaseErrorCode.PackageNotFound,
+      buildId: '74007',
+    });
+    const publishedRelease = {
+      ...release,
+      state: ReleaseState.Succeeded,
+      reason: ReleaseErrorCode.None,
+      buildId: '',
+      publishedVersion: release.version,
+    };
+    loadPackageMetadataLocalMock.mockResolvedValue({
+      name: 'com.example.asset',
+      repoUrl: 'https://github.com/example/asset',
+      trackingMode: 'git',
+    });
+    isReleasePublishedMock.mockResolvedValue(true);
+    markReleasePublishedMock.mockResolvedValue(publishedRelease);
+    fetchAllMock.mockResolvedValue([release]);
+    fetchOneMock
+      .mockResolvedValueOnce(release)
+      .mockResolvedValue(publishedRelease);
+
+    const { buildPackage } = await import('../../src/workers/buildPackage.js');
+    await buildPackage('com.example.asset');
+
+    expect(markReleasePublishedMock).toHaveBeenCalledWith(release);
+    expect(saveReleaseMock).not.toHaveBeenCalledWith(
+      expect.objectContaining({ state: ReleaseState.Pending, source: 'git' }),
+    );
+    expect(addJobMock).not.toHaveBeenCalled();
+  });
+
+  it('does not requeue a legacy git release when its source is missing', async () => {
+    loadPackageMetadataLocalMock.mockResolvedValue({
+      name: 'com.example.asset',
+      repoUrl: 'https://github.com/example/asset',
+      trackingMode: 'git',
+    });
+
+    await runBuildPackage(
+      createRelease({
+        source: undefined,
+        reason: ReleaseErrorCode.PackageNotFound,
+      }),
+    );
+
+    expect(saveReleaseMock).not.toHaveBeenCalled();
+    expect(addJobMock).not.toHaveBeenCalled();
+  });
+
   it('removes a retained failed release job when its only valid Git tag was deleted', async () => {
     const deletedRelease = createRelease({
       reason: ReleaseErrorCode.GitHubReleaseNotFound,

@@ -157,19 +157,17 @@ npm error command failed
 
 describe("buildRelease.getReleaseSource", () => {
   it("defaults to git", () => {
-    expect(getReleaseSource({ trackingMode: "git" }, {})).toEqual("git");
+    expect(getReleaseSource({ trackingMode: "git" })).toEqual("git");
   });
 
-  it("uses package tracking mode when release source is missing", () => {
-    expect(getReleaseSource({ trackingMode: "githubRelease" }, {})).toEqual(
+  it("uses the current package tracking mode", () => {
+    expect(getReleaseSource({ trackingMode: "githubRelease" })).toEqual(
       "githubRelease",
     );
   });
 
-  it("preserves saved source on retry", () => {
-    expect(
-      getReleaseSource({ trackingMode: "git" }, { source: "githubRelease" }),
-    ).toEqual("githubRelease");
+  it("does not preserve a prior release source", () => {
+    expect(getReleaseSource({ trackingMode: "git" })).toEqual("git");
   });
 });
 

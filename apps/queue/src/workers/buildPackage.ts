@@ -265,7 +265,53 @@ async function updateReleaseRecords(
       version,
       async () => {
         const current = await fetchOne(packageName, version);
-        if (current) return current;
+        if (current) {
+          if (
+            current.state === ReleaseState.Failed &&
+            (current.source || 'git') !== source
+          ) {
+            let published: boolean;
+            try {
+              published = await isReleasePublished(
+                current.packageName,
+                current.version,
+              );
+            } catch (error) {
+              logger.warn(
+                {
+                  err: error,
+                  rel: `${packageName}@${current.version}`,
+                },
+                'skip tracking source change while registry check fails',
+              );
+              return current;
+            }
+            if (published) return await markReleasePublished(current);
+
+            logger.info(
+              {
+                pkg: packageName,
+                rel: `${packageName}@${current.version}`,
+                from: current.source || 'git',
+                to: source,
+              },
+              'requeue failed release after tracking source change',
+            );
+            return await save({
+              ...current,
+              state: ReleaseState.Pending,
+              reason: ReleaseErrorCode.None,
+              buildId: '',
+              source,
+              signed: false,
+              publishedVersion: undefined,
+              githubReleaseAssetMissingFirstSeenAt: undefined,
+              githubReleaseAssetMissingLastProbeAt: undefined,
+              githubReleaseAssetMissingProbeCount: undefined,
+            });
+          }
+          return current;
+        }
         return await save({
           packageName,
           version,

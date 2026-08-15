@@ -205,7 +205,7 @@ async function updateReleaseBuild(
       "queue build",
     );
     if (!pkg) throw new Error(`package not found: ${release.packageName}`);
-    release.source = getReleaseSource(pkg, release);
+    release.source = getReleaseSource(pkg);
     release.signed = false;
     release.publishedVersion = undefined;
     release = await save(release);
@@ -231,7 +231,7 @@ export async function getQueueBuildParameters(
     packageVersion: release.version,
   };
 
-  if (getReleaseSource(pkg, release) === "git") {
+  if (getReleaseSource(pkg) === "git") {
     return {
       ...baseParameters,
       packageSource: "git",
@@ -334,9 +334,8 @@ async function handleReleaseBuild(
 
 export function getReleaseSource(
   pkg: Pick<PackageMetadataLocal, "trackingMode">,
-  release: Pick<ReleaseModel, "source">,
 ): "git" | "githubRelease" {
-  return release.source || pkg.trackingMode || "git";
+  return pkg.trackingMode || "git";
 }
 
 export function getPackageResultFromBuildLogText(
