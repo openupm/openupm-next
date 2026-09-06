@@ -94,68 +94,7 @@
 
 ## Blog Post Workflow
 
-- New blog posts live at `apps/docs/docs/blog/<slug>/index.md`.
-- Add each new blog post to `BLOG_POSTS` in
-  `apps/docs/docs/.vuepress/blog.ts`; this drives the blog index, adjacent
-  post navigation, and RSS metadata.
-- Keep blog frontmatter aligned with the `BlogPost` metadata entry: `title`,
-  `author`, `date`, `readingTime`, and `description`/`excerpt` should describe
-  the same post.
-- Use the current US Eastern calendar date (`America/New_York`) for new posts
-  unless the user explicitly asks for a different publish date. Keep dates as
-  `YYYY-MM-DD`. This avoids future-dated blog metadata when GitHub-hosted
-  review and publishing automation evaluates the PR from a US timestamp.
-- Keep frontmatter concise: `title`, `author`, `date`, `readingTime`,
-  `description`, and usually `editLink: false`.
-- If a post has a main image for listing, hero, cover, banner, or social
-  sharing, set the post frontmatter `cover` to that public image path so
-  `@vuepress/plugin-seo` uses it for `og:image` and Article JSON-LD image
-  metadata. The plugin checks `banner` first, then `cover`; prefer `cover` for
-  normal blog posts.
-- When generating or regenerating blog hero images from the OpenUPM operator
-  workspace, use the workspace-level skill/reference at
-  `.agents/skills/openupm-blog-writing/references/hero-images.md`. Keep cover
-  images 16:9, use OpenUPM blue `#3068E5` as the base color, avoid repeating
-  the title text in the image by default, and prefer one or two main visual
-  elements with an absolute maximum of five.
-- For a new post, start by reading a recent nearby post and `BLOG_POSTS` so the
-  title style, metadata, and closing navigation match the site.
-- Add `<BlogPostMeta />` after the H1 and `<BlogPostNav />` at the end unless
-  there is a strong reason to follow a different legacy post format.
-- Keep posts user-facing. Avoid implementation details such as internal build
-  strategy, cache mechanics, deployment topology, local paths, private hostnames,
-  LAN URLs, or temporary preview URLs unless the user specifically asks for
-  operator notes outside the public repo.
-- Use Markdown links for referenced articles, package pages, docs pages, issues,
-  and examples. Avoid bare URLs in prose, especially URLs copied from local
-  staging or development output.
-- Prefer relative links for OpenUPM site pages, for example
-  `[NuGet Packages](/nuget/)` or
-  `[org.nuget.system](/packages/?q=org.nuget.system)`.
-- When linking package examples, use the package name as link text instead of
-  showing the full URL.
-- Make limitations accurate without overexplaining internals. If a feature is
-  searchable but not part of the normal filterable package list, state both
-  surfaces explicitly.
-- Blog ordering tests should verify general ordering behavior, such as dates
-  sorted newest first, rather than hard-coding the current first or last post
-  unless the test is intentionally covering a specific legacy post.
-- For blog-only changes, run `npm run test -- blog.spec.ts` and
-  `npm run lint` from `apps/docs`, then run `npm run docs:build:limit`. Use
-  `mise exec --` for those commands when needed.
-- If a VuePress dev server is already running, stop it before
-  `docs:build:limit`; the build cleans `.vuepress/.temp` and can conflict with
-  a live dev server.
-- When the user wants to review the post locally, start the dev server from
-  `apps/docs` with:
-  `VITE_OPENUPM_API_SERVER_URL=https://api.openupm.com npm run docs:dev -- --host 0.0.0.0 --port 8080`.
-- Before starting the review server, check whether the port is already in use.
-  If it is, either stop the stale server or choose another port and report that
-  port.
-- For LAN review, bind to `0.0.0.0`, determine the active LAN address from the
-  machine, and give the user a concrete `http://<lan-ip>:<port>/...` URL for
-  the page they should review. Do not commit that LAN URL to the repo or include
-  it in public PR text.
+Before creating or editing a blog post, its metadata, navigation, or cover image, read [docs/agent-blog-authoring.md](docs/agent-blog-authoring.md). Follow its authoring, validation, and local review requirements. The docs human-review and public/private boundaries above remain in force.
 
 ## Local Data
 
@@ -196,35 +135,19 @@ size. Do not make changes directly in the main checkout unless the user
 explicitly approves an exception. Direct commits to `main` or the default
 branch should be limited to explicit user-approved exceptions.
 
-Follow this delivery sequence:
+Work on a dedicated topic branch, using a separate worktree when required or
+useful. Make the requested change, run relevant validation, and pass the review
+gate below before committing or creating/updating a PR. Keep saved-plan
+progress current and close the plan when its objective is complete. PRs should
+describe the final scope and validation results.
 
-1. Create a dedicated topic branch. Use a separate worktree when repository
-   guidance requires one or when isolation is useful.
-2. Make the requested change and run relevant validation.
-3. Update plan progress when working from a saved plan.
-4. Run the review gate, fix valid findings, revalidate, and repeat the review
-   until it passes.
-5. Close the plan when appropriate, then commit and push the reviewed change.
-6. Create or update the GitHub pull request with a brief summary and the
-   validation commands that were run.
-7. Verify required checks and merge when there is no blocking reason. When a
-   repository uses Conventional Commits to determine semantic releases, give
-   the pull request and squash merge a valid Conventional Commit title that
-   reflects the intended release type (for example, `fix:` or `feat:`).
-8. Monitor any explicitly authorized deployment when applicable, then remove
-   the clean merged worktree and delete its merged local and remote topic
-   branches. Ordinary remote deletion is authorized after confirming that the
-   exact pull request is merged and the remote ref matches its recorded head.
-   After a squash merge, `git branch -D` is authorized only for the local topic
-   branch after confirming that its tip matches the recorded head and either
-   its tree matches the squash commit's tree, or, when the base advanced, both
-   the `git patch-id --verbatim` of its aggregate diff from the merge base
-   matches the verbatim patch ID of the squash commit's first-parent diff and
-   applying that exact aggregate diff to the first-parent tree produces the
-   squash commit's tree. Exact whole-tree equality normally fails when another
-   pull request merges first; the combined second proof establishes the
-   squashed aggregate change without ignoring whitespace or patch locations.
-   Retain the branch if neither proof succeeds.
+When asked to prepare changes as PRs for review, finish with validated,
+reviewed PRs and report remaining limitations. A read-only review ends with
+findings and coverage limits; it does not authorize changes or PR creation.
+For authorized delivery, continue through green checks,
+merge, any explicitly authorized deployment, and verified cleanup. Use a
+Conventional Commit PR title and squash subject when the repository uses them
+to determine release versions.
 
 Treat a request to `deploy`, `ship`, `publish`, or `deliver` the current
 requested repository change set as authorization to complete this normal
@@ -232,7 +155,7 @@ topic-branch workflow: commit reviewed in-scope changes, push the topic branch,
 create or update its pull request, monitor required checks, make narrowly scoped
 fixes for failures caused by the change, merge when all gates pass, and remove
 the clean merged worktree and merged topic branches under the cleanup checks
-above. Apply required validation and review to every fix. Do not ask for
+below. Apply required validation and review to every fix. Do not ask for
 separate approval for each ordinary step.
 
 This authorization applies only to the current requested repository change
@@ -246,9 +169,8 @@ automatically by the repository's existing merge workflow. In this section,
 `deploy` authorizes repository delivery; it authorizes a service or
 infrastructure deployment only when the current request specifically identifies
 that deployment. More-specific repository approval rules, including final
-content or product publication, still apply. Cleanup does not include removing
-a dirty worktree, using `git branch -D` for any other local branch, any forced
-remote operation, or other destructive operations.
+content or product publication, still apply. Cleanup is limited to the verified merged worktree and topic
+branches described below; it never includes dirty worktrees or forced remote operations.
 
 When requesting platform approval for an authorized step, quote the user's
 delivery request and this shared instruction in the justification. If a
@@ -256,16 +178,29 @@ platform reviewer rejects the action, ask the user once and wait. Do not retry
 an equivalent escalation or repeat the prompt during automatic continuations
 unless the user provides new authorization or relevant context.
 
-Direct-default-branch exceptions still need a clean scope check before
-committing. When an exception is approved, state that the normal pull request
-workflow is being bypassed because of the explicit exception.
+Before committing, run `git status --short`, stage intended files by exact
+path, and verify the staged scope. For an explicitly approved default-branch
+exception, state that the normal PR workflow is being bypassed and still check
+scope. Include screenshots only for changes to rendered UI, generated visual
+output, or external presentation.
 
-Before committing, run `git status --short` and verify the staged files match
-the requested change. Stage files by exact path when possible. Avoid broad
-staging commands such as `git add .` when unrelated local work exists.
+## Merged-Branch Cleanup
 
-Include screenshots in the pull request only if a change affects rendered UI,
-generated visual output, or external presentation.
+After confirming the exact PR is merged, remove only its clean worktree.
+Ordinary remote branch deletion requires the remote ref to match the PR's
+recorded head. A local topic branch may be deleted with `git branch -D` only
+when its tip matches that recorded head and either:
+
+- Its tree matches the squash commit's tree; or
+- When the base advanced, both the `git patch-id --verbatim` of the aggregate
+  diff from the merge base matches the squash commit's first-parent diff and
+  applying that exact aggregate diff to the first-parent tree produces the
+  squash commit's tree.
+
+The second proof handles intervening base changes without ignoring whitespace
+or patch locations. Retain the branch if neither proof succeeds. This is not
+authorization for `git branch -D` on any other local branch or for other
+destructive operations.
 
 ## Review Gate
 
