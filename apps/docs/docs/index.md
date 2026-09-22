@@ -26,6 +26,12 @@ sponsors:
   image: /images/evolution-host-logo-380.png
   width: 380
   height: 117
+- text: Creative uses of Jev · Jevfast
+  slug: jevfast
+  url: https://jevfast.com/
+  image: /images/jevfast-sponsor-wordmark.svg
+  width: 520
+  height: 128
 - text: Deploys by Netlify
   slug: netlify
   url: https://www.netlify.com/
