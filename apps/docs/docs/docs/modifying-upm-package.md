@@ -78,14 +78,25 @@ However, there are specific cases in which you can contact us to request the unp
 
 ### Packages Published Less Than 72 Hours Ago
 
-For newly created packages, as long as no other packages in the OpenUPM Public Registry depend on your package, you can unpublish anytime within the first 72 hours after publishing.
+For newly created packages, as long as no other package in the OpenUPM Public Registry depends on your package, you can unpublish anytime within the first 72 hours after publishing. Dependencies from the same maintainer follow the exception below.
 
 ### Packages Published More Than 72 Hours Ago
 
 Regardless of how long ago a package was published, you can unpublish a package that meets all of the following conditions:
 
-- no other packages in the OpenUPM Public Registry depend on it.
 - it had less than 50 downloads over the last month.
+- no other package in the OpenUPM Public Registry depends on it, except for a dependency covered by the same-maintainer exception below.
+
+#### Same-Maintainer Dependencies
+
+A dependency does not prevent unpublishing when both packages are maintained by the same person or organization and either:
+
+- the package that depends on it is unpublished in the same operation, or
+- the latest published version of that package no longer depends on it.
+
+A package maintained by someone else is never covered: a third-party dependency always prevents unpublishing the package entirely.
+
+Removing a dependency this way leaves older versions of the dependent package unchanged, so projects pinned to a version that still declares it will no longer resolve it.
 
 #### Package Violates Our Package Guidelines
 
