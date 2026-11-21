@@ -5,6 +5,7 @@ import { ReleaseState } from '@openupm/types';
 import { packageMetadataLocalExists } from '@openupm/local-data';
 import {
   fetchAll,
+  fetchOne,
   remove as removeReleaseRecord,
 } from '@openupm/server-common/build/models/release.js';
 import { createLogger } from '@openupm/server-common/build/log.js';
@@ -34,12 +35,30 @@ export interface CleanupMissingPackageResult {
   preservedReleaseCount: number;
 }
 
+export interface CleanupMissingReleaseJobResult {
+  packageName: string;
+  version: string;
+  jobId: string;
+  jobRemoved: boolean;
+  removeError?: string;
+  releaseRecordRemoved: boolean;
+}
+
+export interface CleanupMissingReleaseJobsResult {
+  queue: string;
+  states: JobType[];
+  scanned: number;
+  cleaned: CleanupMissingReleaseJobResult[];
+  skipped: string[];
+}
+
 export interface CleanupMissingPackageJobsResult {
   queue: string;
   states: JobType[];
   scanned: number;
   cleaned: CleanupMissingPackageResult[];
   skipped: string[];
+  releaseJobs: CleanupMissingReleaseJobsResult;
 }
 
 export function getBuildPackageJobId(packageName: string): string {
@@ -75,6 +94,36 @@ export function getPackageNameFromBuildPackageJob(
 
   try {
     return decodeURIComponent(parts[1]);
+  } catch {
+    return null;
+  }
+}
+
+export function getReleaseFromBuildReleaseJob(
+  job: Pick<Job, 'id' | 'data'>,
+): { packageName: string; version: string } | null {
+  const data = job.data;
+  if (
+    typeof data === 'object' &&
+    data !== null &&
+    !Array.isArray(data) &&
+    typeof (data as Record<string, unknown>).name === 'string' &&
+    typeof (data as Record<string, unknown>).version === 'string'
+  ) {
+    const record = data as Record<string, string>;
+    return { packageName: record.name, version: record.version };
+  }
+
+  if (typeof job.id !== 'string') return null;
+  const parts = job.id.split('|');
+  const expectedName = encodeURIComponent(config.jobs.buildRelease.name);
+  if (parts.length !== 3 || parts[0] !== expectedName) return null;
+
+  try {
+    return {
+      packageName: decodeURIComponent(parts[1]),
+      version: decodeURIComponent(parts[2]),
+    };
   } catch {
     return null;
   }
@@ -165,6 +214,77 @@ export async function cleanupMissingPackage(
   };
 }
 
+export async function cleanupMissingReleaseJob(
+  packageName: string,
+  version: string,
+): Promise<CleanupMissingReleaseJobResult> {
+  const jobConfig = config.jobs.buildRelease;
+  const jobId = getBuildReleaseJobId(packageName, version);
+  const job = await removeQueueJob(jobConfig.queue, jobId);
+  let releaseRecordRemoved = false;
+
+  const release = await fetchOne(packageName, version);
+  if (release && release.state === ReleaseState.Failed) {
+    await removeReleaseRecord(packageName, version);
+    releaseRecordRemoved = true;
+  }
+
+  logger.info(
+    {
+      packageName,
+      version,
+      jobId,
+      jobRemoved: job.removed,
+      releaseRecordRemoved,
+    },
+    'cleaned missing package release job',
+  );
+
+  return {
+    packageName,
+    version,
+    jobId,
+    jobRemoved: job.removed,
+    ...(job.removeError ? { removeError: job.removeError } : {}),
+    releaseRecordRemoved,
+  };
+}
+
+async function cleanupMissingReleaseJobs(): Promise<CleanupMissingReleaseJobsResult> {
+  const jobConfig = config.jobs.buildRelease;
+  const queue = getQueue(jobConfig.queue);
+  const states: JobType[] = ['failed'];
+  const counts = await queue.getJobCounts(...states);
+  const total = Object.values(counts).reduce((sum, count) => sum + count, 0);
+  const jobs =
+    total === 0 ? [] : await queue.getJobs(states, 0, total - 1, false);
+  const cleaned: CleanupMissingReleaseJobResult[] = [];
+  const skipped: string[] = [];
+
+  for (const job of jobs) {
+    const release = getReleaseFromBuildReleaseJob(job as Job);
+    if (!release) {
+      skipped.push(`${job.id ?? ''}`);
+      continue;
+    }
+    if (packageMetadataLocalExists(release.packageName)) {
+      skipped.push(`${release.packageName}@${release.version}`);
+      continue;
+    }
+    cleaned.push(
+      await cleanupMissingReleaseJob(release.packageName, release.version),
+    );
+  }
+
+  return {
+    queue: jobConfig.queue,
+    states,
+    scanned: jobs.length,
+    cleaned,
+    skipped,
+  };
+}
+
 export async function cleanupMissingPackageJobs(): Promise<CleanupMissingPackageJobsResult> {
   const jobConfig = config.jobs.buildPackage;
   const queue = getQueue(jobConfig.queue);
@@ -195,5 +315,6 @@ export async function cleanupMissingPackageJobs(): Promise<CleanupMissingPackage
     scanned: jobs.length,
     cleaned,
     skipped,
+    releaseJobs: await cleanupMissingReleaseJobs(),
   };
 }

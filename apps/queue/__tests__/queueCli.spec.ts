@@ -173,6 +173,7 @@ describe('parseQueueCliArgs', () => {
     const { getCommandUsage } = await import('../src/queueCli.js');
     const help = getCommandUsage('cleanup-missing-packages');
     expect(help).toContain('queue-cli cleanup-missing-packages');
+    expect(help).toContain('Failed rel jobs are scanned separately');
     expect(help).toContain(
       'Successful and non-failed release records are preserved.',
     );
