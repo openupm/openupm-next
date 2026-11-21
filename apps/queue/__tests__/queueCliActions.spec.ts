@@ -565,8 +565,8 @@ describe('queue-cli destructive actions', () => {
   });
 
   it('cleanup-missing-packages removes failed state for missing packages only', async () => {
-    const getJobCountsMock = vi.fn().mockResolvedValue({ failed: 2 });
-    const getJobsMock = vi.fn().mockResolvedValue([
+    const pkgGetJobCountsMock = vi.fn().mockResolvedValue({ failed: 2 });
+    const pkgGetJobsMock = vi.fn().mockResolvedValue([
       {
         id: 'build-pkg|com.removed.package',
         data: { name: 'com.removed.package' },
@@ -576,18 +576,27 @@ describe('queue-cli destructive actions', () => {
         data: { name: 'com.kept.package' },
       },
     ]);
+    const relGetJobCountsMock = vi.fn().mockResolvedValue({ failed: 1 });
+    const relGetJobsMock = vi.fn().mockResolvedValue([
+      {
+        id: 'build-rel|com.removed.package|3.0.0',
+        data: { name: 'com.removed.package', version: '3.0.0' },
+      },
+    ]);
     getQueueMock.mockImplementation((name: string) => {
       if (name === 'pkg') {
         return {
           remove: queueRemoveMock,
           add: queueAddMock,
-          getJobCounts: getJobCountsMock,
-          getJobs: getJobsMock,
+          getJobCounts: pkgGetJobCountsMock,
+          getJobs: pkgGetJobsMock,
         };
       }
       return {
         remove: queueRemoveMock,
         add: queueAddMock,
+        getJobCounts: relGetJobCountsMock,
+        getJobs: relGetJobsMock,
       };
     });
     packageMetadataLocalExistsMock.mockImplementation(
@@ -645,6 +654,12 @@ describe('queue-cli destructive actions', () => {
     expect(removeReleaseRecordMock).not.toHaveBeenCalledWith(
       'com.removed.package',
       '2.0.0',
+    );
+    expect(queueRemoveMock).toHaveBeenCalledWith(
+      'build-rel|com.removed.package|3.0.0',
+      {
+        removeChildren: true,
+      },
     );
     expect(console.log).toHaveBeenCalledWith(
       expect.stringContaining('"packageName": "com.removed.package"'),

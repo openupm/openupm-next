@@ -173,8 +173,9 @@ function getUsage(): string {
     '    Remove the deterministic pkg queue job and enqueue a fresh package scan.',
     '',
     '  cleanup-missing-packages [--json]',
-    '    Clean failed pkg jobs for packages removed from local data, plus failed',
-    '    release records and deterministic rel jobs. Successful releases stay.',
+    '    Clean failed pkg and rel jobs for packages removed from local data, plus',
+    '    failed release records and deterministic rel jobs. Successful releases',
+    '    stay.',
   ].join('\n');
 }
 
@@ -339,9 +340,12 @@ function getCommandUsage(topic: string | undefined): string {
       return [
         'Usage: queue-cli cleanup-missing-packages [--json]',
         '',
-        'Scan failed pkg queue jobs and clean jobs for packages missing from local',
-        'data. This removes the deterministic pkg job, failed release Redis',
+        'Scan failed pkg and rel queue jobs and clean jobs for packages missing from',
+        'local data. This removes the deterministic pkg job, failed release Redis',
         'records, and deterministic rel jobs for failed releases only.',
+        '',
+        'Failed rel jobs are scanned separately so a package deleted or renamed',
+        'after a failed release no longer leaves an orphaned job behind.',
         '',
         'Successful and non-failed release records are preserved.',
         '',

@@ -57,7 +57,9 @@ Common commands:
   job and enqueue a fresh package scan.
 - `cleanup-missing-packages [--json]`: clean failed package jobs for packages
   removed from local data, deleting failed release records and related release
-  jobs while preserving successful releases.
+  jobs while preserving successful releases. Failed release jobs are scanned
+  too, so a package deleted or renamed after a failed release does not leave an
+  orphaned job behind.
 
 ## Automatic Release Recovery
 

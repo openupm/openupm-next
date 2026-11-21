@@ -3,11 +3,14 @@ import { ReleaseErrorCode, ReleaseState } from '@openupm/types';
 
 const packageMetadataLocalExistsMock = vi.fn();
 const fetchAllMock = vi.fn();
+const fetchOneMock = vi.fn();
 const removeReleaseRecordMock = vi.fn();
 const pkgRemoveMock = vi.fn();
 const relRemoveMock = vi.fn();
-const getJobCountsMock = vi.fn();
-const getJobsMock = vi.fn();
+const pkgGetJobCountsMock = vi.fn();
+const pkgGetJobsMock = vi.fn();
+const relGetJobCountsMock = vi.fn();
+const relGetJobsMock = vi.fn();
 const getQueueMock = vi.fn();
 
 vi.mock('@openupm/local-data', () => ({
@@ -16,6 +19,7 @@ vi.mock('@openupm/local-data', () => ({
 
 vi.mock('@openupm/server-common/build/models/release.js', () => ({
   fetchAll: fetchAllMock,
+  fetchOne: fetchOneMock,
   remove: removeReleaseRecordMock,
 }));
 
@@ -30,16 +34,27 @@ describe('cleanupMissingPackage', () => {
       if (name === 'pkg') {
         return {
           remove: pkgRemoveMock,
-          getJobCounts: getJobCountsMock,
-          getJobs: getJobsMock,
+          getJobCounts: pkgGetJobCountsMock,
+          getJobs: pkgGetJobsMock,
         };
       }
-      if (name === 'rel') return { remove: relRemoveMock };
+      if (name === 'rel') {
+        return {
+          remove: relRemoveMock,
+          getJobCounts: relGetJobCountsMock,
+          getJobs: relGetJobsMock,
+        };
+      }
       throw new Error(`unexpected queue: ${name}`);
     });
     pkgRemoveMock.mockResolvedValue(1);
     relRemoveMock.mockResolvedValue(1);
     removeReleaseRecordMock.mockResolvedValue(undefined);
+    fetchOneMock.mockResolvedValue(null);
+    pkgGetJobCountsMock.mockResolvedValue({ failed: 0 });
+    pkgGetJobsMock.mockResolvedValue([]);
+    relGetJobCountsMock.mockResolvedValue({ failed: 0 });
+    relGetJobsMock.mockResolvedValue([]);
   });
 
   it('removes the package job and failed releases for missing package metadata', async () => {
@@ -126,8 +141,8 @@ describe('cleanupMissingPackage', () => {
     packageMetadataLocalExistsMock.mockImplementation(
       (name: string) => name === 'com.kept.package',
     );
-    getJobCountsMock.mockResolvedValue({ failed: 2 });
-    getJobsMock.mockResolvedValue([
+    pkgGetJobCountsMock.mockResolvedValue({ failed: 2 });
+    pkgGetJobsMock.mockResolvedValue([
       {
         id: 'build-pkg|com.removed.package',
         data: { name: 'com.removed.package' },
@@ -145,7 +160,7 @@ describe('cleanupMissingPackage', () => {
 
     const result = await cleanupMissingPackageJobs();
 
-    expect(getJobsMock).toHaveBeenCalledWith(['failed'], 0, 1, false);
+    expect(pkgGetJobsMock).toHaveBeenCalledWith(['failed'], 0, 1, false);
     expect(pkgRemoveMock).toHaveBeenCalledTimes(1);
     expect(pkgRemoveMock).toHaveBeenCalledWith(
       'build-pkg|com.removed.package',
@@ -155,5 +170,123 @@ describe('cleanupMissingPackage', () => {
     );
     expect(result.cleaned).toHaveLength(1);
     expect(result.skipped).toEqual(['com.kept.package']);
+  });
+
+  it('removes failed release jobs whose package is missing from local data', async () => {
+    packageMetadataLocalExistsMock.mockImplementation(
+      (name: string) => name === 'com.kept.package',
+    );
+    relGetJobCountsMock.mockResolvedValue({ failed: 2 });
+    relGetJobsMock.mockResolvedValue([
+      {
+        id: 'build-rel|com.removed.package|1.0.0',
+        data: { name: 'com.removed.package', version: '1.0.0' },
+      },
+      {
+        id: 'build-rel|com.kept.package|2.0.0',
+        data: { name: 'com.kept.package', version: '2.0.0' },
+      },
+    ]);
+    fetchOneMock.mockResolvedValue({
+      packageName: 'com.removed.package',
+      version: '1.0.0',
+      state: ReleaseState.Failed,
+      reason: ReleaseErrorCode.BuildTimeout,
+      buildId: '',
+      tag: '1.0.0',
+      commit: 'abc',
+      updatedAt: 100,
+    });
+
+    const { cleanupMissingPackageJobs } = await import(
+      '../../src/jobs/cleanupMissingPackage.js'
+    );
+
+    const result = await cleanupMissingPackageJobs();
+
+    expect(relGetJobsMock).toHaveBeenCalledWith(['failed'], 0, 1, false);
+    expect(relRemoveMock).toHaveBeenCalledWith(
+      'build-rel|com.removed.package|1.0.0',
+      { removeChildren: true },
+    );
+    expect(relRemoveMock).not.toHaveBeenCalledWith(
+      'build-rel|com.kept.package|2.0.0',
+      { removeChildren: true },
+    );
+    expect(removeReleaseRecordMock).toHaveBeenCalledWith(
+      'com.removed.package',
+      '1.0.0',
+    );
+    expect(result.releaseJobs).toMatchObject({
+      queue: 'rel',
+      scanned: 2,
+      skipped: ['com.kept.package@2.0.0'],
+      cleaned: [
+        {
+          packageName: 'com.removed.package',
+          version: '1.0.0',
+          jobId: 'build-rel|com.removed.package|1.0.0',
+          jobRemoved: true,
+          releaseRecordRemoved: true,
+        },
+      ],
+    });
+  });
+
+  it('keeps a successful release record when its failed release job is orphaned', async () => {
+    packageMetadataLocalExistsMock.mockReturnValue(false);
+    relGetJobCountsMock.mockResolvedValue({ failed: 1 });
+    relGetJobsMock.mockResolvedValue([
+      {
+        id: 'build-rel|com.removed.package|3.0.0',
+        data: { name: 'com.removed.package', version: '3.0.0' },
+      },
+    ]);
+    fetchOneMock.mockResolvedValue({
+      packageName: 'com.removed.package',
+      version: '3.0.0',
+      state: ReleaseState.Succeeded,
+      reason: ReleaseErrorCode.None,
+      buildId: '123',
+      tag: '3.0.0',
+      commit: 'def',
+      updatedAt: 200,
+    });
+
+    const { cleanupMissingPackageJobs } = await import(
+      '../../src/jobs/cleanupMissingPackage.js'
+    );
+
+    const result = await cleanupMissingPackageJobs();
+
+    expect(relRemoveMock).toHaveBeenCalledWith(
+      'build-rel|com.removed.package|3.0.0',
+      { removeChildren: true },
+    );
+    expect(removeReleaseRecordMock).not.toHaveBeenCalled();
+    expect(result.releaseJobs.cleaned[0]).toMatchObject({
+      jobRemoved: true,
+      releaseRecordRemoved: false,
+    });
+  });
+
+  it('derives the release from the job id when job data is missing', async () => {
+    packageMetadataLocalExistsMock.mockReturnValue(false);
+    relGetJobCountsMock.mockResolvedValue({ failed: 1 });
+    relGetJobsMock.mockResolvedValue([
+      { id: 'build-rel|com.removed.package|1.0.0' },
+    ]);
+
+    const { cleanupMissingPackageJobs } = await import(
+      '../../src/jobs/cleanupMissingPackage.js'
+    );
+
+    const result = await cleanupMissingPackageJobs();
+
+    expect(relRemoveMock).toHaveBeenCalledWith(
+      'build-rel|com.removed.package|1.0.0',
+      { removeChildren: true },
+    );
+    expect(result.releaseJobs.cleaned).toHaveLength(1);
   });
 });
