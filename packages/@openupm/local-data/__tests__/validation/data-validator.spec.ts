@@ -187,6 +187,47 @@ describe('validateDataDirectory', () => {
     );
   });
 
+  it('rejects repoUrl values with branch fragments, queries, or subpaths', async () => {
+    expect.assertions(9);
+    for (const repoUrl of [
+      'https://github.com/example/package.git#upm-2',
+      'https://github.com/example/package#upm-2',
+      'https://github.com/example/package#',
+      'https://github.com/example/package?ref=upm-2',
+      'https://github.com/example/package/tree/upm-2',
+      'https://github.com/example',
+    ]) {
+      await expectIssue(
+        (dataDir) =>
+          writePackage(dataDir, validPackage.name, {
+            ...validPackage,
+            repoUrl,
+          }),
+        'package-repo-url-invalid',
+      );
+    }
+
+    for (const repoUrl of [
+      'https://github.com/example/package',
+      'https://github.com/example/package/',
+      'https://github.com/example/package.git',
+    ]) {
+      const dataDir = await createDataDir();
+      try {
+        await writePackage(dataDir, validPackage.name, {
+          ...validPackage,
+          repoUrl,
+        });
+        expect(await validateDataDirectory(dataDir)).toEqual({
+          valid: true,
+          issues: [],
+        });
+      } finally {
+        await afs.rm(dataDir, { recursive: true, force: true });
+      }
+    }
+  });
+
   it('rejects malformed GitHub Release repo URLs', async () => {
     expect.assertions(2);
     await expectIssue(

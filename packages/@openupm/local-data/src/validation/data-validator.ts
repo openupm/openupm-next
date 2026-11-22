@@ -56,6 +56,22 @@ function isNonEmptyString(value: unknown): value is string {
   return typeof value === 'string' && value.trim().length > 0;
 }
 
+function getRepoUrlIssueMessage(value: string): string | null {
+  if (value.includes('#') || value.includes('?')) {
+    return 'repoUrl must point to the repository root without a #branch fragment or query string';
+  }
+  try {
+    const parsed = new URL(value);
+    const pathSegments = parsed.pathname.split('/').filter(Boolean);
+    if (pathSegments.length !== 2) {
+      return 'repoUrl must point to the repository root (owner/repo) without a branch or subpath';
+    }
+  } catch {
+    return 'repoUrl must be a valid repository root URL';
+  }
+  return null;
+}
+
 function isGitHubRepoUrl(value: string): boolean {
   if (value.startsWith('git@github.com:')) {
     return /^git@github\.com:[^/]+\/[^/]+?(?:\.git)?$/i.test(value);
@@ -204,6 +220,16 @@ export async function validateDataDirectory(
           path: relPath,
           packageName,
         });
+      } else if (isNonEmptyString(rawPackage.repoUrl)) {
+        const repoUrlIssue = getRepoUrlIssueMessage(rawPackage.repoUrl.trim());
+        if (repoUrlIssue) {
+          addIssue(issues, {
+            code: 'package-repo-url-invalid',
+            message: repoUrlIssue,
+            path: relPath,
+            packageName,
+          });
+        }
       }
       if (!isNonEmptyString(pkg.name)) {
         addIssue(issues, {
