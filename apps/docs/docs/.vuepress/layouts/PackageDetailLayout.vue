@@ -24,10 +24,13 @@ import { getMonthlyDownloadsRangeUrl, getPackageInfoUrl, getPackumentUrl, getPac
 import { fillMissingDates, isPackageExist, timeAgoFormat } from '@/utils';
 import UnityAssetAdPlacement from '@/components/UnityAssetAdPlacement.vue';
 import DonationSidebarAd from '@/components/DonationSidebarAd.vue';
+import KieAffiliateAd from '@/components/KieAffiliateAd.vue';
+import { KIE_AFFILIATE_URLS, useKieCampaign } from '@/kieAffiliate';
 
 const route = useRoute();
 const { t } = useI18n();
 const mq = useMq();
+const { isActive: isKieCampaignActive } = useKieCampaign();
 
 const SubPageSlug = {
   deps: "deps",
@@ -332,6 +335,9 @@ const topics = computed(() => {
   });
 });
 
+const isAiTopic = computed(() => topics.value.some((topic) => topic.slug === "ai"));
+const showKieAd = computed(() => isKieCampaignActive.value && isAiTopic.value);
+
 const breadcrumbItems = computed(() => [
   { text: "Packages", link: "/packages/" },
   { text: packageMetadata.value.displayName || packageMetadata.value.name },
@@ -511,6 +517,7 @@ const buildRouterLinkQuery = function (subPage: string): Record<string, string> 
             </template>
           </div>
         </section>
+        <KieAffiliateAd v-if="showKieAd" variant="sidebar" :href="KIE_AFFILIATE_URLS.ai" />
       </ClientOnly>
     </template>
     <template #page-content-top>
