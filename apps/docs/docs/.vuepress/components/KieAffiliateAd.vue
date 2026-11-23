@@ -65,14 +65,15 @@ const props = defineProps({
 .kie-ad-link {
   color: inherit;
   display: block;
-  text-decoration: none;
-  border-bottom: none;
+  text-decoration: none !important;
+  border-bottom: none !important;
 
   &:hover,
-  &:focus {
+  &:focus,
+  &:active {
     color: inherit;
-    text-decoration: none;
-    border-bottom: none;
+    text-decoration: none !important;
+    border-bottom: none !important;
   }
 
   :deep(span) {
