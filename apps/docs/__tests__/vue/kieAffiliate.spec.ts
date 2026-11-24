@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
 import { describe, expect, it } from "vitest";
@@ -35,16 +35,19 @@ describe("KIE affiliate placement", () => {
     expect(isKieCampaignActiveAt(KIE_CAMPAIGN_END.getTime())).toBe(false);
   });
 
-  it("puts the KIE card first in the package grid and in the sidebar", () => {
+  it("puts the KIE card first in the package grid and directly under the sidebar donation link", () => {
     const source = readVuepressFile("layouts/PackageListLayout.vue");
     const gridInsertion = source.indexOf('items.push({ type: "kie" });');
     const packageLoop = source.indexOf("for (let i = 0; i < metadataEntries.value.length; i++)");
+    const sidebarCard = source.indexOf(
+      '<KieAffiliateAd v-if="isKieCampaignActive" variant="sidebar" :href="KIE_AFFILIATE_URLS.list" />',
+    );
+    const assetStoreSale = source.indexOf("<UnityAssetStoreSale />");
 
     expect(gridInsertion).toBeGreaterThan(-1);
     expect(gridInsertion).toBeLessThan(packageLoop);
-    expect(source).toContain(
-      '<KieAffiliateAd v-if="isKieCampaignActive" variant="sidebar" :href="KIE_AFFILIATE_URLS.list" />',
-    );
+    expect(sidebarCard).toBeGreaterThan(-1);
+    expect(sidebarCard).toBeLessThan(assetStoreSale);
     expect(source).toContain(
       '<KieAffiliateAd variant="grid" :style="style" :href="KIE_AFFILIATE_URLS.grid" />',
     );
@@ -52,6 +55,10 @@ describe("KIE affiliate placement", () => {
 
   it("shows the detail card only when the package has the ai topic", () => {
     const source = readVuepressFile("layouts/PackageDetailLayout.vue");
+    const detailCard = source.indexOf(
+      '<KieAffiliateAd v-if="showKieAd" variant="sidebar" :href="KIE_AFFILIATE_URLS.ai" />',
+    );
+    const subpageSection = source.indexOf('<section class="subpage-section">');
 
     expect(source).toContain(
       'const isAiTopic = computed(() => topics.value.some((topic) => topic.slug === "ai"));',
@@ -59,15 +66,29 @@ describe("KIE affiliate placement", () => {
     expect(source).toContain(
       "const showKieAd = computed(() => isKieCampaignActive.value && isAiTopic.value);",
     );
-    expect(source).toContain(
-      '<KieAffiliateAd v-if="showKieAd" variant="sidebar" :href="KIE_AFFILIATE_URLS.ai" />',
-    );
+    expect(detailCard).toBeGreaterThan(-1);
+    expect(detailCard).toBeLessThan(subpageSection);
   });
 
-  it("labels the card as an affiliate ad and blocks SEO weight", () => {
+  it("labels the card as an affiliate placement, leads with the discount and blocks SEO weight", () => {
     const source = readVuepressFile("components/KieAffiliateAd.vue");
 
-    expect(source).toContain("Ad · Affiliate");
+    expect(source).toContain("Affiliate");
+    expect(source).not.toContain("Sponsor");
+    expect(source).not.toContain("Ad · Affiliate");
+    expect(source).toContain("Up to 88% off official AI API prices");
+    expect(source).toContain("80 free credits");
+    expect(source).toContain('src="/images/ads/kie-logo.png"');
+    expect(
+      existsSync(
+        fileURLToPath(
+          new URL(
+            "../../docs/.vuepress/public/images/ads/kie-logo.png",
+            import.meta.url,
+          ),
+        ),
+      ),
+    ).toBe(true);
     expect(source).toContain(
       'rel="sponsored nofollow noopener"',
     );

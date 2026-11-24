@@ -498,6 +498,7 @@ const buildRouterLinkQuery = function (subPage: string): Record<string, string> 
     <template #sidebar-top>
       <ClientOnly>
         <DonationSidebarAd />
+        <KieAffiliateAd v-if="showKieAd" variant="sidebar" :href="KIE_AFFILIATE_URLS.ai" />
         <section class="subpage-section">
           <ul class="menu">
             <div class="columns">
@@ -517,7 +518,6 @@ const buildRouterLinkQuery = function (subPage: string): Record<string, string> 
             </template>
           </div>
         </section>
-        <KieAffiliateAd v-if="showKieAd" variant="sidebar" :href="KIE_AFFILIATE_URLS.ai" />
       </ClientOnly>
     </template>
     <template #page-content-top>

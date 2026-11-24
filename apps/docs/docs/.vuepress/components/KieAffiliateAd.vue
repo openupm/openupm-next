@@ -15,19 +15,27 @@ const props = defineProps({
 
 <template>
   <div :class="['kie-ad', `kie-ad-${props.variant}`, 'no-external-link-icon']">
-    <span class="kie-ad-label">Ad · Affiliate</span>
+    <span class="kie-ad-label">Affiliate</span>
     <a
       :href="props.href"
       class="kie-ad-link no-external-link-icon"
       rel="sponsored nofollow noopener"
       target="_blank"
     >
-      <span v-if="props.variant === 'grid'" class="kie-ad-media" aria-hidden="true">
-        <span class="kie-ad-wordmark">KIE.ai</span>
+      <span v-if="props.variant === 'grid'" class="kie-ad-media">
+        <img class="kie-ad-logo" src="/images/ads/kie-logo.png" alt="KIE.ai" />
+        <span class="kie-ad-badge">UP TO 88% OFF</span>
       </span>
       <span class="kie-ad-body">
-        <span class="kie-ad-title">KIE.ai</span>
-        <span class="kie-ad-description">AI video, image and music models in one API</span>
+        <span v-if="props.variant === 'sidebar'" class="kie-ad-heading">
+          <img class="kie-ad-logo kie-ad-logo-small" src="/images/ads/kie-logo.png" alt="" />
+          <span class="kie-ad-title">KIE.ai</span>
+        </span>
+        <span v-else class="kie-ad-title">KIE.ai</span>
+        <span class="kie-ad-description">
+          <span>Up to 88% off official AI API prices</span>
+          <span>200+ models · 80 free credits{{ props.variant === 'sidebar' ? ' to start' : '' }}</span>
+        </span>
         <span class="kie-ad-cta">Explore KIE <i class="fas fa-arrow-right"></i></span>
       </span>
     </a>
@@ -56,8 +64,9 @@ const props = defineProps({
   right: 0;
   z-index: 1;
   padding: 0.05rem 0.3rem;
-  color: var(--c-text-lighter);
-  background: var(--c-bg-darker);
+  color: #fff;
+  background: rgba(15, 23, 42, 0.82);
+  border-bottom-left-radius: 0.25rem;
   font-size: 0.65rem;
   line-height: 1.4;
 }
@@ -95,7 +104,31 @@ const props = defineProps({
 
 .kie-ad-description {
   color: var(--c-text-lighter);
+  display: flex;
+  flex-direction: column;
+  gap: 0.05rem;
   line-height: 1.25;
+}
+
+.kie-ad-heading {
+  align-items: center;
+  display: flex;
+  gap: 0.35rem;
+}
+
+.kie-ad-logo {
+  display: block;
+  height: auto;
+  width: 100%;
+}
+
+.kie-ad-logo-small {
+  background: #fff;
+  border-radius: 50%;
+  box-sizing: content-box;
+  height: 18px;
+  padding: 2px;
+  width: 18px;
 }
 
 .kie-ad-cta {
@@ -138,17 +171,30 @@ const props = defineProps({
   .kie-ad-media {
     align-items: center;
     aspect-ratio: 2 / 1;
-    background: linear-gradient(135deg, #1f2a44 0%, #3d5afe 100%);
+    background: radial-gradient(circle at 50% 38%, #ffffff 0%, #eef4ff 62%, #dfe9ff 100%);
     display: flex;
     justify-content: center;
+    position: relative;
     width: 100%;
   }
 
-  .kie-ad-wordmark {
+  .kie-ad-logo {
+    max-width: 120px;
+    width: 42%;
+  }
+
+  .kie-ad-badge {
+    background: #1554ff;
+    border-radius: 0.2rem;
+    bottom: 0.5rem;
     color: #fff;
-    font-size: 1.25rem;
+    font-size: 0.62rem;
     font-weight: 800;
-    letter-spacing: 0.04em;
+    left: 0.5rem;
+    letter-spacing: 0.02em;
+    line-height: 1.4;
+    padding: 0.18rem 0.4rem;
+    position: absolute;
   }
 
   .kie-ad-body {

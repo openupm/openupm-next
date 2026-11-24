@@ -351,8 +351,8 @@ watch(() => topicSlug.value, () => {
     <template #sidebar-top>
       <ClientOnly>
         <DonationSidebarAd />
-        <UnityAssetStoreSale />
         <KieAffiliateAd v-if="isKieCampaignActive" variant="sidebar" :href="KIE_AFFILIATE_URLS.list" />
+        <UnityAssetStoreSale />
         <section class="quicklink-section mt-1">
           <ul class="menu">
             <li class="menu-item mb-0">
