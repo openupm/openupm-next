@@ -38,7 +38,10 @@ jobs:
         run: OPENUPM_DATA_PATH="${{ github.workspace }}/data" npm run test
 
   build-website-us:
-    runs-on: macos-latest
+    # ubuntu-latest: this job has no macOS-specific step, and GitHub-hosted
+    # macOS arm64 runners are capacity-constrained enough that the job is
+    # cancelled when no runner is acquired in ~15 minutes, failing main.
+    runs-on: ubuntu-latest
     needs: test
     if: github.ref == 'refs/heads/main' && github.repository == 'openupm/openupm-next' && !contains(github.event.head_commit.message, '[skip website]')
     steps:
