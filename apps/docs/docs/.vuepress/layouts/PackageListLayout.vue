@@ -21,6 +21,8 @@ import { isUnityNuGetPackageName, usePackageSearchSuggestions } from "@/search";
 import UnityAssetAdPlacement from '@/components/UnityAssetAdPlacementForPackageList.vue';
 import DonationSidebarAd from '@/components/DonationSidebarAd.vue';
 import UnityAssetStoreSale from '@/components/UnityAssetStoreSale.vue';
+import KieAffiliateAd from '@/components/KieAffiliateAd.vue';
+import { KIE_AFFILIATE_URLS } from '@/kieAffiliate';
 import { createTimedCampaignState } from "@/featuredListingAd";
 
 const route = useRoute();
@@ -134,10 +136,10 @@ const adPlacementDataList = reactive([
 ] as AdPlacementData[]);
 
 // List item type that hold package metadata or ad placement data.
-type ListItem = {
-  type: "package" | "ad";
-  value: PackageMetadata | AdPlacementData;
-};
+type ListItem =
+  | { type: "package"; value: PackageMetadata }
+  | { type: "ad"; value: AdPlacementData }
+  | { type: "kie" };
 
 const featuredListingAdCampaignEnd = new Date("2026-07-31T00:00:00Z");
 
@@ -164,6 +166,7 @@ const listItems = computed(() => {
   const items = [] as ListItem[];
   const adInterval = 6;
   let adIndex = 0;
+  items.push({ type: "kie" });
   if (featuredListingAdCampaign.isActive.value) {
     items.push({ type: "ad", value: featuredListingAdPlacementData });
   }
@@ -237,6 +240,7 @@ const gridPageProvider = computed(() => {
 // Grid item key for virtual scroll grid.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const getGridKey = (item: any): string => {
+  if (item.type === "kie") return "kie:grid";
   if (item.type === "ad") return `ad:${item.value.url}`;
   if (item.value) return item.value.name;
   return item.index.toString();
@@ -343,6 +347,7 @@ watch(() => topicSlug.value, () => {
     <template #sidebar-top>
       <ClientOnly>
         <DonationSidebarAd />
+        <KieAffiliateAd variant="sidebar" :href="KIE_AFFILIATE_URLS.list" />
         <UnityAssetStoreSale />
         <section class="quicklink-section mt-1">
           <ul class="menu">
@@ -455,6 +460,9 @@ watch(() => topicSlug.value, () => {
                         <template v-if="item.type === 'ad'">
                           <!-- <AdsenseInfeedForPackageList :style="style" :data="item.value" /> -->
                           <UnityAssetAdPlacement :style="style" :data="item.value" />
+                        </template>
+                        <template v-if="item.type === 'kie'">
+                          <KieAffiliateAd variant="grid" :style="style" :href="KIE_AFFILIATE_URLS.grid" />
                         </template>
                       </template>
                     </Grid>
