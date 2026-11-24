@@ -21,7 +21,7 @@ const aboutLinks = computed(() => [
     text: t("privacy-policy")
   },
   {
-    link: "https://openupm.github.io/upptime/",
+    link: "https://status.openupm.com/",
     text: t("website-status")
   },
   {

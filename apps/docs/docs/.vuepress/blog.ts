@@ -14,6 +14,16 @@ export const BLOG_RSS_PATH = "/blog/rss.xml";
 
 export const BLOG_POSTS: BlogPost[] = [
   {
+    title: "A New OpenUPM Status Page",
+    slug: "openupm-status-page",
+    featuredImage: "/images/blog-covers/openupm-status-page.png",
+    author: "Favo Yang",
+    date: "2026-11-24",
+    readingTime: "1 min read",
+    excerpt:
+      "OpenUPM service availability now has a dedicated public page at status.openupm.com.",
+  },
+  {
     title:
       "Upcoming Unity Editor Change Affecting Package Compatibility: Unity 6.6 Fast Enter Play Mode",
     slug: "unity-66-fast-enter-play-mode-package-readiness",
