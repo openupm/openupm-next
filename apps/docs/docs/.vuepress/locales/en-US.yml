@@ -200,7 +200,7 @@ star: Star
 stars: Stars
 state: State
 status: Status
-website-status: Uptime Status
+website-status: Status
 queue-status: Queue Status
 trends: Trends
 submit-pr: Submit Pull Request
