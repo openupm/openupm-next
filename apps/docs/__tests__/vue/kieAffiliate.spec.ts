@@ -5,9 +5,6 @@ import { describe, expect, it } from "vitest";
 
 import {
   KIE_AFFILIATE_URLS,
-  KIE_CAMPAIGN_END,
-  KIE_CAMPAIGN_START,
-  isKieCampaignActiveAt,
 } from "../../docs/.vuepress/kieAffiliate";
 
 const readVuepressFile = (path: string): string =>
@@ -25,22 +22,12 @@ describe("KIE affiliate placement", () => {
     });
   });
 
-  it("runs from 2026-12-01 to 2026-12-31 in Singapore time", () => {
-    expect(KIE_CAMPAIGN_START.toISOString()).toBe("2026-11-30T16:00:00.000Z");
-    expect(KIE_CAMPAIGN_END.toISOString()).toBe("2026-12-30T16:00:00.000Z");
-
-    expect(isKieCampaignActiveAt(KIE_CAMPAIGN_START.getTime() - 1)).toBe(false);
-    expect(isKieCampaignActiveAt(KIE_CAMPAIGN_START.getTime())).toBe(true);
-    expect(isKieCampaignActiveAt(KIE_CAMPAIGN_END.getTime() - 1)).toBe(true);
-    expect(isKieCampaignActiveAt(KIE_CAMPAIGN_END.getTime())).toBe(false);
-  });
-
-  it("puts the KIE card first in the package grid and directly under the sidebar donation link", () => {
+  it("shows the card immediately on every list page", () => {
     const source = readVuepressFile("layouts/PackageListLayout.vue");
     const gridInsertion = source.indexOf('items.push({ type: "kie" });');
     const packageLoop = source.indexOf("for (let i = 0; i < metadataEntries.value.length; i++)");
     const sidebarCard = source.indexOf(
-      '<KieAffiliateAd v-if="isKieCampaignActive" variant="sidebar" :href="KIE_AFFILIATE_URLS.list" />',
+      '<KieAffiliateAd variant="sidebar" :href="KIE_AFFILIATE_URLS.list" />',
     );
     const assetStoreSale = source.indexOf("<UnityAssetStoreSale />");
 
@@ -48,6 +35,7 @@ describe("KIE affiliate placement", () => {
     expect(gridInsertion).toBeLessThan(packageLoop);
     expect(sidebarCard).toBeGreaterThan(-1);
     expect(sidebarCard).toBeLessThan(assetStoreSale);
+    expect(source).not.toContain("isKieCampaignActive");
     expect(source).toContain(
       '<KieAffiliateAd variant="grid" :style="style" :href="KIE_AFFILIATE_URLS.grid" />',
     );
@@ -64,7 +52,7 @@ describe("KIE affiliate placement", () => {
       'const isAiTopic = computed(() => topics.value.some((topic) => topic.slug === "ai"));',
     );
     expect(source).toContain(
-      "const showKieAd = computed(() => isKieCampaignActive.value && isAiTopic.value);",
+      "const showKieAd = computed(() => isAiTopic.value);",
     );
     expect(detailCard).toBeGreaterThan(-1);
     expect(detailCard).toBeLessThan(subpageSection);

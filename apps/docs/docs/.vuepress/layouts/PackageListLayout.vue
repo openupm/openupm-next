@@ -22,7 +22,7 @@ import UnityAssetAdPlacement from '@/components/UnityAssetAdPlacementForPackageL
 import DonationSidebarAd from '@/components/DonationSidebarAd.vue';
 import UnityAssetStoreSale from '@/components/UnityAssetStoreSale.vue';
 import KieAffiliateAd from '@/components/KieAffiliateAd.vue';
-import { KIE_AFFILIATE_URLS, useKieCampaign } from '@/kieAffiliate';
+import { KIE_AFFILIATE_URLS } from '@/kieAffiliate';
 import { createTimedCampaignState } from "@/featuredListingAd";
 
 const route = useRoute();
@@ -141,8 +141,6 @@ type ListItem =
   | { type: "ad"; value: AdPlacementData }
   | { type: "kie" };
 
-const { isActive: isKieCampaignActive } = useKieCampaign();
-
 const featuredListingAdCampaignEnd = new Date("2026-07-31T00:00:00Z");
 
 const featuredListingAdPlacementData: AdPlacementData = {
@@ -168,9 +166,7 @@ const listItems = computed(() => {
   const items = [] as ListItem[];
   const adInterval = 6;
   let adIndex = 0;
-  if (isKieCampaignActive.value) {
-    items.push({ type: "kie" });
-  }
+  items.push({ type: "kie" });
   if (featuredListingAdCampaign.isActive.value) {
     items.push({ type: "ad", value: featuredListingAdPlacementData });
   }
@@ -351,7 +347,7 @@ watch(() => topicSlug.value, () => {
     <template #sidebar-top>
       <ClientOnly>
         <DonationSidebarAd />
-        <KieAffiliateAd v-if="isKieCampaignActive" variant="sidebar" :href="KIE_AFFILIATE_URLS.list" />
+        <KieAffiliateAd variant="sidebar" :href="KIE_AFFILIATE_URLS.list" />
         <UnityAssetStoreSale />
         <section class="quicklink-section mt-1">
           <ul class="menu">

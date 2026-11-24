@@ -25,12 +25,11 @@ import { fillMissingDates, isPackageExist, timeAgoFormat } from '@/utils';
 import UnityAssetAdPlacement from '@/components/UnityAssetAdPlacement.vue';
 import DonationSidebarAd from '@/components/DonationSidebarAd.vue';
 import KieAffiliateAd from '@/components/KieAffiliateAd.vue';
-import { KIE_AFFILIATE_URLS, useKieCampaign } from '@/kieAffiliate';
+import { KIE_AFFILIATE_URLS } from '@/kieAffiliate';
 
 const route = useRoute();
 const { t } = useI18n();
 const mq = useMq();
-const { isActive: isKieCampaignActive } = useKieCampaign();
 
 const SubPageSlug = {
   deps: "deps",
@@ -336,7 +335,7 @@ const topics = computed(() => {
 });
 
 const isAiTopic = computed(() => topics.value.some((topic) => topic.slug === "ai"));
-const showKieAd = computed(() => isKieCampaignActive.value && isAiTopic.value);
+const showKieAd = computed(() => isAiTopic.value);
 
 const breadcrumbItems = computed(() => [
   { text: "Packages", link: "/packages/" },
