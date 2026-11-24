@@ -20,6 +20,7 @@ sponsors:
   image: https://opensource.nyc3.cdn.digitaloceanspaces.com/attribution/assets/SVG/DO_Logo_horizontal_blue.svg
   width: 603
   height: 103
+  expires: 2026-12-31
 - text: Host your infrastructure on a DDoS protected VPS from Evolution Host
   slug: evolutionhost
   url: https://evolution-host.com/
